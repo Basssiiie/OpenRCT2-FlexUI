@@ -23,10 +23,10 @@ test("Standard properties are set", t =>
 	template.open();
 
 	const label = mock.createdWindows[0].widgets[0] as LabelWidget;
-	t.is("label", label.type);
-	t.is("static", label.text);
-	t.is("centred", label.textAlign);
-	t.is("tip", label.tooltip);
+	t.is(label.type, "label");
+	t.is(label.text, "static");
+	t.is(label.textAlign, "centred");
+	t.is(label.tooltip, "tip");
 });
 
 
@@ -45,17 +45,17 @@ test("Text is bindable", t =>
 	template.open();
 
 	const label1 = mock.createdWindows[0].widgets[0] as LabelWidget;
-	t.is("Hello", label1.text);
+	t.is(label1.text, "Hello");
 
 	text.set("Bye");
-	t.is("Bye", label1.text);
+	t.is(label1.text, "Bye");
 
 	template.close();
 	text.set("Still there");
 	template.open();
 
 	const label2 = mock.createdWindows[1].widgets[0] as LabelWidget;
-	t.is("Still there", label2.text);
+	t.is(label2.text, "Still there");
 });
 
 
@@ -74,15 +74,15 @@ test("Alignment is bindable", t =>
 	template.open();
 
 	const label1 = mock.createdWindows[0].widgets[0] as LabelWidget;
-	t.is("centred", label1.textAlign);
+	t.is(label1.textAlign, "centred");
 
 	alignment.set("left");
-	t.is("left", label1.textAlign);
+	t.is(label1.textAlign, "left");
 
 	template.close();
 	alignment.set("centred");
 	template.open();
 
 	const label2 = mock.createdWindows[1].widgets[0] as LabelWidget;
-	t.is("centred", label2.textAlign);
+	t.is(label2.textAlign, "centred");
 });

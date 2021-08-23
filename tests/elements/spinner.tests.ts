@@ -40,10 +40,10 @@ test("Value is bindable", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("33", spinner.text);
+	t.is(spinner.text, "33");
 
 	value.set(76);
-	t.is("76", spinner.text);
+	t.is(spinner.text, "76");
 });
 
 
@@ -61,13 +61,13 @@ test("Value can be incremented/decremented", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("41", spinner.text);
+	t.is(spinner.text, "41");
 
 	spinner.onIncrement?.();
-	t.is("45", spinner.text);
+	t.is(spinner.text, "45");
 
 	spinner.onDecrement?.();
-	t.is("41", spinner.text);
+	t.is(spinner.text, "41");
 });
 
 
@@ -85,13 +85,13 @@ test("Incremented value gets clamped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("15", spinner.text);
+	t.is(spinner.text, "15");
 
 	spinner.onIncrement?.();
-	t.is("19", spinner.text);
+	t.is(spinner.text, "19");
 
 	spinner.onIncrement?.();
-	t.is("19", spinner.text);
+	t.is(spinner.text, "19");
 });
 
 
@@ -109,13 +109,13 @@ test("Decremented value gets clamped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("15", spinner.text);
+	t.is(spinner.text, "15");
 
 	spinner.onDecrement?.();
-	t.is("10", spinner.text);
+	t.is(spinner.text, "10");
 
 	spinner.onDecrement?.();
-	t.is("10", spinner.text);
+	t.is(spinner.text, "10");
 });
 
 
@@ -133,13 +133,13 @@ test("Incremented value gets wrapped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("6", spinner.text);
+	t.is(spinner.text, "6");
 
 	spinner.onIncrement?.();
-	t.is("0", spinner.text);
+	t.is(spinner.text, "0");
 
 	spinner.onIncrement?.();
-	t.is("8", spinner.text);
+	t.is(spinner.text, "8");
 });
 
 
@@ -157,13 +157,13 @@ test("Decremented value gets wrapped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("4", spinner.text);
+	t.is(spinner.text, "4");
 
 	spinner.onDecrement?.();
-	t.is("9", spinner.text);
+	t.is(spinner.text, "9");
 
 	spinner.onDecrement?.();
-	t.is("1", spinner.text);
+	t.is(spinner.text, "1");
 });
 
 
@@ -181,13 +181,13 @@ test("Incremented value gets clamped then wrapped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("6", spinner.text);
+	t.is(spinner.text, "6");
 
 	spinner.onIncrement?.();
-	t.is("9", spinner.text);
+	t.is(spinner.text, "9");
 
 	spinner.onIncrement?.();
-	t.is("0", spinner.text);
+	t.is(spinner.text, "0");
 });
 
 
@@ -205,13 +205,13 @@ test("Decremented value gets clamped then wrapped", t =>
 	template.open();
 
 	const spinner = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("4", spinner.text);
+	t.is(spinner.text, "4");
 
 	spinner.onDecrement?.();
-	t.is("0", spinner.text);
+	t.is(spinner.text, "0");
 
 	spinner.onDecrement?.();
-	t.is("9", spinner.text);
+	t.is(spinner.text, "9");
 });
 
 
