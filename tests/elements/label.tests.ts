@@ -5,7 +5,7 @@ import Mock from "openrct2-mocks";
 import fui from "../../src/fui";
 
 
-test("Static values are set", t =>
+test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;

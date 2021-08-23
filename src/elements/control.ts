@@ -27,5 +27,7 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase
 		binder.read(this, "tooltip", params.tooltip);
 		binder.read(this, "isDisabled", params.disabled);
 		binder.read(this, "isVisible", params.visibility, v => (v === "visible"));
+
+		output.widgets.push(this as Widget);
 	}
 }

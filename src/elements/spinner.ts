@@ -4,7 +4,6 @@ import { LayoutFactory } from "../layouts/layoutFactory";
 import { LayoutFunction } from "../layouts/layoutFunction";
 import { Bindable } from "../observables/bindable";
 import { Observable } from "../observables/observable";
-import * as Log from "../utilities/logger";
 import * as MathHelper from "../utilities/math";
 import { Control } from "./control";
 import { ElementParams } from "./element";
@@ -71,6 +70,7 @@ export interface SpinnerParams extends ElementParams
 
 	/**
 	 * Allows for a custom formatted display every time the value gets refreshed.
+	 * @default value.toString()
 	 */
 	format?: (value: number) => string;
 }
@@ -106,17 +106,29 @@ class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, Sp
 	{
 		super("spinner", output, params);
 
+		// Make value an observable regardless of user choice,
+		// to make updating the text more convenient.
 		this.value = (params.value instanceof Observable)
 			? params.value
 			: new Observable((params.value) ? params.value : 0);
 
+		// Do a standard .toString() if the format function is not provided.
+		const format = (params.format)
+			? params.format
+			: ((value: number): string => value.toString());
+
 		const binder = output.binder;
-		binder.read(this, "text", this.value, params.format);
+		binder.read(this, "text", this.value, format);
 		binder.read(this, "increment", params.increment);
 		binder.read(this, "minimum", params.minimum);
 		binder.read(this, "maximum", params.maximum);
 		this.wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this.onChange = params.onChange;
+
+		if (this.minimum >= this.maximum)
+		{
+			throw Error(`Spinner: minimum ${this.minimum} is equal to or larger than maximum ${this.maximum}.`);
+		}
 	}
 
 	/**
@@ -124,7 +136,7 @@ class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, Sp
 	 */
 	onIncrement(): void
 	{
-		this.onUpdate(this.value.get() + this.increment);
+		updateSpinnerValue(this, this.increment);
 	}
 
 	/**
@@ -132,50 +144,51 @@ class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, Sp
 	 */
 	onDecrement(): void
 	{
-		this.onUpdate(this.value.get() - this.increment);
+		updateSpinnerValue(this, -this.increment);
 	}
+}
 
-	/**
-	 * Callback for when the value of the spinner is incremented or decremented.
-	 */
-	private onUpdate(value: number): void
+
+/**
+ * Callback for when the value of the spinner is incremented or decremented.
+ */
+function updateSpinnerValue(spinner: SpinnerControl, increment: number): void
+{
+	const min = spinner.minimum;
+	const max = spinner.maximum;
+
+	if (min >= max)
+		return;
+
+	const oldValue = spinner.value.get();
+	const newValue = (oldValue + increment);
+
+	let result: number;
+	switch (spinner.wrapMode)
 	{
-		const min = this.minimum;
-		const max = this.maximum;
+		default:
+		{
+			result = MathHelper.wrap(newValue, min, max);
+			break;
+		}
+		case "clamp":
+		{
+			result = MathHelper.clamp(newValue, min, max);
+			break;
+		}
+		case "clampThenWrap":
+		{
+			// Wrap if old value is at the limit, otherwise clamp.
+			result = (newValue < min && oldValue === min) || (newValue >= max && oldValue === (max - 1))
+				? MathHelper.wrap(newValue, min, max)
+				: MathHelper.clamp(newValue, min, max);
+			break;
+		}
+	}
+	spinner.value.set(result);
 
-		if (min >= max)
-		{
-			Log.debug(`(${this.name}) Minimum ${min} is equal to or larger than maximum ${max}, value ${value} was not applied.`);
-			return;
-		}
-
-		let result: number;
-		switch (this.wrapMode)
-		{
-			default:
-			{
-				result = MathHelper.wrap(value, min, max);
-				break;
-			}
-			case "clamp":
-			{
-				result = MathHelper.clamp(value, min, max);
-				break;
-			}
-			case "clampThenWrap":
-			{
-				const oldValue = this.value.get();
-				// Wrap if old value is at the limit, otherwise clamp.
-				result = (value < min && oldValue === min) || (value >= max && oldValue === (max - 1))
-					? MathHelper.wrap(value, min, max)
-					: MathHelper.clamp(value, min, max);
-				break;
-			}
-		}
-		this.value.set(result);
-		if (this.onChange)
-		{
-			this.onChange(result, this.increment);
-		}
+	if (spinner.onChange)
+	{
+		spinner.onChange(result, increment);
 	}
 }
