@@ -1,5 +1,5 @@
 import test from "ava";
-import * as MathHelper from "../../src/utilities/math";
+import * as MathHelper from "@src/utilities/math";
 
 
 test("clamp(): only max", t =>

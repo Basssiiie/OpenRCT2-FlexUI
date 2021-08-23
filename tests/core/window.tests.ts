@@ -2,8 +2,8 @@
 
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
-import { WindowFactory } from "../../src/core/window";
-import fui from "../../src/fui";
+import { WindowFactory } from "@src/core/window";
+import fui from "@src/fui";
 
 
 test("Simple window with widgets", t =>

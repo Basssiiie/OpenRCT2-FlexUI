@@ -2,7 +2,7 @@
 
 import test from "ava";
 import Mock from "openrct2-mocks";
-import fui from "../../src/fui";
+import fui from "@src/fui";
 
 
 test("Standard properties are set", t =>

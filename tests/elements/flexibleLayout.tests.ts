@@ -1,11 +1,11 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import test from "ava";
-import { BuildOutput } from "../../src/core/buildOutput";
-import { WidgetContainer } from "../../src/core/widgetContainer";
-import { FlexibleLayoutFactory, FlexibleLayoutParams } from "../../src/elements/flexibleLayout";
-import { Direction } from "../../src/positional/direction";
-import { Rectangle } from "../../src/positional/rectangle";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { FlexibleLayoutFactory, FlexibleLayoutParams } from "@src/elements/flexibleLayout";
+import { Direction } from "@src/positional/direction";
+import { Rectangle } from "@src/positional/rectangle";
 
 
 test("Simple layouts with widgets", t =>

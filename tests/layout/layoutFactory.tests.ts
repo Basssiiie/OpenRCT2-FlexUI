@@ -1,9 +1,9 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import test from "ava";
-import { LayoutFactory } from "../../src/layouts/layoutFactory";
-import { Padding } from "../../src/positional/padding";
-import { Rectangle } from "../../src/positional/rectangle";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Padding } from "@src/positional/padding";
+import { Rectangle } from "@src/positional/rectangle";
 
 
 test("Apply no padding", t =>

@@ -2,9 +2,9 @@
 
 import test from "ava";
 import Mock from "openrct2-mocks";
-import { BuildOutput } from "../../src/core/buildOutput";
-import { Binder } from "../../src/observables/binder";
-import { Observable } from "../../src/observables/observable";
+import { BuildOutput } from "@src/core/buildOutput";
+import { Binder } from "@src/observables/binder";
+import { Observable } from "@src/observables/observable";
 
 
 test("read() sets values", t =>
