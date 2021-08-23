@@ -1,12 +1,12 @@
-import { ElementFactory, ElementParams } from "./element";
-import { WidgetFactory } from "../core/widgetFactory";
 import { BuildOutput } from "../core/buildOutput";
-import { Id } from "../utilities/identifier";
+import { WidgetFactory } from "../core/widgetFactory";
+import { LayoutFactory } from "../layouts/layoutFactory";
 import { LayoutFunction } from "../layouts/layoutFunction";
 import { Bindable } from "../observables/bindable";
-import { LayoutFactory } from "../layouts/layoutFactory";
 import { Observable } from "../observables/observable";
 import { Template } from "../templates/template";
+import { Control } from "./control";
+import { ElementParams } from "./element";
 
 
 /**
@@ -51,6 +51,7 @@ export const DropdownFactory: WidgetFactory<DropdownParams> =
 {
 	create(output: BuildOutput, params: DropdownParams): LayoutFunction
 	{
+		/*
 		const id = Id.new();
 		const dropdown = ElementFactory.base<DropdownWidget>(output, params, id);
 		dropdown.type = "dropdown";
@@ -61,10 +62,55 @@ export const DropdownFactory: WidgetFactory<DropdownParams> =
 		binder.read(dropdown, "selectedIndex", params.selectedIndex);
 
 		bindDisabledMessage(output.template, id, params);
-
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
+		*/
+		const control = new DropdownControl(output, params);
+		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, control.name, area);
 	}
 };
+
+
+/**
+ * A controller class for a dropdown widget.
+ */
+export class DropdownControl extends Control<DropdownWidget> implements DropdownWidget, DropdownParams
+{
+	items: string[] = [];
+	selectedIndex: number = 0;
+	disabledMessage: string | undefined;
+	disableSingleItem: boolean;
+	onSelect?: (index: number) => void;
+
+
+	/**
+	 * Create a dropdown control with the specified parameters.
+	 */
+	constructor(output: BuildOutput, params: DropdownParams)
+	{
+		super("dropdown", output, params);
+
+		const binder = output.binder;
+		binder.read(this, "items", params.items);
+		binder.read(this, "selectedIndex", params.selectedIndex);
+		this.disabledMessage = params.disabledMessage;
+		this.disableSingleItem = !!params.disableSingleItem;
+		this.onSelect = params.onSelect;
+
+		bindDisabledMessage(output.template, this.name, params);
+	}
+
+	/**
+	 * Called when the dropdown item is changed by the user.
+	 */
+	onChange(index: number): void
+	{
+		this.selectedIndex = index;
+
+		if (this.onSelect)
+		{
+			this.onSelect(index);
+		}
+	}
+}
 
 
 /**
