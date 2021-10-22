@@ -3,8 +3,6 @@ import { WidgetFactory } from "../core/widgetFactory";
 import { LayoutFactory } from "../layouts/layoutFactory";
 import { LayoutFunction } from "../layouts/layoutFunction";
 import { Bindable } from "../observables/bindable";
-import { Observable } from "../observables/observable";
-import { Template } from "../templates/template";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -29,14 +27,12 @@ export interface DropdownParams extends ElementParams
 	/**
 	 * Sets the message that will show when the dropdown is not available.
 	 * @default undefined
-	 * @todo Implement.
 	 */
 	disabledMessage?: string;
 
 	/**
 	 * Automatically disables the dropdown if it has a single item.
 	 * @default false
-	 * @todo Implement.
 	 */
 	disableSingleItem?: boolean;
 
@@ -95,7 +91,15 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		this.disableSingleItem = !!params.disableSingleItem;
 		this.onSelect = params.onSelect;
 
-		bindDisabledMessage(output.template, this.name, params);
+		if (this.disabledMessage)
+		{
+			const items = this.items; // get local reference
+			binder.on(params.disabled, this, "items", (value) => (value) ? [ this.disabledMessage as string ] : items);
+		}
+		if (this.disableSingleItem)
+		{
+			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
+		}
 	}
 
 	/**
@@ -110,31 +114,4 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			this.onSelect(index);
 		}
 	}
-}
-
-
-/**
- * Binds `disabledMessage` to `isDisabled` if possible.
- */
-function bindDisabledMessage(template: Template, id: string, params: DropdownParams): void
-{
-	const disabledMessage = params.disabledMessage;
-	if (!disabledMessage)
-		return;
-
-	const onDisabled = params.disabled;
-	if (!(onDisabled instanceof Observable))
-		return;
-
-	const items = (params.items) ? params.items : [];
-
-	onDisabled.subscribe(v =>
-	{
-		const dropdown = template.getWidget<DropdownWidget>(id);
-		if (!dropdown)
-			return;
-
-		const value = (v) ? [ disabledMessage ] : items;
-		dropdown.set("items", value as string[]);
-	});
 }

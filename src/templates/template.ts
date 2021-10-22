@@ -9,14 +9,16 @@ import { WindowTemplate } from "./windowTemplate";
  */
 export class Template implements WindowTemplate
 {
+	window: Window | null = null;
+
+
 	/**
 	 * Callback that gets called when the window is opened.
 	 */
 	onOpen?: () => void;
 
-	private _instance?: Window;
 
-	constructor(private readonly window: WindowDesc, private readonly binder?: Binder)
+	constructor(private readonly description: WindowDesc, private readonly binder?: Binder)
 	{
 	}
 
@@ -26,36 +28,36 @@ export class Template implements WindowTemplate
 		{
 			this.onOpen();
 		}
-		this._instance = ui.openWindow(this.window);
+		this.window = ui.openWindow(this.description);
 		if (this.binder)
 		{
-			this.binder.bind(this._instance);
+			this.binder.bind(this);
 		}
 	}
 
 	close(): void
 	{
-		ui.closeWindows(this.window.classification);
-		this._instance = undefined;
+		ui.closeWindows(this.description.classification);
+		this.window = null;
 	}
 
 	focus(): void
 	{
-		if (this._instance)
+		if (this.window)
 		{
-			this._instance.bringToFront();
+			this.window.bringToFront();
 		}
 	}
 
 	getWidget<T extends Widget>(name: string): WidgetEditor<T> | null
 	{
-		const widgets = this.window.widgets;
+		const widgets = this.description.widgets;
 		if (widgets)
 		{
 			const template = ArrayHelper.find(widgets, w => w.name === name) as T;
 			if (template)
 			{
-				const active = (this._instance) ? this._instance.findWidget<T>(name) : undefined;
+				const active = (this.window) ? this.window.findWidget<T>(name) : undefined;
 				return new WidgetEditor(template, active);
 			}
 		}
