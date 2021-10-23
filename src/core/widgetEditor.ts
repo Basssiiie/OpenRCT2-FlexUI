@@ -19,7 +19,7 @@ export class WidgetEditor<T extends Widget>
 		const actual = (value instanceof Observable) ? value.get() : value;
 		if (this.active)
 		{
-			this.active[key] = actual;
+			(this.active)[key] = actual;
 		}
 		this.template[key] = actual;
 	}
