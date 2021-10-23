@@ -129,10 +129,7 @@ export interface TabbedWindowParams extends BaseWindowParams
 }
 
 
-export const WindowFactory = createWindow;
-
-
-function createWindow(params: WindowParams | TabbedWindowParams): WindowTemplate
+export function window(params: WindowParams | TabbedWindowParams): WindowTemplate
 {
 	const window: WindowDesc =
 	{

@@ -2,7 +2,7 @@
 
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
-import { WindowFactory } from "@src/core/window";
+import { window } from "@src/core/window";
 import fui from "@src/fui";
 
 
@@ -10,7 +10,7 @@ test("Simple window with widgets", t =>
 {
 	global.ui = Mock.ui();
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window",
 		width: 200, height: 150 + 16,
 
@@ -28,14 +28,14 @@ test("Simple window with widgets", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
-	t.truthy(window);
-	t.is(window.title, "test window");
-	t.is(window.width, 200);
-	t.is(window.height, 166);
-	t.is(window.widgets.length, 4);
+	const created = (global.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.title, "test window");
+	t.is(created.width, 200);
+	t.is(created.height, 166);
+	t.is(created.widgets.length, 4);
 
-	const label1 = window.widgets[0] as LabelWidget;
+	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 0);
@@ -43,7 +43,7 @@ test("Simple window with widgets", t =>
 	t.is(label1.width, 200);
 	t.is(label1.height, 50);
 
-	const button1 = window.widgets[1] as ButtonWidget;
+	const button1 = created.widgets[1] as ButtonWidget;
 	t.is(button1.type, "button");
 	t.is(button1.text, "left button");
 	t.is(button1.x, 0);
@@ -51,7 +51,7 @@ test("Simple window with widgets", t =>
 	t.is(button1.width, 100);
 	t.is(button1.height, 50);
 
-	const button2 = window.widgets[2] as ButtonWidget;
+	const button2 = created.widgets[2] as ButtonWidget;
 	t.is(button2.type, "button");
 	t.is(button2.text, "right button");
 	t.is(button2.x, 100);
@@ -59,7 +59,7 @@ test("Simple window with widgets", t =>
 	t.is(button2.width, 100);
 	t.is(button2.height, 50);
 
-	const label2 = window.widgets[3] as LabelWidget;
+	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.type, "label");
 	t.is(label2.text, "big area");
 	t.is(label2.textAlign, "centred");
@@ -74,7 +74,7 @@ test("Window adjusts to resize", t =>
 {
 	global.ui = Mock.ui();
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window",
 		width: 200, height: 150 + 16,
 		minWidth: 100, minHeight: 50,
@@ -94,30 +94,30 @@ test("Window adjusts to resize", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
-	window.width = 400;
-	window.height = 316;
-	window.onUpdate?.();
+	const created = (global.ui as UiMock).createdWindows[0];
+	created.width = 400;
+	created.height = 316;
+	created.onUpdate?.();
 
-	const label1 = window.widgets[0] as LabelWidget;
+	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 16);
 	t.is(label1.width, 400);
 	t.is(label1.height, 100);
 
-	const button1 = window.widgets[1] as ButtonWidget;
+	const button1 = created.widgets[1] as ButtonWidget;
 	t.is(button1.x, 0);
 	t.is(button1.y, 116);
 	t.is(button1.width, 200);
 	t.is(button1.height, 100);
 
-	const button2 = window.widgets[2] as ButtonWidget;
+	const button2 = created.widgets[2] as ButtonWidget;
 	t.is(button2.x, 200);
 	t.is(button2.y, 116);
 	t.is(button2.width, 200);
 	t.is(button2.height, 100);
 
-	const label2 = window.widgets[3] as LabelWidget;
+	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
 	t.is(label2.y, 216);
 	t.is(label2.width, 400);
@@ -129,7 +129,7 @@ test("Window does not resize if size hasn't changed", t =>
 {
 	global.ui = Mock.ui();
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window",
 		width: 200, height: 150 + 16,
 		minWidth: 100, minHeight: 50,
@@ -149,28 +149,28 @@ test("Window does not resize if size hasn't changed", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
-	window.onUpdate?.();
+	const created = (global.ui as UiMock).createdWindows[0];
+	created.onUpdate?.();
 
-	const label1 = window.widgets[0] as LabelWidget;
+	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 16);
 	t.is(label1.width, 200);
 	t.is(label1.height, 50);
 
-	const button1 = window.widgets[1] as ButtonWidget;
+	const button1 = created.widgets[1] as ButtonWidget;
 	t.is(button1.x, 0);
 	t.is(button1.y, 66);
 	t.is(button1.width, 100);
 	t.is(button1.height, 50);
 
-	const button2 = window.widgets[2] as ButtonWidget;
+	const button2 = created.widgets[2] as ButtonWidget;
 	t.is(button2.x, 100);
 	t.is(button2.y, 66);
 	t.is(button2.width, 100);
 	t.is(button2.height, 50);
 
-	const label2 = window.widgets[3] as LabelWidget;
+	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
 	t.is(label2.y, 116);
 	t.is(label2.width, 200);
@@ -189,7 +189,7 @@ test("Window updates to bindings", t =>
 		buttonPressed: fui.observable(true)
 	};
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window", width: 100, height: 100,
 		content: wb => wb
 			.label({
@@ -203,12 +203,12 @@ test("Window updates to bindings", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
+	const created = (global.ui as UiMock).createdWindows[0];
 
-	const label = window.widgets[0] as LabelWidget;
+	const label = created.widgets[0] as LabelWidget;
 	t.is(label.text, "test");
 	t.is(label.textAlign, "centred");
-	const button = window.widgets[1] as ButtonWidget;
+	const button = created.widgets[1] as ButtonWidget;
 	t.is(button.text, "click me");
 	t.true(button.isPressed);
 
@@ -228,7 +228,7 @@ test("Window applies padding", t =>
 {
 	global.ui = Mock.ui();
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window", width: 150, height: 100,
 		padding: 15,
 		content: wb => wb
@@ -236,9 +236,9 @@ test("Window applies padding", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
+	const created = (global.ui as UiMock).createdWindows[0];
 
-	const button = window.widgets[0] as ButtonWidget;
+	const button = created.widgets[0] as ButtonWidget;
 	t.is(button.x, 15);
 	t.is(button.y, 15 + 16);
 	t.is(button.width, 120);
@@ -250,7 +250,7 @@ test("Window applies padding to resizes", t =>
 {
 	global.ui = Mock.ui();
 
-	const template = WindowFactory({
+	const template = window({
 		title: "test window",
 		width: 150, height: 100,
 		minWidth: 100, minHeight: 50,
@@ -261,12 +261,12 @@ test("Window applies padding to resizes", t =>
 	});
 	template.open();
 
-	const window = (global.ui as UiMock).createdWindows[0];
-	window.width = 250;
-	window.height = 300;
-	window.onUpdate?.();
+	const created = (global.ui as UiMock).createdWindows[0];
+	created.width = 250;
+	created.height = 300;
+	created.onUpdate?.();
 
-	const button = window.widgets[0] as ButtonWidget;
+	const button = created.widgets[0] as ButtonWidget;
 	t.is(button.x, 20);
 	t.is(button.y, 20 + 16);
 	t.is(button.width, 210);

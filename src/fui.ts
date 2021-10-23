@@ -1,4 +1,4 @@
-import { WindowFactory } from "./core/window";
+import { window } from "./core/window";
 import { ObservableFactory } from "./observables/observableFactory";
 import { WindowParams, TabbedWindowParams } from "./core/window";
 import { WindowTemplate } from "./templates/windowTemplate";
@@ -12,7 +12,7 @@ const fui =
 	/**
 	 * Create a new fluently designed window.
 	 */
-	window: WindowFactory,
+	window: window,
 
 	/**
 	 * Create a value that can be observed by the user interface for change detection.
