@@ -1,9 +1,9 @@
-import { FlexiblePosition } from "../positional/flexiblePosition";
-import { Padding } from "../positional/padding";
-import { Scale } from "../positional/scale";
-import { Direction } from "../positional/direction";
-import { Rectangle } from "../positional/rectangle";
-import { WidgetContainer } from "../core/widgetContainer";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { Direction } from "@src/positional/direction";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Padding } from "@src/positional/padding";
+import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
 
 
 /**

@@ -1,4 +1,4 @@
-import { Observable } from "../observables/observable";
+import { Observable } from "@src/observables/observable";
 
 /**
  * Small editor that allows editing both the template and active widget, if present.

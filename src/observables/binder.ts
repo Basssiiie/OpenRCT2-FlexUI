@@ -1,9 +1,9 @@
-import { Observable } from "./observable";
-import * as Log from "../utilities/logger";
-import { Bindable } from "./bindable";
-import { Id } from "../utilities/identifier";
-import { WidgetContainer } from "../core/widgetContainer";
+import { WidgetContainer } from "@src/core/widgetContainer";
 import { Template } from "@src/templates/template";
+import { Id } from "@src/utilities/identifier";
+import * as Log from "@src/utilities/logger";
+import { Bindable } from "./bindable";
+import { Observable } from "./observable";
 
 
 /**

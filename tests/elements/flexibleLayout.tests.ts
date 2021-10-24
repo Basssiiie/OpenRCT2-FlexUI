@@ -1,11 +1,13 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import test from "ava";
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetContainer } from "@src/core/widgetContainer";
-import { FlexibleLayoutFactory, FlexibleLayoutParams } from "@src/elements/flexibleLayout";
+import { widgetContainer } from "@src/core/widgetContainer";
+import { button } from "@src/elements/button";
+import { flexible, FlexibleLayoutParams, horizontal } from "@src/elements/flexibleLayout";
+import { label } from "@src/elements/label";
 import { Direction } from "@src/positional/direction";
 import { Rectangle } from "@src/positional/rectangle";
+import test from "ava";
 
 
 test("Simple layouts with widgets", t =>
@@ -14,21 +16,23 @@ test("Simple layouts with widgets", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({ text: "hello world" })
-			.horizontal({
-				content: sb => sb
-					.button({ text: "left button" })
-					.button({ text: "right button" })
-			})
-			.label({
+		content: [
+			label({ text: "hello world" }),
+			horizontal({
+				content: [
+					button({ text: "left button" }),
+					button({ text: "right button" })
+				]
+			}),
+			label({
 				text: "big area",
 				alignment: "centred"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.type, "label");
@@ -71,20 +75,21 @@ test("Pixel sizes ignore leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", width: "40px", height: "25px"
-			})
-			.label({
+			}),
+			label({
 				text: "b", width: "30px", height: "10px"
-			})
-			.label({
+			}),
+			label({
 				text: "c", width: "70px", height: "20px"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -112,20 +117,21 @@ test("Percentage sizes", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", width: "50%", height: "20%"
-			})
-			.label({
+			}),
+			label({
 				text: "b", width: "10%", height: "45%"
-			})
-			.label({
+			}),
+			label({
 				text: "c", width: "75%", height: "15%"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -153,20 +159,21 @@ test("Weighted sizes", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", width: "1w", height: "5w"
-			})
-			.label({
+			}),
+			label({
 				text: "b", width: "2w", height: "2w"
-			})
-			.label({
+			}),
+			label({
 				text: "c", width: "3w", height: "10w"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -194,17 +201,18 @@ test("Relative percentage fills leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", height: "100%"
-			})
-			.label({
+			}),
+			label({
 				text: "b", height: "65px"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
@@ -222,17 +230,18 @@ test("Relative weight fills leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", height: "3w"
-			})
-			.label({
+			}),
+			label({
 				text: "b", height: "17px"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
@@ -250,14 +259,15 @@ test("Padding: single number value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", padding: 5
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -273,14 +283,15 @@ test("Padding: single pixel value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", padding: "5px"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -296,14 +307,15 @@ test("Padding: single percentage value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", padding: "20%"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 12);
@@ -319,14 +331,15 @@ test("Padding: single weighted value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", padding: "5w"
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -342,17 +355,18 @@ test("Padding: tuple with 2 values", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: "a", height: "4w", padding: ["1w", "7px"]
-			})
-			.label({
+			}),
+			label({
 				text: "a", height: "6w", padding: ["2w", "10%"]
 			})
+		]
 	};
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
-	layout(WidgetContainer.create(output.widgets), rect);
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(widgetContainer(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 7);

@@ -1,6 +1,6 @@
-import { WidgetEditor } from "../core/widgetEditor";
-import { Binder } from "../observables/binder";
-import * as ArrayHelper from "../utilities/array";
+import { WidgetEditor } from "@src/core/widgetEditor";
+import { Binder } from "@src/observables/binder";
+import * as ArrayHelper from "@src/utilities/array";
 import { WindowTemplate } from "./windowTemplate";
 
 

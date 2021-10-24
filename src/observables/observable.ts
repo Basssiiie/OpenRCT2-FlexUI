@@ -1,4 +1,15 @@
 /**
+ * Create a value that can be observed by the user interface for change detection.
+ */
+export function observable<U>(): Observable<U | undefined>;
+export function observable<T>(initialValue: T): Observable<T>;
+export function observable<T>(initialValue?: T): Observable<T | undefined>
+{
+	return new Observable<T | undefined>(initialValue);
+}
+
+
+/**
  * An object that can be subscribed to and whose subscriptions will be notified
  * when the value has changed.
  */

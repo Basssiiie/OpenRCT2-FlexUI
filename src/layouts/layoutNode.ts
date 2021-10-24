@@ -1,4 +1,4 @@
-import { Rectangle } from "../positional/rectangle";
+import { Rectangle } from "@src/positional/rectangle";
 
 
 /**

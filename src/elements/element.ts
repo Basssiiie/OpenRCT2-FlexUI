@@ -1,11 +1,4 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
-import { Rectangle } from "../positional/rectangle";
-import { Id } from "../utilities/identifier";
-
+import { Bindable } from "@src/observables/bindable";
 
 /**
  * Whether the element is visible, hidden or gone completely.
@@ -42,40 +35,3 @@ export interface ElementParams
 	 */
 	visibility?: Bindable<ElementVisibility>;
 }
-
-
-interface ElementFactory extends WidgetFactory<ElementParams>
-{
-	/**
-	 * Creates a base widget with the id, a tooltip and other properties.
-	 * Adds this widget to the output and binds up any base bindings.
-	 */
-	base<T = WidgetBase>(output: BuildOutput, params: ElementParams, id: string): T;
-}
-
-
-export const ElementFactory: ElementFactory =
-{
-	create(output: BuildOutput, params: ElementParams): LayoutFunction
-	{
-		const id = Id.new();
-		/* const widget =  */this.base(output, params, id);
-
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
-	},
-
-	base<T = WidgetBase>(output: BuildOutput, params: ElementParams, id: string): T
-	{
-		const widget = <Omit<WidgetBase, keyof Rectangle>>
-		{
-			name: id,
-		} as WidgetBase;
-
-		const binder = output.binder;
-		binder.read(widget, "tooltip", params.tooltip);
-		binder.read(widget, "isDisabled", params.disabled);
-		binder.read(widget, "isVisible", params.visibility, v => (v === "visible"));
-		output.widgets.push(widget);
-		return <T><unknown>widget;
-	}
-};

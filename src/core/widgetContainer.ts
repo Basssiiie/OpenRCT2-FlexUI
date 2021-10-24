@@ -11,28 +11,25 @@ export interface WidgetContainer
 }
 
 
-export const WidgetContainer =
+/**
+ * Creates a widget container from a list of widgets.
+ */
+export function widgetContainer(widgets: Widget[]): WidgetContainer
 {
-	/**
-	 * Creates a widget container from a list of widgets.
-	 */
-	create(widgets: Widget[]): WidgetContainer
+	const dictionary: Record<string, Widget> = {};
+	for (let i = 0; i < widgets.length; i++)
 	{
-		const dictionary: Record<string, Widget> = {};
-		for (let i = 0; i < widgets.length; i++)
+		const widget = widgets[i];
+		const name = widget.name;
+		if (name)
 		{
-			const widget = widgets[i];
-			const name = widget.name;
-			if (name)
-			{
-				dictionary[name] = widget;
-			}
+			dictionary[name] = widget;
 		}
-		return {
-			get(name: string): Widget
-			{
-				return dictionary[name];
-			}
-		};
 	}
-};
+	return {
+		get(name: string): Widget
+		{
+			return dictionary[name];
+		}
+	};
+}

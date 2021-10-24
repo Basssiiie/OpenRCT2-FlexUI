@@ -1,8 +1,10 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
+import { window } from "@src/core/window";
+import { dropdown } from "@src/elements/dropdown";
+import { observable } from "@src/observables/observable";
 import test from "ava";
 import Mock from "openrct2-mocks";
-import fui from "@src/fui";
 
 
 test("Standard properties are set", t =>
@@ -10,18 +12,19 @@ test("Standard properties are set", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, tooltip: "drop me" })
+		content: [
+			dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, tooltip: "drop me" })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.is(dropdown.type, "dropdown");
-	t.deepEqual(dropdown.items, [ "a", "b", "c" ]);
-	t.is(dropdown.selectedIndex, 2);
-	t.is(dropdown.tooltip, "drop me");
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.is(widget.type, "dropdown");
+	t.deepEqual(widget.items, [ "a", "b", "c" ]);
+	t.is(widget.selectedIndex, 2);
+	t.is(widget.tooltip, "drop me");
 });
 
 
@@ -30,19 +33,20 @@ test("Items are bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const items = fui.observable([ "a", "b", "c" ]);
-	const template = fui.window({
+	const items = observable([ "a", "b", "c" ]);
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: items, selectedIndex: 2 })
+		content: [
+			dropdown({ items: items, selectedIndex: 2 })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.deepEqual(dropdown.items, [ "a", "b", "c" ]);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 
 	items.set([ "q", "p" ]);
-	t.deepEqual(dropdown.items, [ "q", "p" ]);
+	t.deepEqual(widget.items, [ "q", "p" ]);
 });
 
 
@@ -51,22 +55,23 @@ test("Selected index is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const selected = fui.observable(2);
-	const template = fui.window({
+	const selected = observable(2);
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b", "c" ], selectedIndex: selected })
+		content: [
+			dropdown({ items: [ "a", "b", "c" ], selectedIndex: selected })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.is(dropdown.selectedIndex, 2);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.is(widget.selectedIndex, 2);
 
 	selected.set(1);
-	t.is(dropdown.selectedIndex, 1);
+	t.is(widget.selectedIndex, 1);
 
 	selected.set(0);
-	t.is(dropdown.selectedIndex, 0);
+	t.is(widget.selectedIndex, 0);
 });
 
 
@@ -76,18 +81,19 @@ test("Select event gets called", t =>
 	global.ui = mock;
 	const hits: number[] = [];
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, onSelect: (i) => hits.push(i) })
+		content: [
+			dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, onSelect: (i) => hits.push(i) })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	dropdown.onChange?.(1);
-	dropdown.onChange?.(2);
-	dropdown.onChange?.(0);
-	dropdown.onChange?.(2);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	widget.onChange?.(1);
+	widget.onChange?.(2);
+	widget.onChange?.(0);
+	widget.onChange?.(2);
 
 	t.deepEqual(hits, [ 1, 2, 0, 2 ]);
 });
@@ -98,22 +104,23 @@ test("Disable message shows when disabled", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const disabled = fui.observable(false);
-	const template = fui.window({
+	const disabled = observable(false);
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b" ], disabled: disabled, disabledMessage: "Sorry!" })
+		content: [
+			dropdown({ items: [ "a", "b" ], disabled: disabled, disabledMessage: "Sorry!" })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.deepEqual(dropdown.items, [ "a", "b" ]);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b" ]);
 
 	disabled.set(true);
-	t.deepEqual(dropdown.items, [ "Sorry!" ]);
+	t.deepEqual(widget.items, [ "Sorry!" ]);
 
 	disabled.set(false);
-	t.deepEqual(dropdown.items, [ "a", "b" ]);
+	t.deepEqual(widget.items, [ "a", "b" ]);
 });
 
 
@@ -122,15 +129,16 @@ test("Disable message shows when always disabled", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b" ], disabled: true, disabledMessage: "Sorry!" })
+		content: [
+			dropdown({ items: [ "a", "b" ], disabled: true, disabledMessage: "Sorry!" })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.deepEqual(dropdown.items, [ "Sorry!" ]);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "Sorry!" ]);
 });
 
 
@@ -139,15 +147,16 @@ test("Disable message doesn't show when always enabled", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b" ], disabled: false, disabledMessage: "Sorry!" })
+		content: [
+			dropdown({ items: [ "a", "b" ], disabled: false, disabledMessage: "Sorry!" })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.deepEqual(dropdown.items, [ "a", "b" ]);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b" ]);
 });
 
 
@@ -156,15 +165,16 @@ test("Disable single item disables when just one item", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a" ], disableSingleItem: true })
+		content: [
+			dropdown({ items: [ "a" ], disableSingleItem: true })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.true(dropdown.isDisabled);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.true(widget.isDisabled);
 });
 
 
@@ -173,13 +183,14 @@ test("Disable single item enabled when more than one item", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.dropdown({ items: [ "a", "b" ], disableSingleItem: true })
+		content: [
+			dropdown({ items: [ "a", "b" ], disableSingleItem: true })
+		]
 	});
 	template.open();
 
-	const dropdown = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	t.false(dropdown.isDisabled);
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.false(widget.isDisabled);
 });

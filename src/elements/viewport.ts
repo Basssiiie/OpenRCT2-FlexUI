@@ -1,10 +1,9 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
-import { Observable } from "../observables/observable";
-import { Template } from "../templates/template";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Bindable } from "@src/observables/bindable";
+import { Observable } from "@src/observables/observable";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Template } from "@src/templates/template";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -65,20 +64,22 @@ export interface ViewportParams extends ElementParams
 }
 
 
-export const ViewportFactory: WidgetFactory<ViewportParams> =
+/**
+ * Add a viewport for displaying a location somewhere on the map.
+ */
+export function viewport<P = FlexiblePosition>(params: ViewportParams & P): WidgetCreator<ViewportParams & P>
 {
-	create(output: BuildOutput, params: ViewportParams): LayoutFunction
-	{
-		const control = new ViewportControl(output, params);
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, control.name, area);
-	}
-};
+	return {
+		params: params,
+		create: (output: BuildOutput): ViewportControl => new ViewportControl(output, params)
+	};
+}
 
 
 /**
  * A controller class for a viewport widget.
  */
-export default class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
+class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
 {
 	target?: CoordsXY | CoordsXYZ | number;
 	rotation?: number;

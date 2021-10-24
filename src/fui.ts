@@ -1,24 +1,15 @@
-import { window } from "./core/window";
-import { ObservableFactory } from "./observables/observableFactory";
-import { WindowParams, TabbedWindowParams } from "./core/window";
-import { WindowTemplate } from "./templates/windowTemplate";
+export { window, WindowParams, TabbedWindowParams }  from "./core/window";
+export type { WindowTemplate } from "./templates/windowTemplate";
 
+export { button, ButtonParams } from "./elements/button";
+export { dropdown, DropdownParams } from "./elements/dropdown";
+export { dropdownSpinner, DropdownSpinnerParams } from "./elements/dropdownSpinner";
+export { flexible, FlexibleLayoutParams, horizontal, vertical } from "./elements/flexibleLayout";
+export { label, LabelParams } from "./elements/label";
+export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/spinner";
+export { viewport, ViewportParams } from "./elements/viewport";
 
-/**
- * FluentUI is a user interface framework for OpenRCT2.
- */
-const fui =
-{
-	/**
-	 * Create a new fluently designed window.
-	 */
-	window: window,
+export { observable } from "./observables/observable";
 
-	/**
-	 * Create a value that can be observed by the user interface for change detection.
-	 */
-	observable: ObservableFactory
-};
-
-export default fui;
-export type { WindowParams, TabbedWindowParams, WindowTemplate };
+export type { ElementVisibility } from "./elements/element";
+export { WindowColour } from "./utilities/colour";

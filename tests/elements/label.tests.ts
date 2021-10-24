@@ -1,8 +1,10 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
+import { window } from "@src/core/window";
+import { label } from "@src/elements/label";
+import { observable } from "@src/observables/observable";
 import test from "ava";
 import Mock from "openrct2-mocks";
-import fui from "@src/fui";
 
 
 test("Standard properties are set", t =>
@@ -10,23 +12,24 @@ test("Standard properties are set", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const template = fui.window({
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.label({
-			text: "static",
-			alignment: "centred",
-			tooltip: "tip"
-		})
+		content: [
+			label({
+				text: "static",
+				alignment: "centred",
+				tooltip: "tip"
+			})
+		]
 	});
 
 	template.open();
 
-	const label = mock.createdWindows[0].widgets[0] as LabelWidget;
-	t.is(label.type, "label");
-	t.is(label.text, "static");
-	t.is(label.textAlign, "centred");
-	t.is(label.tooltip, "tip");
+	const widget = mock.createdWindows[0].widgets[0] as LabelWidget;
+	t.is(widget.type, "label");
+	t.is(widget.text, "static");
+	t.is(widget.textAlign, "centred");
+	t.is(widget.tooltip, "tip");
 });
 
 
@@ -35,11 +38,12 @@ test("Text is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const text = fui.observable("Hello");
-	const template = fui.window({
+	const text = observable("Hello");
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.label({ text: text })
+		content: [
+			label({ text: text })
+		]
 	});
 
 	template.open();
@@ -64,11 +68,12 @@ test("Alignment is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const alignment = fui.observable<TextAlignment>("centred");
-	const template = fui.window({
+	const alignment = observable<TextAlignment>("centred");
+	const template = window({
 		width: 100, height: 100,
-		content: b => b
-		.label({ text: "test", alignment: alignment })
+		content: [
+			label({ text: "test", alignment: alignment })
+		]
 	});
 
 	template.open();

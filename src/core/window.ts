@@ -1,15 +1,15 @@
-import { FlexibleLayoutBuilder, FlexibleLayoutFactory } from "../elements/flexibleLayout";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Direction } from "../positional/direction";
-import { Paddable, Padding } from "../positional/padding";
-import { Rectangle } from "../positional/rectangle";
-import { WindowTemplate } from "../templates/windowTemplate";
-import { WindowColour } from "../utilities/colour";
-import { Event } from "../utilities/event";
-import { Id } from "../utilities/identifier";
+import { flexible, FlexibleLayoutParams } from "@src/elements/flexibleLayout";
+import { Layoutable } from "@src/layouts/layoutable";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Direction } from "@src/positional/direction";
+import { Paddable, Padding } from "@src/positional/padding";
+import { Rectangle } from "@src/positional/rectangle";
+import { WindowTemplate } from "@src/templates/windowTemplate";
+import { WindowColour } from "@src/utilities/colour";
+import { Event } from "@src/utilities/event";
+import { Id } from "@src/utilities/identifier";
 import { BuildOutput } from "./buildOutput";
-import { WidgetContainer } from "./widgetContainer";
+import { widgetContainer } from "./widgetContainer";
 
 
 /**
@@ -98,7 +98,7 @@ export interface WindowParams extends BaseWindowParams
 	/**
 	 * Specify the content of this window.
 	 */
-	content: (builder: FlexibleLayoutBuilder) => void;
+	content: FlexibleLayoutParams;
 }
 
 
@@ -125,10 +125,13 @@ export interface TabbedWindowParams extends BaseWindowParams
 	/**
 	 * Specify the tabs that this window has.
 	 */
-	tabs: (builder: FlexibleLayoutBuilder) => void;
+	tabs: FlexibleLayoutParams;
 }
 
 
+/**
+ * Create a new fluently designed window.
+ */
 export function window(params: WindowParams | TabbedWindowParams): WindowTemplate
 {
 	const window: WindowDesc =
@@ -167,7 +170,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		if (widgets)
 		{
 			// Update the template widgets always before the window opens.
-			const container = WidgetContainer.create(widgets);
+			const container = widgetContainer(widgets);
 			open.push(() => binder.update(container));
 		}
 		close.push(() => binder.unbind());
@@ -201,15 +204,15 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildOutput, window: WindowDesc, params: WindowParams): void
 {
-	const factory = FlexibleLayoutFactory.for(Direction.Vertical);
-	const layout = factory.create(output, params);
+	const creator = flexible(params.content, Direction.Vertical);
+	const control = creator.create(output);
 
 	window.widgets = output.widgets;
-	performLayout(output.widgets, layout, window.width, window.height, params.padding);
+	performLayout(output.widgets, control, window.width, window.height, params.padding);
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
-		setWindowLayoutResizing(output, window, layout, params.padding);
+		setWindowLayoutResizing(output, window, control, params.padding);
 	}
 }
 
@@ -217,7 +220,7 @@ function createWindowLayout(output: BuildOutput, window: WindowDesc, params: Win
 /**
  * Enables resizing the window by the user.
  */
-function setWindowLayoutResizing(output: BuildOutput, window: WindowDesc, layout: LayoutFunction, padding?: Padding): void
+function setWindowLayoutResizing(output: BuildOutput, window: WindowDesc, control: Layoutable, padding?: Padding): void
 {
 	const previous = { name: window.classification, width: window.width, height: window.height };
 	output.update.push((): void =>
@@ -231,7 +234,7 @@ function setWindowLayoutResizing(output: BuildOutput, window: WindowDesc, layout
 		previous.width = width;
 		previous.height = height;
 
-		performLayout(instance.widgets, layout, width, height, padding);
+		performLayout(instance.widgets, control, width, height, padding);
 	});
 }
 
@@ -239,7 +242,7 @@ function setWindowLayoutResizing(output: BuildOutput, window: WindowDesc, layout
 /**
  * Recalculate the whole layout.
  */
-function performLayout(widgets: Widget[], layout: LayoutFunction, width: number, height: number, padding?: Padding): void
+function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: Padding): void
 {
 	// Skip the top bar (16px)
 	const area: Rectangle = { x: 0, y: 16, width: width, height: height - 16 };
@@ -247,6 +250,6 @@ function performLayout(widgets: Widget[], layout: LayoutFunction, width: number,
 	{
 		LayoutFactory.applyPadding(area, padding);
 	}
-	const container = WidgetContainer.create(widgets);
-	layout(container, area);
+	const container = widgetContainer(widgets);
+	control.layout(container, area);
 }

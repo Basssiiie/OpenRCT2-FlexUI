@@ -1,13 +1,13 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
-import { Direction } from "../positional/direction";
-import { FlexiblePosition } from "../positional/flexiblePosition";
-import { Rectangle } from "../positional/rectangle";
-import { Scale } from "../positional/scale";
-import { Id } from "../utilities/identifier";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Bindable } from "@src/observables/bindable";
+import { Direction } from "@src/positional/direction";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
+import { Control } from "./control";
 import { ElementParams } from "./element";
 
 
@@ -21,15 +21,9 @@ export interface ListViewColumnParams
 }
 
 
-export interface ListViewContentBuilder
-{
-	column(params: ListViewColumnParams): ListViewContentBuilder;
-}
-
-
 export interface ListViewParams extends ElementParams
 {
-	content?: (builder: ListViewContentBuilder) => void;
+	columns?: ListViewColumn[] | WidgetCreator<ListViewColumnParams>[];
 	items?: Bindable<string[] | ListViewItem[]>;
 
 	scrollbars?: ScrollbarType;
@@ -38,77 +32,96 @@ export interface ListViewParams extends ElementParams
 }
 
 
-export const ListViewFactory: WidgetFactory<ListViewParams> =
+/**
+ * Add a listbox for displaying data in rows and columns.
+ */
+export function listview<P = FlexiblePosition>(params: ListViewParams & P): WidgetCreator<ListViewParams & P>
 {
-	create(output: BuildOutput, params: ListViewParams): LayoutFunction
+	return {
+		params: params,
+		create: (output: BuildOutput): ListViewControl => new ListViewControl(output, params)
+	};
+}
+
+
+/**
+ * A controller class for a listview widget.
+ */
+class ListViewControl extends Control<ListViewWidget> implements ListViewParams, ListViewWidget
+{
+	showColumnHeaders: boolean;
+	columns: ListViewColumn[];
+	columnParams?: (ListViewColumnParams & FlexiblePosition)[];
+	items?: string[] | ListViewItem[];
+	scrollbars?: ScrollbarType;
+	canSelect?: boolean;
+	isStriped?: boolean;
+
+	constructor(output: BuildOutput, params: ListViewParams)
 	{
-		const id = Id.new();
-		const listview = <Omit<ListView, keyof Rectangle>>
-		{
-			name: id,
-			type: "listview",
-			showColumnHeaders: (params.content !== undefined),
-			scrollbars: params.scrollbars,
-			canSelect: params.canSelect,
-			isStriped: params.isStriped
-		} as ListView;
+		super("listview", output, params);
 
 		const binder = output.binder;
-		binder.read(listview, "items", params.items);
+		binder.read(this, "items", params.items);
 
-		output.widgets.push(listview);
+		this.showColumnHeaders = (params.columns !== undefined);
+		this.canSelect = params.canSelect;
+		this.isStriped = params.isStriped;
 
-		const columnBuilder = params.content;
-		if (!columnBuilder)
+		// Figure out if default columns or custom columns were configured..
+		const columns = params.columns;
+		if (!columns || columns.length === 0 || !("create" in columns[0]))
 		{
-			return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
+			this.columns = <ListViewColumn[]>columns;
+			return;
 		}
 
-		// Columns present, create layout function to include column scaling...
-		const columns: (ListViewColumnParams | ListViewColumn)[] = [];
-		columnBuilder(new ContentBuilder(columns));
-		const columnSizes = columns.map(c => <FlexiblePosition>{ width: c.width });
+		const count = columns.length;
+		const columParams = Array<ListViewColumnParams & FlexiblePosition>(count);
+		const columWidgets = Array<ListViewColumn>(count);
 
-		for (let i = 0; i < columns.length; i++)
+		for (let i = 0; i < count; i++)
 		{
-			// Convert column params to actual column
-			const column = <ListViewColumnParams>columns[i];
-			columns[i] = <ListViewColumn>{
+			const column = (<WidgetCreator<ListViewColumnParams>>columns[i]).params;
+
+			columParams[i] = column;
+			columWidgets[i] = {
 				header: column.header,
 				headerTooltip: column.tooltip,
 				canSort: column.canSort,
 				sortOrder: column.sortOrder
 			};
 		}
+		this.columnParams = columParams;
+		this.columns = columWidgets;
+	}
 
-		return (widgets, area): void =>
+
+	/**
+	 * Defines custom layouting for when the listview uses flexible columns.
+	 */
+	override layout(widgets: WidgetContainer, area: Rectangle): void
+	{
+		const params = this.columnParams;
+		if (!params)
 		{
-			const widget = widgets.get<ListView>(id);
-			if (widget.width !== area.width)
+			super.layout(widgets, area);
+			return;
+		}
+
+		const widget = widgets.get<ListViewWidget>(this.name);
+		if (widget.width !== area.width)
+		{
+			const columns = this.columns;
+			LayoutFactory.flexibleLayout(columns, area, Direction.Horizontal, (idx, subarea) =>
 			{
-				LayoutFactory.flexibleLayout(columnSizes, area, Direction.Horizontal, (idx, subarea) =>
-				{
-					columns[idx].width = subarea.width;
-				});
-				widget.columns = <ListViewColumn[]>columns;
-				widget.width = area.width;
-			}
-			widget.x = area.x;
-			widget.y = area.y;
-			widget.height = area.height;
-		};
-	}
-};
-
-class ContentBuilder implements ListViewContentBuilder
-{
-	constructor(private readonly container: ListViewColumnParams[])
-	{
-	}
-
-	column(params: ListViewColumnParams): ListViewContentBuilder
-	{
-		this.container.push(params);
-		return this;
+				columns[idx].width = subarea.width;
+			});
+			widget.columns = columns;
+			widget.width = area.width;
+		}
+		widget.x = area.x;
+		widget.y = area.y;
+		widget.height = area.height;
 	}
 }

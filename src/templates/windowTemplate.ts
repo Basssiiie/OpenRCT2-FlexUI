@@ -1,8 +1,6 @@
 /**
  * A fully created and compressed window template that can now be used.
  */
-
-
 export interface WindowTemplate
 {
 	/**

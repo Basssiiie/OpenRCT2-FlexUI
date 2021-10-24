@@ -1,6 +1,6 @@
-import { Binder } from "../observables/binder";
-import { Template } from "../templates/template";
-import { Event } from "../utilities/event";
+import { Binder } from "@src/observables/binder";
+import { Template } from "@src/templates/template";
+import { Event } from "@src/utilities/event";
 
 
 /**

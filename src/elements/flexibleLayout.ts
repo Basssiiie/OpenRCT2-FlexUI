@@ -1,27 +1,27 @@
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutElement } from "../layouts/layoutElement";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Direction } from "../positional/direction";
-import { FlexiblePosition } from "../positional/flexiblePosition";
-import { ButtonFactory, ButtonParams } from "./button";
-import { DropdownFactory, DropdownParams } from "./dropdown";
-import { LabelFactory, LabelParams } from "./label";
-import { ListViewFactory, ListViewParams } from "./listview";
-import { SpinnerFactory, SpinnerParams } from "./spinner";
-import { ViewportFactory, ViewportParams } from "./viewport";
-import { CustomWidgetFactory, WidgetParams } from "./widget";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Layoutable } from "@src/layouts/layoutable";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Direction } from "@src/positional/direction";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Positions } from "@src/positional/positions";
+import { Rectangle } from "@src/positional/rectangle";
+import { ButtonParams } from "./button";
+import { DropdownParams } from "./dropdown";
+import { LabelParams } from "./label";
 
 
-export interface FlexibleLayoutParams
+export type FlexibleLayoutParams = WidgetCreator<FlexiblePosition>[] |
 {
 	/**
 	 * Specify the child widgets within this box.
 	 */
-	content: (builder: FlexibleLayoutBuilder) => void;
-}
+	content: WidgetCreator<FlexiblePosition>[];
+};
 
 
+/** @deprecated */
 export interface FlexibleLayoutBuilder
 {
 	/**
@@ -34,9 +34,6 @@ export interface FlexibleLayoutBuilder
 	 */
 	dropdown(params: DropdownParams & FlexiblePosition): FlexibleLayoutBuilder;
 
-	/**
-	 * Add a horizontal row with additional child widgets.
-	 */
 	horizontal(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder;
 
 	/**
@@ -47,152 +44,83 @@ export interface FlexibleLayoutBuilder
 	/**
 	 * Add a listbox for displaying data in rows and columns.
 	 */
-	listview(params: ListViewParams & FlexiblePosition): FlexibleLayoutBuilder;
+	//listview(params: ListViewParams & FlexiblePosition): FlexibleLayoutBuilder;
 
-	/**
-	 * Add a spinner widget with [+] and [-] buttons.
-	 */
-	spinner(params: SpinnerParams & FlexiblePosition): FlexibleLayoutBuilder;
+	//spinner(params: SpinnerParams & FlexiblePosition): FlexibleLayoutBuilder;
 
 	/**
 	 * Add a viewport for displaying a location somewhere on the map.
 	 */
-	viewport(params: ViewportParams & FlexiblePosition): FlexibleLayoutBuilder;
+	//viewport(params: ViewportParams & FlexiblePosition): FlexibleLayoutBuilder;
 
 	/**
 	 * Add a static custom widget.
 	 */
-	widget<TWidget extends WidgetParams>(params: TWidget & FlexiblePosition): FlexibleLayoutBuilder;
+	//widget<TWidget extends WidgetParams>(params: TWidget & FlexiblePosition): FlexibleLayoutBuilder;
 
-	/**
-	 * Add a vertical row with additional child widgets.
-	 */
+
 	vertical(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder;
 }
 
 
-export const FlexibleLayoutFactory =
+/**
+ * Add a horizontal row with additional child widgets.
+ */
+export function horizontal(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
 {
-	/**
-	 * Get a flexible layout factory for the specified direction.
-	 */
-	for(direction: Direction): WidgetFactory<FlexibleLayoutParams>
-	{
-		return {
-			create(output, params): LayoutFunction
-			{
-				const builder = new LayoutBuilder();
-				params.content(builder);
-				const children = builder.children;
-				const childParams = children.map(c => c.params);
-
-				const layoutFunctions: LayoutFunction[] = [];
-				for (let i = 0; i < children.length; i++)
-				{
-					const child = children[i];
-					const layout = child.factory.create(output, child.params);
-
-					layoutFunctions.push(layout);
-				}
-
-				return (widgets, area): void =>
-				{
-					LayoutFactory.flexibleLayout(childParams, area, direction, (idx, subarea) =>
-					{
-						layoutFunctions[idx](widgets, subarea);
-					});
-				};
-			}
-		};
-	}
-};
+	return flexible(params, Direction.Horizontal);
+}
 
 
-class LayoutBuilder implements FlexibleLayoutBuilder
+/**
+ * Add a vertical row with additional child widgets.
+ */
+export function vertical(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
 {
-	readonly children: LayoutElement<FlexiblePosition, unknown>[] = [];
+	return flexible(params, Direction.Vertical);
+}
 
-	/*
-	absolute(params: AbsoluteLayoutParams): FlexibleLayoutBuilder
+
+
+export function flexible(params: FlexibleLayoutParams & Positions, direction: Direction): WidgetCreator<FlexibleLayoutParams & Positions>
+{
+	return {
+		params: params,
+		create: (output: BuildOutput): FlexibleLayoutControl => new FlexibleLayoutControl(output, params, direction)
+	};
+}
+
+
+export class FlexibleLayoutControl implements Layoutable
+{
+	params: FlexiblePosition[];
+	children: Layoutable[];
+	direction: Direction;
+
+
+	constructor(output: BuildOutput, children: FlexibleLayoutParams, direction: Direction)
 	{
+		this.direction = direction;
 
-	}
-	*/
+		const items = (Array.isArray(children)) ? children : children.content;
+		const count = items.length;
+		this.params = Array<FlexiblePosition>(count);
+		this.children = Array<Layoutable>(count);
 
-	button(params: ButtonParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, ButtonFactory);
-	}
-
-	/*
-	checkbox(params: Params<CheckboxWidget> & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		const widget = params as CheckboxWidget;
-		widget.type = "checkbox";
-		return this.add(widget);
-	}
-	*/
-
-	dropdown(params: DropdownParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, DropdownFactory);
-	}
-
-	/*
-	dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		const view = new DropdownSpinner(params);
-		this._elements.push(view as Element<WidgetBase>);
-		return view;
-	}
-
-
-	groupbox(params: Params<GroupBoxWidget> & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		const widget = params as GroupBoxWidget;
-		widget.type = "groupbox";
-		return this.add(widget);
-	}
-	*/
-
-	horizontal(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, FlexibleLayoutFactory.for(Direction.Horizontal));
+		for (let i = 0; i < items.length; i++)
+		{
+			const child = items[i];
+			this.params[i] = child.params;
+			this.children[i] = child.create(output);
+		}
 	}
 
-	label(params: LabelParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, LabelFactory);
-	}
 
-	listview(params: ListViewParams & FlexiblePosition): FlexibleLayoutBuilder
+	layout(widgets: WidgetContainer, area: Rectangle): void
 	{
-		return this.add(params, ListViewFactory);
-	}
-
-	spinner(params: SpinnerParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, SpinnerFactory);
-	}
-
-	viewport(params: ViewportParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, ViewportFactory);
-	}
-
-	widget<TWidget extends WidgetParams>(params: TWidget & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, CustomWidgetFactory);
-	}
-
-	vertical(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder
-	{
-		return this.add(params, FlexibleLayoutFactory.for(Direction.Vertical));
-	}
-
-	private add<T>(params: FlexiblePosition, factory: WidgetFactory<T>): FlexibleLayoutBuilder
-	{
-		this.children.push({ params: params, factory: factory as WidgetFactory<unknown> });
-		return this;
+		LayoutFactory.flexibleLayout(this.params, area, this.direction, (idx, subarea) =>
+		{
+			this.children[idx].layout(widgets, subarea);
+		});
 	}
 }

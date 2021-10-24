@@ -1,8 +1,7 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Bindable } from "@src/observables/bindable";
+import { Positions } from "@src/positional/positions";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -43,26 +42,16 @@ export interface DropdownParams extends ElementParams
 }
 
 
-export const DropdownFactory: WidgetFactory<DropdownParams> =
+/**
+ * Create a dropdown widget with one or more selectable options.
+ */
+export function dropdown(params: DropdownParams & Positions): WidgetCreator<DropdownParams & Positions>
 {
-	create(output: BuildOutput, params: DropdownParams): LayoutFunction
-	{
-		/*
-		const id = Id.new();
-		const dropdown = ElementFactory.base<DropdownWidget>(output, params, id);
-		dropdown.type = "dropdown";
-		dropdown.onChange = params.onSelect;
-
-		const binder = output.binder;
-		binder.read(dropdown, "items", params.items);
-		binder.read(dropdown, "selectedIndex", params.selectedIndex);
-
-		bindDisabledMessage(output.template, id, params);
-		*/
-		const control = new DropdownControl(output, params);
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, control.name, area);
-	}
-};
+	return {
+		params: params,
+		create: (output: BuildOutput): DropdownControl => new DropdownControl(output, params)
+	};
+}
 
 
 /**
@@ -77,9 +66,6 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	onSelect?: (index: number) => void;
 
 
-	/**
-	 * Create a dropdown control with the specified parameters.
-	 */
 	constructor(output: BuildOutput, params: DropdownParams)
 	{
 		super("dropdown", output, params);

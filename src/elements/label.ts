@@ -1,11 +1,10 @@
-import { BuildOutput } from "../core/buildOutput";
-import type { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
-import { TextColour } from "../utilities/colour";
-import { Id } from "../utilities/identifier";
-import { ElementFactory, ElementParams } from "./element";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Bindable } from "@src/observables/bindable";
+import { Positions } from "@src/positional/positions";
+import { TextColour } from "@src/utilities/colour";
+import { Control } from "./control";
+import { ElementParams } from "./element";
 
 
 export interface LabelParams extends ElementParams
@@ -30,18 +29,32 @@ export interface LabelParams extends ElementParams
 }
 
 
-export const LabelFactory: WidgetFactory<LabelParams> =
+/**
+ * Create a textual label with the specified parameters.
+ */
+export function label(params: LabelParams & Positions): WidgetCreator<LabelParams & Positions>
 {
-	create(output: BuildOutput, params: LabelParams): LayoutFunction
+	return {
+		params: params,
+		create: (output: BuildOutput): LabelControl => new LabelControl(output, params)
+	};
+}
+
+
+/**
+ * A controller class for a dropdown widget.
+ */
+class LabelControl extends Control<LabelWidget> implements LabelWidget, LabelParams
+{
+	text: string = "";
+	textAlign?: TextAlignment;
+
+	constructor(output: BuildOutput, params: LabelParams)
 	{
-		const id = Id.new();
-		const label = ElementFactory.base<LabelWidget>(output, params, id);
-		label.type = "label";
+		super("label", output, params);
 
 		const binder = output.binder;
-		binder.read(label, "text", params.text);
-		binder.read(label, "textAlign", params.alignment);
-
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
+		binder.read(this, "text", params.text);
+		binder.read(this, "textAlign", params.alignment);
 	}
-};
+}

@@ -1,12 +1,16 @@
-import { BuildOutput } from "../core/buildOutput";
-import { Id } from "../utilities/identifier";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { Layoutable } from "@src/layouts/layoutable";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Rectangle } from "@src/positional/rectangle";
+import { Id } from "@src/utilities/identifier";
 import { ElementParams } from "./element";
 
 
 /**
  * Base control that takes care of the base widget properties.
  */
-export abstract class Control<T extends WidgetBase> implements WidgetBase
+export abstract class Control<T extends WidgetBase> implements WidgetBase, Layoutable
 {
 	name: string = Id.new();
 	type: T["type"];
@@ -29,5 +33,11 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase
 		binder.read(this, "isVisible", params.visibility, v => (v === "visible"));
 
 		output.widgets.push(this as Widget);
+	}
+
+
+	layout(widgets: WidgetContainer, area: Rectangle): void
+	{
+		LayoutFactory.defaultLayout(widgets, this.name, area);
 	}
 }

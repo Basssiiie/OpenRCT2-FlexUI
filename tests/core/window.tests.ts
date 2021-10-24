@@ -1,9 +1,12 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
+import { window } from "@src/core/window";
+import { button } from "@src/elements/button";
+import { horizontal } from "@src/elements/flexibleLayout";
+import { label } from "@src/elements/label";
+import { observable } from "@src/observables/observable";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
-import { window } from "@src/core/window";
-import fui from "@src/fui";
 
 
 test("Simple window with widgets", t =>
@@ -14,17 +17,17 @@ test("Simple window with widgets", t =>
 		title: "test window",
 		width: 200, height: 150 + 16,
 
-		content: wb => wb
-			.label({ text: "hello world" })
-			.horizontal({
-				content: sb => sb
-					.button({ text: "left button" })
-					.button({ text: "right button" })
-			})
-			.label({
+		content: [
+			label({ text: "hello world" }),
+			horizontal([
+				button({ text: "left button" }),
+				button({ text: "right button" })
+			]),
+			label({
 				text: "big area",
 				alignment: "centred"
 			})
+		]
 	});
 	template.open();
 
@@ -80,17 +83,17 @@ test("Window adjusts to resize", t =>
 		minWidth: 100, minHeight: 50,
 		maxWidth: 500, maxHeight: 400,
 
-		content: wb => wb
-			.label({ text: "hello world" })
-			.horizontal({
-				content: sb => sb
-					.button({ text: "left button" })
-					.button({ text: "right button" })
-			})
-			.label({
+		content: [
+			label({ text: "hello world" }),
+			horizontal([
+				button({ text: "left button" }),
+				button({ text: "right button" })
+			]),
+			label({
 				text: "big area",
 				alignment: "centred"
 			})
+		]
 	});
 	template.open();
 
@@ -135,17 +138,17 @@ test("Window does not resize if size hasn't changed", t =>
 		minWidth: 100, minHeight: 50,
 		maxWidth: 500, maxHeight: 400,
 
-		content: wb => wb
-			.label({ text: "hello world" })
-			.horizontal({
-				content: sb => sb
-					.button({ text: "left button" })
-					.button({ text: "right button" })
-			})
-			.label({
+		content: [
+			label({ text: "hello world" }),
+			horizontal([
+				button({ text: "left button" }),
+				button({ text: "right button" })
+			]),
+			label({
 				text: "big area",
 				alignment: "centred"
 			})
+		]
 	});
 	template.open();
 
@@ -183,44 +186,45 @@ test("Window updates to bindings", t =>
 	global.ui = Mock.ui();
 
 	const viewmodel = {
-		labelText: fui.observable("test"),
-		labelAlign: fui.observable<TextAlignment>("centred"),
-		buttonText: fui.observable("click me"),
-		buttonPressed: fui.observable(true)
+		labelText: observable("test"),
+		labelAlign: observable<TextAlignment>("centred"),
+		buttonText: observable("click me"),
+		buttonPressed: observable(true)
 	};
 
 	const template = window({
 		title: "test window", width: 100, height: 100,
-		content: wb => wb
-			.label({
+		content: [
+			label({
 				text: viewmodel.labelText,
 				alignment: viewmodel.labelAlign
-			})
-			.button({
+			}),
+			button({
 				text: viewmodel.buttonText,
 				isPressed: viewmodel.buttonPressed
 			})
+		]
 	});
 	template.open();
 
 	const created = (global.ui as UiMock).createdWindows[0];
 
-	const label = created.widgets[0] as LabelWidget;
-	t.is(label.text, "test");
-	t.is(label.textAlign, "centred");
-	const button = created.widgets[1] as ButtonWidget;
-	t.is(button.text, "click me");
-	t.true(button.isPressed);
+	const label1 = created.widgets[0] as LabelWidget;
+	t.is(label1.text, "test");
+	t.is(label1.textAlign, "centred");
+	const button1 = created.widgets[1] as ButtonWidget;
+	t.is(button1.text, "click me");
+	t.true(button1.isPressed);
 
 	viewmodel.labelText.set("blub");
 	viewmodel.labelAlign.set("left");
 	viewmodel.buttonText.set("clicked!");
 	viewmodel.buttonPressed.set(false);
 
-	t.is(label.text, "blub");
-	t.is(label.textAlign, "left");
-	t.is(button.text, "clicked!");
-	t.false(button.isPressed);
+	t.is(label1.text, "blub");
+	t.is(label1.textAlign, "left");
+	t.is(button1.text, "clicked!");
+	t.false(button1.isPressed);
 });
 
 
@@ -231,18 +235,19 @@ test("Window applies padding", t =>
 	const template = window({
 		title: "test window", width: 150, height: 100,
 		padding: 15,
-		content: wb => wb
-			.button({ text: "click"	})
+		content: [
+			button({ text: "click"	})
+		]
 	});
 	template.open();
 
 	const created = (global.ui as UiMock).createdWindows[0];
 
-	const button = created.widgets[0] as ButtonWidget;
-	t.is(button.x, 15);
-	t.is(button.y, 15 + 16);
-	t.is(button.width, 120);
-	t.is(button.height, 70 - 16);
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.x, 15);
+	t.is(button1.y, 15 + 16);
+	t.is(button1.width, 120);
+	t.is(button1.height, 70 - 16);
 });
 
 
@@ -256,8 +261,9 @@ test("Window applies padding to resizes", t =>
 		minWidth: 100, minHeight: 50,
 		maxWidth: 500, maxHeight: 400,
 		padding: 20,
-		content: wb => wb
-			.button({ text: "click"	})
+		content: [
+			button({ text: "click" })
+		]
 	});
 	template.open();
 
@@ -266,9 +272,9 @@ test("Window applies padding to resizes", t =>
 	created.height = 300;
 	created.onUpdate?.();
 
-	const button = created.widgets[0] as ButtonWidget;
-	t.is(button.x, 20);
-	t.is(button.y, 20 + 16);
-	t.is(button.width, 210);
-	t.is(button.height, 260 - 16);
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.x, 20);
+	t.is(button1.y, 20 + 16);
+	t.is(button1.width, 210);
+	t.is(button1.height, 260 - 16);
 });

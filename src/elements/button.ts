@@ -1,10 +1,9 @@
-import { WidgetFactory } from "../core/widgetFactory";
-import { ElementFactory, ElementParams } from "./element";
-import { BuildOutput } from "../core/buildOutput";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Id } from "../utilities/identifier";
-import { Bindable } from "../observables/bindable";
-import { LayoutFactory } from "../layouts/layoutFactory";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Bindable } from "@src/observables/bindable";
+import { Positions } from "@src/positional/positions";
+import { Control } from "./control";
+import { ElementParams } from "./element";
 
 
 /**
@@ -36,19 +35,32 @@ export interface ButtonParams extends ElementParams
 }
 
 
-export const ButtonFactory: WidgetFactory<ButtonParams> =
+export function button(params: ButtonParams & Positions): WidgetCreator<ButtonParams & Positions>
 {
-	create(output: BuildOutput, params: ButtonParams): LayoutFunction
+	return {
+		params: params,
+		create: (output: BuildOutput): ButtonControl => new ButtonControl(output, params)
+	};
+}
+
+
+/**
+ * A controller class for a button widget.
+ */
+class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, ButtonParams
+{
+	text?: string;
+	image?: number;
+	isPressed?: boolean;
+
+
+	constructor(output: BuildOutput, params: ButtonParams)
 	{
-		const id = Id.new();
-		const button = ElementFactory.base<ButtonWidget>(output, params, id);
-		button.type = "button";
+		super("button", output, params);
 
 		const binder = output.binder;
-		binder.read(button, "text", params.text);
-		binder.read(button, "image", params.image);
-		binder.read(button, "isPressed", params.isPressed);
-
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
+		binder.read(this, "text", params.text);
+		binder.read(this, "image", params.image);
+		binder.read(this, "isPressed", params.isPressed);
 	}
-};
+}

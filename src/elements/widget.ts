@@ -1,22 +1,28 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Id } from "../utilities/identifier";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Control } from "./control";
 
 
 
 export type WidgetParams = Omit<Widget, "x" | "y" | "width" | "height" | "window">;
 
 
-export const CustomWidgetFactory: WidgetFactory<WidgetParams> =
+/**
+ * Add a custom widget without any bindings.
+ */
+export function widget<P = FlexiblePosition>(params: WidgetParams & P): WidgetCreator<WidgetParams & P>
 {
-	create(output: BuildOutput, params: WidgetParams): LayoutFunction
-	{
-		const id = Id.new();
-		const widget = { ...params, name: id } as Widget;
-		output.widgets.push(widget);
+	return {
+		params: params,
+		create: (output: BuildOutput): WidgetControl => new WidgetControl(params.type, output, params)
+	};
+}
 
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, id, area);
-	}
-};
+
+/**
+ * A controller class for a custom widget.
+ */
+class WidgetControl extends Control<WidgetBase> implements WidgetParams
+{
+}

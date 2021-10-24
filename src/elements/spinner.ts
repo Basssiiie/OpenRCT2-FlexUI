@@ -1,10 +1,9 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
-import { Bindable } from "../observables/bindable";
-import { Observable } from "../observables/observable";
-import * as MathHelper from "../utilities/math";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { Bindable } from "@src/observables/bindable";
+import { Observable } from "@src/observables/observable";
+import { Positions } from "@src/positional/positions";
+import * as MathHelper from "@src/utilities/math";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -76,20 +75,22 @@ export interface SpinnerParams extends ElementParams
 }
 
 
-export const SpinnerFactory: WidgetFactory<SpinnerParams> =
+/**
+ * Add a spinner widget with [+] and [-] buttons.
+ */
+export function spinner(params: SpinnerParams & Positions): WidgetCreator<SpinnerParams & Positions>
 {
-	create(output: BuildOutput, params: SpinnerParams): LayoutFunction
-	{
-		const control = new SpinnerControl(output, params);
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, control.name, area);
-	}
-};
+	return {
+		params: params,
+		create: (output: BuildOutput): SpinnerControl => new SpinnerControl(output, params)
+	};
+}
 
 
 /**
  * A controller class for a spinner widget.
  */
-class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, SpinnerParams
+export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, SpinnerParams
 {
 	text?: string;
 	value: Observable<number>;
@@ -99,9 +100,7 @@ class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, Sp
 	wrapMode: SpinnerWrapMode;
 	onChange?: (value: number, adjustment: number) => void;
 
-	/**
-	 * Create a spinner control with the specified parameters.
-	 */
+
 	constructor(output: BuildOutput, params: SpinnerParams)
 	{
 		super("spinner", output, params);

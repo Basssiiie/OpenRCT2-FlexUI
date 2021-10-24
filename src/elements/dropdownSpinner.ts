@@ -1,9 +1,12 @@
-import { BuildOutput } from "../core/buildOutput";
-import { WidgetFactory } from "../core/widgetFactory";
-import { LayoutFactory } from "../layouts/layoutFactory";
-import { LayoutFunction } from "../layouts/layoutFunction";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { Observable } from "@src/observables/observable";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Rectangle } from "@src/positional/rectangle";
 import { DropdownControl, DropdownParams } from "./dropdown";
-import { SpinnerWrapMode } from "./spinner";
+import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 
 
 /**
@@ -19,15 +22,16 @@ export interface DropdownSpinnerParams extends DropdownParams
 }
 
 
-export const DropdownSpinnerFactory: WidgetFactory<DropdownSpinnerParams> =
+export function dropdownSpinner<P = FlexiblePosition>(params: DropdownSpinnerParams & P): WidgetCreator<DropdownSpinnerParams & P>
 {
-	create(output: BuildOutput, params: DropdownSpinnerParams): LayoutFunction
-	{
-		const control = new DropdownSpinnerControl(output, params);
-		return (widgets, area): void => LayoutFactory.defaultLayout(widgets, control.name, area);
-	}
-};
+	return {
+		params: params,
+		create: (output: BuildOutput): DropdownSpinnerControl => new DropdownSpinnerControl(output, params)
+	};
+}
 
+
+const spinnerControlsWidth = 24;
 
 
 /**
@@ -35,4 +39,57 @@ export const DropdownSpinnerFactory: WidgetFactory<DropdownSpinnerParams> =
  */
 class DropdownSpinnerControl extends DropdownControl
 {
+	spinner: SpinnerControl;
+
+	constructor(output: BuildOutput, params: DropdownSpinnerParams)
+	{
+		super(output, params);
+
+		// Setup internal spinner control
+		const spinParams: SpinnerParams =
+		{
+			minimum: 0,
+			maximum: 0,
+			// update dropdown
+			onChange: (value: number) => this.onChange(value)
+		};
+		const items = params.items;
+		if (items instanceof Observable)
+		{
+			const maximum = new Observable(0);
+			items.subscribe(v => maximum.set((v) ? v.length : 0));
+			spinParams.maximum = maximum;
+		}
+		else if (items)
+		{
+			spinParams.maximum = items.length;
+		}
+		this.spinner = new SpinnerControl(output, spinParams);
+	}
+
+
+	/**
+	 * Update spinner when dropdown itme has changed.
+	 */
+	override onChange(index: number): void
+	{
+		this.spinner.value.set(index);
+		super.onChange(index);
+	}
+
+
+	/**
+	 * Positions the two widgets in the proper location.
+	 */
+	override layout(widgets: WidgetContainer, area: Rectangle): void
+	{
+		// Position dropdown (leave space for spinner controls)
+		area.width -= spinnerControlsWidth;
+		LayoutFactory.defaultLayout(widgets, this.name, area);
+
+		// Position spinner (only show controls next to dropdown)
+		area.x += area.width;
+		area.width = spinnerControlsWidth;
+		LayoutFactory.defaultLayout(widgets, this.spinner.name, area);
+	}
 }

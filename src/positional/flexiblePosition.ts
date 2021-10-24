@@ -1,5 +1,5 @@
-import { Scale } from "./scale";
 import { Paddable } from "./padding";
+import { Scale } from "./scale";
 
 
 /**
