@@ -4,7 +4,8 @@
 	"license": "MIT",
 	"version": "0.1.0",
 	"description": "Create fluent user interfaces for OpenRCT2 plugins.",
-	"main": "dist/index.min.js",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist/index*"
@@ -12,8 +13,8 @@
 	"scripts": {
 		"start": "npm run watch",
 		"watch": "nodemon --watch ./src --ext js,ts",
-		"build": "npm run lint && rollup --config rollup.config.prod.js",
-		"build:dev": "rollup --config rollup.config.dev.js",
+		"build": "npm run lint && rollup --config rollup.config.js --environment BUILD:production",
+		"build:dev": "rollup --config rollup.config.js",
 		"build:all": "npm run build && npm run build:dev",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",

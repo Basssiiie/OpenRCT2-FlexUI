@@ -7,6 +7,7 @@
 		"stripInternal": true
 	},
 	"exclude": [
-		".src/**/*.d.ts"
+		"./src/**/*.d.ts",
+		"./tests/"
 	]
 }
