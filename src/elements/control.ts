@@ -1,7 +1,7 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetContainer } from "@src/core/widgetContainer";
 import { Layoutable } from "@src/layouts/layoutable";
-import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { fillLayout } from "@src/layouts/fillLayout";
 import { Rectangle } from "@src/positional/rectangle";
 import { Id } from "@src/utilities/identifier";
 import { ElementParams } from "./element";
@@ -38,6 +38,6 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 
 	layout(widgets: WidgetContainer, area: Rectangle): void
 	{
-		LayoutFactory.defaultLayout(widgets, this.name, area);
+		fillLayout(widgets, this.name, area);
 	}
 }

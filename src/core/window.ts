@@ -1,6 +1,6 @@
 import { flexible, FlexibleLayoutParams } from "@src/elements/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
-import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { applyPadding } from "@src/layouts/flexibleLayout";
 import { Direction } from "@src/positional/direction";
 import { Paddable, Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
@@ -248,7 +248,7 @@ function performLayout(widgets: Widget[], control: Layoutable, width: number, he
 	const area: Rectangle = { x: 0, y: 16, width: width, height: height - 16 };
 	if (padding !== undefined)
 	{
-		LayoutFactory.applyPadding(area, padding);
+		applyPadding(area, padding);
 	}
 	const container = widgetContainer(widgets);
 	control.layout(container, area);

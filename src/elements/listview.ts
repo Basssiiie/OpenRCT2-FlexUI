@@ -1,7 +1,7 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetContainer } from "@src/core/widgetContainer";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Bindable } from "@src/observables/bindable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
@@ -113,7 +113,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 		if (widget.width !== area.width)
 		{
 			const columns = this.columns;
-			LayoutFactory.flexibleLayout(columns, area, Direction.Horizontal, (idx, subarea) =>
+			flexibleLayout(columns, area, Direction.Horizontal, (idx, subarea) =>
 			{
 				columns[idx].width = subarea.width;
 			});

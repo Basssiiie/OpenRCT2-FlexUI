@@ -1,7 +1,7 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetContainer } from "@src/core/widgetContainer";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { fillLayout } from "@src/layouts/fillLayout";
 import { Observable } from "@src/observables/observable";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Rectangle } from "@src/positional/rectangle";
@@ -85,11 +85,11 @@ class DropdownSpinnerControl extends DropdownControl
 	{
 		// Position dropdown (leave space for spinner controls)
 		area.width -= spinnerControlsWidth;
-		LayoutFactory.defaultLayout(widgets, this.name, area);
+		fillLayout(widgets, this.name, area);
 
 		// Position spinner (only show controls next to dropdown)
 		area.x += area.width;
 		area.width = spinnerControlsWidth;
-		LayoutFactory.defaultLayout(widgets, this.spinner.name, area);
+		fillLayout(widgets, this.spinner.name, area);
 	}
 }

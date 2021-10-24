@@ -2,7 +2,7 @@ import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetContainer } from "@src/core/widgetContainer";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Layoutable } from "@src/layouts/layoutable";
-import { LayoutFactory } from "@src/layouts/layoutFactory";
+import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
@@ -118,7 +118,7 @@ export class FlexibleLayoutControl implements Layoutable
 
 	layout(widgets: WidgetContainer, area: Rectangle): void
 	{
-		LayoutFactory.flexibleLayout(this.params, area, this.direction, (idx, subarea) =>
+		flexibleLayout(this.params, area, this.direction, (idx, subarea) =>
 		{
 			this.children[idx].layout(widgets, subarea);
 		});

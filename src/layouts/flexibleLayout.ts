@@ -1,4 +1,3 @@
-import { WidgetContainer } from "@src/core/widgetContainer";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
@@ -7,94 +6,74 @@ import { Scale } from "@src/positional/scale";
 
 
 /**
- * Factory for calculating various layout templates.
+ * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export const LayoutFactory =
+export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectangle, direction: Direction, apply: (index: number, childArea: Rectangle) => void): void
 {
-	/**
-	 * A default layout function that retrieves the widget from the container by name
-	 * and then updates it to fill the rectangle area.
-	 */
-	defaultLayout(widgets: WidgetContainer, name: string, area: Rectangle): void
+	const keys = getDirectionKeys(direction);
+
+	// First pass: calculate absolute space use and total weight.
+	const stack: ParsedStack = parseFlexibleElements(elements, keys, parentArea);
+
+	// Second pass: calculate positions and relative sizes with leftover space.
+	const leftoverSpace = (parentArea[keys.mainSize] - stack.absoluteSpace);
+	let cursor = 0;
+
+	for (let i = 0; i < elements.length; i++)
 	{
-		const widget = widgets.get(name);
-		widget.x = area.x;
-		widget.y = area.y;
-		widget.width = area.width;
-		widget.height = area.height;
-	},
+		const parsed = stack.elements[i];
+		const otherSpace = parentArea[keys.otherSize];
 
+		let mainAxis = (cursor + parentArea[keys.mainAxis]),
+			mainSize = applyScale(parsed.mainSize, leftoverSpace, stack.weightedTotal),
+			otherAxis = parentArea[keys.otherAxis],
+			otherSize = applyScale(parsed.otherSize, otherSpace);
 
-	/**
-	 * Lay out all elements over the specified area and direction, then calls apply for each element.
-	 */
-	flexibleLayout(elements: FlexiblePosition[], parentArea: Rectangle, direction: Direction, apply: (index: number, childArea: Rectangle) => void): void
-	{
-		const keys = getDirectionKeys(direction);
+		cursor += mainSize;
 
-		// First pass: calculate absolute space use and total weight.
-		const stack: ParsedStack = parseFlexibleElements(elements, keys, parentArea);
-
-		// Second pass: calculate positions and relative sizes with leftover space.
-		const leftoverSpace = (parentArea[keys.mainSize] - stack.absoluteSpace);
-		let cursor = 0;
-
-		for (let i = 0; i < elements.length; i++)
+		if (parsed.hasPadding)
 		{
-			const parsed = stack.elements[i];
-			const otherSpace = parentArea[keys.otherSize];
-
-			let mainAxis = (cursor + parentArea[keys.mainAxis]),
-				mainSize = applyScale(parsed.mainSize, leftoverSpace, stack.weightedTotal),
-				otherAxis = parentArea[keys.otherAxis],
-				otherSize = applyScale(parsed.otherSize, otherSpace);
-
-			cursor += mainSize;
-
-			if (parsed.hasPadding)
-			{
-				const vecStart = applyScale(parsed.mainStart, leftoverSpace, stack.weightedTotal);
-				const vecEnd = applyScale(parsed.mainEnd, leftoverSpace, stack.weightedTotal);
-				mainAxis += vecStart;
-				mainSize -= (vecStart + vecEnd);
-				const otherStart = applyScale(parsed.otherStart, otherSpace, otherSpace);
-				const otherEnd = applyScale(parsed.otherEnd, otherSpace, otherSpace);
-				otherAxis += otherStart;
-				otherSize -= (otherStart + otherEnd);
-			}
-
-			const childArea = {} as Rectangle;
-			childArea[keys.mainAxis] = mainAxis;
-			childArea[keys.mainSize] = mainSize;
-			childArea[keys.otherAxis] = otherAxis;
-			childArea[keys.otherSize] = otherSize;
-
-			apply(i, childArea);
+			const vecStart = applyScale(parsed.mainStart, leftoverSpace, stack.weightedTotal);
+			const vecEnd = applyScale(parsed.mainEnd, leftoverSpace, stack.weightedTotal);
+			mainAxis += vecStart;
+			mainSize -= (vecStart + vecEnd);
+			const otherStart = applyScale(parsed.otherStart, otherSpace, otherSpace);
+			const otherEnd = applyScale(parsed.otherEnd, otherSpace, otherSpace);
+			otherAxis += otherStart;
+			otherSize -= (otherStart + otherEnd);
 		}
-	},
 
-	/**
-	 * Applies padding to a specific area as a whole.
-	 */
-	applyPadding(area: Rectangle, padding: Padding): void
-	{
-		const parsed = {} as ParsedStackElement;
-		const keys = { mainDirection: Direction.Horizontal, otherDirection: Direction.Vertical };
+		const childArea = {} as Rectangle;
+		childArea[keys.mainAxis] = mainAxis;
+		childArea[keys.mainSize] = mainSize;
+		childArea[keys.otherAxis] = otherAxis;
+		childArea[keys.otherSize] = otherSize;
 
-		parsePadding(padding, parsed, keys as DirectionKeys);
-
-		if (!parsed.hasPadding)
-			return;
-
-		const width = area.width, height = area.height;
-		const left = applyScale(parsed.mainStart, width, width);
-		const top = applyScale(parsed.otherStart, height, height);
-		area.x += left;
-		area.y += top;
-		area.width -= (left + applyScale(parsed.mainEnd, width, width));
-		area.height -= (top + applyScale(parsed.otherEnd, height, height));
+		apply(i, childArea);
 	}
-};
+}
+
+/**
+ * Applies padding to a specific area as a whole.
+ */
+export function applyPadding(area: Rectangle, padding: Padding): void
+{
+	const parsed = {} as ParsedStackElement;
+	const keys = { mainDirection: Direction.Horizontal, otherDirection: Direction.Vertical };
+
+	parsePadding(padding, parsed, keys as DirectionKeys);
+
+	if (!parsed.hasPadding)
+		return;
+
+	const width = area.width, height = area.height;
+	const left = applyScale(parsed.mainStart, width, width);
+	const top = applyScale(parsed.otherStart, height, height);
+	area.x += left;
+	area.y += top;
+	area.width -= (left + applyScale(parsed.mainEnd, width, width));
+	area.height -= (top + applyScale(parsed.otherEnd, height, height));
+}
 
 
 type AxisKey = "x" | "y";
