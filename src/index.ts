@@ -12,6 +12,7 @@ export { dropdownSpinner, DropdownSpinnerParams } from "./elements/dropdownSpinn
 export { flexible, horizontal, vertical, FlexibleLayoutParams } from "./elements/flexible";
 export { label, LabelParams } from "./elements/label";
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/spinner";
+export { toggle, ToggleParams } from "./elements/toggle";
 export { viewport, ViewportParams, ViewportFlags } from "./elements/viewport";
 
 // Widget parameter types

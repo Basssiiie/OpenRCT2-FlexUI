@@ -1,44 +1,70 @@
-import { ElementParams } from "./element";
-
-
-/**
- * Whether the button is pressed down or released.
- */
-export type ToggleDirection = "down" | "up";
+import { BuildOutput } from "@src/core/buildOutput";
+import { WidgetCreator } from "@src/core/widgetCreator";
+import { isObservable } from "@src/observables/isObservable";
+import { Observable } from "@src/observables/observable";
+import { observable } from "@src/observables/observableConstructor";
+import { Positions } from "@src/positional/positions";
+import { ButtonControl, ButtonParams } from "./button";
 
 
 /**
  * The parameters for configuring the toggle button.
  */
-export interface ToggleParams extends ElementParams
+export interface ToggleParams extends Omit<ButtonParams, "onClick">
 {
 	/**
-	 * The id of a sprite to use as image.
-	 * @default undefined
+	 * Triggers when the toggle button is pressed down or released.
 	 */
-	image?: number;
+	onChange?: (isPressed: boolean) => void;
+}
 
-	/**
-	 * Whether the button starts off being pressed or not.
-	 * @default false
-	 */
-	isPressed?: boolean;
 
-	/**
-	 * Triggers when the button is pressed down.
-	 */
-	onDown?: () => void;
-
-	/**
-	 * Triggers when the button is released.
-	 */
-	onUp?: () => void;
+export function toggle(params: ToggleParams & Positions): WidgetCreator<ToggleParams & Positions>
+{
+	return {
+		params: params,
+		create: (output: BuildOutput): ToggleControl => new ToggleControl(output, params)
+	};
 }
 
 
 /**
  * A controller class for a toggle button widget.
  */
-export default class ToggleControl //extends Control<ToggleParams>
+class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 {
+	toggled: Observable<boolean>;
+	onChange?: (isPressed: boolean) => void;
+
+	constructor(output: BuildOutput, params: ToggleParams & ButtonParams)
+	{
+		// Ensure isPressed is an observable, so we can update
+		// the live widget more easily.
+		const pressed = params.isPressed;
+		const toggled = (isObservable(pressed))
+			? pressed : observable(!!pressed);
+
+		params.isPressed = toggled;
+		params.onClick = (): void => updateToggle(this);
+
+		super(output, params);
+		this.toggled = toggled;
+		this.onChange = params.onChange;
+	}
+}
+
+
+/**
+ * Callback that toggles the button when it gets pressed.
+ */
+function updateToggle(toggle: ToggleControl): void
+{
+	const observable = toggle.toggled;
+	const newValue = !observable.get();
+
+	observable.set(newValue);
+	if (toggle.onChange)
+	{
+		toggle.onChange(newValue);
+	}
 }

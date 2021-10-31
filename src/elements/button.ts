@@ -47,11 +47,12 @@ export function button(params: ButtonParams & Positions): WidgetCreator<ButtonPa
 /**
  * A controller class for a button widget.
  */
-class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, ButtonParams
+export class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, ButtonParams
 {
 	text?: string;
 	image?: number;
 	isPressed?: boolean;
+	onClick?: () => void;
 
 
 	constructor(output: BuildOutput, params: ButtonParams)
@@ -62,5 +63,6 @@ class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, Butto
 		binder.add(this, "text", params.text);
 		binder.add(this, "image", params.image);
 		binder.add(this, "isPressed", params.isPressed);
+		this.onClick = params.onClick;
 	}
 }

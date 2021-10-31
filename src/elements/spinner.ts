@@ -109,9 +109,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		// Make value an observable regardless of user choice,
 		// to make updating the text more convenient.
-		this.value = (isObservable(params.value))
-			? params.value
-			: observable((params.value) ? params.value : 0);
+		const value = params.value;
+		this.value = (isObservable(value))
+			? value : observable(value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		const format = (params.format)
