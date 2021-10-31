@@ -59,8 +59,8 @@ class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, Butto
 		super("button", output, params);
 
 		const binder = output.binder;
-		binder.read(this, "text", params.text);
-		binder.read(this, "image", params.image);
-		binder.read(this, "isPressed", params.isPressed);
+		binder.add(this, "text", params.text);
+		binder.add(this, "image", params.image);
+		binder.add(this, "isPressed", params.isPressed);
 	}
 }

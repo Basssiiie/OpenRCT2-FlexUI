@@ -3,6 +3,7 @@
 		"baseUrl": ".",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"moduleResolution": "node",
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
 		"noImplicitOverride": true,
@@ -10,12 +11,12 @@
 		"noImplicitThis": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"outDir": "out",
+		"outDir": "./@tsc",
 		"paths": {
 			"@src/*": [ "src/*" ]
 		},
 		"strict": true,
-		"target": "es5",
+		"target": "es6",
 		"lib": [ "es5" ],
 	},
 	"include": [

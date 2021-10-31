@@ -54,7 +54,7 @@ class LabelControl extends Control<LabelWidget> implements LabelWidget, LabelPar
 		super("label", output, params);
 
 		const binder = output.binder;
-		binder.read(this, "text", params.text);
-		binder.read(this, "textAlign", params.alignment);
+		binder.add(this, "text", params.text);
+		binder.add(this, "textAlign", params.alignment);
 	}
 }

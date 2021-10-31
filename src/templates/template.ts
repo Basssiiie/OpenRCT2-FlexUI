@@ -1,15 +1,19 @@
 import { WidgetEditor } from "@src/core/widgetEditor";
-import { Binder } from "@src/observables/binder";
-import * as ArrayHelper from "@src/utilities/array";
+import { createWidgetMap, WidgetMap } from "@src/core/widgetMap";
+import { WindowContext } from "@src/core/windowContext";
+import { WindowBinder } from "@src/observables/windowBinder";
 import { WindowTemplate } from "./windowTemplate";
 
 
 /**
  * Internal template that keeps track of the window.
  */
-export class Template implements WindowTemplate
+export class Template implements WindowTemplate, WindowContext
 {
 	window: Window | null = null;
+
+	templateWidgets: WidgetMap | null = null;
+	openWidgets: WidgetMap | null = null;
 
 
 	/**
@@ -18,20 +22,42 @@ export class Template implements WindowTemplate
 	onOpen?: () => void;
 
 
-	constructor(private readonly description: WindowDesc, private readonly binder?: Binder)
+	constructor(private readonly description: WindowDesc, private readonly binder?: WindowBinder)
 	{
+	}
+
+	/**
+	 * Builds the final template.
+	 */
+	build(): void
+	{
+		const widgets = this.description.widgets;
+		this.templateWidgets = (widgets) ? createWidgetMap(widgets) : null;
 	}
 
 	open(): void
 	{
+		const description = this.description;
+		const binder = this.binder;
+
+		if (binder && binder.hasBindings())
+		{
+			const widgets = this.templateWidgets;
+			if (widgets)
+			{
+				// Update the template widgets always before the window opens.
+				binder.update(widgets);
+			}
+			binder.bind(this);
+		}
+
+		const window = ui.openWindow(description);
+		this.window = window;
+		this.openWidgets = createWidgetMap(window.widgets);
+
 		if (this.onOpen)
 		{
 			this.onOpen();
-		}
-		this.window = ui.openWindow(this.description);
-		if (this.binder)
-		{
-			this.binder.bind(this);
 		}
 	}
 
@@ -39,6 +65,7 @@ export class Template implements WindowTemplate
 	{
 		ui.closeWindows(this.description.classification);
 		this.window = null;
+		this.openWidgets = null;
 	}
 
 	focus(): void
@@ -51,13 +78,24 @@ export class Template implements WindowTemplate
 
 	getWidget<T extends Widget>(name: string): WidgetEditor<T> | null
 	{
-		const widgets = this.description.widgets;
+		const widgets = this.templateWidgets;
 		if (widgets)
 		{
-			const template = ArrayHelper.find(widgets, w => w.name === name) as T;
+			const template = <T>widgets[name];
 			if (template)
 			{
-				const active = (this.window) ? this.window.findWidget<T>(name) : undefined;
+				const window = this.window;
+				let active: T | undefined;
+				if (window)
+				{
+					// Create map of open widgets lazily if it has not been created yet.
+					let openWidgets = this.openWidgets;
+					if (!openWidgets)
+					{
+						this.openWidgets = openWidgets = createWidgetMap(window.widgets);
+					}
+					active = <T>openWidgets[name];
+				}
 				return new WidgetEditor(template, active);
 			}
 		}

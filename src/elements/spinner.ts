@@ -117,10 +117,10 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 			: ((value: number): string => value.toString());
 
 		const binder = output.binder;
-		binder.read(this, "text", this.value, format);
-		binder.read(this, "increment", params.increment);
-		binder.read(this, "minimum", params.minimum);
-		binder.read(this, "maximum", params.maximum);
+		binder.add(this, "text", this.value, format);
+		binder.add(this, "increment", params.increment);
+		binder.add(this, "minimum", params.minimum);
+		binder.add(this, "maximum", params.maximum);
 		this.wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this.onChange = params.onChange;
 

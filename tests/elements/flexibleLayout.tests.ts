@@ -1,9 +1,9 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { BuildOutput } from "@src/core/buildOutput";
-import { widgetContainer } from "@src/core/widgetContainer";
+import { BuildContainer } from "@src/core/buildContainer";
+import { createWidgetMap } from "@src/core/widgetMap";
 import { button } from "@src/elements/button";
-import { flexible, FlexibleLayoutParams, horizontal } from "@src/elements/flexibleLayout";
+import { flexible, FlexibleLayoutParams, horizontal } from "@src/elements/flexible";
 import { label } from "@src/elements/label";
 import { Direction } from "@src/positional/direction";
 import { Rectangle } from "@src/positional/rectangle";
@@ -12,7 +12,7 @@ import test from "ava";
 
 test("Simple layouts with widgets", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
 	const params: FlexibleLayoutParams =
 	{
@@ -32,7 +32,7 @@ test("Simple layouts with widgets", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.type, "label");
@@ -71,7 +71,7 @@ test("Simple layouts with widgets", t =>
 
 test("Pixel sizes ignore leftover space", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
@@ -89,7 +89,7 @@ test("Pixel sizes ignore leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -113,7 +113,7 @@ test("Pixel sizes ignore leftover space", t =>
 
 test("Percentage sizes", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
@@ -131,7 +131,7 @@ test("Percentage sizes", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -155,7 +155,7 @@ test("Percentage sizes", t =>
 
 test("Weighted sizes", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
@@ -173,7 +173,7 @@ test("Weighted sizes", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -197,7 +197,7 @@ test("Weighted sizes", t =>
 
 test("Relative percentage fills leftover space", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
 	const params: FlexibleLayoutParams =
 	{
@@ -212,7 +212,7 @@ test("Relative percentage fills leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
@@ -226,7 +226,7 @@ test("Relative percentage fills leftover space", t =>
 
 test("Relative weight fills leftover space", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
@@ -241,7 +241,7 @@ test("Relative weight fills leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
@@ -255,7 +255,7 @@ test("Relative weight fills leftover space", t =>
 
 test("Padding: single number value", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
@@ -267,7 +267,7 @@ test("Padding: single number value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -279,7 +279,7 @@ test("Padding: single number value", t =>
 
 test("Padding: single pixel value", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
@@ -291,7 +291,7 @@ test("Padding: single pixel value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -303,7 +303,7 @@ test("Padding: single pixel value", t =>
 
 test("Padding: single percentage value", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
@@ -315,7 +315,7 @@ test("Padding: single percentage value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 12);
@@ -327,7 +327,7 @@ test("Padding: single percentage value", t =>
 
 test("Padding: single weighted value", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
@@ -339,7 +339,7 @@ test("Padding: single weighted value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -351,7 +351,7 @@ test("Padding: single weighted value", t =>
 
 test("Padding: tuple with 2 values", t =>
 {
-	const output: BuildOutput = new BuildOutput({} as WindowDesc);
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
@@ -366,7 +366,7 @@ test("Padding: tuple with 2 values", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(widgetContainer(output.widgets), rect);
+	control.layout(createWidgetMap(output.widgets), rect);
 
 	const label1 = output.widgets[0] as LabelWidget;
 	t.is(label1.x, 7);

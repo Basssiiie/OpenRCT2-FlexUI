@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { fillLayout } from "@src/layouts/fillLayout";
 import { Observable } from "@src/observables/observable";
@@ -81,7 +81,7 @@ class DropdownSpinnerControl extends DropdownControl
 	/**
 	 * Positions the two widgets in the proper location.
 	 */
-	override layout(widgets: WidgetContainer, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position dropdown (leave space for spinner controls)
 		area.width -= spinnerControlsWidth;

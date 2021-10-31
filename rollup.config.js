@@ -31,7 +31,7 @@ const plugins =
 const config = [
 	{
 		// Regular build
-		input: "./src/fui.ts",
+		input: "./src/index.ts",
 		output: [
 			{
 				file: "./dist/index.mjs",
@@ -46,7 +46,7 @@ const config = [
 	},
 	{
 		// Minified build
-		input: "./src/fui.ts",
+		input: "./src/index.ts",
 		output: [
 			{
 				file: "./dist/index.min.mjs",
@@ -84,7 +84,7 @@ const config = [
 	},
 	{
 		// Declaration file packaging
-		input: "./src/fui.ts",
+		input: "./src/index.ts",
 		output: {
 			file: "./dist/index.d.ts",
 		},

@@ -1,11 +1,11 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
+import { Positions } from "@src/positional/positions";
 import { Bindable } from "@src/observables/bindable";
 import { Observable } from "@src/observables/observable";
-import { FlexiblePosition } from "@src/positional/flexiblePosition";
-import { Template } from "@src/templates/template";
 import { Control } from "./control";
 import { ElementParams } from "./element";
+import { WindowContext } from "@src/core/windowContext";
 
 
 const FarAway: CoordsXY = { x: -9000, y: -9000 };
@@ -67,7 +67,7 @@ export interface ViewportParams extends ElementParams
 /**
  * Add a viewport for displaying a location somewhere on the map.
  */
-export function viewport<P = FlexiblePosition>(params: ViewportParams & P): WidgetCreator<ViewportParams & P>
+export function viewport(params: ViewportParams & Positions): WidgetCreator<ViewportParams & Positions>
 {
 	return {
 		params: params,
@@ -99,30 +99,29 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		super("viewport", output, params);
 
 		const target = params.target;
-		const template = output.template;
 		if (target instanceof Observable)
 		{
-			output.update.push((): void => this.goToTarget(template));
+			output.on("update", (context) => this.goToTarget(context));
 		}
 		else
 		{
-			output.open.push((): void => this.goToTarget(template));
+			output.on("open", (context) => this.goToTarget(context));
 		}
 
 		const binder = output.binder;
-		binder.read(this, "target", params.target);
-		binder.read(this, "rotation", params.rotation);
-		binder.read(this, "zoom", params.zoom);
-		binder.read(this, "visibilityFlags", params.visibilityFlags);
+		binder.add(this, "target", params.target);
+		binder.add(this, "rotation", params.rotation);
+		binder.add(this, "zoom", params.zoom);
+		binder.add(this, "visibilityFlags", params.visibilityFlags);
 	}
 
 
 	/**
 	 * Makes sure the viewport always targets the target.
 	 */
-	private goToTarget(template: Template): void
+	private goToTarget(context: WindowContext): void
 	{
-		const widget = template.getWidget<ViewportWidget>(this.name);
+		const widget = context.getWidget<ViewportWidget>(this.name);
 		if (!widget)
 			return;
 

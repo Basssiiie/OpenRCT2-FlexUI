@@ -13,12 +13,12 @@
 	"scripts": {
 		"start": "npm run watch",
 		"watch": "nodemon --watch ./src --ext js,ts",
-		"build": "npm run lint && rollup --config rollup.config.js --environment BUILD:production",
-		"build:dev": "rollup --config rollup.config.js",
-		"build:all": "npm run build && npm run build:dev",
+		"build": "npm run clean && npm run lint && rollup --config rollup.config.js --environment BUILD:production",
+		"build:dev": "npm run clean && rollup --config rollup.config.js",
+		"clean": "rimraf ./dist/*",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
-		"publish:local": "npm run build:all && cd dist && npm pack .. && npm install --global openrct2-fluentui-0.1.0.tgz"
+		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-fluentui-0.1.0.tgz"
 	},
 	"repository": {
 		"type": "git",
@@ -40,6 +40,7 @@
 		"nodemon": "^2.0.12",
 		"nyc": "^15.1.0",
 		"openrct2-mocks": "^0.1.0",
+		"rimraf": "^3.0.2",
 		"rollup": "^2.56.2",
 		"rollup-plugin-dts": "^4.0.0",
 		"rollup-plugin-terser": "^7.0.2",

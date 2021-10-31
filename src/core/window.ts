@@ -1,15 +1,16 @@
-import { flexible, FlexibleLayoutParams } from "@src/elements/flexibleLayout";
-import { Layoutable } from "@src/layouts/layoutable";
+import { flexible, FlexibleLayoutParams } from "@src/elements/flexible";
 import { applyPadding } from "@src/layouts/flexibleLayout";
+import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
 import { Paddable, Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
 import { WindowTemplate } from "@src/templates/windowTemplate";
 import { WindowColour } from "@src/utilities/colour";
-import { Event } from "@src/utilities/event";
+import { invoke } from "@src/utilities/event";
 import { Id } from "@src/utilities/identifier";
-import { BuildOutput } from "./buildOutput";
-import { widgetContainer } from "./widgetContainer";
+import { BuildContainer } from "./buildContainer";
+import { createWidgetMap } from "./widgetMap";
+import { WindowContext } from "./windowContext";
 
 
 /**
@@ -71,13 +72,13 @@ interface BaseWindowParams extends Paddable
 	/**
 	 * Event that gets triggered for every tick the window is open.
 	 */
-	onUpdate?: () => void;
+	onUpdate?: (context: WindowContext) => void;
 
 	/**
 	 * Event that gets triggered when the window gets closed by either the
 	 * user or a plugin.
 	 */
-	onClose?: () => void;
+	onClose?: (context: WindowContext) => void;
 }
 
 
@@ -149,7 +150,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		maxHeight: params.maxHeight
 	};
 
-	const output = new BuildOutput(window);
+	const output = new BuildContainer(window);
 	if ("content" in params)
 	{
 		createWindowLayout(output, window, params);
@@ -166,13 +167,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 
 	if (binder.hasBindings())
 	{
-		const widgets = window.widgets;
-		if (widgets)
-		{
-			// Update the template widgets always before the window opens.
-			const container = widgetContainer(widgets);
-			open.push(() => binder.update(container));
-		}
+		// Unbind binder on close event.
 		close.push(() => binder.unbind());
 	}
 	if (params.onUpdate)
@@ -185,16 +180,18 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	}
 	if (open.length > 0)
 	{
-		output.template.onOpen = (): void => Event.invoke(open);
+		output.template.onOpen = (): void => invoke(open);
 	}
 	if (update.length > 0)
 	{
-		window.onUpdate = (): void => Event.invoke(update);
+		window.onUpdate = (): void => invoke(update);
 	}
 	if (close.length > 0)
 	{
-		window.onClose = (): void => Event.invoke(close);
+		window.onClose = (): void => invoke(close);
 	}
+
+	output.template.build();
 	return output.template;
 }
 
@@ -202,7 +199,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 /**
  * Create a regular window layout.
  */
-function createWindowLayout(output: BuildOutput, window: WindowDesc, params: WindowParams): void
+function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
 	const creator = flexible(params.content, Direction.Vertical);
 	const control = creator.create(output);
@@ -220,7 +217,7 @@ function createWindowLayout(output: BuildOutput, window: WindowDesc, params: Win
 /**
  * Enables resizing the window by the user.
  */
-function setWindowLayoutResizing(output: BuildOutput, window: WindowDesc, control: Layoutable, padding?: Padding): void
+function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, control: Layoutable, padding?: Padding): void
 {
 	const previous = { name: window.classification, width: window.width, height: window.height };
 	output.update.push((): void =>
@@ -250,6 +247,6 @@ function performLayout(widgets: Widget[], control: Layoutable, width: number, he
 	{
 		applyPadding(area, padding);
 	}
-	const container = widgetContainer(widgets);
+	const container = createWidgetMap(widgets);
 	control.layout(container, area);
 }

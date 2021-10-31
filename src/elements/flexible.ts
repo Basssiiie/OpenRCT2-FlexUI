@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Layoutable } from "@src/layouts/layoutable";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
@@ -64,7 +64,7 @@ export interface FlexibleLayoutBuilder
 
 
 /**
- * Add a horizontal row with additional child widgets.
+ * Add a horizontal row with one or more child widgets.
  */
 export function horizontal(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
 {
@@ -73,7 +73,7 @@ export function horizontal(params: FlexibleLayoutParams & Positions): WidgetCrea
 
 
 /**
- * Add a vertical row with additional child widgets.
+ * Add a vertical row with one or more child widgets.
  */
 export function vertical(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
 {
@@ -81,7 +81,9 @@ export function vertical(params: FlexibleLayoutParams & Positions): WidgetCreato
 }
 
 
-
+/**
+ * Add a flexible row with one or more child widgets in the specified direction.
+ */
 export function flexible(params: FlexibleLayoutParams & Positions, direction: Direction): WidgetCreator<FlexibleLayoutParams & Positions>
 {
 	return {
@@ -96,7 +98,6 @@ export class FlexibleLayoutControl implements Layoutable
 	params: FlexiblePosition[];
 	children: Layoutable[];
 	direction: Direction;
-
 
 	constructor(output: BuildOutput, children: FlexibleLayoutParams, direction: Direction)
 	{
@@ -115,8 +116,7 @@ export class FlexibleLayoutControl implements Layoutable
 		}
 	}
 
-
-	layout(widgets: WidgetContainer, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		flexibleLayout(this.params, area, this.direction, (idx, subarea) =>
 		{

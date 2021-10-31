@@ -71,8 +71,8 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		super("dropdown", output, params);
 
 		const binder = output.binder;
-		binder.read(this, "items", params.items);
-		binder.read(this, "selectedIndex", params.selectedIndex);
+		binder.add(this, "items", params.items);
+		binder.add(this, "selectedIndex", params.selectedIndex);
 		this.disabledMessage = params.disabledMessage;
 		this.disableSingleItem = !!params.disableSingleItem;
 		this.onSelect = params.onSelect;

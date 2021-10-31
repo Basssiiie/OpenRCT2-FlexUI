@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetMap } from "@src/core/widgetMap";
 import { Layoutable } from "@src/layouts/layoutable";
 import { fillLayout } from "@src/layouts/fillLayout";
 import { Rectangle } from "@src/positional/rectangle";
@@ -28,15 +28,15 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 		this.type = type;
 
 		const binder = output.binder;
-		binder.read(this, "tooltip", params.tooltip);
-		binder.read(this, "isDisabled", params.disabled);
-		binder.read(this, "isVisible", params.visibility, v => (v === "visible"));
+		binder.add(this, "tooltip", params.tooltip);
+		binder.add(this, "isDisabled", params.disabled);
+		binder.add(this, "isVisible", params.visibility, v => (v === "visible"));
 
-		output.widgets.push(this as Widget);
+		output.add(<Widget>this);
 	}
 
 
-	layout(widgets: WidgetContainer, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		fillLayout(widgets, this.name, area);
 	}

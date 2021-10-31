@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetContainer } from "@src/core/widgetContainer";
+import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Bindable } from "@src/observables/bindable";
@@ -62,7 +62,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 		super("listview", output, params);
 
 		const binder = output.binder;
-		binder.read(this, "items", params.items);
+		binder.add(this, "items", params.items);
 
 		this.showColumnHeaders = (params.columns !== undefined);
 		this.canSelect = params.canSelect;
@@ -100,7 +100,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 	/**
 	 * Defines custom layouting for when the listview uses flexible columns.
 	 */
-	override layout(widgets: WidgetContainer, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		const params = this.columnParams;
 		if (!params)
@@ -109,7 +109,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 			return;
 		}
 
-		const widget = widgets.get<ListViewWidget>(this.name);
+		const widget = <ListViewWidget>widgets[this.name];
 		if (widget.width !== area.width)
 		{
 			const columns = this.columns;

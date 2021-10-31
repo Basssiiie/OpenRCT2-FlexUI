@@ -4,23 +4,13 @@
 export type Event<T = never> = ((params: T) => void)[];
 
 
-export const Event: EventInvoker =
+/**
+ * Invoke the specified event and all its registered callbacks.
+ */
+export function invoke<T = never>(event: Event<T>, params?: T): void
 {
-	invoke<T = never>(event: Event<T>, params?: T): void
+	for (let i = 0; i < event.length; i++)
 	{
-		for (let i = 0; i < event.length; i++)
-		{
-			event[i](params as T);
-		}
+		event[i](<T>params);
 	}
-};
-
-
-interface EventInvoker
-{
-	/**
-	 * Invoke the specified event and all its registered callbacks.
-	 */
-	invoke(event: Event<never>): void;
-	invoke<T>(event: Event<T>, params: T): void;
 }

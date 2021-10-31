@@ -1,23 +1,25 @@
 import { Binder } from "@src/observables/binder";
-import { Template } from "@src/templates/template";
-import { Event } from "@src/utilities/event";
+import { WindowContext } from "./windowContext";
+import { WindowEvent } from "./windowEvent";
 
 
 /**
- * Object that holds components required to build the final window.
+ * Object that allows components to add themselves to the window.
  */
-export class BuildOutput
+export interface BuildOutput
 {
-	widgets: Widget[] = [];
-	binder: Binder = new Binder();
-	template: Template;
+	/**
+	 * The binder helps with binding observables from a viewmodel to a widget inside a window.
+	 */
+	binder: Binder;
 
-	open: Event = [];
-	update: Event = [];
-	close: Event = [];
+	/**
+	 * Add a widget to the build output.
+	 */
+	add(widget: Widget): void;
 
-	constructor(window: WindowDesc)
-	{
-		this.template = new Template(window, this.binder);
-	}
+	/**
+	 * Subscribe to an event on the created window.
+	 */
+	on(event: WindowEvent, callback: (context: WindowContext) => void): void;
 }
