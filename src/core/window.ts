@@ -243,7 +243,7 @@ function performLayout(widgets: Widget[], control: Layoutable, width: number, he
 {
 	// Skip the top bar (16px)
 	const area: Rectangle = { x: 0, y: 16, width: width, height: height - 16 };
-	if (padding !== undefined)
+	if (padding)
 	{
 		applyPadding(area, padding);
 	}

@@ -5,6 +5,7 @@ export { observable } from "./observables/observableConstructor";
 export { Observable } from "./observables/observable";
 
 // Widget controls
+export { box, BoxParams } from "./elements/box";
 export { button, ButtonParams } from "./elements/button";
 export { dropdown, DropdownParams } from "./elements/dropdown";
 export { dropdownSpinner, DropdownSpinnerParams } from "./elements/dropdownSpinner";

@@ -42,7 +42,7 @@ export function label(params: LabelParams & Positions): WidgetCreator<LabelParam
 
 
 /**
- * A controller class for a dropdown widget.
+ * A controller class for a label widget.
  */
 class LabelControl extends Control<LabelWidget> implements LabelWidget, LabelParams
 {
