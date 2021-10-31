@@ -1,8 +1,9 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
+import { WidgetMap } from "@src/core/widgetMap";
 import { fillLayout } from "@src/layouts/fillLayout";
-import { Observable } from "@src/observables/observable";
+import { isObservable } from "@src/observables/isObservable";
+import { observable } from "@src/observables/observableConstructor";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Rectangle } from "@src/positional/rectangle";
 import { DropdownControl, DropdownParams } from "./dropdown";
@@ -54,9 +55,9 @@ class DropdownSpinnerControl extends DropdownControl
 			onChange: (value: number) => this.onChange(value)
 		};
 		const items = params.items;
-		if (items instanceof Observable)
+		if (isObservable(items))
 		{
-			const maximum = new Observable(0);
+			const maximum = observable(0);
 			items.subscribe(v => maximum.set((v) ? v.length : 0));
 			spinParams.maximum = maximum;
 		}

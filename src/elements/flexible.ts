@@ -1,12 +1,13 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { Layoutable } from "@src/layouts/layoutable";
+import { WidgetMap } from "@src/core/widgetMap";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
+import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
+import { isArray } from "@src/utilities/type";
 import { ButtonParams } from "./button";
 import { DropdownParams } from "./dropdown";
 import { LabelParams } from "./label";
@@ -103,7 +104,7 @@ export class FlexibleLayoutControl implements Layoutable
 	{
 		this.direction = direction;
 
-		const items = (Array.isArray(children)) ? children : children.content;
+		const items = (isArray(children)) ? children : children.content;
 		const count = items.length;
 		this.params = Array<FlexiblePosition>(count);
 		this.children = Array<Layoutable>(count);

@@ -5,6 +5,7 @@ import * as Log from "@src/utilities/logger";
 import { Bindable } from "./bindable";
 import { Binder } from "./binder";
 import { Binding } from "./binding";
+import { isObservable } from "./isObservable";
 import { Observable } from "./observable";
 
 
@@ -19,7 +20,7 @@ export class WindowBinder implements Binder
 
 	add<W extends WidgetBase, K extends keyof W, T>(widget: W, key: K, value: Bindable<T> | undefined, converter?: (value: T) => W[K]): void
 	{
-		if (value instanceof Observable)
+		if (isObservable(value))
 		{
 			// bind
 			if (!widget.name)
@@ -83,7 +84,7 @@ export class WindowBinder implements Binder
 
 	on<T, W extends WidgetBase, K extends keyof W>(bindable: Bindable<T> | undefined, widgetTemplate: W, property: K, callback: (value: T) => W[K]): void
 	{
-		if (bindable instanceof Observable)
+		if (isObservable(bindable))
 		{
 			const name = widgetTemplate.name;
 			if (!name)

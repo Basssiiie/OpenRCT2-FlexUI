@@ -1,11 +1,11 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { Positions } from "@src/positional/positions";
+import { WindowContext } from "@src/core/windowContext";
 import { Bindable } from "@src/observables/bindable";
-import { Observable } from "@src/observables/observable";
+import { isObservable } from "@src/observables/isObservable";
+import { Positions } from "@src/positional/positions";
 import { Control } from "./control";
 import { ElementParams } from "./element";
-import { WindowContext } from "@src/core/windowContext";
 
 
 const FarAway: CoordsXY = { x: -9000, y: -9000 };
@@ -99,7 +99,7 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		super("viewport", output, params);
 
 		const target = params.target;
-		if (target instanceof Observable)
+		if (isObservable(target))
 		{
 			output.on("update", (context) => this.goToTarget(context));
 		}

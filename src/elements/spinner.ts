@@ -1,7 +1,9 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
+import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
+import { observable } from "@src/observables/observableConstructor";
 import { Positions } from "@src/positional/positions";
 import * as MathHelper from "@src/utilities/math";
 import { Control } from "./control";
@@ -107,9 +109,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		// Make value an observable regardless of user choice,
 		// to make updating the text more convenient.
-		this.value = (params.value instanceof Observable)
+		this.value = (isObservable(params.value))
 			? params.value
-			: new Observable((params.value) ? params.value : 0);
+			: observable((params.value) ? params.value : 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		const format = (params.format)

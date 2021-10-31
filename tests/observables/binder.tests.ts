@@ -3,7 +3,7 @@
 import test from "ava";
 import { BuildContainer } from "@src/core/buildContainer";
 import { WindowBinder } from "@src/observables/windowBinder";
-import { Observable } from "@src/observables/observable";
+import { ObservableInstance } from "@src/observables/observableInstance";
 import { ElementVisibility } from "@src/elements/element";
 import Mock from "openrct2-mocks";
 
@@ -41,7 +41,7 @@ test("read() adds observable to binder", t =>
 
 	t.falsy(binder["_bindings"]);
 
-	const observableNumber = new Observable(25);
+	const observableNumber = new ObservableInstance(25);
 	binder.add(label, "y", observableNumber);
 
 	t.truthy(binder["_bindings"]);
@@ -60,7 +60,7 @@ test("read() sets observable in window template", t =>
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
 	output.widgets.push(label);
 
-	const observableNumber = new Observable(25);
+	const observableNumber = new ObservableInstance(25);
 	output.binder.add(label, "x", observableNumber);
 	output.binder.bind(output.template);
 
@@ -86,7 +86,7 @@ test("read() sets observable through converter", t =>
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
 	output.widgets.push(label);
 
-	const observableNumber = new Observable<ElementVisibility>("visible");
+	const observableNumber = new ObservableInstance<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", observableNumber, v => (v === "visible"));
 	output.binder.bind(output.template);
 

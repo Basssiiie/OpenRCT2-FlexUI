@@ -1,3 +1,4 @@
+import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 
 /**
@@ -16,7 +17,7 @@ export class WidgetEditor<T extends Widget>
 
 	set<K extends keyof T>(key: K, value: T[K] | Observable<T[K]>): void
 	{
-		const actual = (value instanceof Observable) ? value.get() : value;
+		const actual = (isObservable(value)) ? value.get() : value;
 		if (this.active)
 		{
 			(this.active)[key] = actual;

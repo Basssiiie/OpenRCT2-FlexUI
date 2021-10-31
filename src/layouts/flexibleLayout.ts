@@ -3,6 +3,7 @@ import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
+import { isArray, isNumber, isObject } from "@src/utilities/type";
 
 
 /**
@@ -254,7 +255,7 @@ function parseScale(value: Scale | undefined, fallback: number = 0, fallbackType
 	}
 
 	// Number = weighted value.
-	if (typeof value === "number")
+	if (isNumber(value))
 	{
 		return [value, ScaleType.Weight];
 	}
@@ -307,7 +308,7 @@ function parsePadding(padding: Padding | undefined, target: ParsedStackElement, 
 	}
 
 	target.hasPadding = true;
-	if (Array.isArray(padding))
+	if (isArray(padding))
 	{
 		// padding specified as 2 or 4 item tuple.
 		const length = padding.length;
@@ -330,7 +331,7 @@ function parsePadding(padding: Padding | undefined, target: ParsedStackElement, 
 		else
 			throw new Error(`Padding array of unknown length: ${length}. Only lengths of 2 or 4 are supported.`);
 	}
-	else if (typeof padding === "object")
+	else if (isObject(padding))
 	{
 		// padding specified as object
 		const padKeys = getPaddingKeys(keys.mainDirection);

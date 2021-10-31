@@ -4,7 +4,7 @@ import { window } from "@src/core/window";
 import { button } from "@src/elements/button";
 import { horizontal } from "@src/elements/flexible";
 import { label } from "@src/elements/label";
-import { observable } from "@src/observables/observable";
+import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
 

@@ -2,7 +2,7 @@
 
 import { window } from "@src/core/window";
 import { dropdown } from "@src/elements/dropdown";
-import { observable } from "@src/observables/observable";
+import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
 

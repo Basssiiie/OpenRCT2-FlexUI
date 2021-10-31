@@ -1,58 +1,19 @@
 /**
- * Create a value that can be observed by the user interface for change detection.
- */
-export function observable<U>(): Observable<U | undefined>;
-export function observable<T>(initialValue: T): Observable<T>;
-export function observable<T>(initialValue?: T): Observable<T | undefined>
-{
-	return new Observable<T | undefined>(initialValue);
-}
-
-
-/**
  * An object that can be subscribed to and whose subscriptions will be notified
  * when the value has changed.
  */
-export class Observable<T>
+export interface Observable<T>
 {
-	/**
-	 * The current value.
-	 * @internal
-	 */
-	private _value: T;
-
-	/**
-	 * Keeps track of the current listeners.
-	 * @internal
-	 */
-	private _listeners?: ((value: T) => void)[];
-
-	/**
-	 * Create a new observable object with the specified value.
-	 * @param value The value that the object will be initialized with.
-	 */
-	constructor(value: T)
-	{
-		this._value = value;
-	}
-
 	/**
 	 * Gets the current value in this observable.
 	 */
-	get(): T
-	{
-		return this._value;
-	}
+	get(): T;
 
 	/**
 	 * Updates the current value to a new one, and notifies all subscribers of this change.
 	 * @param value The new value.
 	 */
-	set(value: T): void
-	{
-		this._value = value;
-		invoke(value, this._listeners);
-	}
+	set(value: T): void;
 
 	/**
 	 * Subscribes to this observable. The subscription will be called when the value
@@ -61,40 +22,5 @@ export class Observable<T>
 	 * has changed.
 	 * @returns A callback to unsubscribe from the subscription.
 	 */
-	subscribe(callback: (value: T) => void): () => void
-	{
-		if (!this._listeners)
-		{
-			this._listeners = [ callback ];
-		}
-		else
-		{
-			this._listeners.push(callback);
-		}
-
-		const subscriptions = this._listeners;
-		return (): void =>
-		{
-			const index = subscriptions.indexOf(callback);
-			if (index !== -1)
-			{
-				subscriptions.splice(index, 1);
-			}
-		};
-	}
-}
-
-
-/**
- * Informs all listeners of the new value.
- */
-function invoke<T>(value: T, listeners?: ((value: T) => void)[]): void
-{
-	if (listeners)
-	{
-		for (let i = 0; i < listeners.length; i++)
-		{
-			listeners[i](value);
-		}
-	}
+	subscribe(callback: (value: T) => void): () => void;
 }

@@ -1,7 +1,8 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./core/window";
 export { WindowTemplate } from "./templates/windowTemplate";
-export { observable } from "./observables/observable";
+export { observable } from "./observables/observableConstructor";
+export { Observable } from "./observables/observable";
 
 // Widget controls
 export { button, ButtonParams } from "./elements/button";
