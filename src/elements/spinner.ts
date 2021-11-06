@@ -1,10 +1,12 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
+import { WidgetMap } from "@src/core/widgetMap";
 import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
 import { Positions } from "@src/positional/positions";
+import { Rectangle } from "@src/positional/rectangle";
 import * as MathHelper from "@src/utilities/math";
 import { Control } from "./control";
 import { ElementParams } from "./element";
@@ -44,7 +46,7 @@ export interface SpinnerParams extends ElementParams
 	 * The amount to increment or decrement per interaction.
 	 * @default 1
 	 */
-	increment?: Bindable<number>;
+	step?: Bindable<number>;
 
 
 	/**
@@ -96,10 +98,12 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 {
 	text?: string;
 	value: Observable<number>;
-	increment: number = 1;
+	step: number = 1;
 	minimum: number = 0;
 	maximum: number = 0;
 	wrapMode: SpinnerWrapMode;
+	onIncrement: () => void;
+	onDecrement: () => void;
 	onChange?: (value: number, adjustment: number) => void;
 
 
@@ -120,32 +124,28 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		const binder = output.binder;
 		binder.add(this, "text", this.value, format);
-		binder.add(this, "increment", params.increment);
+		binder.add(this, "step", params.step);
 		binder.add(this, "minimum", params.minimum);
 		binder.add(this, "maximum", params.maximum);
 		this.wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this.onChange = params.onChange;
+		this.onIncrement = (): void => updateSpinnerValue(this, this.step);
+		this.onDecrement = (): void => updateSpinnerValue(this, -this.step);
 
-		if (this.minimum >= this.maximum)
+		if (this.minimum > this.maximum)
 		{
 			throw Error(`Spinner: minimum ${this.minimum} is equal to or larger than maximum ${this.maximum}.`);
 		}
 	}
 
-	/**
-	 * Called when the spinner value is incremented by the user.
-	 */
-	onIncrement(): void
-	{
-		updateSpinnerValue(this, this.increment);
-	}
 
 	/**
-	 * Called when the spinner value is decremented by the user.
+	 * Fix: default spinner is drawn 1 px to wide.
 	 */
-	onDecrement(): void
+	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		updateSpinnerValue(this, -this.increment);
+		area.width -= 1;
+		super.layout(widgets, area);
 	}
 }
 
@@ -153,7 +153,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 /**
  * Callback for when the value of the spinner is incremented or decremented.
  */
-function updateSpinnerValue(spinner: SpinnerControl, increment: number): void
+function updateSpinnerValue(spinner: SpinnerControl, step: number): void
 {
 	const min = spinner.minimum;
 	const max = spinner.maximum;
@@ -162,7 +162,7 @@ function updateSpinnerValue(spinner: SpinnerControl, increment: number): void
 		return;
 
 	const oldValue = spinner.value.get();
-	const newValue = (oldValue + increment);
+	const newValue = (oldValue + step);
 
 	let result: number;
 	switch (spinner.wrapMode)
@@ -190,6 +190,6 @@ function updateSpinnerValue(spinner: SpinnerControl, increment: number): void
 
 	if (spinner.onChange)
 	{
-		spinner.onChange(result, increment);
+		spinner.onChange(result, step);
 	}
 }

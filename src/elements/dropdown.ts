@@ -63,6 +63,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	selectedIndex: number = 0;
 	disabledMessage: string | undefined;
 	disableSingleItem: boolean;
+	onChange: (index: number) => void;
 	onSelect?: (index: number) => void;
 
 
@@ -76,6 +77,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		this.disabledMessage = params.disabledMessage;
 		this.disableSingleItem = !!params.disableSingleItem;
 		this.onSelect = params.onSelect;
+		this.onChange = (idx): void => onChanged(this, idx);
 
 		if (this.disabledMessage)
 		{
@@ -87,17 +89,18 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
 		}
 	}
+}
 
-	/**
-	 * Called when the dropdown item is changed by the user.
-	 */
-	onChange(index: number): void
+
+/**
+ * Called when the dropdown item is changed by the user.
+ */
+function onChanged(control: DropdownControl, index: number): void
+{
+	control.selectedIndex = index;
+
+	if (control.onSelect)
 	{
-		this.selectedIndex = index;
-
-		if (this.onSelect)
-		{
-			this.onSelect(index);
-		}
+		control.onSelect(index);
 	}
 }

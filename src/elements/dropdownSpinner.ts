@@ -4,7 +4,7 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { fillLayout } from "@src/layouts/fillLayout";
 import { isObservable } from "@src/observables/isObservable";
 import { observable } from "@src/observables/observableConstructor";
-import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
@@ -23,7 +23,7 @@ export interface DropdownSpinnerParams extends DropdownParams
 }
 
 
-export function dropdownSpinner<P = FlexiblePosition>(params: DropdownSpinnerParams & P): WidgetCreator<DropdownSpinnerParams & P>
+export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<DropdownSpinnerParams & Positions>
 {
 	return {
 		params: params,
@@ -32,7 +32,7 @@ export function dropdownSpinner<P = FlexiblePosition>(params: DropdownSpinnerPar
 }
 
 
-const spinnerControlsWidth = 24;
+const spinnerControlsWidth = 26;
 
 
 /**
@@ -49,6 +49,7 @@ class DropdownSpinnerControl extends DropdownControl
 		// Setup internal spinner control
 		const spinParams: SpinnerParams =
 		{
+			tooltip: params.tooltip,
 			minimum: 0,
 			maximum: 0,
 			// update dropdown
@@ -66,16 +67,13 @@ class DropdownSpinnerControl extends DropdownControl
 			spinParams.maximum = items.length;
 		}
 		this.spinner = new SpinnerControl(output, spinParams);
-	}
 
-
-	/**
-	 * Update spinner when dropdown itme has changed.
-	 */
-	override onChange(index: number): void
-	{
-		this.spinner.value.set(index);
-		super.onChange(index);
+		const inheritedCallback = this.onChange;
+		this.onChange = (idx): void =>
+		{
+			this.spinner.value.set(idx);
+			inheritedCallback(idx);
+		};
 	}
 
 

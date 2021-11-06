@@ -5,6 +5,7 @@ import { spinner } from "@src/elements/spinner";
 import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Standard properties are set", t =>
@@ -59,7 +60,7 @@ test("Value can be incremented/decremented", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 41, increment: 4,	maximum: 222 })
+			spinner({ value: 41, step: 4,	maximum: 222 })
 		]
 	});
 
@@ -68,10 +69,10 @@ test("Value can be incremented/decremented", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "41");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "45");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "41");
 });
 
@@ -84,7 +85,7 @@ test("Incremented value gets clamped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 15, increment: 10, maximum: 20, wrapMode: "clamp" })
+			spinner({ value: 15, step: 10, maximum: 20, wrapMode: "clamp" })
 		]
 	});
 
@@ -93,10 +94,10 @@ test("Incremented value gets clamped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "15");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "19");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "19");
 });
 
@@ -109,7 +110,7 @@ test("Decremented value gets clamped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 15, increment: 8, minimum: 10, maximum: 20, wrapMode: "clamp" })
+			spinner({ value: 15, step: 8, minimum: 10, maximum: 20, wrapMode: "clamp" })
 		]
 	});
 
@@ -118,10 +119,10 @@ test("Decremented value gets clamped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "15");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "10");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "10");
 });
 
@@ -134,7 +135,7 @@ test("Incremented value gets wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 6, increment: 8, maximum: 10, wrapMode: "wrap" })
+			spinner({ value: 6, step: 8, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 
@@ -143,10 +144,10 @@ test("Incremented value gets wrapped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "6");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "0");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "8");
 });
 
@@ -159,7 +160,7 @@ test("Decremented value gets wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 4, increment: 8, maximum: 10, wrapMode: "wrap" })
+			spinner({ value: 4, step: 8, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 
@@ -168,10 +169,10 @@ test("Decremented value gets wrapped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "4");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "9");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "1");
 });
 
@@ -184,7 +185,7 @@ test("Incremented value gets clamped then wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 6, increment: 8, maximum: 10, wrapMode: "clampThenWrap" })
+			spinner({ value: 6, step: 8, maximum: 10, wrapMode: "clampThenWrap" })
 		]
 	});
 
@@ -193,10 +194,10 @@ test("Incremented value gets clamped then wrapped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "6");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "9");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "0");
 });
 
@@ -209,7 +210,7 @@ test("Decremented value gets clamped then wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 4, increment: 8, maximum: 10, wrapMode: "clampThenWrap" })
+			spinner({ value: 4, step: 8, maximum: 10, wrapMode: "clampThenWrap" })
 		]
 	});
 
@@ -218,10 +219,10 @@ test("Decremented value gets clamped then wrapped", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
 	t.is(widget.text, "4");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "0");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "9");
 });
 
@@ -235,18 +236,18 @@ test("Change event gets called", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ increment: 3, maximum: 8, onChange: (v, a) => hits.push([v, a]) })
+			spinner({ step: 3, maximum: 8, onChange: (v, a) => hits.push([v, a]) })
 		]
 	});
 
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	widget.onIncrement?.();
-	widget.onIncrement?.();
-	widget.onIncrement?.();
-	widget.onDecrement?.();
-	widget.onDecrement?.();
+	call(widget.onIncrement);
+	call(widget.onIncrement);
+	call(widget.onIncrement);
+	call(widget.onDecrement);
+	call(widget.onDecrement);
 
 	t.deepEqual(hits, [
 		[3, 3], [6, 3], [0, 3], [7, -3], [4, -3]
@@ -254,7 +255,7 @@ test("Change event gets called", t =>
 });
 
 
-test("Spinner throws on minimum larger than maximum", t =>
+test("Throw error on minimum larger than maximum", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;
@@ -271,4 +272,24 @@ test("Spinner throws on minimum larger than maximum", t =>
 	t.true(error.message.includes("5678"));
 	t.true(error.message.includes("1234"));
 	t.true(error.message.includes("is equal to or larger than maximum"));
+});
+
+
+test("Minimum equal to maximum does nothing", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ value: 4, minimum: 10, maximum: 10, onChange: () => t.fail() })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	call(widget.onIncrement);
+	call(widget.onDecrement);
+	t.pass();
 });

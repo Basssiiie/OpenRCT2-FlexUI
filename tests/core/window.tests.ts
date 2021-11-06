@@ -1,12 +1,14 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { window } from "@src/core/window";
+import { WindowContext } from "@src/core/windowContext";
 import { button } from "@src/elements/button";
 import { horizontal } from "@src/elements/flexible";
 import { label } from "@src/elements/label";
 import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Simple window with widgets", t =>
@@ -100,7 +102,7 @@ test("Window adjusts to resize", t =>
 	const created = (global.ui as UiMock).createdWindows[0];
 	created.width = 400;
 	created.height = 316;
-	created.onUpdate?.();
+	call(created.onUpdate);
 
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -153,7 +155,7 @@ test("Window does not resize if size hasn't changed", t =>
 	template.open();
 
 	const created = (global.ui as UiMock).createdWindows[0];
-	created.onUpdate?.();
+	call(created.onUpdate);
 
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
@@ -270,11 +272,42 @@ test("Window applies padding to resizes", t =>
 	const created = (global.ui as UiMock).createdWindows[0];
 	created.width = 250;
 	created.height = 300;
-	created.onUpdate?.();
+	call(created.onUpdate);
 
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 20);
 	t.is(button1.y, 20 + 16);
 	t.is(button1.width, 210);
 	t.is(button1.height, 260 - 16);
+});
+
+
+test("Window events are triggered", t =>
+{
+	global.ui = Mock.ui();
+	const hits: [string, WindowContext][] = [];
+
+	const template = window({
+		width: 150, height: 100,
+		onUpdate: ((c: WindowContext) => hits.push(["update", c])) as unknown as (() => void),
+		onClose: ((c: WindowContext) => hits.push(["close", c])) as unknown as (() => void),
+		content: [
+			button({ image: 342 }),
+			label({ text: "hello"})
+		]
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows[0];
+	t.is(hits.length, 0);
+
+	call(created.onUpdate);
+	t.is(hits.length, 1);
+	t.is(hits[0][0], "update");
+	t.truthy(hits[0][1]);
+
+	call(created.onClose);
+	t.is(hits.length, 2);
+	t.is(hits[1][0], "close");
+	t.truthy(hits[1][1]);
 });

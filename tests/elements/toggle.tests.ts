@@ -5,6 +5,7 @@ import { toggle } from "@src/elements/toggle";
 import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Standard properties are set", t =>
@@ -66,13 +67,13 @@ test("Is pressed updates on toggle", t =>
 	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
 	t.falsy(widget.isPressed);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.true(widget.isPressed);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.false(widget.isPressed);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.true(widget.isPressed);
 });
 
@@ -94,11 +95,11 @@ test("Is pressed observable updates on toggle", t =>
 	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
 	t.false(widget.isPressed);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.true(widget.isPressed);
 	t.true(pressed.get());
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.false(pressed.get());
 
@@ -106,7 +107,7 @@ test("Is pressed observable updates on toggle", t =>
 	t.true(widget.isPressed);
 	t.true(pressed.get());
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.false(pressed.get());
 });
@@ -129,11 +130,11 @@ test("Change event gets called", t =>
 	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
 	t.deepEqual(hits, []);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.deepEqual(hits, [ true ]);
 
-	widget.onClick?.();
-	widget.onClick?.();
-	widget.onClick?.();
+	call(widget.onClick);
+	call(widget.onClick);
+	call(widget.onClick);
 	t.deepEqual(hits, [ true, false, true, false ]);
 });

@@ -10,7 +10,6 @@ import { invoke } from "@src/utilities/event";
 import { Id } from "@src/utilities/identifier";
 import { BuildContainer } from "./buildContainer";
 import { createWidgetMap } from "./widgetMap";
-import { WindowContext } from "./windowContext";
 
 
 /**
@@ -72,13 +71,13 @@ interface BaseWindowParams extends Paddable
 	/**
 	 * Event that gets triggered for every tick the window is open.
 	 */
-	onUpdate?: (context: WindowContext) => void;
+	onUpdate?: () => void;
 
 	/**
 	 * Event that gets triggered when the window gets closed by either the
 	 * user or a plugin.
 	 */
-	onClose?: (context: WindowContext) => void;
+	onClose?: () => void;
 }
 
 
@@ -178,20 +177,23 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	{
 		close.push(params.onClose);
 	}
+
+	const template = output.template;
+	template.build();
+
 	if (open.length > 0)
 	{
-		output.template.onOpen = (): void => invoke(open);
+		template.onOpen = (): void => invoke(open, template);
 	}
 	if (update.length > 0)
 	{
-		window.onUpdate = (): void => invoke(update);
+		window.onUpdate = (): void => invoke(update, template);
 	}
 	if (close.length > 0)
 	{
-		window.onClose = (): void => invoke(close);
+		window.onClose = (): void => invoke(close, template);
 	}
 
-	output.template.build();
 	return output.template;
 }
 

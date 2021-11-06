@@ -5,6 +5,7 @@ import { dropdown } from "@src/elements/dropdown";
 import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Standard properties are set", t =>
@@ -90,10 +91,10 @@ test("Select event gets called", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
-	widget.onChange?.(1);
-	widget.onChange?.(2);
-	widget.onChange?.(0);
-	widget.onChange?.(2);
+	call(widget.onChange, 1);
+	call(widget.onChange, 2);
+	call(widget.onChange, 0);
+	call(widget.onChange, 2);
 
 	t.deepEqual(hits, [ 1, 2, 0, 2 ]);
 });

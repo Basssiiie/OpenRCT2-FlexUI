@@ -5,6 +5,7 @@ import { button } from "@src/elements/button";
 import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Standard properties are set", t =>
@@ -111,12 +112,12 @@ test("Click event gets called", t =>
 	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
 	t.is(count, 0);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.is(count, 1);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.is(count, 2);
 
-	widget.onClick?.();
+	call(widget.onClick);
 	t.is(count, 3);
 });
