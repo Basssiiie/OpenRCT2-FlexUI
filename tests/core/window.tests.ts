@@ -17,14 +17,17 @@ test("Simple window with widgets", t =>
 
 	const template = window({
 		title: "test window",
-		width: 200, height: 150 + 16,
+		width: 200, height: 150 + 16, padding: 0,
 
 		content: [
 			label({ text: "hello world" }),
-			horizontal([
-				button({ text: "left button" }),
-				button({ text: "right button" })
-			]),
+			horizontal({
+				padding: 0,
+				content: [
+					button({ text: "left button" }),
+					button({ text: "right button" })
+				]
+			}),
 			label({
 				text: "big area",
 				alignment: "centred"
@@ -87,10 +90,13 @@ test("Window adjusts to resize", t =>
 
 		content: [
 			label({ text: "hello world" }),
-			horizontal([
-				button({ text: "left button" }),
-				button({ text: "right button" })
-			]),
+			horizontal({
+				padding: 0,
+				content: [
+					button({ text: "left button" }),
+					button({ text: "right button" })
+				]
+			}),
 			label({
 				text: "big area",
 				alignment: "centred"
@@ -136,16 +142,19 @@ test("Window does not resize if size hasn't changed", t =>
 
 	const template = window({
 		title: "test window",
-		width: 200, height: 150 + 16,
+		width: 200, height: 150 + 16, padding: 0,
 		minWidth: 100, minHeight: 50,
 		maxWidth: 500, maxHeight: 400,
 
 		content: [
 			label({ text: "hello world" }),
-			horizontal([
-				button({ text: "left button" }),
-				button({ text: "right button" })
-			]),
+			horizontal({
+				padding: 0,
+				content: [
+					button({ text: "left button" }),
+					button({ text: "right button" })
+				]
+			}),
 			label({
 				text: "big area",
 				alignment: "centred"

@@ -23,7 +23,11 @@ export interface DropdownSpinnerParams extends DropdownParams
 }
 
 
-export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<DropdownSpinnerParams & Positions>
+/**
+ * Create a dropdown widget with multiple selectable options, which can be navigated
+ * through with [+] and [-] buttons from a spinner widget.
+ */
+export function dropdownSpinner<TPos extends Positions>(params: DropdownSpinnerParams & TPos): WidgetCreator<DropdownSpinnerParams & TPos>
 {
 	return {
 		params: params,

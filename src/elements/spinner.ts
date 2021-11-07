@@ -82,7 +82,7 @@ export interface SpinnerParams extends ElementParams
 /**
  * Add a spinner widget with [+] and [-] buttons.
  */
-export function spinner(params: SpinnerParams & Positions): WidgetCreator<SpinnerParams & Positions>
+export function spinner<TPos extends Positions>(params: SpinnerParams & TPos): WidgetCreator<SpinnerParams & TPos>
 {
 	return {
 		params: params,

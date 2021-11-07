@@ -2,8 +2,8 @@ import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
-import { Scale } from "@src/positional/scale";
-import { isArray, isNumber, isObject } from "@src/utilities/type";
+import { convertToPixels, ParsedScale, parseScale, ScaleType } from "@src/positional/scale";
+import { isArray, isObject } from "@src/utilities/type";
 
 
 /**
@@ -26,20 +26,20 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 		const otherSpace = parentArea[keys.otherSize];
 
 		let mainAxis = (cursor + parentArea[keys.mainAxis]),
-			mainSize = applyScale(parsed.mainSize, leftoverSpace, stack.weightedTotal),
+			mainSize = convertToPixels(parsed.mainSize, leftoverSpace, stack.weightedTotal),
 			otherAxis = parentArea[keys.otherAxis],
-			otherSize = applyScale(parsed.otherSize, otherSpace);
+			otherSize = convertToPixels(parsed.otherSize, otherSpace);
 
 		cursor += mainSize;
 
 		if (parsed.hasPadding)
 		{
-			const vecStart = applyScale(parsed.mainStart, leftoverSpace, stack.weightedTotal);
-			const vecEnd = applyScale(parsed.mainEnd, leftoverSpace, stack.weightedTotal);
+			const vecStart = convertToPixels(parsed.mainStart, leftoverSpace, stack.weightedTotal);
+			const vecEnd = convertToPixels(parsed.mainEnd, leftoverSpace, stack.weightedTotal);
 			mainAxis += vecStart;
 			mainSize -= (vecStart + vecEnd);
-			const otherStart = applyScale(parsed.otherStart, otherSpace, otherSpace);
-			const otherEnd = applyScale(parsed.otherEnd, otherSpace, otherSpace);
+			const otherStart = convertToPixels(parsed.otherStart, otherSpace, otherSpace);
+			const otherEnd = convertToPixels(parsed.otherEnd, otherSpace, otherSpace);
 			otherAxis += otherStart;
 			otherSize -= (otherStart + otherEnd);
 		}
@@ -68,12 +68,12 @@ export function applyPadding(area: Rectangle, padding: Padding): void
 		return;
 
 	const width = area.width, height = area.height;
-	const left = applyScale(parsed.mainStart, width, width);
-	const top = applyScale(parsed.otherStart, height, height);
+	const left = convertToPixels(parsed.mainStart, width, width);
+	const top = convertToPixels(parsed.otherStart, height, height);
 	area.x += left;
 	area.y += top;
-	area.width -= (left + applyScale(parsed.mainEnd, width, width));
-	area.height -= (top + applyScale(parsed.otherEnd, height, height));
+	area.width -= (left + convertToPixels(parsed.mainEnd, width, width));
+	area.height -= (top + convertToPixels(parsed.otherEnd, height, height));
 }
 
 
@@ -111,19 +111,6 @@ const enum PaddingSide
 	Start = 0,
 	End = 1
 }
-
-
-// Specifies the type of scaling used in a specified scale.
-const enum ScaleType
-{
-	Pixel = 0,
-	Percentage = 1,
-	Weight = 2
-}
-
-
-// A scale value split into the hard number and its type.
-type ParsedScale = [number, ScaleType];
 
 
 // A parsed stack of widget elements.
@@ -188,6 +175,7 @@ function parseFlexibleElements(elements: FlexiblePosition[], keys: DirectionKeys
 	return stack;
 }
 
+
 /**
  * Gets the property keys which should be used to lay out the widgets in the
  * specified direction.
@@ -246,87 +234,32 @@ function getPaddingKeys(direction: Direction): PaddingKeys
 }
 
 
-
-function parseScale(value: Scale | undefined, fallback: number = 0, fallbackType: ScaleType = ScaleType.Pixel): ParsedScale
-{
-	if (value === undefined)
-	{
-		return [fallback, fallbackType];
-	}
-
-	// Number = weighted value.
-	if (isNumber(value))
-	{
-		return [value, ScaleType.Weight];
-	}
-
-	const trimmed = value.trim();
-	const length = trimmed.length;
-
-	if (length > 1)
-	{
-		let endIdx: number = (length - 1);
-		let type: ScaleType | undefined;
-		const last = trimmed[endIdx];
-
-		if (last === "w")
-		{
-			type = ScaleType.Weight;
-		}
-		else if (last === "%")
-		{
-			type = ScaleType.Percentage;
-		}
-		else if (length > 2)
-		{
-			endIdx = (length - 2);
-			if (last === "x" && trimmed[endIdx] === "p")
-			{
-				type = ScaleType.Pixel;
-			}
-		}
-
-		if (type !== undefined)
-		{
-			const num = Number.parseInt(trimmed.substring(0, endIdx));
-			return [num, type];
-		}
-	}
-
-	throw new Error(`Value '${value}' is not a valid scale.`);
-}
-
-
-
 function parsePadding(padding: Padding | undefined, target: ParsedStackElement, keys: DirectionKeys): void
 {
 	if (padding === undefined)
 	{
 		// padding not specified, apply no padding.
 		target.hasPadding = false;
-		return;
 	}
-
-	target.hasPadding = true;
-	if (isArray(padding))
+	else if (isArray(padding))
 	{
 		// padding specified as 2 or 4 item tuple.
 		const length = padding.length;
 		if (length === 2)
 		{
 			const vectorDir = parseScale(padding[keys.mainDirection]);
-			target.mainStart = vectorDir;
-			target.mainEnd = vectorDir;
 			const otherDir = parseScale(padding[keys.otherDirection]);
-			target.otherStart = otherDir;
-			target.otherEnd = otherDir;
+			setPaddingOnParsedElement(target, vectorDir, vectorDir, otherDir, otherDir);
 		}
 		else if (length === 4)
 		{
-			target.mainStart = parseScale(padding[(keys.mainDirection << 1) + PaddingSide.Start]);
-			target.mainEnd = parseScale(padding[(keys.mainDirection << 1) + PaddingSide.End]);
-			target.otherStart = parseScale(padding[(keys.otherDirection << 1) + PaddingSide.Start]);
-			target.otherEnd = parseScale(padding[(keys.otherDirection << 1) + PaddingSide.End]);
+			setPaddingOnParsedElement(
+				target,
+				parseScale(padding[(keys.mainDirection << 1) + PaddingSide.Start]),
+				parseScale(padding[(keys.mainDirection << 1) + PaddingSide.End]),
+				parseScale(padding[(keys.otherDirection << 1) + PaddingSide.Start]),
+				parseScale(padding[(keys.otherDirection << 1) + PaddingSide.End])
+			);
 		}
 		else
 			throw new Error(`Padding array of unknown length: ${length}. Only lengths of 2 or 4 are supported.`);
@@ -335,37 +268,31 @@ function parsePadding(padding: Padding | undefined, target: ParsedStackElement, 
 	{
 		// padding specified as object
 		const padKeys = getPaddingKeys(keys.mainDirection);
-		target.mainStart = parseScale(padding[padKeys.mainStart]);
-		target.mainEnd = parseScale(padding[padKeys.mainEnd]);
-		target.otherStart = parseScale(padding[padKeys.otherStart]);
-		target.otherEnd = parseScale(padding[padKeys.otherEnd]);
+		setPaddingOnParsedElement(
+			target,
+			parseScale(padding[padKeys.mainStart]),
+			parseScale(padding[padKeys.mainEnd]),
+			parseScale(padding[padKeys.otherStart]),
+			parseScale(padding[padKeys.otherEnd])
+		);
 	}
 	else
 	{
 		// padding specified as number or string
 		const value = parseScale(padding);
-		target.mainStart = value;
-		target.mainEnd = value;
-		target.otherStart = value;
-		target.otherEnd = value;
+		setPaddingOnParsedElement(target, value, value, value, value);
 	}
 }
 
 
-
-function applyScale(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number): number
+/**
+ * Writes the values to the stacked element.
+ */
+function setPaddingOnParsedElement(target: ParsedStackElement, mainStart: ParsedScale, mainEnd: ParsedScale, otherStart: ParsedScale, otherEnd: ParsedScale): void
 {
-	switch (scale[1])
-	{
-		case ScaleType.Pixel:
-			return scale[0];
-
-		case ScaleType.Weight:
-			return (weightedTotal === undefined)
-				? leftoverSpace
-				: Math.round((scale[0] / weightedTotal) * leftoverSpace);
-
-		case ScaleType.Percentage:
-			return Math.round((scale[0] * 0.01) * leftoverSpace);
-	}
+	target.mainStart = mainStart;
+	target.mainEnd = mainEnd;
+	target.otherStart = otherStart;
+	target.otherEnd = otherEnd;
+	target.hasPadding = (mainStart[0] !== 0 || mainEnd[0] !== 0 || otherStart[0] !== 0 || otherEnd[0] !== 0);
 }

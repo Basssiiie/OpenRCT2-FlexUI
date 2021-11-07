@@ -35,7 +35,7 @@ export interface ButtonParams extends ElementParams
 }
 
 
-export function button(params: ButtonParams & Positions): WidgetCreator<ButtonParams & Positions>
+export function button<TPos extends Positions>(params: ButtonParams & TPos): WidgetCreator<ButtonParams & TPos>
 {
 	return {
 		params: params,

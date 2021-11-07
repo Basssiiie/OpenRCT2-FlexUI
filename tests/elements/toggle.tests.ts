@@ -59,7 +59,7 @@ test("Is pressed updates on toggle", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			toggle({ })
+			toggle({ text: "Press me" })
 		]
 	});
 	template.open();

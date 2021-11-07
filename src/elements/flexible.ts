@@ -5,69 +5,34 @@ import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { applyDefaults, PositionalDefaults } from "@src/positional/positionalDefaults";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { isArray } from "@src/utilities/type";
-import { ButtonParams } from "./button";
-import { DropdownParams } from "./dropdown";
-import { LabelParams } from "./label";
 
 
-export type FlexibleLayoutParams = WidgetCreator<FlexiblePosition>[] |
+/**
+ * Array of widgets created with fluent-ui.
+ */
+export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition>[];
+
+
+/**
+ * The parameters for configuring a flexible layout.
+ */
+export interface FlexibleLayoutParams
 {
 	/**
-	 * Specify the child widgets within this box.
+	 * Specify the child widgets within this flexible box.
 	 */
-	content: WidgetCreator<FlexiblePosition>[];
-};
-
-
-/** @deprecated */
-export interface FlexibleLayoutBuilder
-{
-	/**
-	 * Add a clickable button widget.
-	 */
-	button(params: ButtonParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	/**
-	 * Add a dropdown widget with one or more selectable options.
-	 */
-	dropdown(params: DropdownParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	horizontal(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	/**
-	 * Add a textual label widget.
-	 */
-	label(params: LabelParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	/**
-	 * Add a listbox for displaying data in rows and columns.
-	 */
-	//listview(params: ListViewParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	//spinner(params: SpinnerParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	/**
-	 * Add a viewport for displaying a location somewhere on the map.
-	 */
-	//viewport(params: ViewportParams & FlexiblePosition): FlexibleLayoutBuilder;
-
-	/**
-	 * Add a static custom widget.
-	 */
-	//widget<TWidget extends WidgetParams>(params: TWidget & FlexiblePosition): FlexibleLayoutBuilder;
-
-
-	vertical(params: FlexibleLayoutParams & FlexiblePosition): FlexibleLayoutBuilder;
+	content: FlexibleLayoutContainer;
 }
 
 
 /**
  * Add a horizontal row with one or more child widgets.
  */
-export function horizontal(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
+export function horizontal<TPos extends Positions>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & TPos): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & TPos>
 {
 	return flexible(params, Direction.Horizontal);
 }
@@ -76,7 +41,7 @@ export function horizontal(params: FlexibleLayoutParams & Positions): WidgetCrea
 /**
  * Add a vertical row with one or more child widgets.
  */
-export function vertical(params: FlexibleLayoutParams & Positions): WidgetCreator<FlexibleLayoutParams & Positions>
+export function vertical<TPos extends Positions>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & TPos): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & TPos>
 {
 	return flexible(params, Direction.Vertical);
 }
@@ -85,7 +50,7 @@ export function vertical(params: FlexibleLayoutParams & Positions): WidgetCreato
 /**
  * Add a flexible row with one or more child widgets in the specified direction.
  */
-export function flexible(params: FlexibleLayoutParams & Positions, direction: Direction): WidgetCreator<FlexibleLayoutParams & Positions>
+export function flexible<TPos extends Positions>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & TPos, direction: Direction): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & TPos>
 {
 	return {
 		params: params,
@@ -94,17 +59,20 @@ export function flexible(params: FlexibleLayoutParams & Positions, direction: Di
 }
 
 
-export class FlexibleLayoutControl implements Layoutable
+class FlexibleLayoutControl implements Layoutable
 {
+	static _defaults: PositionalDefaults = { padding: 5 };
+
 	params: FlexiblePosition[];
 	children: Layoutable[];
 	direction: Direction;
 
-	constructor(output: BuildOutput, children: FlexibleLayoutParams, direction: Direction)
+	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
 	{
 		this.direction = direction;
+		applyDefaults(<PositionalDefaults>params, FlexibleLayoutControl._defaults);
 
-		const items = (isArray(children)) ? children : children.content;
+		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
 		this.params = Array<FlexiblePosition>(count);
 		this.children = Array<Layoutable>(count);

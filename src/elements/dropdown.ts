@@ -13,9 +13,8 @@ export interface DropdownParams extends ElementParams
 {
 	/**
 	 * Sets the items that will show up in the dropdown menu.
-	 * @default []
 	 */
-	items?: Bindable<string[]>;
+	items: Bindable<string[]>;
 
 	/**
 	 * sets the default selected item, indexed into the items array.
@@ -45,7 +44,7 @@ export interface DropdownParams extends ElementParams
 /**
  * Create a dropdown widget with one or more selectable options.
  */
-export function dropdown(params: DropdownParams & Positions): WidgetCreator<DropdownParams & Positions>
+export function dropdown<TPos extends Positions>(params: DropdownParams & TPos): WidgetCreator<DropdownParams & TPos>
 {
 	return {
 		params: params,

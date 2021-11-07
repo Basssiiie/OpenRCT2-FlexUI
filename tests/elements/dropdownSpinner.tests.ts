@@ -100,7 +100,7 @@ test("Spinner allows empty item list", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdownSpinner({ })
+			dropdownSpinner({ items: [] })
 		]
 	});
 	template.open();

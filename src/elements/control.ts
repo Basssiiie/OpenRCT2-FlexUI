@@ -1,7 +1,7 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetMap } from "@src/core/widgetMap";
-import { Layoutable } from "@src/layouts/layoutable";
 import { fillLayout } from "@src/layouts/fillLayout";
+import { Layoutable } from "@src/layouts/layoutable";
 import { Rectangle } from "@src/positional/rectangle";
 import { Id } from "@src/utilities/identifier";
 import { ElementParams } from "./element";
@@ -34,7 +34,6 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 
 		output.add(<Widget>this);
 	}
-
 
 	layout(widgets: WidgetMap, area: Rectangle): void
 	{

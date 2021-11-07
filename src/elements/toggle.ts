@@ -19,7 +19,10 @@ export interface ToggleParams extends Omit<ButtonParams, "onClick">
 }
 
 
-export function toggle(params: ToggleParams & Positions): WidgetCreator<ToggleParams & Positions>
+/**
+ * Add a button that can be toggled on and off.
+ */
+export function toggle<TPos extends Positions>(params: ToggleParams & TPos): WidgetCreator<ToggleParams & TPos>
 {
 	return {
 		params: params,

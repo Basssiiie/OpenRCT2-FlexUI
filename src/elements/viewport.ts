@@ -39,6 +39,9 @@ export const enum ViewportFlags
 }
 
 
+/**
+ * The parameters for configuring the viewport.
+ */
 export interface ViewportParams extends ElementParams
 {
 	/**
@@ -67,7 +70,7 @@ export interface ViewportParams extends ElementParams
 /**
  * Add a viewport for displaying a location somewhere on the map.
  */
-export function viewport(params: ViewportParams & Positions): WidgetCreator<ViewportParams & Positions>
+export function viewport<TPos extends Positions>(params: ViewportParams & TPos): WidgetCreator<ViewportParams & TPos>
 {
 	return {
 		params: params,

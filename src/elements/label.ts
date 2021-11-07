@@ -7,6 +7,9 @@ import { Control } from "./control";
 import { ElementParams } from "./element";
 
 
+/**
+ * The parameters for configuring the label.
+ */
 export interface LabelParams extends ElementParams
 {
 	/**
@@ -32,7 +35,7 @@ export interface LabelParams extends ElementParams
 /**
  * Create a textual label with the specified parameters.
  */
-export function label(params: LabelParams & Positions): WidgetCreator<LabelParams & Positions>
+export function label<TPos extends Positions>(params: LabelParams & TPos): WidgetCreator<LabelParams & TPos>
 {
 	return {
 		params: params,

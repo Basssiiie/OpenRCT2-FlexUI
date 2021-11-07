@@ -1,16 +1,20 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { WidgetMap } from "@src/core/widgetMap";
 import { WidgetCreator } from "@src/core/widgetCreator";
+import { WidgetMap } from "@src/core/widgetMap";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Bindable } from "@src/observables/bindable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
 
+/**
+ * The parameters for configuring a column in the list.
+ */
 export interface ListViewColumnParams
 {
 	header?: string;
@@ -21,6 +25,9 @@ export interface ListViewColumnParams
 }
 
 
+/**
+ * The parameters for configuring the listview.
+ */
 export interface ListViewParams extends ElementParams
 {
 	columns?: ListViewColumn[] | WidgetCreator<ListViewColumnParams>[];
@@ -35,7 +42,7 @@ export interface ListViewParams extends ElementParams
 /**
  * Add a listbox for displaying data in rows and columns.
  */
-export function listview<P = FlexiblePosition>(params: ListViewParams & P): WidgetCreator<ListViewParams & P>
+export function listview<TPos extends Positions>(params: ListViewParams & TPos): WidgetCreator<ListViewParams & TPos>
 {
 	return {
 		params: params,

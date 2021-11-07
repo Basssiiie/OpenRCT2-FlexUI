@@ -84,7 +84,7 @@ interface BaseWindowParams extends Paddable
 /**
  * The parameters for a regular window.
  */
-export interface WindowParams extends BaseWindowParams
+export interface WindowParams extends BaseWindowParams, FlexibleLayoutParams
 {
 	/**
 	 * The colours of the window.
@@ -94,16 +94,12 @@ export interface WindowParams extends BaseWindowParams
 	 *  2. Used for widget backgrounds.
 	 */
 	colours?: [WindowColour, WindowColour];
-
-	/**
-	 * Specify the content of this window.
-	 */
-	content: FlexibleLayoutParams;
 }
 
 
 /**
  * The parameters for a window that uses tabs.
+ * @todo
  */
 export interface TabbedWindowParams extends BaseWindowParams
 {
@@ -124,6 +120,7 @@ export interface TabbedWindowParams extends BaseWindowParams
 
 	/**
 	 * Specify the tabs that this window has.
+	 * @todo
 	 */
 	tabs: FlexibleLayoutParams;
 }

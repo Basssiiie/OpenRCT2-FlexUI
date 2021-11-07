@@ -1,3 +1,5 @@
+import { isNumber } from "@src/utilities/type";
+
 /**
  * Specifies the scale of a specific property. The value can be either a string or a
  * number. String values can be either pixels, percentages, weighted values or 'inherit'.
@@ -27,7 +29,97 @@
  *       ((150 - 30px) * (1w / 2w)) = 60 pixels. The 2 here is the total weight over
  *       all the weighted elements within the parent.
  *  * `var number = 10;`
- *     - Number values are always interpreted as weighted values, to make it easier to
- *       convert existing windows to resizable fluent windows.
+ *     - Number values are always interpreted as absolute pixel values.
  */
-export type Scale = number | `${number}%` | `${number}w` | `${number}px` | `inherit`;
+export type Scale = number | `${number}%` | `${number}w` | `${number}px`;
+
+
+/**
+ * Specifies the type of scaling used in a specified scale.
+ */
+export const enum ScaleType
+{
+	Pixel = 0,
+	Percentage = 1,
+	Weight = 2
+}
+
+
+/**
+ * A scale value split into the hard number and its type.
+ */
+export type ParsedScale = [number, ScaleType];
+
+
+/**
+ * Parses an user-defined scale (either string or number) to a tuple of scale value and type.
+ */
+export function parseScale(value: Scale | undefined, fallback: number = 0, fallbackType: ScaleType = ScaleType.Pixel): ParsedScale
+{
+	if (value === undefined)
+	{
+		return [fallback, fallbackType];
+	}
+
+	// Number = weighted value.
+	if (isNumber(value))
+	{
+		return [value, ScaleType.Pixel];
+	}
+
+	const trimmed = value.trim();
+	const length = trimmed.length;
+
+	if (length > 1)
+	{
+		let endIdx: number = (length - 1);
+		let type: ScaleType | undefined;
+		const last = trimmed[endIdx];
+
+		if (last === "w")
+		{
+			type = ScaleType.Weight;
+		}
+		else if (last === "%")
+		{
+			type = ScaleType.Percentage;
+		}
+		else if (length > 2)
+		{
+			endIdx = (length - 2);
+			if (last === "x" && trimmed[endIdx] === "p")
+			{
+				type = ScaleType.Pixel;
+			}
+		}
+
+		if (type !== undefined)
+		{
+			const num = Number.parseInt(trimmed.substring(0, endIdx));
+			return [num, type];
+		}
+	}
+
+	throw new Error(`Value '${value}' is not a valid scale.`);
+}
+
+
+/**
+ * Calculates the pixel scale using the leftover space and weighted total if necessary.
+ */
+export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number): number
+{
+	switch (scale[1])
+	{
+		case ScaleType.Pixel:
+			return scale[0];
+
+		case ScaleType.Weight:
+			return (weightedTotal === undefined)
+				? leftoverSpace
+				: Math.round((scale[0] / weightedTotal) * leftoverSpace);
+
+		case ScaleType.Percentage:
+			return Math.round((scale[0] * 0.01) * leftoverSpace);
+	}
+}

@@ -14,23 +14,20 @@ test("Simple layouts with widgets", t =>
 {
 	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
-	const params: FlexibleLayoutParams =
-	{
+	const creator = flexible({
+		padding: 0,
 		content: [
 			label({ text: "hello world" }),
 			horizontal({
+				padding: 0,
 				content: [
 					button({ text: "left button" }),
 					button({ text: "right button" })
 				]
 			}),
-			label({
-				text: "big area",
-				alignment: "centred"
-			})
+			label({ text: "big area", alignment: "centred" })
 		]
-	};
-	const creator = flexible(params, Direction.Vertical);
+	}, Direction.Vertical);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output.widgets), rect);
 
