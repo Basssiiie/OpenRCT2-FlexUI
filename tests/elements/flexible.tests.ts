@@ -15,9 +15,11 @@ test("Simple layouts with widgets", t =>
 	const output: BuildContainer = new BuildContainer({} as WindowDesc);
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
 	const creator = flexible({
+		spacing: 0,
 		content: [
 			label({ text: "hello world" }),
 			horizontal({
+				spacing: 0,
 				content: [
 					button({ text: "left button" }),
 					button({ text: "right button" })
@@ -70,6 +72,7 @@ test("Pixel sizes ignore leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", width: "40px", height: "25px"
@@ -112,6 +115,7 @@ test("Percentage sizes", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", width: "50%", height: "20%"
@@ -154,6 +158,7 @@ test("Weighted sizes", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", width: "1w", height: "5w"
@@ -196,6 +201,7 @@ test("Relative percentage fills leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", height: "100%"
@@ -225,6 +231,7 @@ test("Relative weight fills leftover space", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", height: "3w"
@@ -254,6 +261,7 @@ test("Padding: single number value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", padding: 5
@@ -278,6 +286,7 @@ test("Padding: single pixel value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", padding: "5px"
@@ -302,6 +311,7 @@ test("Padding: single percentage value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", padding: "20%"
@@ -326,6 +336,7 @@ test("Padding: single weighted value", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", padding: "5w"
@@ -350,6 +361,7 @@ test("Padding: tuple with 2 values", t =>
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const params: FlexibleLayoutParams =
 	{
+		spacing: 0,
 		content: [
 			label({
 				text: "a", height: "4w", padding: ["1w", "7px"]
@@ -374,4 +386,140 @@ test("Padding: tuple with 2 values", t =>
 	t.is(label2.y, 24);
 	t.is(label2.width, 48);
 	t.is(label2.height, 8);
+});
+
+
+test("Works without children", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
+	const params: FlexibleLayoutParams =
+	{
+		content: []
+	};
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(createWidgetMap(output.widgets), rect);
+
+	const widgets = output.widgets;
+	t.is(widgets.length, 0);
+});
+
+
+test("Spacing: 10 pixels between two elements", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
+	const params: FlexibleLayoutParams =
+	{
+		spacing: 10,
+		content: [
+			label({ text: "a" }),
+			label({ text: "b" })
+		]
+	};
+	const creator = flexible(params, Direction.Horizontal);
+	const control = creator.create(output);
+	control.layout(createWidgetMap(output.widgets), rect);
+
+	const label1 = output.widgets[0] as LabelWidget;
+	t.is(label1.x, 0);
+	t.is(label1.y, 0);
+	t.is(label1.width, 25);
+	t.is(label1.height, 40);
+
+	const label2 = output.widgets[1] as LabelWidget;
+	t.is(label2.x, 35);
+	t.is(label2.y, 0);
+	t.is(label2.width, 25);
+	t.is(label2.height, 40);
+});
+
+
+test("Spacing: default space between two elements", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 7, y: 20, width: 78, height: 35 };
+	const params: FlexibleLayoutParams =
+	{
+		content: [
+			label({ text: "a" }),
+			label({ text: "b" })
+		]
+	};
+	const creator = flexible(params, Direction.Vertical);
+	const control = creator.create(output);
+	control.layout(createWidgetMap(output.widgets), rect);
+
+	const label1 = output.widgets[0] as LabelWidget;
+	t.is(label1.x, 7);
+	t.is(label1.y, 20);
+	t.is(label1.width, 78);
+	t.is(label1.height, 15);
+
+	const label2 = output.widgets[1] as LabelWidget;
+	t.is(label2.x, 7);
+	t.is(label2.y, 40);
+	t.is(label2.width, 78);
+	t.is(label2.height, 15);
+});
+
+
+test("Spacing: percentile space between two elements", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 5, y: 10, width: 50, height: 15 };
+	const params: FlexibleLayoutParams =
+	{
+		spacing: "20%",
+		content: [
+			label({ text: "a", width: "40%" }),
+			label({ text: "b", width: "40%" })
+		]
+	};
+	const creator = flexible(params, Direction.Horizontal);
+	const control = creator.create(output);
+	control.layout(createWidgetMap(output.widgets), rect);
+
+	const label1 = output.widgets[0] as LabelWidget;
+	t.is(label1.x, 5);
+	t.is(label1.y, 10);
+	t.is(label1.width, 20);
+	t.is(label1.height, 15);
+
+	const label2 = output.widgets[1] as LabelWidget;
+	t.is(label2.x, 35);
+	t.is(label2.y, 10);
+	t.is(label2.width, 20);
+	t.is(label2.height, 15);
+});
+
+
+test("Spacing: weighted space between two elements", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 5, y: 0, width: 30, height: 15 };
+	const params: FlexibleLayoutParams =
+	{
+		spacing: "1w",
+		content: [
+			label({ text: "a", width: "1w" }),
+			label({ text: "b", width: "1w" })
+		]
+	};
+	const creator = flexible(params, Direction.Horizontal);
+	const control = creator.create(output);
+	control.layout(createWidgetMap(output.widgets), rect);
+
+	const label1 = output.widgets[0] as LabelWidget;
+	t.is(label1.x, 5);
+	t.is(label1.y, 0);
+	t.is(label1.width, 10);
+	t.is(label1.height, 15);
+
+	const label2 = output.widgets[1] as LabelWidget;
+	t.is(label2.x, 25);
+	t.is(label2.y, 0);
+	t.is(label2.width, 10);
+	t.is(label2.height, 15);
 });

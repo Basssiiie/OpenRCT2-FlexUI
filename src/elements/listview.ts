@@ -120,7 +120,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 		if (widget.width !== area.width)
 		{
 			const columns = this.columns;
-			flexibleLayout(columns, area, Direction.Horizontal, (idx, subarea) =>
+			flexibleLayout(columns, area, Direction.Horizontal, 0, (idx, subarea) =>
 			{
 				columns[idx].width = subarea.width;
 			});

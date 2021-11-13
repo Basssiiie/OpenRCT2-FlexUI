@@ -5,8 +5,10 @@ import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
+import { Paddable } from "@src/positional/padding";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
 import { isArray } from "@src/utilities/type";
 
 
@@ -19,12 +21,18 @@ export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition>[];
 /**
  * The parameters for configuring a flexible layout.
  */
-export interface FlexibleLayoutParams
+export interface FlexibleLayoutParams extends Paddable
 {
 	/**
 	 * Specify the child widgets within this flexible box.
 	 */
 	content: FlexibleLayoutContainer;
+
+	/**
+	 * Specify the amount of space between each child widget.
+	 * @default "5px"
+	 */
+	spacing?: Scale;
 }
 
 
@@ -58,34 +66,39 @@ export function flexible<TPos extends Positions>(params: (FlexibleLayoutParams |
 }
 
 
+const defaultSpacing: Scale = 5;
+
+
 class FlexibleLayoutControl implements Layoutable
 {
-	params: FlexiblePosition[];
-	children: Layoutable[];
-	direction: Direction;
+	_childPositions: FlexiblePosition[];
+	_childLayoutFunctions: Layoutable[];
+	_direction: Direction;
+	_spacing: Scale;
 
 	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
 	{
-		this.direction = direction;
+		this._direction = direction;
+		this._spacing = ("spacing" in params && params.spacing !== undefined) ? params.spacing : defaultSpacing;
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
-		this.params = Array<FlexiblePosition>(count);
-		this.children = Array<Layoutable>(count);
+		this._childPositions = Array<FlexiblePosition>(count);
+		this._childLayoutFunctions = Array<Layoutable>(count);
 
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			this.params[i] = child.params;
-			this.children[i] = child.create(output);
+			this._childPositions[i] = child.params;
+			this._childLayoutFunctions[i] = child.create(output);
 		}
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		flexibleLayout(this.params, area, this.direction, (idx, subarea) =>
+		flexibleLayout(this._childPositions, area, this._direction, this._spacing, (idx, subarea) =>
 		{
-			this.children[idx].layout(widgets, subarea);
+			this._childLayoutFunctions[idx].layout(widgets, subarea);
 		});
 	}
 }

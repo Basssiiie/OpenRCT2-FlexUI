@@ -203,7 +203,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
-	const creator = flexible(params.content, Direction.Vertical);
+	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
 
 	// Check if padding was specified..
