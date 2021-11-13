@@ -11,9 +11,10 @@ import { WindowEvent } from "./windowEvent";
  */
 export class BuildContainer implements BuildOutput
 {
-	widgets: Widget[] = [];
 	binder: WindowBinder = new WindowBinder();
-	template: Template;
+
+	_widgets: Widget[] = [];
+	_template: Template;
 
 	open: Event<WindowContext> = [];
 	update: Event<WindowContext> = [];
@@ -21,12 +22,12 @@ export class BuildContainer implements BuildOutput
 
 	constructor(window: WindowDesc)
 	{
-		this.template = new Template(window, this.binder);
+		this._template = new Template(window, this.binder);
 	}
 
 	add(widget: Widget): void
 	{
-		this.widgets.push(widget);
+		this._widgets.push(widget);
 	}
 
 	on(event: WindowEvent, callback: (context: WindowContext) => void): void

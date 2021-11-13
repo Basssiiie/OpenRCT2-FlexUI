@@ -41,30 +41,30 @@ export function absolute<TPos extends Positions>(params: (AbsoluteLayoutParams |
 
 class AbsoluteLayoutControl implements Layoutable
 {
-	params: AbsolutePosition[];
-	children: Layoutable[];
+	_childPositions: AbsolutePosition[];
+	_childLayoutFunctions: Layoutable[];
 
 	constructor(output: BuildOutput, params: AbsoluteLayoutParams | AbsoluteLayoutContainer)
 	{
 		// TODO: this code is almost equal to flexlayout, make shared helper function
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
-		this.params = Array<AbsolutePosition>(count);
-		this.children = Array<Layoutable>(count);
+		this._childPositions = Array<AbsolutePosition>(count);
+		this._childLayoutFunctions = Array<Layoutable>(count);
 
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			this.params[i] = child.params;
-			this.children[i] = child.create(output);
+			this._childPositions[i] = child.params;
+			this._childLayoutFunctions[i] = child.create(output);
 		}
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		absoluteLayout(this.params, area, (idx, subarea) =>
+		absoluteLayout(this._childPositions, area, (idx, subarea) =>
 		{
-			this.children[idx].layout(widgets, subarea);
+			this._childLayoutFunctions[idx].layout(widgets, subarea);
 		});
 	}
 }

@@ -29,9 +29,9 @@ test("Simple layouts with widgets", t =>
 		]
 	}, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 0);
@@ -39,7 +39,7 @@ test("Simple layouts with widgets", t =>
 	t.is(label1.width, 200);
 	t.is(label1.height, 50);
 
-	const button1 = output.widgets[1] as ButtonWidget;
+	const button1 = output._widgets[1] as ButtonWidget;
 	t.is(button1.type, "button");
 	t.is(button1.text, "left button");
 	t.is(button1.x, 0);
@@ -47,7 +47,7 @@ test("Simple layouts with widgets", t =>
 	t.is(button1.width, 100);
 	t.is(button1.height, 50);
 
-	const button2 = output.widgets[2] as ButtonWidget;
+	const button2 = output._widgets[2] as ButtonWidget;
 	t.is(button2.type, "button");
 	t.is(button2.text, "right button");
 	t.is(button2.x, 100);
@@ -55,7 +55,7 @@ test("Simple layouts with widgets", t =>
 	t.is(button2.width, 100);
 	t.is(button2.height, 50);
 
-	const label2 = output.widgets[3] as LabelWidget;
+	const label2 = output._widgets[3] as LabelWidget;
 	t.is(label2.type, "label");
 	t.is(label2.text, "big area");
 	t.is(label2.textAlign, "centred");
@@ -87,21 +87,21 @@ test("Pixel sizes ignore leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 0);
 	t.is(label1.width, 40);
 	t.is(label1.height, 25);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
 	t.is(label2.y, 25);
 	t.is(label2.width, 30);
 	t.is(label2.height, 10);
 
-	const label3 = output.widgets[2] as LabelWidget;
+	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
 	t.is(label3.y, 35);
 	t.is(label3.width, 70);
@@ -130,21 +130,21 @@ test("Percentage sizes", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 0);
 	t.is(label1.width, 30);
 	t.is(label1.height, 12);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
 	t.is(label2.y, 12);
 	t.is(label2.width, 6);
 	t.is(label2.height, 27);
 
-	const label3 = output.widgets[2] as LabelWidget;
+	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
 	t.is(label3.y, 39);
 	t.is(label3.width, 45);
@@ -173,21 +173,21 @@ test("Weighted sizes", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 0);
 	t.is(label1.width, 60);
 	t.is(label1.height, 18);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
 	t.is(label2.y, 18);
 	t.is(label2.width, 60);
 	t.is(label2.height, 7);
 
-	const label3 = output.widgets[2] as LabelWidget;
+	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
 	t.is(label3.y, 25);
 	t.is(label3.width, 60);
@@ -213,13 +213,13 @@ test("Relative percentage fills leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
 	t.is(label1.height, 15);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.y, 15);
 	t.is(label2.height, 65);
 });
@@ -243,13 +243,13 @@ test("Relative weight fills leftover space", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.y, 0);
 	t.is(label1.height, 43);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.y, 43);
 	t.is(label2.height, 17);
 });
@@ -270,9 +270,9 @@ test("Padding: single number value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
 	t.is(label1.y, 5);
 	t.is(label1.width, 50);
@@ -295,9 +295,9 @@ test("Padding: single pixel value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
 	t.is(label1.y, 5);
 	t.is(label1.width, 50);
@@ -320,9 +320,9 @@ test("Padding: single percentage value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 12);
 	t.is(label1.y, 8);
 	t.is(label1.width, 36);
@@ -345,9 +345,9 @@ test("Padding: single weighted value", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
 	t.is(label1.y, 5);
 	t.is(label1.width, 50);
@@ -373,15 +373,15 @@ test("Padding: tuple with 2 values", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 7);
 	t.is(label1.y, 4);
 	t.is(label1.width, 46);
 	t.is(label1.height, 8);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 6);
 	t.is(label2.y, 24);
 	t.is(label2.width, 48);
@@ -399,9 +399,9 @@ test("Works without children", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const widgets = output.widgets;
+	const widgets = output._widgets;
 	t.is(widgets.length, 0);
 });
 
@@ -420,15 +420,15 @@ test("Spacing: 10 pixels between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 0);
 	t.is(label1.width, 25);
 	t.is(label1.height, 40);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 35);
 	t.is(label2.y, 0);
 	t.is(label2.width, 25);
@@ -449,15 +449,15 @@ test("Spacing: default space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 7);
 	t.is(label1.y, 20);
 	t.is(label1.width, 78);
 	t.is(label1.height, 15);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 7);
 	t.is(label2.y, 40);
 	t.is(label2.width, 78);
@@ -479,15 +479,15 @@ test("Spacing: percentile space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
 	t.is(label1.y, 10);
 	t.is(label1.width, 20);
 	t.is(label1.height, 15);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 35);
 	t.is(label2.y, 10);
 	t.is(label2.width, 20);
@@ -509,15 +509,15 @@ test("Spacing: weighted space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output.widgets), rect);
+	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output.widgets[0] as LabelWidget;
+	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
 	t.is(label1.y, 0);
 	t.is(label1.width, 10);
 	t.is(label1.height, 15);
 
-	const label2 = output.widgets[1] as LabelWidget;
+	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 25);
 	t.is(label2.y, 0);
 	t.is(label2.width, 10);

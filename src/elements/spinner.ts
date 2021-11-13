@@ -94,17 +94,19 @@ export function spinner<TPos extends Positions>(params: SpinnerParams & TPos): W
 /**
  * A controller class for a spinner widget.
  */
-export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget, SpinnerParams
+export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget
 {
 	text?: string;
-	value: Observable<number>;
+	onIncrement: () => void;
+	onDecrement: () => void;
+
 	step: number = 1;
 	minimum: number = 0;
 	maximum: number = 0;
-	wrapMode: SpinnerWrapMode;
-	onIncrement: () => void;
-	onDecrement: () => void;
-	onChange?: (value: number, adjustment: number) => void;
+
+	_value: Observable<number>;
+	_wrapMode: SpinnerWrapMode;
+	_onChange?: (value: number, adjustment: number) => void;
 
 
 	constructor(output: BuildOutput, params: SpinnerParams)
@@ -114,7 +116,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		// Make value an observable regardless of user choice,
 		// to make updating the text more convenient.
 		const value = params.value;
-		this.value = (isObservable(value))
+		this._value = (isObservable(value))
 			? value : observable(value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
@@ -123,12 +125,12 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 			: ((value: number): string => value.toString());
 
 		const binder = output.binder;
-		binder.add(this, "text", this.value, format);
+		binder.add(this, "text", this._value, format);
 		binder.add(this, "step", params.step);
 		binder.add(this, "minimum", params.minimum);
 		binder.add(this, "maximum", params.maximum);
-		this.wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
-		this.onChange = params.onChange;
+		this._wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
+		this._onChange = params.onChange;
 		this.onIncrement = (): void => updateSpinnerValue(this, this.step);
 		this.onDecrement = (): void => updateSpinnerValue(this, -this.step);
 
@@ -161,11 +163,11 @@ function updateSpinnerValue(spinner: SpinnerControl, step: number): void
 	if (min >= max)
 		return;
 
-	const oldValue = spinner.value.get();
+	const oldValue = spinner._value.get();
 	const newValue = (oldValue + step);
 
 	let result: number;
-	switch (spinner.wrapMode)
+	switch (spinner._wrapMode)
 	{
 		default:
 		{
@@ -186,10 +188,10 @@ function updateSpinnerValue(spinner: SpinnerControl, step: number): void
 			break;
 		}
 	}
-	spinner.value.set(result);
+	spinner._value.set(result);
 
-	if (spinner.onChange)
+	if (spinner._onChange)
 	{
-		spinner.onChange(result, step);
+		spinner._onChange(result, step);
 	}
 }

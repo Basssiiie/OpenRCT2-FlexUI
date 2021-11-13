@@ -55,9 +55,9 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 {
 	text?: string;
 
-	child: Layoutable;
-	innerPadding: Padding;
-	childPadding?: Padding;
+	_child: Layoutable;
+	_innerPadding: Padding;
+	_childPadding?: Padding;
 
 	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & FlexiblePosition)
 	{
@@ -86,9 +86,9 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 			binder.add(this, "text", params.text);
 		}
 
-		this.innerPadding = padding;
-		this.child = content.create(output);
-		this.childPadding = content.params.padding;
+		this._innerPadding = padding;
+		this._child = content.create(output);
+		this._childPadding = content.params.padding;
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
@@ -99,17 +99,17 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 		area.y += trimTop;
 		area.height -= trimTop;
 
-		const innerPadding = this.innerPadding;
+		const innerPadding = this._innerPadding;
 		if (innerPadding)
 		{
 			applyPadding(area, innerPadding);
 		}
-		const childPadding = this.childPadding;
+		const childPadding = this._childPadding;
 		if (childPadding)
 		{
 			applyPadding(area, childPadding);
 		}
-		const child = this.child;
+		const child = this._child;
 		child.layout(widgets, area);
 	}
 }

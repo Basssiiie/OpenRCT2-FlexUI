@@ -178,7 +178,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		close.push(params.onClose);
 	}
 
-	const template = output.template;
+	const template = output._template;
 	template.build();
 
 	if (open.length > 0)
@@ -194,7 +194,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		window.onClose = (): void => invoke(close, template);
 	}
 
-	return output.template;
+	return output._template;
 }
 
 
@@ -210,8 +210,8 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 	const suppliedPadding = params.padding;
 	const padding = (suppliedPadding !== undefined) ? suppliedPadding : defaultPadding;
 
-	window.widgets = output.widgets;
-	performLayout(output.widgets, control, window.width, window.height, padding);
+	window.widgets = output._widgets;
+	performLayout(output._widgets, control, window.width, window.height, padding);
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{

@@ -44,7 +44,7 @@ const spinnerControlsWidth = 25;
  */
 class DropdownSpinnerControl extends DropdownControl
 {
-	spinner: SpinnerControl;
+	_spinner: SpinnerControl;
 
 	constructor(output: BuildOutput, params: DropdownSpinnerParams)
 	{
@@ -71,12 +71,12 @@ class DropdownSpinnerControl extends DropdownControl
 		const spinner = new SpinnerControl(output, spinParams);
 
 		super(output, params);
-		this.spinner = spinner;
+		this._spinner = spinner;
 
 		const inheritedCallback = this.onChange;
 		this.onChange = (idx): void =>
 		{
-			this.spinner.value.set(idx);
+			this._spinner._value.set(idx);
 			inheritedCallback(idx);
 		};
 	}
@@ -88,7 +88,7 @@ class DropdownSpinnerControl extends DropdownControl
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position spinner (only show controls next to dropdown)
-		fillLayout(widgets, this.spinner.name, area);
+		fillLayout(widgets, this._spinner.name, area);
 
 		// Position dropdown (leave space for spinner controls)
 		area.width -= spinnerControlsWidth;

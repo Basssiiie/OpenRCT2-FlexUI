@@ -58,14 +58,15 @@ export function dropdown<TPos extends Positions>(params: DropdownParams & TPos):
 /**
  * A controller class for a dropdown widget.
  */
-export class DropdownControl extends Control<DropdownWidget> implements DropdownWidget, DropdownParams
+export class DropdownControl extends Control<DropdownWidget> implements DropdownWidget
 {
 	items: string[] = [];
 	selectedIndex: number = 0;
-	disabledMessage: string | undefined;
-	disableSingleItem: boolean;
 	onChange: (index: number) => void;
-	onSelect?: (index: number) => void;
+
+	_disabledMessage: string | undefined;
+	_disableSingleItem: boolean;
+	_onSelect?: (index: number) => void;
 
 
 	constructor(output: BuildOutput, params: DropdownParams)
@@ -75,17 +76,18 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
 		binder.add(this, "selectedIndex", params.selectedIndex);
-		this.disabledMessage = params.disabledMessage;
-		this.disableSingleItem = !!params.disableSingleItem;
-		this.onSelect = params.onSelect;
 		this.onChange = (idx): void => onChanged(this, idx);
 
-		if (this.disabledMessage)
+		this._disabledMessage = params.disabledMessage;
+		this._disableSingleItem = !!params.disableSingleItem;
+		this._onSelect = params.onSelect;
+
+		if (this._disabledMessage)
 		{
 			const items = this.items; // get local reference
-			binder.on(params.disabled, this, "items", (value) => (value) ? [ this.disabledMessage as string ] : items);
+			binder.on(params.disabled, this, "items", (value) => (value) ? [ this._disabledMessage as string ] : items);
 		}
-		if (this.disableSingleItem)
+		if (this._disableSingleItem)
 		{
 			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
 		}
@@ -110,8 +112,8 @@ function onChanged(control: DropdownControl, index: number): void
 {
 	control.selectedIndex = index;
 
-	if (control.onSelect)
+	if (control._onSelect)
 	{
-		control.onSelect(index);
+		control._onSelect(index);
 	}
 }

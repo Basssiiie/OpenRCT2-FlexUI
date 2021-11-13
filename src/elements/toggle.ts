@@ -36,8 +36,9 @@ export function toggle<TPos extends Positions>(params: ToggleParams & TPos): Wid
  */
 class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 {
-	toggled: Observable<boolean>;
 	onChange?: (isPressed: boolean) => void;
+
+	_toggled: Observable<boolean>;
 
 	constructor(output: BuildOutput, params: ToggleParams & ButtonParams)
 	{
@@ -51,7 +52,7 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 		params.onClick = (): void => updateToggle(this);
 
 		super(output, params);
-		this.toggled = toggled;
+		this._toggled = toggled;
 		this.onChange = params.onChange;
 	}
 }
@@ -62,7 +63,7 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
  */
 function updateToggle(toggle: ToggleControl): void
 {
-	const observable = toggle.toggled;
+	const observable = toggle._toggled;
 	const newValue = !observable.get();
 
 	observable.set(newValue);

@@ -47,7 +47,7 @@ export function label<TPos extends Positions>(params: LabelParams & TPos): Widge
 /**
  * A controller class for a label widget.
  */
-class LabelControl extends Control<LabelWidget> implements LabelWidget, LabelParams
+class LabelControl extends Control<LabelWidget> implements LabelWidget
 {
 	text: string = "";
 	textAlign?: TextAlignment;

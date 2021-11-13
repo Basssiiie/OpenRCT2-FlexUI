@@ -54,15 +54,17 @@ export function listview<TPos extends Positions>(params: ListViewParams & TPos):
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl extends Control<ListViewWidget> implements ListViewParams, ListViewWidget
+class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 {
 	showColumnHeaders: boolean;
 	columns: ListViewColumn[];
-	columnParams?: (ListViewColumnParams & FlexiblePosition)[];
 	items?: string[] | ListViewItem[];
 	scrollbars?: ScrollbarType;
 	canSelect?: boolean;
 	isStriped?: boolean;
+
+	_columnParams?: (ListViewColumnParams & FlexiblePosition)[];
+
 
 	constructor(output: BuildOutput, params: ListViewParams)
 	{
@@ -99,7 +101,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 				sortOrder: column.sortOrder
 			};
 		}
-		this.columnParams = columParams;
+		this._columnParams = columParams;
 		this.columns = columWidgets;
 	}
 
@@ -109,7 +111,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewParams,
 	 */
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		const params = this.columnParams;
+		const params = this._columnParams;
 		if (!params)
 		{
 			super.layout(widgets, area);

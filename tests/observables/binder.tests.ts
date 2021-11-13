@@ -58,13 +58,13 @@ test("read() sets observable in window template", t =>
 		x: 0, y: 0, height: 10, width: 100,
 	};
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
-	output.widgets.push(label);
+	output._widgets.push(label);
 
 	const observableNumber = new ObservableInstance(25);
 	output.binder.add(label, "x", observableNumber);
-	output.binder.bind(output.template);
+	output.binder.bind(output._template);
 
-	output.template.open();
+	output._template.open();
 	t.is(label.x, 25);
 
 	observableNumber.set(77);
@@ -84,13 +84,13 @@ test("read() sets observable through converter", t =>
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
-	output.widgets.push(label);
+	output._widgets.push(label);
 
 	const observableNumber = new ObservableInstance<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", observableNumber, v => (v === "visible"));
-	output.binder.bind(output.template);
+	output.binder.bind(output._template);
 
-	output.template.open();
+	output._template.open();
 	t.true(label.isVisible);
 
 	observableNumber.set("hidden");
