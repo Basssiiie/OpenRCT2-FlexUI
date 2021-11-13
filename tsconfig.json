@@ -16,7 +16,7 @@
 			"@src/*": [ "src/*" ]
 		},
 		"strict": true,
-		"target": "es6",
+		"target": "es5",
 		"lib": [ "es5" ],
 	},
 	"include": [
