@@ -45,6 +45,7 @@ export function box<TPos extends Positions>(params: (BoxParams | BoxContainer) &
 
 
 const defaultPadding: Padding = 5;
+const trimTop: number = 4;
 
 
 /**
@@ -56,6 +57,7 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 
 	child: Layoutable;
 	innerPadding: Padding;
+	childPadding?: Padding;
 
 	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & FlexiblePosition)
 	{
@@ -84,19 +86,30 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 			binder.add(this, "text", params.text);
 		}
 
-		this.child = content.create(output);
 		this.innerPadding = padding;
+		this.child = content.create(output);
+		this.childPadding = content.params.padding;
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
+		area.y -= trimTop;
+		area.height += trimTop;
 		super.layout(widgets, area);
+		area.y += trimTop;
+		area.height -= trimTop;
 
-		const padding = this.innerPadding;
-		if (padding)
+		const innerPadding = this.innerPadding;
+		if (innerPadding)
 		{
-			applyPadding(area, padding);
+			applyPadding(area, innerPadding);
 		}
-		this.child.layout(widgets, area);
+		const childPadding = this.childPadding;
+		if (childPadding)
+		{
+			applyPadding(area, childPadding);
+		}
+		const child = this.child;
+		child.layout(widgets, area);
 	}
 }

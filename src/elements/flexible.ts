@@ -5,7 +5,6 @@ import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
-import { applyDefaults, PositionalDefaults } from "@src/positional/positionalDefaults";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { isArray } from "@src/utilities/type";
@@ -61,8 +60,6 @@ export function flexible<TPos extends Positions>(params: (FlexibleLayoutParams |
 
 class FlexibleLayoutControl implements Layoutable
 {
-	static _defaults: PositionalDefaults = { padding: 5 };
-
 	params: FlexiblePosition[];
 	children: Layoutable[];
 	direction: Direction;
@@ -70,7 +67,6 @@ class FlexibleLayoutControl implements Layoutable
 	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
 	{
 		this.direction = direction;
-		applyDefaults(<PositionalDefaults>params, FlexibleLayoutControl._defaults);
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;

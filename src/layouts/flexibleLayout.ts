@@ -45,10 +45,10 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 		}
 
 		const childArea = {} as Rectangle;
-		childArea[keys.mainAxis] = mainAxis;
-		childArea[keys.mainSize] = mainSize;
-		childArea[keys.otherAxis] = otherAxis;
-		childArea[keys.otherSize] = otherSize;
+		childArea[keys.mainAxis] = Math.round(mainAxis);
+		childArea[keys.mainSize] = Math.round(mainSize);
+		childArea[keys.otherAxis] = Math.round(otherAxis);
+		childArea[keys.otherSize] = Math.round(otherSize);
 
 		apply(i, childArea);
 	}

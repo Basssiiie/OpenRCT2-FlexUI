@@ -240,8 +240,8 @@ function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, con
  */
 function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: Padding): void
 {
-	// Skip the top bar (16px)
-	const area: Rectangle = { x: 0, y: 16, width: width, height: height - 16 };
+	// Skip the top bar (15px)
+	const area: Rectangle = { x: 0, y: 15, width: width, height: height - 15 };
 	if (padding)
 	{
 		applyPadding(area, padding);
