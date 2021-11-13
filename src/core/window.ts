@@ -126,6 +126,9 @@ export interface TabbedWindowParams extends BaseWindowParams
 }
 
 
+const defaultPadding: Padding = 5;
+
+
 /**
  * Create a new fluently designed window.
  */
@@ -203,12 +206,16 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 	const creator = flexible(params.content, Direction.Vertical);
 	const control = creator.create(output);
 
+	// Check if padding was specified..
+	const suppliedPadding = params.padding;
+	const padding = (suppliedPadding !== undefined) ? suppliedPadding : defaultPadding;
+
 	window.widgets = output.widgets;
-	performLayout(output.widgets, control, window.width, window.height, params.padding);
+	performLayout(output.widgets, control, window.width, window.height, padding);
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
-		setWindowLayoutResizing(output, window, control, params.padding);
+		setWindowLayoutResizing(output, window, control, padding);
 	}
 }
 

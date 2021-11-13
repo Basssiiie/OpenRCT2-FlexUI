@@ -84,7 +84,7 @@ test("Window adjusts to resize", t =>
 
 	const template = window({
 		title: "test window",
-		width: 200, height: 150 + 15,
+		width: 200, height: 150 + 15, padding: 0,
 		minWidth: 100, minHeight: 50,
 		maxWidth: 500, maxHeight: 400,
 
