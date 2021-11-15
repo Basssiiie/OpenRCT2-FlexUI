@@ -1,3 +1,4 @@
+import { isUndefined } from "@src/utilities/type";
 import { Padding } from "./padding";
 import { Scale } from "./scale";
 
@@ -20,15 +21,15 @@ export function applyDefaults(target: PositionalDefaults, defaults: PositionalDe
 {
 	if (defaults)
 	{
-		if (target.width === undefined && defaults.width !== undefined)
+		if (isUndefined(target.width) && !isUndefined(defaults.width))
 		{
 			target.width = defaults.width;
 		}
-		if (target.height === undefined && defaults.height !== undefined)
+		if (isUndefined(target.height) && !isUndefined(defaults.height))
 		{
 			target.height = defaults.height;
 		}
-		if (target.padding === undefined && defaults.padding !== undefined)
+		if (isUndefined(target.padding) && !isUndefined(defaults.padding))
 		{
 			target.padding = defaults.padding;
 		}

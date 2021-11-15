@@ -8,6 +8,7 @@ import { WindowTemplate } from "@src/templates/windowTemplate";
 import { WindowColour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
 import { Id } from "@src/utilities/identifier";
+import { isUndefined } from "@src/utilities/type";
 import { BuildContainer } from "./buildContainer";
 import { createWidgetMap } from "./widgetMap";
 
@@ -208,7 +209,7 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 
 	// Check if padding was specified..
 	const suppliedPadding = params.padding;
-	const padding = (suppliedPadding !== undefined) ? suppliedPadding : defaultPadding;
+	const padding = (!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding;
 
 	window.widgets = output._widgets;
 	performLayout(output._widgets, control, window.width, window.height, padding);

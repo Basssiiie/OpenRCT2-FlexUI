@@ -8,6 +8,7 @@ import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -79,7 +80,7 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 
 			// padding should be applied after widget sizing, not before, thus remove specified padding
 			const supplied = params.padding;
-			padding = (supplied !== undefined) ? supplied : defaultPadding;
+			padding = (!isUndefined(supplied)) ? supplied : defaultPadding;
 			params.padding = undefined;
 
 			const binder = output.binder;

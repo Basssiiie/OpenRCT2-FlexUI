@@ -9,7 +9,7 @@ import { Paddable } from "@src/positional/padding";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
-import { isArray } from "@src/utilities/type";
+import { isArray, isUndefined } from "@src/utilities/type";
 
 
 /**
@@ -79,7 +79,7 @@ class FlexibleLayoutControl implements Layoutable
 	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
 	{
 		this._direction = direction;
-		this._spacing = ("spacing" in params && params.spacing !== undefined) ? params.spacing : defaultSpacing;
+		this._spacing = ("spacing" in params && !isUndefined(params.spacing)) ? params.spacing : defaultSpacing;
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;

@@ -4,6 +4,7 @@ import { WindowContext } from "@src/core/windowContext";
 import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
 import { Positions } from "@src/positional/positions";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -133,7 +134,7 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 			return;
 
 		const target = this.target;
-		if (target !== undefined)
+		if (!isUndefined(target))
 		{
 			const type = (typeof target);
 			if (type === "number")

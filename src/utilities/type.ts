@@ -1,4 +1,28 @@
 /**
+ * Checks whether the target is undefined or not.
+ */
+export function isUndefined(target: unknown): target is undefined
+{
+	return (target === undefined);
+}
+
+/**
+ * Checks whether the target is null or not.
+ */
+export function isNull(target: unknown): target is null
+{
+	return (target === null);
+}
+
+/**
+ * Checks whether the target is null or not.
+ */
+export function isNullOrUndefined(target: unknown): target is null | undefined
+{
+	return isUndefined(target) || isNull(target);
+}
+
+/**
  * Checks whether the target is an array or not.
  */
 export function isArray(target: unknown): target is unknown[]

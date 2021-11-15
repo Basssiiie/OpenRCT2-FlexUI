@@ -8,6 +8,7 @@ import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -73,7 +74,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
 
-		this.showColumnHeaders = (params.columns !== undefined);
+		this.showColumnHeaders = (!isUndefined(params.columns));
 		this.canSelect = params.canSelect;
 		this.isStriped = params.isStriped;
 

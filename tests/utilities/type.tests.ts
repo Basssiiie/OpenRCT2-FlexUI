@@ -2,6 +2,61 @@ import test from "ava";
 import * as Type from "@src/utilities/type";
 
 
+test("isUndefined() returns true", t =>
+{
+	t.true(Type.isUndefined(undefined));
+	t.true(Type.isUndefined(void 0));
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let a: any;
+	t.true(Type.isUndefined(a));
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	t.true(Type.isUndefined((<any>{}).b));
+});
+
+test("isUndefined() returns false", t =>
+{
+	t.false(Type.isUndefined(0));
+	t.false(Type.isUndefined(1));
+	t.false(Type.isUndefined("array"));
+	t.false(Type.isUndefined([ 1, 2, 3 ]));
+	t.false(Type.isUndefined({ array: true }));
+	t.false(Type.isUndefined((): [] => []));
+	t.false(Type.isUndefined(null));
+});
+
+test("isNull() returns true", t =>
+{
+	t.true(Type.isNull(null));
+});
+
+test("isNull() returns false", t =>
+{
+	t.false(Type.isNull(0));
+	t.false(Type.isNull(1));
+	t.false(Type.isNull("array"));
+	t.false(Type.isNull([ 1, 2, 3 ]));
+	t.false(Type.isNull({ array: true }));
+	t.false(Type.isNull((): [] => []));
+	t.false(Type.isNull(undefined));
+});
+
+test("isNullOrUndefined() returns true", t =>
+{
+	t.true(Type.isNullOrUndefined(null));
+	t.true(Type.isNullOrUndefined(undefined));
+	t.true(Type.isNullOrUndefined(void 0));
+});
+
+test("isNullOrUndefined() returns false", t =>
+{
+	t.false(Type.isNullOrUndefined(0));
+	t.false(Type.isNullOrUndefined(1));
+	t.false(Type.isNullOrUndefined("array"));
+	t.false(Type.isNullOrUndefined([ 1, 2, 3 ]));
+	t.false(Type.isNullOrUndefined({ array: true }));
+	t.false(Type.isNullOrUndefined((): [] => []));
+});
+
 test("isArray() returns true", t =>
 {
 	t.true(Type.isArray([ 1, 2, 3 ]));

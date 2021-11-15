@@ -3,7 +3,7 @@ import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
 import { convertToPixels, ParsedScale, parseScale, Scale, ScaleType } from "@src/positional/scale";
-import { isArray, isObject } from "@src/utilities/type";
+import { isArray, isObject, isUndefined } from "@src/utilities/type";
 
 
 /**
@@ -265,7 +265,7 @@ function getPaddingKeys(direction: Direction): PaddingKeys
 
 function parsePadding(padding: Padding | undefined, target: ParsedStackElement, keys: DirectionKeys): void
 {
-	if (padding === undefined)
+	if (isUndefined(padding))
 	{
 		// padding not specified, apply no padding.
 		target._hasPadding = false;

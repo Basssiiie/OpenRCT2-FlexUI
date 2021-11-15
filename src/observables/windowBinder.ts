@@ -2,6 +2,7 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { Template } from "@src/templates/template";
 import { Id } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import { isUndefined } from "@src/utilities/type";
 import { Bindable } from "./bindable";
 import { Binder } from "./binder";
 import { Binding } from "./binding";
@@ -31,7 +32,7 @@ export class WindowBinder implements Binder
 			const val = value.get();
 			widget[key] = (converter) ? converter(val) : val as never;
 		}
-		else if (value !== undefined)
+		else if (!isUndefined(value))
 		{
 			// just update value
 			widget[key] = (converter) ? converter(value) : value as never;
@@ -103,7 +104,7 @@ export class WindowBinder implements Binder
 				}
 			});
 		}
-		else if (bindable !== undefined)
+		else if (!isUndefined(bindable))
 		{
 			// Write callback straight back to the widget template.
 			widgetTemplate[property] = callback(bindable);
@@ -148,7 +149,7 @@ export class WindowBinder implements Binder
 	 */
 	hasBindings(): boolean
 	{
-		return (this._bindings !== undefined && this._bindings.length > 0);
+		return (!isUndefined(this._bindings) && this._bindings.length > 0);
 	}
 
 	/**

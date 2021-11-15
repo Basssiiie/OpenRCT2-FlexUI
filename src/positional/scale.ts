@@ -1,4 +1,4 @@
-import { isNumber } from "@src/utilities/type";
+import { isNumber, isUndefined } from "@src/utilities/type";
 
 /**
  * Specifies the scale of a specific property. The value can be either a string or a
@@ -56,7 +56,7 @@ export type ParsedScale = [number, ScaleType];
  */
 export function parseScale(value: Scale | undefined, fallback: number = 0, fallbackType: ScaleType = ScaleType.Pixel): ParsedScale
 {
-	if (value === undefined)
+	if (isUndefined(value))
 	{
 		return [fallback, fallbackType];
 	}
@@ -93,7 +93,7 @@ export function parseScale(value: Scale | undefined, fallback: number = 0, fallb
 			}
 		}
 
-		if (type !== undefined)
+		if (!isUndefined(type))
 		{
 			const num = Number.parseInt(trimmed.substring(0, endIdx));
 			return [num, type];
@@ -115,7 +115,7 @@ export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weigh
 			return scale[0];
 
 		case ScaleType.Weight:
-			return (weightedTotal === undefined)
+			return (isUndefined(weightedTotal))
 				? leftoverSpace
 				: Math.round((scale[0] / weightedTotal) * leftoverSpace);
 
