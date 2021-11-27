@@ -1,6 +1,6 @@
 import { WidgetMap } from "@src/core/widgetMap";
 import { Template } from "@src/templates/template";
-import { Id } from "@src/utilities/identifier";
+import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
 import { Bindable } from "./bindable";
@@ -26,7 +26,7 @@ export class WindowBinder implements Binder
 			// bind
 			if (!widget.name)
 			{
-				widget.name = Id.new();
+				widget.name = identifier();
 			}
 			this.createBinding(widget.name, key, value, converter);
 			const val = value.get();

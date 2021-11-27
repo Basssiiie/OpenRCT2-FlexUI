@@ -7,7 +7,7 @@ import { Rectangle } from "@src/positional/rectangle";
 import { WindowTemplate } from "@src/templates/windowTemplate";
 import { WindowColour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
-import { Id } from "@src/utilities/identifier";
+import { identifier } from "@src/utilities/identifier";
 import { isUndefined } from "@src/utilities/type";
 import { BuildContainer } from "./buildContainer";
 import { createWidgetMap } from "./widgetMap";
@@ -138,7 +138,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 {
 	const window: WindowDesc =
 	{
-		classification: `fui-${Id.new()}`,
+		classification: `fui-${identifier()}`,
 		title: (params.title) ? params.title : "",
 		colours: params.colours,
 		width: params.width,

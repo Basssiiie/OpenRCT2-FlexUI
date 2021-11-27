@@ -3,7 +3,7 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { fillLayout } from "@src/layouts/fillLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Rectangle } from "@src/positional/rectangle";
-import { Id } from "@src/utilities/identifier";
+import { identifier } from "@src/utilities/identifier";
 import { ElementParams } from "./element";
 
 
@@ -12,7 +12,7 @@ import { ElementParams } from "./element";
  */
 export abstract class Control<T extends WidgetBase> implements WidgetBase, Layoutable
 {
-	name: string = Id.new();
+	name: string = identifier();
 	type: T["type"];
 	x: number = 0;
 	y: number = 0;
