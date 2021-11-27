@@ -447,13 +447,13 @@ test("Spacing: default space between two elements", t =>
 	t.is(label1.x, 7);
 	t.is(label1.y, 20);
 	t.is(label1.width, 78);
-	t.is(label1.height, 15);
+	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 7);
-	t.is(label2.y, 40);
+	t.is(label2.y, 38);
 	t.is(label2.width, 78);
-	t.is(label2.height, 15);
+	t.is(label2.height, 14);
 });
 
 
@@ -477,13 +477,13 @@ test("Spacing: percentile space between two elements", t =>
 	t.is(label1.x, 5);
 	t.is(label1.y, 10);
 	t.is(label1.width, 20);
-	t.is(label1.height, 15);
+	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 35);
 	t.is(label2.y, 10);
 	t.is(label2.width, 20);
-	t.is(label2.height, 15);
+	t.is(label2.height, 14);
 });
 
 
@@ -507,11 +507,11 @@ test("Spacing: weighted space between two elements", t =>
 	t.is(label1.x, 5);
 	t.is(label1.y, 0);
 	t.is(label1.width, 10);
-	t.is(label1.height, 15);
+	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 25);
 	t.is(label2.y, 0);
 	t.is(label2.width, 10);
-	t.is(label2.height, 15);
+	t.is(label2.height, 14);
 });

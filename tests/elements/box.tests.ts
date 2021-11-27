@@ -32,10 +32,10 @@ test("Standard properties are set", t =>
 	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "inside a box!");
-	t.is(widget2.x, 9);
-	t.is(widget2.y, 9 + 15);
-	t.is(widget2.width, 32);
-	t.is(widget2.height, 22);
+	t.is(widget2.x, 10);
+	t.is(widget2.y, 10 + 15);
+	t.is(widget2.width, 30);
+	t.is(widget2.height, 20);
 });
 
 
