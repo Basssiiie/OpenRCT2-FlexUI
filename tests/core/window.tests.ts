@@ -21,7 +21,7 @@ test("Simple window with widgets", t =>
 		padding: 0, spacing: 0,
 
 		content: [
-			label({ text: "hello world" }),
+			label({ text: "hello world", height: "1w" }),
 			horizontal({
 				spacing: 0,
 				content: [
@@ -29,10 +29,7 @@ test("Simple window with widgets", t =>
 					button({ text: "right button" })
 				]
 			}),
-			label({
-				text: "big area",
-				alignment: "centred"
-			})
+			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
 	});
 	template.open();
@@ -91,7 +88,7 @@ test("Window adjusts to resize", t =>
 		padding: 0, spacing: 0,
 
 		content: [
-			label({ text: "hello world" }),
+			label({ text: "hello world", height: "1w" }),
 			horizontal({
 				spacing: 0,
 				content: [
@@ -99,10 +96,7 @@ test("Window adjusts to resize", t =>
 					button({ text: "right button" })
 				]
 			}),
-			label({
-				text: "big area",
-				alignment: "centred"
-			})
+			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
 	});
 	template.open();
@@ -150,7 +144,7 @@ test("Window does not resize if size hasn't changed", t =>
 		padding: 0, spacing: 0,
 
 		content: [
-			label({ text: "hello world" }),
+			label({ text: "hello world", height: "1w" }),
 			horizontal({
 				spacing: 0,
 				content: [
@@ -158,10 +152,7 @@ test("Window does not resize if size hasn't changed", t =>
 					button({ text: "right button" })
 				]
 			}),
-			label({
-				text: "big area",
-				alignment: "centred"
-			})
+			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
 	});
 	template.open();

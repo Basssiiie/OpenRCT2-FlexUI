@@ -2,7 +2,7 @@ import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
-import { convertToPixels, ParsedScale, parseScale, Scale, ScaleType } from "@src/positional/scale";
+import { convertToPixels, ParsedScale, parseScaleOrFallback, parseScaleOrZero, Scale, ScaleType } from "@src/positional/scale";
 import { isArray, isObject, isUndefined } from "@src/utilities/type";
 
 
@@ -18,12 +18,11 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 	const keys = getDirectionKeys(direction);
 
 	// First pass: calculate absolute space use and total weight.
-	const stack: ParsedStack = parseFlexibleElements(elements, spacing, keys, parentArea);
+	const stack: ParsedStack = parseFlexibleElements(elements, spacing, keys);
 
 	// Second pass: calculate positions and relative sizes with leftover space.
 	const leftoverSpace = (parentArea[keys._mainSize] - stack._absoluteSpace);
 	const spaceInPixels = convertToPixels(stack._spacing, leftoverSpace, stack._weightedTotal);
-	//leftoverSpace -= (spaceInPixels * (elementCount - 1));
 
 	let cursor = 0;
 
@@ -42,12 +41,12 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 
 		if (parsed._hasPadding)
 		{
-			const vecStart = convertToPixels(parsed._mainStart, leftoverSpace, stack._weightedTotal);
-			const vecEnd = convertToPixels(parsed._mainEnd, leftoverSpace, stack._weightedTotal);
-			mainAxis += vecStart;
-			mainSize -= (vecStart + vecEnd);
-			const otherStart = convertToPixels(parsed._otherStart, otherSpace, otherSpace);
-			const otherEnd = convertToPixels(parsed._otherEnd, otherSpace, otherSpace);
+			const mainStart = convertToPixels(parsed._mainStart, leftoverSpace, stack._weightedTotal);
+			const mainEnd = convertToPixels(parsed._mainEnd, leftoverSpace, stack._weightedTotal);
+			mainAxis += mainStart;
+			mainSize -= (mainStart + mainEnd);
+			const otherStart = convertToPixels(parsed._otherStart, otherSpace, 1);
+			const otherEnd = convertToPixels(parsed._otherEnd, otherSpace, 1);
 			otherAxis += otherStart;
 			otherSize -= (otherStart + otherEnd);
 		}
@@ -143,21 +142,21 @@ interface ParsedStackElement
 }
 
 
+const defaultScale: ParsedScale = [1, ScaleType.Weight];
+
+
 /**
  * Parses all specified child positions
  */
-function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, keys: DirectionKeys, area: Rectangle): ParsedStack
+function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, keys: DirectionKeys): ParsedStack
 {
 	const elementCount = elements.length;
 	const stack: ParsedStack = {
 		_elements: Array<ParsedStackElement>(elementCount),
 		_absoluteSpace: 0,
 		_weightedTotal: 0,
-		_spacing: parseScale(spacing)
+		_spacing: parseScaleOrZero(spacing)
 	};
-
-	let layoutMainSize = area[keys._mainSize];
-	const layoutOtherSize = area[keys._otherSize];
 
 	// Parse spacing in between elements
 	const space = stack._spacing;
@@ -170,10 +169,7 @@ function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, key
 	{
 		const pixelSize = (space[0] * (elementCount - 1));
 		stack._absoluteSpace += pixelSize;
-		layoutMainSize -= pixelSize;
 	}
-
-	const childMainSize = (layoutMainSize / elementCount);
 
 	// First pass: parse all values to numbers.
 	for (let i = 0; i < elementCount; i++)
@@ -181,8 +177,8 @@ function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, key
 		const params = elements[i];
 		const parsed =
 		{
-			_mainSize: parseScale(params[keys._mainSize], childMainSize, ScaleType.Weight),
-			_otherSize: parseScale(params[keys._otherSize], layoutOtherSize, ScaleType.Weight),
+			_mainSize: parseScaleOrFallback(params[keys._mainSize], defaultScale),
+			_otherSize: parseScaleOrFallback(params[keys._otherSize], defaultScale),
 		} as ParsedStackElement;
 
 		// Parse padding
@@ -276,18 +272,18 @@ function parsePadding(padding: Padding | undefined, target: ParsedStackElement, 
 		const length = padding.length;
 		if (length === 2)
 		{
-			const vectorDir = parseScale(padding[keys._mainDirection]);
-			const otherDir = parseScale(padding[keys._otherDirection]);
+			const vectorDir = parseScaleOrZero(padding[keys._mainDirection]);
+			const otherDir = parseScaleOrZero(padding[keys._otherDirection]);
 			setPaddingOnParsedElement(target, vectorDir, vectorDir, otherDir, otherDir);
 		}
 		else if (length === 4)
 		{
 			setPaddingOnParsedElement(
 				target,
-				parseScale(padding[(keys._mainDirection << 1) + PaddingSide.Start]),
-				parseScale(padding[(keys._mainDirection << 1) + PaddingSide.End]),
-				parseScale(padding[(keys._otherDirection << 1) + PaddingSide.Start]),
-				parseScale(padding[(keys._otherDirection << 1) + PaddingSide.End])
+				parseScaleOrZero(padding[(keys._mainDirection << 1) + PaddingSide.Start]),
+				parseScaleOrZero(padding[(keys._mainDirection << 1) + PaddingSide.End]),
+				parseScaleOrZero(padding[(keys._otherDirection << 1) + PaddingSide.Start]),
+				parseScaleOrZero(padding[(keys._otherDirection << 1) + PaddingSide.End])
 			);
 		}
 		else
@@ -299,16 +295,16 @@ function parsePadding(padding: Padding | undefined, target: ParsedStackElement, 
 		const padKeys = getPaddingKeys(keys._mainDirection);
 		setPaddingOnParsedElement(
 			target,
-			parseScale(padding[padKeys._mainStart]),
-			parseScale(padding[padKeys._mainEnd]),
-			parseScale(padding[padKeys._otherStart]),
-			parseScale(padding[padKeys._otherEnd])
+			parseScaleOrZero(padding[padKeys._mainStart]),
+			parseScaleOrZero(padding[padKeys._mainEnd]),
+			parseScaleOrZero(padding[padKeys._otherStart]),
+			parseScaleOrZero(padding[padKeys._otherEnd])
 		);
 	}
 	else
 	{
 		// padding specified as number or string
-		const value = parseScale(padding);
+		const value = parseScaleOrZero(padding);
 		setPaddingOnParsedElement(target, value, value, value, value);
 	}
 }

@@ -128,6 +128,7 @@ export interface TabbedWindowParams extends BaseWindowParams
 
 
 const defaultPadding: Padding = 5;
+const topBarSize: number = 15;
 
 
 /**
@@ -249,7 +250,7 @@ function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, con
 function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: Padding): void
 {
 	// Skip the top bar (15px)
-	const area: Rectangle = { x: 0, y: 15, width: width, height: height - 15 };
+	const area: Rectangle = { x: 0, y: topBarSize, width: width, height: height - topBarSize };
 	if (padding)
 	{
 		applyPadding(area, padding);

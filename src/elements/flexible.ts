@@ -1,4 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
+import { defaultSpacing } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { WidgetMap } from "@src/core/widgetMap";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
@@ -64,9 +65,6 @@ export function flexible<TPos extends Positions>(params: (FlexibleLayoutParams |
 		create: (output: BuildOutput): FlexibleLayoutControl => new FlexibleLayoutControl(output, params, direction)
 	};
 }
-
-
-const defaultSpacing: Scale = 5;
 
 
 class FlexibleLayoutControl implements Layoutable

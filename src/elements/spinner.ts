@@ -1,13 +1,13 @@
 import { BuildOutput } from "@src/core/buildOutput";
+import { defaultLineHeight } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { WidgetMap } from "@src/core/widgetMap";
 import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
 import { Positions } from "@src/positional/positions";
-import { Rectangle } from "@src/positional/rectangle";
 import * as MathHelper from "@src/utilities/math";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -109,9 +109,12 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	_onChange?: (value: number, adjustment: number) => void;
 
 
-	constructor(output: BuildOutput, params: SpinnerParams)
+	constructor(output: BuildOutput, params: SpinnerParams & Positions)
 	{
 		super("spinner", output, params);
+
+		if (isUndefined(params.height))
+			params.height = defaultLineHeight;
 
 		// Make value an observable regardless of user choice,
 		// to make updating the text more convenient.
@@ -138,16 +141,6 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		{
 			throw Error(`Spinner: minimum ${this.minimum} is equal to or larger than maximum ${this.maximum}.`);
 		}
-	}
-
-
-	/**
-	 * Fix: default spinner is drawn 1 px to wide.
-	 */
-	override layout(widgets: WidgetMap, area: Rectangle): void
-	{
-		area.width -= 1;
-		super.layout(widgets, area);
 	}
 }
 

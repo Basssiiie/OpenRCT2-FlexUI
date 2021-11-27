@@ -45,7 +45,7 @@ export function box<TPos extends Positions>(params: (BoxParams | BoxContainer) &
 }
 
 
-const defaultPadding: Padding = 5;
+const defaultPadding: Padding = 6;
 const trimTop: number = 4;
 
 

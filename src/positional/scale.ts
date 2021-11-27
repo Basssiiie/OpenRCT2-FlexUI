@@ -54,11 +54,11 @@ export type ParsedScale = [number, ScaleType];
 /**
  * Parses an user-defined scale (either string or number) to a tuple of scale value and type.
  */
-export function parseScale(value: Scale | undefined, fallback: number = 0, fallbackType: ScaleType = ScaleType.Pixel): ParsedScale
+export function parseScale(value: Scale | undefined): ParsedScale | undefined
 {
 	if (isUndefined(value))
 	{
-		return [fallback, fallbackType];
+		return value;
 	}
 
 	// Number = weighted value.
@@ -86,7 +86,7 @@ export function parseScale(value: Scale | undefined, fallback: number = 0, fallb
 		}
 		else if (length > 2)
 		{
-			endIdx = (length - 2);
+			endIdx--;
 			if (last === "x" && trimmed[endIdx] === "p")
 			{
 				type = ScaleType.Pixel;
@@ -95,12 +95,33 @@ export function parseScale(value: Scale | undefined, fallback: number = 0, fallb
 
 		if (!isUndefined(type))
 		{
-			const num = Number.parseInt(trimmed.substring(0, endIdx));
+			const num = Number.parseFloat(trimmed.substring(0, endIdx));
 			return [num, type];
 		}
 	}
 
 	throw new Error(`Value '${value}' is not a valid scale.`);
+}
+
+
+/**
+ * Tries to parse the scale, or returns zero scale otherwise.
+ */
+export function parseScaleOrFallback(value: Scale | undefined, fallback: ParsedScale): ParsedScale
+{
+	return parseScale(value) || fallback;
+}
+
+
+const zeroScale: ParsedScale = [0, ScaleType.Pixel];
+
+
+/**
+ * Tries to parse the scale, or returns zero scale otherwise.
+ */
+export function parseScaleOrZero(value: Scale | undefined): ParsedScale
+{
+	return parseScaleOrFallback(value, zeroScale);
 }
 
 
@@ -115,9 +136,9 @@ export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weigh
 			return scale[0];
 
 		case ScaleType.Weight:
-			return (isUndefined(weightedTotal))
-				? leftoverSpace
-				: Math.round((scale[0] / weightedTotal) * leftoverSpace);
+			return (weightedTotal)
+				? Math.round((scale[0] / weightedTotal) * leftoverSpace)
+				: leftoverSpace;
 
 		case ScaleType.Percentage:
 			return Math.round((scale[0] * 0.01) * leftoverSpace);

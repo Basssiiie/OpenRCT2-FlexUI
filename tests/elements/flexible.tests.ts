@@ -17,7 +17,7 @@ test("Simple layouts with widgets", t =>
 	const creator = flexible({
 		spacing: 0,
 		content: [
-			label({ text: "hello world" }),
+			label({ text: "hello world", height: "1w" }),
 			horizontal({
 				spacing: 0,
 				content: [
@@ -25,7 +25,7 @@ test("Simple layouts with widgets", t =>
 					button({ text: "right button" })
 				]
 			}),
-			label({ text: "big area", alignment: "centred" })
+			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
 	}, Direction.Vertical);
 	const control = creator.create(output);
@@ -263,20 +263,18 @@ test("Padding: single number value", t =>
 	{
 		spacing: 0,
 		content: [
-			label({
-				text: "a", padding: 5
-			})
+			button({ text: "a", padding: 5 })
 		]
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.x, 5);
-	t.is(label1.y, 5);
-	t.is(label1.width, 50);
-	t.is(label1.height, 30);
+	const widget = output._widgets[0];
+	t.is(widget.x, 5);
+	t.is(widget.y, 5);
+	t.is(widget.width, 50);
+	t.is(widget.height, 30);
 });
 
 
@@ -288,20 +286,18 @@ test("Padding: single pixel value", t =>
 	{
 		spacing: 0,
 		content: [
-			label({
-				text: "a", padding: "5px"
-			})
+			button({ text: "a", padding: "5px" })
 		]
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.x, 5);
-	t.is(label1.y, 5);
-	t.is(label1.width, 50);
-	t.is(label1.height, 30);
+	const widget = output._widgets[0];
+	t.is(widget.x, 5);
+	t.is(widget.y, 5);
+	t.is(widget.width, 50);
+	t.is(widget.height, 30);
 });
 
 
@@ -313,20 +309,18 @@ test("Padding: single percentage value", t =>
 	{
 		spacing: 0,
 		content: [
-			label({
-				text: "a", padding: "20%"
-			})
+			button({ text: "a", padding: "20%" })
 		]
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.x, 12);
-	t.is(label1.y, 8);
-	t.is(label1.width, 36);
-	t.is(label1.height, 24);
+	const widget = output._widgets[0];
+	t.is(widget.x, 12);
+	t.is(widget.y, 8);
+	t.is(widget.width, 36);
+	t.is(widget.height, 24);
 });
 
 
@@ -338,20 +332,18 @@ test("Padding: single weighted value", t =>
 	{
 		spacing: 0,
 		content: [
-			label({
-				text: "a", padding: "5w"
-			})
+			button({ text: "a", width: "1w", padding: "0.4w" })
 		]
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.x, 5);
-	t.is(label1.y, 5);
-	t.is(label1.width, 50);
-	t.is(label1.height, 30);
+	const widget = output._widgets[0];
+	t.is(widget.x, 24);
+	t.is(widget.y, 16);
+	t.is(widget.width, 12);
+	t.is(widget.height, 8);
 });
 
 
@@ -414,25 +406,25 @@ test("Spacing: 10 pixels between two elements", t =>
 	{
 		spacing: 10,
 		content: [
-			label({ text: "a" }),
-			label({ text: "b" })
+			button({ text: "a" }),
+			button({ text: "b" })
 		]
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
 	control.layout(createWidgetMap(output._widgets), rect);
 
-	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.x, 0);
-	t.is(label1.y, 0);
-	t.is(label1.width, 25);
-	t.is(label1.height, 40);
+	const widget1 = output._widgets[0];
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0);
+	t.is(widget1.width, 25);
+	t.is(widget1.height, 40);
 
-	const label2 = output._widgets[1] as LabelWidget;
-	t.is(label2.x, 35);
-	t.is(label2.y, 0);
-	t.is(label2.width, 25);
-	t.is(label2.height, 40);
+	const widget2 = output._widgets[1];
+	t.is(widget2.x, 35);
+	t.is(widget2.y, 0);
+	t.is(widget2.width, 25);
+	t.is(widget2.height, 40);
 });
 
 

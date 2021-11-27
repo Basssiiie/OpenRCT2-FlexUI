@@ -1,9 +1,9 @@
 import { BuildOutput } from "@src/core/buildOutput";
+import { defaultLineHeight } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
-import { WidgetMap } from "@src/core/widgetMap";
 import { Bindable } from "@src/observables/bindable";
 import { Positions } from "@src/positional/positions";
-import { Rectangle } from "@src/positional/rectangle";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -69,9 +69,12 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	_onSelect?: (index: number) => void;
 
 
-	constructor(output: BuildOutput, params: DropdownParams)
+	constructor(output: BuildOutput, params: DropdownParams & Positions)
 	{
 		super("dropdown", output, params);
+
+		if (isUndefined(params.height))
+			params.height = defaultLineHeight;
 
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
@@ -91,16 +94,6 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		{
 			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
 		}
-	}
-
-
-	/**
-	 * Fix: default spinner is drawn 1 px to wide.
-	 */
-	override layout(widgets: WidgetMap, area: Rectangle): void
-	{
-		area.width -= 1;
-		super.layout(widgets, area);
 	}
 }
 

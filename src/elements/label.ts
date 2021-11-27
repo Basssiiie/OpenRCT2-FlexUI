@@ -1,8 +1,10 @@
 import { BuildOutput } from "@src/core/buildOutput";
+import { defaultLineHeight } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
 import { Positions } from "@src/positional/positions";
 import { TextColour } from "@src/utilities/colour";
+import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
 import { ElementParams } from "./element";
 
@@ -52,9 +54,12 @@ class LabelControl extends Control<LabelWidget> implements LabelWidget
 	text: string = "";
 	textAlign?: TextAlignment;
 
-	constructor(output: BuildOutput, params: LabelParams)
+	constructor(output: BuildOutput, params: LabelParams & Positions)
 	{
 		super("label", output, params);
+
+		if (isUndefined(params.height))
+			params.height = defaultLineHeight;
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);

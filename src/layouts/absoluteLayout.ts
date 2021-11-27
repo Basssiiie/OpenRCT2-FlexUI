@@ -1,6 +1,6 @@
 import { AbsolutePosition } from "@src/positional/absolutePosition";
 import { Rectangle } from "@src/positional/rectangle";
-import { convertToPixels, ParsedScale, parseScale, ScaleType } from "@src/positional/scale";
+import { convertToPixels, ParsedScale, parseScaleOrZero, ScaleType } from "@src/positional/scale";
 
 
 /**
@@ -18,10 +18,10 @@ export function absoluteLayout(elements: AbsolutePosition[], parentArea: Rectang
 	for (let i = 0; i < elementCount; i++)
 	{
 		const element = elements[i];
-		const x = parseScale(element.x);
-		const y = parseScale(element.y);
-		const width = parseScale(element.width);
-		const height = parseScale(element.height);
+		const x = parseScaleOrZero(element.x);
+		const y = parseScaleOrZero(element.y);
+		const width = parseScaleOrZero(element.width);
+		const height = parseScaleOrZero(element.height);
 
 		if (width[1] === ScaleType.Weight)
 		{

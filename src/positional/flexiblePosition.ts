@@ -8,16 +8,16 @@ import { Scale } from "./scale";
 export interface FlexiblePosition extends Paddable
 {
 	/**
-	 * Specify a width constraint for this area.
-	 *
-	 * @see {@link Scale} for how to use.
+	 * The width of this widget on the horizontal axis.
+	 * @see {@link Scale} for examples of allowed values.
+	 * @default "1w".
 	 */
 	width?: Scale;
 
 	/**
-	 * Specify a height constraint for this area.
-	 *
-	 * @see {@link Scale} for how to use.
+	 * The height of this widget on the vertical axis.
+	 * @see {@link Scale} for examples of allowed values.
+	 * @default "14px" for labels, dropdowns, spinners; "1w" for others.
 	 */
 	height?: Scale;
 }
