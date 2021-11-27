@@ -15,7 +15,7 @@ export function createWidgetMap(widgets: Widget[]): WidgetMap
 	{
 		const widget = widgets[i];
 		const name = widget.name;
-		if (name)
+		if (name && !(name in dictionary))
 		{
 			dictionary[name] = widget;
 		}
