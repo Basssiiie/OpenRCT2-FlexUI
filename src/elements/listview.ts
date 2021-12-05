@@ -3,6 +3,7 @@ import { WidgetCreator } from "@src/core/widgetCreator";
 import { WidgetMap } from "@src/core/widgetMap";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
 import { Bindable } from "@src/observables/bindable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
@@ -43,7 +44,9 @@ export interface ListViewParams extends ElementParams
 /**
  * Add a listbox for displaying data in rows and columns.
  */
-export function listview<TPos extends Positions>(params: ListViewParams & TPos): WidgetCreator<ListViewParams & TPos>
+export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<ListViewParams & FlexiblePosition>;
+export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<ListViewParams & AbsolutePosition>;
+export function listview(params: ListViewParams & Positions): WidgetCreator<ListViewParams>
 {
 	return {
 		params: params,

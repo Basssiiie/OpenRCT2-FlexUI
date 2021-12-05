@@ -2,6 +2,8 @@ import { BuildOutput } from "@src/core/buildOutput";
 import { defaultLineHeight } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { TextColour } from "@src/utilities/colour";
 import { isUndefined } from "@src/utilities/type";
@@ -37,8 +39,13 @@ export interface LabelParams extends ElementParams
 /**
  * Create a textual label with the specified parameters.
  */
-export function label<TPos extends Positions>(params: LabelParams & TPos): WidgetCreator<LabelParams & TPos>
+export function label(params: LabelParams & FlexiblePosition): WidgetCreator<LabelParams & FlexiblePosition>;
+export function label(params: LabelParams & AbsolutePosition): WidgetCreator<LabelParams & AbsolutePosition>;
+export function label(params: LabelParams & Positions): WidgetCreator<LabelParams>
 {
+	if (isUndefined(params.height))
+		params.height = defaultLineHeight;
+
 	return {
 		params: params,
 		create: (output: BuildOutput): LabelControl => new LabelControl(output, params)
@@ -54,12 +61,9 @@ class LabelControl extends Control<LabelWidget> implements LabelWidget
 	text: string = "";
 	textAlign?: TextAlignment;
 
-	constructor(output: BuildOutput, params: LabelParams & Positions)
+	constructor(output: BuildOutput, params: LabelParams)
 	{
 		super("label", output, params);
-
-		if (isUndefined(params.height))
-			params.height = defaultLineHeight;
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);

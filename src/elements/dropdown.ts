@@ -2,6 +2,8 @@ import { BuildOutput } from "@src/core/buildOutput";
 import { defaultLineHeight } from "@src/core/defaults";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
@@ -46,8 +48,13 @@ export interface DropdownParams extends ElementParams
 /**
  * Create a dropdown widget with one or more selectable options.
  */
-export function dropdown<TPos extends Positions>(params: DropdownParams & TPos): WidgetCreator<DropdownParams & TPos>
+export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreator<DropdownParams & FlexiblePosition>;
+export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<DropdownParams & AbsolutePosition>;
+export function dropdown(params: DropdownParams & Positions): WidgetCreator<DropdownParams>
 {
+	if (isUndefined(params.height))
+		params.height = defaultLineHeight;
+
 	return {
 		params: params,
 		create: (output: BuildOutput): DropdownControl => new DropdownControl(output, params)
@@ -69,12 +76,9 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	_onSelect?: (index: number) => void;
 
 
-	constructor(output: BuildOutput, params: DropdownParams & Positions)
+	constructor(output: BuildOutput, params: DropdownParams)
 	{
 		super("dropdown", output, params);
-
-		if (isUndefined(params.height))
-			params.height = defaultLineHeight;
 
 		const binder = output.binder;
 		binder.add(this, "items", params.items);

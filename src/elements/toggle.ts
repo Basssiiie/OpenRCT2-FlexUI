@@ -3,6 +3,8 @@ import { WidgetCreator } from "@src/core/widgetCreator";
 import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { ButtonControl, ButtonParams } from "./button";
 
@@ -22,7 +24,9 @@ export interface ToggleParams extends Omit<ButtonParams, "onClick">
 /**
  * Add a button that can be toggled on and off.
  */
-export function toggle<TPos extends Positions>(params: ToggleParams & TPos): WidgetCreator<ToggleParams & TPos>
+export function toggle(params: ToggleParams & FlexiblePosition): WidgetCreator<ToggleParams & FlexiblePosition>;
+export function toggle(params: ToggleParams & AbsolutePosition): WidgetCreator<ToggleParams & AbsolutePosition>;
+export function toggle(params: ToggleParams & Positions): WidgetCreator<ToggleParams>
 {
 	return {
 		params: params,

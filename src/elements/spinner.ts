@@ -5,6 +5,8 @@ import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import * as MathHelper from "@src/utilities/math";
 import { isUndefined } from "@src/utilities/type";
@@ -82,8 +84,13 @@ export interface SpinnerParams extends ElementParams
 /**
  * Add a spinner widget with [+] and [-] buttons.
  */
-export function spinner<TPos extends Positions>(params: SpinnerParams & TPos): WidgetCreator<SpinnerParams & TPos>
+export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator<SpinnerParams & FlexiblePosition>;
+export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<SpinnerParams & AbsolutePosition>;
+export function spinner(params: SpinnerParams & Positions): WidgetCreator<SpinnerParams>
 {
+	if (isUndefined(params.height))
+		params.height = defaultLineHeight;
+
 	return {
 		params: params,
 		create: (output: BuildOutput): SpinnerControl => new SpinnerControl(output, params)
@@ -109,12 +116,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	_onChange?: (value: number, adjustment: number) => void;
 
 
-	constructor(output: BuildOutput, params: SpinnerParams & Positions)
+	constructor(output: BuildOutput, params: SpinnerParams)
 	{
 		super("spinner", output, params);
-
-		if (isUndefined(params.height))
-			params.height = defaultLineHeight;
 
 		// Make value an observable regardless of user choice,
 		// to make updating the text more convenient.

@@ -3,6 +3,8 @@ import { WidgetCreator } from "@src/core/widgetCreator";
 import { WindowContext } from "@src/core/windowContext";
 import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { isUndefined } from "@src/utilities/type";
 import { Control } from "./control";
@@ -71,7 +73,9 @@ export interface ViewportParams extends ElementParams
 /**
  * Add a viewport for displaying a location somewhere on the map.
  */
-export function viewport<TPos extends Positions>(params: ViewportParams & TPos): WidgetCreator<ViewportParams & TPos>
+export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreator<ViewportParams & FlexiblePosition>;
+export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<ViewportParams & AbsolutePosition>;
+export function viewport(params: ViewportParams & Positions): WidgetCreator<ViewportParams>
 {
 	return {
 		params: params,

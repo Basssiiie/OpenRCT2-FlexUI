@@ -4,6 +4,8 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { fillLayout } from "@src/layouts/fillLayout";
 import { isObservable } from "@src/observables/isObservable";
 import { observable } from "@src/observables/observableConstructor";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { DropdownControl, DropdownParams } from "./dropdown";
@@ -27,7 +29,9 @@ export interface DropdownSpinnerParams extends DropdownParams
  * Create a dropdown widget with multiple selectable options, which can be navigated
  * through with [+] and [-] buttons from a spinner widget.
  */
-export function dropdownSpinner<TPos extends Positions>(params: DropdownSpinnerParams & TPos): WidgetCreator<DropdownSpinnerParams & TPos>
+export function dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition): WidgetCreator<DropdownSpinnerParams & FlexiblePosition>;
+export function dropdownSpinner(params: DropdownSpinnerParams & AbsolutePosition): WidgetCreator<DropdownSpinnerParams & AbsolutePosition>;
+export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<DropdownSpinnerParams>
 {
 	return {
 		params: params,

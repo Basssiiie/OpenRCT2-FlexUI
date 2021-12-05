@@ -1,5 +1,7 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Control } from "./control";
 
@@ -13,7 +15,9 @@ export type WidgetParams = Omit<Widget, "x" | "y" | "width" | "height" | "window
 /**
  * Add a custom widget without any bindings.
  */
-export function widget<TPos extends Positions>(params: WidgetParams & TPos): WidgetCreator<WidgetParams & TPos>
+export function widget(params: WidgetParams & FlexiblePosition): WidgetCreator<WidgetParams & FlexiblePosition>;
+export function widget(params: WidgetParams & AbsolutePosition): WidgetCreator<WidgetParams & AbsolutePosition>;
+export function widget(params: WidgetParams & Positions): WidgetCreator<WidgetParams>
 {
 	return {
 		params: params,
