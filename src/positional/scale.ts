@@ -1,3 +1,4 @@
+import { zeroScale } from "@src/core/constants";
 import { isNumber, isUndefined } from "@src/utilities/type";
 
 /**
@@ -112,8 +113,6 @@ export function parseScaleOrFallback(value: Scale | undefined, fallback: ParsedS
 	return parseScale(value) || fallback;
 }
 
-
-const zeroScale: ParsedScale = [0, ScaleType.Pixel];
 
 
 /**

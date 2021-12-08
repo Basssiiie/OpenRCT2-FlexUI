@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { defaultLineHeight } from "@src/core/defaults";
+import { defaultLineHeight } from "@src/core/constants";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
 import { AbsolutePosition } from "@src/positional/absolutePosition";

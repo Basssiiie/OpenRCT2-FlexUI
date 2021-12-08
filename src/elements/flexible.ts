@@ -1,5 +1,5 @@
 import { BuildOutput } from "@src/core/buildOutput";
-import { defaultSpacing } from "@src/core/defaults";
+import { defaultSpacing } from "@src/core/constants";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { WidgetMap } from "@src/core/widgetMap";
 import { flexibleLayout } from "@src/layouts/flexibleLayout";
@@ -7,11 +7,12 @@ import { Layoutable } from "@src/layouts/layoutable";
 import { AbsolutePosition } from "@src/positional/absolutePosition";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
-import { Paddable } from "@src/positional/padding";
+import { Paddable, parsePadding } from "@src/positional/padding";
+import { Parsed } from "@src/positional/parsed";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
-import { Scale } from "@src/positional/scale";
-import { isArray, isUndefined } from "@src/utilities/type";
+import { ParsedScale, parseScale, Scale } from "@src/positional/scale";
+import { isArray } from "@src/utilities/type";
 
 
 /**
@@ -82,26 +83,32 @@ export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer
 
 class FlexibleLayoutControl implements Layoutable
 {
-	_childPositions: FlexiblePosition[];
-	_childLayoutFunctions: Layoutable[];
 	_direction: Direction;
-	_spacing: Scale;
+	_childLayoutFunctions: Layoutable[];
+	_childPositions: Parsed<FlexiblePosition>[];
+	_spacing: ParsedScale;
 
 	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
 	{
 		this._direction = direction;
-		this._spacing = ("spacing" in params && !isUndefined(params.spacing)) ? params.spacing : defaultSpacing;
+
+		let spacing: ParsedScale | undefined;
+		if ("spacing" in params)
+		{
+			spacing = parseScale(params.spacing);
+		}
+		this._spacing = spacing || defaultSpacing;
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
-		this._childPositions = Array<FlexiblePosition>(count);
 		this._childLayoutFunctions = Array<Layoutable>(count);
+		this._childPositions = Array<Parsed<FlexiblePosition>>(count);
 
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			this._childPositions[i] = child.params;
 			this._childLayoutFunctions[i] = child.create(output);
+			this._childPositions[i] = parseFlexiblePosition(child.params);
 		}
 	}
 
@@ -112,4 +119,17 @@ class FlexibleLayoutControl implements Layoutable
 			this._childLayoutFunctions[idx].layout(widgets, subarea);
 		});
 	}
+}
+
+
+/**
+ * Parses the properties used in a flexible layout.
+ */
+function parseFlexiblePosition(desired: FlexiblePosition): Parsed<FlexiblePosition>
+{
+	return {
+		width: parseScale(desired.width),
+		height: parseScale(desired.height),
+		padding: parsePadding(desired.padding),
+	};
 }

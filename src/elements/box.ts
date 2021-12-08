@@ -6,7 +6,7 @@ import { Layoutable } from "@src/layouts/layoutable";
 import { Bindable } from "@src/observables/bindable";
 import { AbsolutePosition } from "@src/positional/absolutePosition";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
-import { Padding } from "@src/positional/padding";
+import { Padding, ParsedPadding, parsePadding } from "@src/positional/padding";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { isUndefined } from "@src/utilities/type";
@@ -62,8 +62,8 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 	text?: string;
 
 	_child: Layoutable;
-	_innerPadding: Padding;
-	_childPadding?: Padding;
+	_innerPadding: ParsedPadding;
+	_childPadding?: ParsedPadding;
 
 	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & FlexiblePosition)
 	{
@@ -92,9 +92,9 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 			binder.add(this, "text", params.text);
 		}
 
-		this._innerPadding = padding;
+		this._innerPadding = parsePadding(padding);
 		this._child = content.create(output);
-		this._childPadding = content.params.padding;
+		this._childPadding = parsePadding(content.params.padding);
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void

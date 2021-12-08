@@ -1,15 +1,17 @@
+import { zeroScale } from "@src/core/constants";
 import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
-import { Padding } from "@src/positional/padding";
+import { ParsedPadding } from "@src/positional/padding";
+import { Parsed } from "@src/positional/parsed";
 import { Rectangle } from "@src/positional/rectangle";
-import { convertToPixels, ParsedScale, parseScaleOrFallback, parseScaleOrZero, Scale, ScaleType } from "@src/positional/scale";
-import { isArray, isObject, isUndefined } from "@src/utilities/type";
+import { convertToPixels, ParsedScale, ScaleType } from "@src/positional/scale";
+import { isUndefined } from "@src/utilities/type";
 
 
 /**
  * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectangle, direction: Direction, spacing: Scale, apply: (index: number, childArea: Rectangle) => void): void
+export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, direction: Direction, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
 {
 	const elementCount = elements.length;
 	if (!elementCount)
@@ -22,7 +24,7 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 
 	// Second pass: calculate positions and relative sizes with leftover space.
 	const leftoverSpace = (parentArea[keys._mainSize] - stack._absoluteSpace);
-	const spaceInPixels = convertToPixels(stack._spacing, leftoverSpace, stack._weightedTotal);
+	const spaceInPixels = convertToPixels(spacing, leftoverSpace, stack._weightedTotal);
 
 	let cursor = 0;
 
@@ -64,30 +66,26 @@ export function flexibleLayout(elements: FlexiblePosition[], parentArea: Rectang
 /**
  * Applies padding to a specific area as a whole.
  */
-export function applyPadding(area: Rectangle, padding: Padding): void
+export function applyPadding(area: Rectangle, padding: ParsedPadding): void
 {
 	const parsed = {} as ParsedStackElement;
-	const keys = { _mainDirection: Direction.Horizontal, _otherDirection: Direction.Vertical };
-
-	parsePadding(padding, parsed, keys as DirectionKeys);
+	setPaddingToDirection(padding, parsed, Direction.Vertical);
 
 	if (!parsed._hasPadding)
 		return;
 
 	const width = area.width, height = area.height;
-	const left = convertToPixels(parsed._mainStart, width, width);
-	const top = convertToPixels(parsed._otherStart, height, height);
+	const left = convertToPixels(parsed._otherStart, height, height);
+	const top = convertToPixels(parsed._mainStart, width, width);
 	area.x += left;
 	area.y += top;
-	area.width -= (left + convertToPixels(parsed._mainEnd, width, width));
-	area.height -= (top + convertToPixels(parsed._otherEnd, height, height));
+	area.width -= (left + convertToPixels(parsed._otherEnd, width, width));
+	area.height -= (top + convertToPixels(parsed._mainEnd, height, height));
 }
 
 
 type AxisKey = "x" | "y";
 type SizeKey = "width" | "height";
-type StartKey = "top" | "left";
-type EndKey = "bottom" | "right";
 
 
 // Contains the keys to use for laying out the widgets.
@@ -102,31 +100,12 @@ interface DirectionKeys
 }
 
 
-// Contains the keys to use for reading out the padding.
-interface PaddingKeys
-{
-	_mainStart: StartKey;
-	_mainEnd: EndKey;
-	_otherStart: StartKey;
-	_otherEnd: EndKey;
-}
-
-
-// Specifies the starting or ending side of padding on a single axis.
-const enum PaddingSide
-{
-	Start = 0,
-	End = 1
-}
-
-
 // A parsed stack of widget elements.
 interface ParsedStack
 {
 	_elements: ParsedStackElement[];
 	_absoluteSpace: number;
 	_weightedTotal: number;
-	_spacing: ParsedScale;
 }
 
 // The parsed scales for a specific element.
@@ -148,26 +127,24 @@ const defaultScale: ParsedScale = [1, ScaleType.Weight];
 /**
  * Parses all specified child positions
  */
-function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, keys: DirectionKeys): ParsedStack
+function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, keys: DirectionKeys): ParsedStack
 {
 	const elementCount = elements.length;
 	const stack: ParsedStack = {
 		_elements: Array<ParsedStackElement>(elementCount),
 		_absoluteSpace: 0,
-		_weightedTotal: 0,
-		_spacing: parseScaleOrZero(spacing)
+		_weightedTotal: 0
 	};
 
 	// Parse spacing in between elements
-	const space = stack._spacing;
-	const spaceType = space[1];
+	const spaceType = spacing[1];
 	if (spaceType === ScaleType.Weight)
 	{
-		stack._weightedTotal += (space[0] * (elementCount - 1));
+		stack._weightedTotal += (spacing[0] * (elementCount - 1));
 	}
 	else if (spaceType === ScaleType.Pixel)
 	{
-		const pixelSize = (space[0] * (elementCount - 1));
+		const pixelSize = (spacing[0] * (elementCount - 1));
 		stack._absoluteSpace += pixelSize;
 	}
 
@@ -177,12 +154,12 @@ function parseFlexibleElements(elements: FlexiblePosition[], spacing: Scale, key
 		const params = elements[i];
 		const parsed =
 		{
-			_mainSize: parseScaleOrFallback(params[keys._mainSize], defaultScale),
-			_otherSize: parseScaleOrFallback(params[keys._otherSize], defaultScale),
+			_mainSize: params[keys._mainSize] || defaultScale,
+			_otherSize: params[keys._otherSize] || defaultScale,
 		} as ParsedStackElement;
 
-		// Parse padding
-		parsePadding(params.padding, parsed, keys);
+		// Apply padding
+		setPaddingToDirection(params.padding, parsed, keys._mainDirection);
 
 		stack._elements[i] = parsed;
 
@@ -233,91 +210,30 @@ function getDirectionKeys(direction: Direction): DirectionKeys
 
 
 /**
- * Gets the property keys which should to lay out get the correct padding values
- * for the widgets in the specified direction.
+ * Uses the selected direction to apply padding to the target.
  */
-function getPaddingKeys(direction: Direction): PaddingKeys
-{
-	if (direction === Direction.Vertical)
-	{
-		return {
-			_mainStart: "top",
-			_mainEnd: "bottom",
-			_otherStart: "left",
-			_otherEnd: "right"
-		};
-	}
-	else
-	{
-		return {
-			_mainStart: "left",
-			_mainEnd: "right",
-			_otherStart: "top",
-			_otherEnd: "bottom"
-		};
-	}
-}
-
-
-function parsePadding(padding: Padding | undefined, target: ParsedStackElement, keys: DirectionKeys): void
+function setPaddingToDirection(padding: ParsedPadding | undefined, target: ParsedStackElement, direction: Direction): void
 {
 	if (isUndefined(padding))
 	{
 		// padding not specified, apply no padding.
 		target._hasPadding = false;
+		return;
 	}
-	else if (isArray(padding))
+
+	if (direction === Direction.Horizontal)
 	{
-		// padding specified as 2 or 4 item tuple.
-		const length = padding.length;
-		if (length === 2)
-		{
-			const vectorDir = parseScaleOrZero(padding[keys._mainDirection]);
-			const otherDir = parseScaleOrZero(padding[keys._otherDirection]);
-			setPaddingOnParsedElement(target, vectorDir, vectorDir, otherDir, otherDir);
-		}
-		else if (length === 4)
-		{
-			setPaddingOnParsedElement(
-				target,
-				parseScaleOrZero(padding[(keys._mainDirection << 1) + PaddingSide.Start]),
-				parseScaleOrZero(padding[(keys._mainDirection << 1) + PaddingSide.End]),
-				parseScaleOrZero(padding[(keys._otherDirection << 1) + PaddingSide.Start]),
-				parseScaleOrZero(padding[(keys._otherDirection << 1) + PaddingSide.End])
-			);
-		}
-		else
-			throw new Error(`Padding array of unknown length: ${length}. Only lengths of 2 or 4 are supported.`);
-	}
-	else if (isObject(padding))
-	{
-		// padding specified as object
-		const padKeys = getPaddingKeys(keys._mainDirection);
-		setPaddingOnParsedElement(
-			target,
-			parseScaleOrZero(padding[padKeys._mainStart]),
-			parseScaleOrZero(padding[padKeys._mainEnd]),
-			parseScaleOrZero(padding[padKeys._otherStart]),
-			parseScaleOrZero(padding[padKeys._otherEnd])
-		);
+		target._mainStart = padding.left || zeroScale;
+		target._mainEnd = padding.right || zeroScale;
+		target._otherStart = padding.top || zeroScale;
+		target._otherEnd = padding.bottom || zeroScale;
 	}
 	else
 	{
-		// padding specified as number or string
-		const value = parseScaleOrZero(padding);
-		setPaddingOnParsedElement(target, value, value, value, value);
+		target._mainStart = padding.top || zeroScale;
+		target._mainEnd = padding.bottom || zeroScale;
+		target._otherStart = padding.left || zeroScale;
+		target._otherEnd = padding.right || zeroScale;
 	}
-}
-
-
-/**
- * Writes the values to the stacked element.
- */
-function setPaddingOnParsedElement(target: ParsedStackElement, mainStart: ParsedScale, mainEnd: ParsedScale, otherStart: ParsedScale, otherEnd: ParsedScale): void
-{
-	target._mainStart = mainStart;
-	target._mainEnd = mainEnd;
-	target._otherStart = otherStart;
-	target._otherEnd = otherEnd;
-	target._hasPadding = (mainStart[0] !== 0 || mainEnd[0] !== 0 || otherStart[0] !== 0 || otherEnd[0] !== 0);
+	target._hasPadding = (target._mainStart[0] !== 0 || target._mainEnd[0] !== 0 || target._otherStart[0] !== 0 || target._otherEnd[0] !== 0);
 }

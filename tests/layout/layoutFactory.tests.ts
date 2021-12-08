@@ -1,7 +1,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import test from "ava";
-import { Padding } from "@src/positional/padding";
+import { ParsedPadding, parsePadding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
 import { applyPadding } from "@src/layouts/flexibleLayout";
 
@@ -9,8 +9,8 @@ import { applyPadding } from "@src/layouts/flexibleLayout";
 test("Apply no padding", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 100, height: 200 };
-	const padding: Padding = 0;
 
+	const padding: ParsedPadding = parsePadding(0);
 	applyPadding(area, padding);
 
 	t.is(10, area.x);
@@ -23,8 +23,8 @@ test("Apply no padding", t =>
 test("Apply basic padding", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 100, height: 200 };
-	const padding: Padding = 5;
 
+	const padding: ParsedPadding = parsePadding(5);
 	applyPadding(area, padding);
 
 	t.is(15, area.x);
@@ -37,8 +37,8 @@ test("Apply basic padding", t =>
 test("Apply horizontal and vertical padding", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 100, height: 200 };
-	const padding: Padding = [20, 15];
 
+	const padding: ParsedPadding = parsePadding([20, 15]);
 	applyPadding(area, padding);
 
 	t.is(25, area.x);

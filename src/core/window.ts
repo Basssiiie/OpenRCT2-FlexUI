@@ -2,7 +2,7 @@ import { flexible, FlexibleLayoutParams } from "@src/elements/flexible";
 import { applyPadding } from "@src/layouts/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Direction } from "@src/positional/direction";
-import { Paddable, Padding } from "@src/positional/padding";
+import { Paddable, Padding, ParsedPadding, parsePadding } from "@src/positional/padding";
 import { Rectangle } from "@src/positional/rectangle";
 import { WindowTemplate } from "@src/templates/windowTemplate";
 import { WindowColour } from "@src/utilities/colour";
@@ -210,14 +210,14 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 
 	// Check if padding was specified..
 	const suppliedPadding = params.padding;
-	const padding = (!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding;
+	const parsedPadding = parsePadding((!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding);
 
 	window.widgets = output._widgets;
-	performLayout(output._widgets, control, window.width, window.height, padding);
+	performLayout(output._widgets, control, window.width, window.height, parsedPadding);
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
-		setWindowLayoutResizing(output, window, control, padding);
+		setWindowLayoutResizing(output, window, control, parsedPadding);
 	}
 }
 
@@ -225,7 +225,7 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 /**
  * Enables resizing the window by the user.
  */
-function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, control: Layoutable, padding?: Padding): void
+function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, control: Layoutable, padding?: ParsedPadding): void
 {
 	const previous = { name: window.classification, width: window.width, height: window.height };
 	output.update.push((): void =>
@@ -247,7 +247,7 @@ function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, con
 /**
  * Recalculate the whole layout.
  */
-function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: Padding): void
+function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: ParsedPadding): void
 {
 	// Skip the top bar (15px)
 	const area: Rectangle = { x: 0, y: topBarSize, width: width, height: height - topBarSize };

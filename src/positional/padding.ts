@@ -1,4 +1,5 @@
-import { Scale } from "./scale";
+import { isUndefined, isArray, isObject } from "@src/utilities/type";
+import { ParsedScale, parseScaleOrZero, Scale } from "./scale";
 
 
 /**
@@ -29,4 +30,80 @@ export interface Paddable
 	 * @default "5px" for boxes and window frame, 0 for everything else.
 	 */
 	padding?: Padding;
+}
+
+
+/**
+ * Object that contains the parsed padding values.
+ */
+export interface ParsedPadding
+{
+	top?: ParsedScale;
+	right?: ParsedScale;
+	bottom?: ParsedScale;
+	left?: ParsedScale;
+}
+
+
+/**
+ * Parses the padding to usable tuples of parsed scales.
+ */
+export function parsePadding(padding: Padding): ParsedPadding;
+export function parsePadding(padding: Padding | undefined): ParsedPadding | undefined;
+export function parsePadding(padding: Padding | undefined): ParsedPadding | undefined
+{
+	let returnValue: ParsedPadding | undefined;
+	if (isUndefined(padding))
+	{
+		// padding not specified, apply no padding.
+		returnValue = padding;
+	}
+	else if (isArray(padding))
+	{
+		// padding specified as 2 or 4 item tuple.
+		const length = padding.length;
+		if (length === 2)
+		{
+			const vertical = parseScaleOrZero(padding[0]);
+			const horizontal = parseScaleOrZero(padding[1]);
+			returnValue = createParsed(vertical, horizontal, vertical, horizontal);
+		}
+		else if (length === 4)
+		{
+			returnValue = createParsed(
+				parseScaleOrZero(padding[0]),
+				parseScaleOrZero(padding[1]),
+				parseScaleOrZero(padding[2]),
+				parseScaleOrZero(padding[3])
+			);
+		}
+		else
+			throw new Error(`Padding array of unknown length: ${length}. Only lengths of 2 or 4 are supported.`);
+	}
+	else if (isObject(padding))
+	{
+		// padding specified as object
+		returnValue = createParsed(
+			parseScaleOrZero(padding.top),
+			parseScaleOrZero(padding.right),
+			parseScaleOrZero(padding.bottom),
+			parseScaleOrZero(padding.left)
+		);
+	}
+	else
+	{
+		// padding specified as number or string
+		const value = parseScaleOrZero(padding);
+		returnValue = createParsed(value, value, value, value);
+	}
+	return returnValue;
+}
+
+
+/**
+ * Create a parsed padding object.
+ */
+function createParsed(top: ParsedScale, right: ParsedScale, bottom: ParsedScale, left: ParsedScale): ParsedPadding
+{
+	return { top, right, bottom, left };
 }
