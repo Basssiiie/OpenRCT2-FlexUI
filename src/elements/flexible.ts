@@ -41,30 +41,36 @@ export interface FlexibleLayoutParams extends Paddable
 /**
  * Add a horizontal row with one or more child widgets.
  */
-export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition>;
-export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition>;
+export function horizontal(params: FlexibleLayoutContainer & FlexiblePosition): WidgetCreator<FlexibleLayoutContainer & FlexiblePosition>;
+export function horizontal(params: FlexibleLayoutContainer & AbsolutePosition): WidgetCreator<FlexibleLayoutContainer & AbsolutePosition>;
+export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): WidgetCreator<FlexibleLayoutParams & FlexiblePosition>;
+export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
 export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
-	return flexible(params, Direction.Horizontal);
+	return flexible(<never>params, Direction.Horizontal);
 }
 
 
 /**
  * Add a vertical row with one or more child widgets.
  */
-export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition>;
-export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition>;
+export function vertical(params: FlexibleLayoutContainer & FlexiblePosition): WidgetCreator<FlexibleLayoutContainer & FlexiblePosition>;
+export function vertical(params: FlexibleLayoutContainer & AbsolutePosition): WidgetCreator<FlexibleLayoutContainer & AbsolutePosition>;
+export function vertical(params: FlexibleLayoutParams & FlexiblePosition): WidgetCreator<FlexibleLayoutParams & FlexiblePosition>;
+export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
 export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
-	return flexible(params, Direction.Vertical);
+	return flexible(<never>params, Direction.Vertical);
 }
 
 
 /**
  * Add a flexible row with one or more child widgets in the specified direction.
  */
-export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition, direction: Direction): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & FlexiblePosition>;
-export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition, direction: Direction): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer) & AbsolutePosition>;
+export function flexible(params: FlexibleLayoutContainer & FlexiblePosition, direction: Direction): WidgetCreator<FlexibleLayoutContainer & FlexiblePosition>;
+export function flexible(params: FlexibleLayoutContainer & AbsolutePosition, direction: Direction): WidgetCreator<FlexibleLayoutContainer & AbsolutePosition>;
+export function flexible(params: FlexibleLayoutParams & FlexiblePosition, direction: Direction): WidgetCreator<FlexibleLayoutParams & FlexiblePosition>;
+export function flexible(params: FlexibleLayoutParams & AbsolutePosition, direction: Direction): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
 export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: Direction): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
 	return {

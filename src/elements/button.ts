@@ -1,6 +1,8 @@
 import { BuildOutput } from "@src/core/buildOutput";
 import { WidgetCreator } from "@src/core/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Control } from "./control";
 import { ElementParams } from "./element";
@@ -35,7 +37,12 @@ export interface ButtonParams extends ElementParams
 }
 
 
-export function button<TPos extends Positions>(params: ButtonParams & TPos): WidgetCreator<ButtonParams & TPos>
+/**
+ * Create a clickable button that can perform an action.
+ */
+export function button(params: ButtonParams & FlexiblePosition): WidgetCreator<ButtonParams & FlexiblePosition>;
+export function button(params: ButtonParams & AbsolutePosition): WidgetCreator<ButtonParams & AbsolutePosition>;
+export function button(params: ButtonParams & Positions): WidgetCreator<ButtonParams & Positions>
 {
 	return {
 		params: params,

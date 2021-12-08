@@ -4,6 +4,7 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { absoluteLayout } from "@src/layouts/absoluteLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { AbsolutePosition } from "@src/positional/absolutePosition";
+import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Positions } from "@src/positional/positions";
 import { Rectangle } from "@src/positional/rectangle";
 import { isArray } from "@src/utilities/type";
@@ -30,7 +31,11 @@ export interface AbsoluteLayoutParams
 /**
  * Add an area with widgets positioned at absolute.
  */
-export function absolute<TPos extends Positions>(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & TPos): WidgetCreator<(AbsoluteLayoutParams | AbsoluteLayoutContainer) & TPos>
+export function absolute(params: AbsoluteLayoutContainer & FlexiblePosition): WidgetCreator<AbsoluteLayoutContainer & FlexiblePosition>;
+export function absolute(params: AbsoluteLayoutContainer & AbsolutePosition): WidgetCreator<AbsoluteLayoutContainer & AbsolutePosition>;
+export function absolute(params: AbsoluteLayoutParams & FlexiblePosition): WidgetCreator<AbsoluteLayoutParams & FlexiblePosition>;
+export function absolute(params: AbsoluteLayoutParams & AbsolutePosition): WidgetCreator<AbsoluteLayoutParams & AbsolutePosition>;
+export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions): WidgetCreator<(AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions>
 {
 	return {
 		params: params,

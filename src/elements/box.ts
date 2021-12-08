@@ -4,6 +4,7 @@ import { WidgetMap } from "@src/core/widgetMap";
 import { applyPadding } from "@src/layouts/flexibleLayout";
 import { Layoutable } from "@src/layouts/layoutable";
 import { Bindable } from "@src/observables/bindable";
+import { AbsolutePosition } from "@src/positional/absolutePosition";
 import { FlexiblePosition } from "@src/positional/flexiblePosition";
 import { Padding } from "@src/positional/padding";
 import { Positions } from "@src/positional/positions";
@@ -36,7 +37,11 @@ export interface BoxParams extends ElementParams
 /**
  * Create a visual box for grouping one or widgets with the specified parameters.
  */
-export function box<TPos extends Positions>(params: (BoxParams | BoxContainer) & TPos): WidgetCreator<(BoxParams | BoxContainer) & TPos>
+export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<BoxContainer & FlexiblePosition>;
+export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<BoxContainer & AbsolutePosition>;
+export function box(params: BoxParams & FlexiblePosition): WidgetCreator<BoxParams & FlexiblePosition>;
+export function box(params: BoxParams & AbsolutePosition): WidgetCreator<BoxParams & AbsolutePosition>;
+export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreator<(BoxParams | BoxContainer) & Positions>
 {
 	return {
 		params: params,
