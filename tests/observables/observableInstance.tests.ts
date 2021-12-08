@@ -1,5 +1,5 @@
-import test from "ava";
 import { ObservableInstance } from "@src/observables/observableInstance";
+import test from "ava";
 
 
 test("get() returns string from constructor", t =>

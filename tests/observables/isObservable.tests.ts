@@ -1,6 +1,6 @@
-import test from "ava";
-import { ObservableInstance } from "@src/observables/observableInstance";
 import { isObservable } from "@src/observables/isObservable";
+import { ObservableInstance } from "@src/observables/observableInstance";
+import test from "ava";
 
 
 test("Observable string is true", t =>

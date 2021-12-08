@@ -1,37 +1,38 @@
 // Window related components
-export { window, WindowParams, TabbedWindowParams } from "./core/window";
-export { WindowTemplate } from "./templates/windowTemplate";
+export { window, WindowParams, TabbedWindowParams } from "./building/window";
+export { WindowTemplate } from "./building/windowTemplate";
 export { observable } from "./observables/observableConstructor";
 export { Observable } from "./observables/observable";
 
 // Widget controls
-export { box, BoxParams } from "./elements/box";
-export { button, ButtonParams } from "./elements/button";
-export { dropdown, DropdownParams } from "./elements/dropdown";
-export { dropdownSpinner, DropdownSpinnerParams } from "./elements/dropdownSpinner";
-export { flexible, horizontal, vertical, FlexibleLayoutParams } from "./elements/flexible";
-export { label, LabelParams } from "./elements/label";
-export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/spinner";
-export { toggle, ToggleParams } from "./elements/toggle";
-export { viewport, ViewportParams, ViewportFlags } from "./elements/viewport";
+export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
+export { box, BoxParams } from "./elements/controls/box";
+export { button, ButtonParams } from "./elements/controls/button";
+export { dropdown, DropdownParams } from "./elements/controls/dropdown";
+export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
+export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
+export { label, LabelParams } from "./elements/controls/label";
+export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
+export { toggle, ToggleParams } from "./elements/controls/toggle";
+export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/viewport";
 
 // Widget parameter types
 export { ElementVisibility } from "./elements/element";
 export { WindowColour } from "./utilities/colour";
 
 // Layout information
-export { AbsolutePosition } from "./positional/absolutePosition";
-export { FlexiblePosition } from "./positional/flexiblePosition";
-export { Positions } from "./positional/positions";
+export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
+export { FlexiblePosition } from "./elements/layouts/flexible/flexiblePosition";
+export { Positions } from "./elements/layouts/positions";
 export { Scale } from "./positional/scale";
 export { Padding } from "./positional/padding";
 export { Rectangle } from "./positional/rectangle";
 
 // Internal components
-export { BuildOutput } from "./core/buildOutput";
-export { WidgetMap as WidgetContainer } from "./core/widgetMap";
-export { WidgetCreator } from "./core/widgetCreator";
-export { WindowEvent } from "./core/windowEvent";
-export { Layoutable } from "./layouts/layoutable";
+export { BuildOutput } from "./building/buildOutput";
+export { WidgetMap as WidgetContainer } from "./building/widgetMap";
+export { WidgetCreator } from "./building/widgetCreator";
+export { WindowEvent } from "./building/windowEvent";
+export { Layoutable } from "./building/layoutable";
 export { Bindable } from "./observables/bindable";
 export { Binder } from "./observables/binder";

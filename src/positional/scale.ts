@@ -1,4 +1,4 @@
-import { zeroScale } from "@src/core/constants";
+import { zeroScale } from "@src/elements/constants";
 import { isNumber, isUndefined } from "@src/utilities/type";
 
 /**
