@@ -55,6 +55,8 @@ export type ParsedScale = [number, ScaleType];
 /**
  * Parses an user-defined scale (either string or number) to a tuple of scale value and type.
  */
+export function parseScale(value: Scale): ParsedScale;
+export function parseScale(value: Scale | undefined): ParsedScale | undefined;
 export function parseScale(value: Scale | undefined): ParsedScale | undefined
 {
 	if (isUndefined(value))
