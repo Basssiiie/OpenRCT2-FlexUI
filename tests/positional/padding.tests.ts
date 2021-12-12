@@ -13,10 +13,10 @@ test("Apply no padding", t =>
 	const padding: ParsedPadding = parsePadding(0);
 	applyPadding(area, padding);
 
-	t.is(10, area.x);
-	t.is(20, area.y);
-	t.is(100, area.width);
-	t.is(200, area.height);
+	t.is(area.x, 10);
+	t.is(area.y, 20);
+	t.is(area.width, 100);
+	t.is(area.height, 200);
 });
 
 
@@ -27,10 +27,10 @@ test("Apply basic padding", t =>
 	const padding: ParsedPadding = parsePadding(5);
 	applyPadding(area, padding);
 
-	t.is(15, area.x);
-	t.is(25, area.y);
-	t.is(90, area.width);
-	t.is(190, area.height);
+	t.is(area.x, 15);
+	t.is(area.y, 25);
+	t.is(area.width, 90);
+	t.is(area.height, 190);
 });
 
 
@@ -41,8 +41,8 @@ test("Apply horizontal and vertical padding", t =>
 	const padding: ParsedPadding = parsePadding([20, 15]);
 	applyPadding(area, padding);
 
-	t.is(25, area.x);
-	t.is(40, area.y);
-	t.is(70, area.width);
-	t.is(160, area.height);
+	t.is(area.x, 25);
+	t.is(area.y, 40);
+	t.is(area.width, 70);
+	t.is(area.height, 160);
 });
