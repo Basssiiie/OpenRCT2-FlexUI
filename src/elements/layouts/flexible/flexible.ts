@@ -7,7 +7,7 @@ import { Direction } from "@src/positional/direction";
 import { Paddable, parsePadding } from "@src/positional/padding";
 import { Parsed } from "@src/positional/parsed";
 import { Rectangle } from "@src/positional/rectangle";
-import { ParsedScale, parseScale, Scale } from "@src/positional/scale";
+import { ParsedScale, parseScale, Scale, ScaleType } from "@src/positional/scale";
 import { isArray } from "@src/utilities/type";
 import { AbsolutePosition } from "../absolute/absolutePosition";
 import { Positions } from "../positions";
@@ -89,7 +89,7 @@ class FlexibleLayoutControl implements Layoutable
 	_childPositions: Parsed<FlexiblePosition>[];
 	_spacing: ParsedScale;
 
-	constructor(output: BuildOutput, params: FlexibleLayoutParams | FlexibleLayoutContainer, direction: Direction)
+	constructor(output: BuildOutput, params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: Direction)
 	{
 		this._direction = direction;
 
@@ -105,11 +105,45 @@ class FlexibleLayoutControl implements Layoutable
 		this._childLayoutFunctions = Array<Layoutable>(count);
 		this._childPositions = Array<Parsed<FlexiblePosition>>(count);
 
+		let absoluteWidth: number = 0, isFullyAbsoluteWidth: boolean = true,
+			absoluteHeight: number = 0, isFullyAbsoluteHeight: boolean = true;
+		const isHorizontal = (direction === Direction.Horizontal);
+
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
 			this._childLayoutFunctions[i] = child.create(output);
-			this._childPositions[i] = parseFlexiblePosition(child.params);
+			const pos = parseFlexiblePosition(child.params);
+			this._childPositions[i] = pos;
+
+			// Determine if all children are absolutely sized,
+			// if so, then size itself accordingly.
+			const width = pos.width, height = pos.height;
+			if (width && width[1] === ScaleType.Pixel)
+			{
+				absoluteWidth = addOrMax(absoluteWidth, width[0], isHorizontal);
+			}
+			else
+			{
+				isFullyAbsoluteWidth = false;
+			}
+			if (height && height[1] === ScaleType.Pixel)
+			{
+				absoluteHeight = addOrMax(absoluteHeight, height[0], !isHorizontal);
+			}
+			else
+			{
+				isFullyAbsoluteHeight = false;
+			}
+		}
+
+		if (isFullyAbsoluteWidth)
+		{
+			params.width = absoluteWidth;
+		}
+		if (isFullyAbsoluteHeight)
+		{
+			params.height = absoluteHeight;
 		}
 	}
 
@@ -133,4 +167,17 @@ function parseFlexiblePosition(desired: FlexiblePosition): Parsed<FlexiblePositi
 		height: parseScale(desired.height),
 		padding: parsePadding(desired.padding),
 	};
+}
+
+
+/**
+ * Either adds the new value, or returns the highest of the two.
+ */
+function addOrMax(oldValue: number, newValue: number, add: boolean): number
+{
+	if (add)
+	{
+		return (oldValue + newValue);
+	}
+	return (oldValue < newValue) ? newValue : oldValue;
 }

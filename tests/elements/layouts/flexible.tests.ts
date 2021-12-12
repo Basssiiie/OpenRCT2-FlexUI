@@ -4,7 +4,7 @@ import { BuildContainer } from "@src/building/buildContainer";
 import { createWidgetMap } from "@src/building/widgetMap";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
-import { flexible, FlexibleLayoutParams, horizontal } from "@src/elements/layouts/flexible/flexible";
+import { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal } from "@src/elements/layouts/flexible/flexible";
 import { Direction } from "@src/positional/direction";
 import { Rectangle } from "@src/positional/rectangle";
 import test from "ava";
@@ -514,4 +514,69 @@ test("Spacing: weighted space between two elements", t =>
 	t.is(label2.y, 0);
 	t.is(label2.width, 10);
 	t.is(label2.height, 14);
+});
+
+
+test("Absolute children make parent absolutely sized", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const params: FlexibleLayoutParams =
+	{
+		content: [
+			label({ text: "a", width: 20, height: "12px" }),
+			label({ text: "b", width: 15, height: "5px" })
+		]
+	};
+	const creator = flexible(params, Direction.Horizontal);
+	creator.create(output); // todo: create() should not required for this to work
+	const pos = creator.params;
+
+	t.is(pos.width, 35);
+	t.is(pos.height, 12);
+});
+
+
+test("Absolute children make all parents absolutely sized", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const params: FlexibleLayoutContainer =
+	[
+		flexible([
+			label({ text: "a", width: 20, height: "12px" }),
+			label({ text: "b", width: 15, height: "5px" })
+		], Direction.Vertical),
+		flexible([
+			label({ text: "c", width: "33px", height: 11 }),
+			label({ text: "d", width: 8, height: "51px" })
+		], Direction.Horizontal)
+	];
+	const creator = flexible(params, Direction.Horizontal);
+	creator.create(output); // todo: create() should not required for this to work
+	const pos = creator.params;
+
+	t.is(pos.width, 61);
+	t.is(pos.height, 51);
+});
+
+
+test("Single non-absolute child makes parents size unknown", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const params: FlexibleLayoutContainer =
+	[
+		flexible([
+			label({ text: "a", width: 20, height: "12px" }),
+			label({ text: "b", width: "1w", height: "50%" }) // <- non-absolute
+		], Direction.Vertical),
+		flexible([
+			label({ text: "c", width: "33px", height: 11 }),
+			label({ text: "d", width: 8, height: "51px" })
+		], Direction.Horizontal)
+	];
+	const creator = flexible(params, Direction.Horizontal);
+	creator.create(output); // todo: create() should not required for this to work
+	const pos = creator.params;
+
+	t.is(pos.width, undefined);
+	t.is(pos.height, undefined);
 });
