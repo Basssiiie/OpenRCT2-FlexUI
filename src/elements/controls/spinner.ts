@@ -4,9 +4,8 @@ import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
 import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
-import { wrap, clamp } from "@src/utilities/math";
-import { isUndefined } from "@src/utilities/type";
-import { defaultLineHeight } from "../constants";
+import { clamp, wrap } from "@src/utilities/math";
+import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -88,8 +87,7 @@ export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator
 export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<SpinnerParams & AbsolutePosition>;
 export function spinner(params: SpinnerParams & Positions): WidgetCreator<SpinnerParams>
 {
-	if (isUndefined(params.height))
-		params.height = defaultLineHeight;
+	ensureDefaultLineHeight(params);
 
 	return {
 		params: params,

@@ -1,8 +1,7 @@
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
-import { isUndefined } from "@src/utilities/type";
-import { defaultLineHeight } from "../constants";
+import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -52,8 +51,7 @@ export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreat
 export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<DropdownParams & AbsolutePosition>;
 export function dropdown(params: DropdownParams & Positions): WidgetCreator<DropdownParams>
 {
-	if (isUndefined(params.height))
-		params.height = defaultLineHeight;
+	ensureDefaultLineHeight(params);
 
 	return {
 		params: params,

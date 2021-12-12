@@ -2,8 +2,7 @@ import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { Bindable } from "@src/observables/bindable";
 import { TextColour } from "@src/utilities/colour";
-import { isUndefined } from "@src/utilities/type";
-import { defaultLineHeight } from "../constants";
+import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -43,8 +42,7 @@ export function label(params: LabelParams & FlexiblePosition): WidgetCreator<Lab
 export function label(params: LabelParams & AbsolutePosition): WidgetCreator<LabelParams & AbsolutePosition>;
 export function label(params: LabelParams & Positions): WidgetCreator<LabelParams>
 {
-	if (isUndefined(params.height))
-		params.height = defaultLineHeight;
+	ensureDefaultLineHeight(params);
 
 	return {
 		params: params,

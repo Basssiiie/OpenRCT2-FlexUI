@@ -23,7 +23,6 @@ export { WindowColour } from "./utilities/colour";
 // Layout information
 export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
 export { FlexiblePosition } from "./elements/layouts/flexible/flexiblePosition";
-export { Positions } from "./elements/layouts/positions";
 export { Scale } from "./positional/scale";
 export { Padding } from "./positional/padding";
 export { Rectangle } from "./positional/rectangle";

@@ -4,6 +4,7 @@ import { WidgetMap } from "@src/building/widgetMap";
 import { isObservable } from "@src/observables/isObservable";
 import { observable } from "@src/observables/observableConstructor";
 import { Rectangle } from "@src/positional/rectangle";
+import { ensureDefaultLineHeight } from "../constants";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { fillLayout } from "../layouts/fillLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -33,6 +34,8 @@ export function dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition
 export function dropdownSpinner(params: DropdownSpinnerParams & AbsolutePosition): WidgetCreator<DropdownSpinnerParams & AbsolutePosition>;
 export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<DropdownSpinnerParams>
 {
+	ensureDefaultLineHeight(params);
+
 	return {
 		params: params,
 		create: (output: BuildOutput): DropdownSpinnerControl => new DropdownSpinnerControl(output, params)
