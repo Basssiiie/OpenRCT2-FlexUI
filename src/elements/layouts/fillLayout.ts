@@ -1,5 +1,6 @@
 import { WidgetMap } from "@src/building/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
+import { round } from "@src/utilities/math";
 
 
 /**
@@ -9,8 +10,8 @@ import { Rectangle } from "@src/positional/rectangle";
 export function fillLayout(widgets: WidgetMap, name: string, area: Rectangle): void
 {
 	const widget = widgets[name];
-	widget.x = area.x;
-	widget.y = area.y;
-	widget.width = area.width;
-	widget.height = area.height;
+	widget.x = round(area.x);
+	widget.y = round(area.y);
+	widget.width = round(area.width);
+	widget.height = round(area.height);
 }

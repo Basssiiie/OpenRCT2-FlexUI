@@ -3,11 +3,12 @@ import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { Bindable } from "@src/observables/bindable";
 import { Direction } from "@src/positional/direction";
-import { Parsed } from "@src/positional/parsed";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { parseScale, Scale } from "@src/positional/scale";
+import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
-import { zeroScale } from "../constants";
+import { defaultScale, zeroPadding, zeroScale } from "../constants";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { flexibleLayout } from "../layouts/flexible/flexibleLayout";
@@ -92,7 +93,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		}
 
 		const count = columns.length;
-		const columWidths = Array<Parsed<ListViewColumnParams & FlexiblePosition>>(count);
+		const columWidths = Array<Parsed<FlexiblePosition>>(count);
 		const columWidgets = Array<ListViewColumn>(count);
 
 		for (let i = 0; i < count; i++)
@@ -100,7 +101,9 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 			const column = (<WidgetCreator<ListViewColumnParams>>columns[i]).params;
 
 			columWidths[i] = {
-				width: parseScale(column.width)
+				width: parseScaleOrFallback(column.width, defaultScale),
+				height: zeroScale,
+				padding: zeroPadding
 			};
 			columWidgets[i] = {
 				header: column.header,

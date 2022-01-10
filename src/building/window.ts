@@ -1,7 +1,11 @@
+import { defaultScale } from "@src/elements/constants";
 import { flexible, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
-import { applyPadding } from "@src/elements/layouts/flexible/flexibleLayout";
+import { applyPadding } from "@src/elements/layouts/paddingHelpers";
 import { Direction } from "@src/positional/direction";
-import { Paddable, Padding, ParsedPadding, parsePadding } from "@src/positional/padding";
+import { Paddable } from "@src/positional/paddable";
+import { Padding } from "@src/positional/padding";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Rectangle } from "@src/positional/rectangle";
 import { WindowColour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
@@ -253,7 +257,7 @@ function performLayout(widgets: Widget[], control: Layoutable, width: number, he
 	const area: Rectangle = { x: 0, y: topBarSize, width: width, height: height - topBarSize };
 	if (padding)
 	{
-		applyPadding(area, padding);
+		applyPadding(area, defaultScale, defaultScale, padding);
 	}
 	const container = createWidgetMap(widgets);
 	control.layout(container, area);

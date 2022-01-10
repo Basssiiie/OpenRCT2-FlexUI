@@ -4,15 +4,18 @@ import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { defaultSpacing } from "@src/elements/constants";
 import { Direction } from "@src/positional/direction";
-import { Paddable, parsePadding } from "@src/positional/padding";
-import { Parsed } from "@src/positional/parsed";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { ParsedScale, parseScale, Scale, ScaleType } from "@src/positional/scale";
+import { Scale } from "@src/positional/scale";
 import { isArray } from "@src/utilities/type";
 import { AbsolutePosition } from "../absolute/absolutePosition";
 import { Positions } from "../positions";
+import { setDesiredSpaceForChildren } from "./desiredSpacing";
 import { flexibleLayout } from "./flexibleLayout";
 import { FlexiblePosition } from "./flexiblePosition";
+import { parseFlexiblePosition } from "./parseFlexiblePosition";
 
 
 
@@ -25,7 +28,7 @@ export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition>[];
 /**
  * The parameters for configuring a flexible layout.
  */
-export interface FlexibleLayoutParams extends Paddable
+export interface FlexibleLayoutParams
 {
 	/**
 	 * Specify the child widgets within this flexible box.
@@ -98,53 +101,25 @@ class FlexibleLayoutControl implements Layoutable
 		{
 			spacing = parseScale(params.spacing);
 		}
-		this._spacing = spacing || defaultSpacing;
+		this._spacing = (spacing ||= defaultSpacing);
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
-		this._childLayoutFunctions = Array<Layoutable>(count);
-		this._childPositions = Array<Parsed<FlexiblePosition>>(count);
-
-		let absoluteWidth: number = 0, isFullyAbsoluteWidth: boolean = true,
-			absoluteHeight: number = 0, isFullyAbsoluteHeight: boolean = true;
-		const isHorizontal = (direction === Direction.Horizontal);
+		const functions = Array<Layoutable>(count);
+		const positions = Array<Parsed<FlexiblePosition>>(count);
 
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			this._childLayoutFunctions[i] = child.create(output);
+			functions[i] = child.create(output);
 			const pos = parseFlexiblePosition(child.params);
-			this._childPositions[i] = pos;
-
-			// Determine if all children are absolutely sized,
-			// if so, then size itself accordingly.
-			const width = pos.width, height = pos.height;
-			if (width && width[1] === ScaleType.Pixel)
-			{
-				absoluteWidth = addOrMax(absoluteWidth, width[0], isHorizontal);
-			}
-			else
-			{
-				isFullyAbsoluteWidth = false;
-			}
-			if (height && height[1] === ScaleType.Pixel)
-			{
-				absoluteHeight = addOrMax(absoluteHeight, height[0], !isHorizontal);
-			}
-			else
-			{
-				isFullyAbsoluteHeight = false;
-			}
+			positions[i] = pos;
 		}
 
-		if (isFullyAbsoluteWidth)
-		{
-			params.width = absoluteWidth;
-		}
-		if (isFullyAbsoluteHeight)
-		{
-			params.height = absoluteHeight;
-		}
+		setDesiredSpaceForChildren(params, positions, <ParsedScale>spacing, direction);
+
+		this._childLayoutFunctions = functions;
+		this._childPositions = positions;
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void
@@ -154,30 +129,4 @@ class FlexibleLayoutControl implements Layoutable
 			this._childLayoutFunctions[idx].layout(widgets, subarea);
 		});
 	}
-}
-
-
-/**
- * Parses the properties used in a flexible layout.
- */
-function parseFlexiblePosition(desired: FlexiblePosition): Parsed<FlexiblePosition>
-{
-	return {
-		width: parseScale(desired.width),
-		height: parseScale(desired.height),
-		padding: parsePadding(desired.padding),
-	};
-}
-
-
-/**
- * Either adds the new value, or returns the highest of the two.
- */
-function addOrMax(oldValue: number, newValue: number, add: boolean): number
-{
-	if (add)
-	{
-		return (oldValue + newValue);
-	}
-	return (oldValue < newValue) ? newValue : oldValue;
 }

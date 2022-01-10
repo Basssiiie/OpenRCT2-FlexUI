@@ -1,6 +1,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { parseScale, ScaleType } from "@src/positional/scale";
+import { parseScale } from "@src/positional/parsing/parseScale";
+import { ScaleType } from "@src/positional/parsing/scaleType";
 import test from "ava";
 
 

@@ -90,7 +90,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		if (this._disabledMessage)
 		{
 			const items = this.items; // get local reference
-			binder.on(params.disabled, this, "items", (value) => (value) ? [ this._disabledMessage as string ] : items);
+			binder.on(params.disabled, this, "items", (value) => (value) ? [ this._disabledMessage || "" ] : items);
 		}
 		if (this._disableSingleItem)
 		{

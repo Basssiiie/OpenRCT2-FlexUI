@@ -1,5 +1,5 @@
-import { Paddable } from "../../../positional/padding";
-import { Scale } from "../../../positional/scale";
+import { Paddable } from "@src/positional/paddable";
+import { Scale } from "@src/positional/scale";
 
 
 /**

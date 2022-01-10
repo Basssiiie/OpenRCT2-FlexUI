@@ -1,4 +1,6 @@
-import { ParsedScale, ScaleType } from "@src/positional/scale";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { ScaleType } from "@src/positional/parsing/scaleType";
 import { isUndefined } from "@src/utilities/type";
 import { AbsolutePosition } from "./layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "./layouts/flexible/flexiblePosition";
@@ -14,9 +16,25 @@ export const defaultLineHeight = 14;
 export const defaultSpacing: ParsedScale = [4, ScaleType.Pixel];
 
 /**
+ * Default scale of a widget.
+ */
+export const defaultScale: ParsedScale = [1, ScaleType.Weight];
+
+/**
  * A scale that equals to zero.
  */
 export const zeroScale: ParsedScale = [0, ScaleType.Pixel];
+
+/**
+ * A padding that equals to zero on each side.
+ */
+export const zeroPadding: ParsedPadding =
+{
+	top: zeroScale,
+	right: zeroScale,
+	bottom: zeroScale,
+	left: zeroScale
+};
 
 
 /**

@@ -1,5 +1,6 @@
+import { isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { convertToPixels, parseScaleOrZero } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { parseScaleOrZero, ScaleType, convertToPixels, ParsedScale } from "@src/positional/scale";
 import { AbsolutePosition } from "./absolutePosition";
 
 
@@ -23,11 +24,11 @@ export function absoluteLayout(elements: AbsolutePosition[], parentArea: Rectang
 		const width = parseScaleOrZero(element.width);
 		const height = parseScaleOrZero(element.height);
 
-		if (width[1] === ScaleType.Weight)
+		if (isWeighted(width))
 		{
 			weightedTotalWidth += width[0];
 		}
-		if (height[1] === ScaleType.Weight)
+		if (isWeighted(height))
 		{
 			weightedTotalHeight += height[0];
 		}

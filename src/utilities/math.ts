@@ -31,3 +31,10 @@ export function wrap(value: number, minimum: number, maximum: number): number
 
 	return value;
 }
+
+
+/**
+ * Shortcut for `Math.round()`.
+ * @see {@link Math.round}
+ */
+export const round = Math.round;

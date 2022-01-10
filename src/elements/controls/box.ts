@@ -3,13 +3,18 @@ import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { Bindable } from "@src/observables/bindable";
-import { Padding, ParsedPadding, parsePadding } from "@src/positional/padding";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
+import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { isUndefined } from "@src/utilities/type";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { applyPadding } from "../layouts/flexible/flexibleLayout";
+import { setDesiredSpaceForChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
+import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
+import { applyPadding, hasPadding } from "../layouts/paddingHelpers";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
@@ -26,7 +31,8 @@ export type BoxContainer = WidgetCreator<FlexiblePosition>;
 export interface BoxParams extends ElementParams
 {
 	/**
-	 * The content to show within the box.
+	 * The content to show within the box. The content will be padded to `6px`
+	 * if `padding` is not set on this content.
 	 */
 	content: BoxContainer;
 
@@ -53,7 +59,7 @@ export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreat
 }
 
 
-const defaultPadding: Padding = 6;
+const defaultPadding: ParsedPadding = parsePadding(6);
 const trimTop: number = 4;
 
 
@@ -65,60 +71,68 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 	text?: string;
 
 	_child: Layoutable;
-	_innerPadding: ParsedPadding;
-	_childPadding?: ParsedPadding;
+	_childPos: Parsed<FlexiblePosition>;
 
-	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & FlexiblePosition)
+	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & Positions)
 	{
 		const type = "groupbox";
 		let content: WidgetCreator<FlexiblePosition>;
-		let padding: Padding;
 		if ("create" in params)
 		{
-			// flat params, just a creator
+			// Is BoxContainer (flat params, just a creator)
 			super(type, output, {});
 			content = params;
-			padding = defaultPadding;
 		}
 		else
 		{
-			// complex params object
+			// Is BoxParams (complex object)
 			super(type, output, params);
 			content = params.content;
-
-			// padding should be applied after widget sizing, not before, thus remove specified padding
-			const supplied = params.padding;
-			padding = (!isUndefined(supplied)) ? supplied : defaultPadding;
-			params.padding = undefined;
 
 			const binder = output.binder;
 			binder.add(this, "text", params.text);
 		}
 
-		this._innerPadding = parsePadding(padding);
 		this._child = content.create(output);
-		this._childPadding = parsePadding(content.params.padding);
+
+		const childPos = parseFlexiblePosition(content.params, defaultPadding);
+		this._childPos = childPos;
+		setDesiredSpaceForChild(params, childPos);
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
+		// Align visual box with layout box, will move label slightly out of bounds.
 		area.y -= trimTop;
 		area.height += trimTop;
 		super.layout(widgets, area);
 		area.y += trimTop;
 		area.height -= trimTop;
 
-		const innerPadding = this._innerPadding;
-		if (innerPadding)
+		const { width, height, padding } = this._childPos;
+		if (hasPadding(padding))
 		{
-			applyPadding(area, innerPadding);
+			applyPadding(area, width, height, padding);
 		}
-		const childPadding = this._childPadding;
-		if (childPadding)
+		else
 		{
-			applyPadding(area, childPadding);
+			area.width = parseAxis(width, area.width);
+			area.height = parseAxis(height, area.height);
 		}
+
 		const child = this._child;
 		child.layout(widgets, area);
 	}
+}
+
+
+/**
+ * Sets the size of the axis, using the parent space for calculating leftover space.
+ */
+function parseAxis(scale: ParsedScale, parentSpace: number): number
+{
+	const leftoverSpace = (isAbsolute(scale)) ? (parentSpace - scale[0]) : parentSpace;
+	const weightedTotal = (isWeighted(scale)) ? scale[0] : undefined;
+
+	return convertToPixels(scale, leftoverSpace, weightedTotal);
 }

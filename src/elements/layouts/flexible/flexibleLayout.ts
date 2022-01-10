@@ -1,11 +1,11 @@
-import { zeroScale } from "@src/elements/constants";
-import { Direction } from "@src/positional/direction";
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
-import { ParsedPadding } from "@src/positional/padding";
-import { Parsed } from "@src/positional/parsed";
+import { Direction } from "@src/positional/direction";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { convertToPixels, ParsedScale, ScaleType } from "@src/positional/scale";
-import { isUndefined } from "@src/utilities/type";
+import { applyPaddingToDirection, hasPadding } from "../paddingHelpers";
 
 
 /**
@@ -19,68 +19,46 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 
 	const keys = getDirectionKeys(direction);
 
-	// First pass: calculate absolute space use and total weight.
-	const stack: ParsedStack = parseFlexibleElements(elements, spacing, keys);
+	// First pass: calculate available and used space.
+	const
+		stack = parseFlexibleElements(elements, spacing, keys),
+		leftoverSpace = (parentArea[keys._mainSize] - stack._absoluteSpace),
+		spaceInPixels = convertToPixels(spacing, leftoverSpace, stack._weightedTotal);
 
-	// Second pass: calculate positions and relative sizes with leftover space.
-	const leftoverSpace = (parentArea[keys._mainSize] - stack._absoluteSpace);
-	const spaceInPixels = convertToPixels(spacing, leftoverSpace, stack._weightedTotal);
-
+	// Second pass: compute locations and update widgets.
 	let cursor = 0;
-
 	for (let i = 0; i < elementCount; i++)
 	{
-		const parsed = stack._elements[i];
-		const otherSpace = parentArea[keys._otherSize];
-
-		let mainAxis = (cursor + parentArea[keys._mainAxis]),
+		const
+			parsed = stack._elements[i],
+			mainAxis = (cursor + parentArea[keys._mainAxis]),
 			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, stack._weightedTotal),
 			otherAxis = parentArea[keys._otherAxis],
-			otherSize = convertToPixels(parsed._otherSize, otherSpace);
+			otherSize = parentArea[keys._otherSize],
+			padding = parsed._padding;
+
+		const childArea = {} as Rectangle;
+		childArea[keys._mainAxis] = mainAxis;
+		childArea[keys._mainSize] = mainSize;
+		childArea[keys._otherAxis] = otherAxis;
+		childArea[keys._otherSize] = otherSize; // set to full size first, for padding.
+
+		if (hasPadding(padding))
+		{
+			applyPaddingToDirection(childArea, keys._mainDirection, parsed._mainSize, padding);
+			applyPaddingToDirection(childArea, keys._otherDirection, parsed._otherSize, padding);
+		}
+		else
+		{
+			// If the child requested a smaller size, apply it here.
+			childArea[keys._otherSize] = convertToPixels(parsed._otherSize, otherSize);
+		}
+
+		apply(i, childArea);
 
 		cursor += mainSize;
 		cursor += spaceInPixels;
-
-		if (parsed._hasPadding)
-		{
-			const mainStart = convertToPixels(parsed._mainStart, leftoverSpace, stack._weightedTotal);
-			const mainEnd = convertToPixels(parsed._mainEnd, leftoverSpace, stack._weightedTotal);
-			mainAxis += mainStart;
-			mainSize -= (mainStart + mainEnd);
-			const otherStart = convertToPixels(parsed._otherStart, otherSpace, 1);
-			const otherEnd = convertToPixels(parsed._otherEnd, otherSpace, 1);
-			otherAxis += otherStart;
-			otherSize -= (otherStart + otherEnd);
-		}
-
-		const childArea = {} as Rectangle;
-		childArea[keys._mainAxis] = Math.round(mainAxis);
-		childArea[keys._mainSize] = Math.round(mainSize);
-		childArea[keys._otherAxis] = Math.round(otherAxis);
-		childArea[keys._otherSize] = Math.round(otherSize);
-
-		apply(i, childArea);
 	}
-}
-
-/**
- * Applies padding to a specific area as a whole.
- */
-export function applyPadding(area: Rectangle, padding: ParsedPadding): void
-{
-	const parsed = {} as ParsedStackElement;
-	setPaddingToDirection(padding, parsed, Direction.Vertical);
-
-	if (!parsed._hasPadding)
-		return;
-
-	const width = area.width, height = area.height;
-	const left = convertToPixels(parsed._otherStart, height, height);
-	const top = convertToPixels(parsed._mainStart, width, width);
-	area.x += left;
-	area.y += top;
-	area.width -= (left + convertToPixels(parsed._otherEnd, width, width));
-	area.height -= (top + convertToPixels(parsed._mainEnd, height, height));
 }
 
 
@@ -113,15 +91,8 @@ interface ParsedStackElement
 {
 	_mainSize: ParsedScale;
 	_otherSize: ParsedScale;
-	_hasPadding: boolean;
-	_mainStart: ParsedScale;
-	_mainEnd: ParsedScale;
-	_otherStart: ParsedScale;
-	_otherEnd: ParsedScale;
+	_padding: ParsedPadding;
 }
-
-
-const defaultScale: ParsedScale = [1, ScaleType.Weight];
 
 
 /**
@@ -137,39 +108,35 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 	};
 
 	// Parse spacing in between elements
-	const spaceType = spacing[1];
-	if (spaceType === ScaleType.Weight)
-	{
-		stack._weightedTotal += (spacing[0] * (elementCount - 1));
-	}
-	else if (spaceType === ScaleType.Pixel)
+	if (isAbsolute(spacing))
 	{
 		const pixelSize = (spacing[0] * (elementCount - 1));
 		stack._absoluteSpace += pixelSize;
+	}
+	else if (isWeighted(spacing))
+	{
+		stack._weightedTotal += (spacing[0] * (elementCount - 1));
 	}
 
 	// First pass: parse all values to numbers.
 	for (let i = 0; i < elementCount; i++)
 	{
-		const params = elements[i];
-		const parsed =
+		const params = elements[i], padding = params.padding;
+		const parsed: ParsedStackElement =
 		{
-			_mainSize: params[keys._mainSize] || defaultScale,
-			_otherSize: params[keys._otherSize] || defaultScale,
-		} as ParsedStackElement;
-
-		// Apply padding
-		setPaddingToDirection(params.padding, parsed, keys._mainDirection);
-
+			_mainSize: params[keys._mainSize],
+			_otherSize: params[keys._otherSize],
+			_padding: padding
+		};
 		stack._elements[i] = parsed;
 
 		// Add size of current element to totals
-		const type = parsed._mainSize[1];
-		if (type === ScaleType.Weight)
+		const size = parsed._mainSize;
+		if (isWeighted(size))
 		{
 			stack._weightedTotal += parsed._mainSize[0];
 		}
-		else if (type === ScaleType.Pixel)
+		else if (isAbsolute(size))
 		{
 			stack._absoluteSpace += parsed._mainSize[0];
 		}
@@ -206,34 +173,4 @@ function getDirectionKeys(direction: Direction): DirectionKeys
 			_otherSize: "height"
 		};
 	}
-}
-
-
-/**
- * Uses the selected direction to apply padding to the target.
- */
-function setPaddingToDirection(padding: ParsedPadding | undefined, target: ParsedStackElement, direction: Direction): void
-{
-	if (isUndefined(padding))
-	{
-		// padding not specified, apply no padding.
-		target._hasPadding = false;
-		return;
-	}
-
-	if (direction === Direction.Horizontal)
-	{
-		target._mainStart = padding.left || zeroScale;
-		target._mainEnd = padding.right || zeroScale;
-		target._otherStart = padding.top || zeroScale;
-		target._otherEnd = padding.bottom || zeroScale;
-	}
-	else
-	{
-		target._mainStart = padding.top || zeroScale;
-		target._mainEnd = padding.bottom || zeroScale;
-		target._otherStart = padding.left || zeroScale;
-		target._otherEnd = padding.right || zeroScale;
-	}
-	target._hasPadding = (target._mainStart[0] !== 0 || target._mainEnd[0] !== 0 || target._otherStart[0] !== 0 || target._otherEnd[0] !== 0);
 }
