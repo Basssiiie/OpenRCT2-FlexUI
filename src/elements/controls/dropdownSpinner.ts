@@ -2,6 +2,7 @@ import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { isObservable } from "@src/observables/isObservable";
+import { Observable } from "@src/observables/observable";
 import { observable } from "@src/observables/observableConstructor";
 import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
@@ -52,6 +53,9 @@ const spinnerControlsWidth = 25;
 class DropdownSpinnerControl extends DropdownControl
 {
 	_spinner: SpinnerControl;
+	_selectedIndex: Observable<number>;
+	_isUpdatingSelectedIndex: boolean;
+	_userOnChange?: (index: number) => void;
 
 	constructor(output: BuildOutput, params: DropdownSpinnerParams)
 	{
@@ -61,9 +65,22 @@ class DropdownSpinnerControl extends DropdownControl
 			tooltip: params.tooltip,
 			minimum: 0,
 			maximum: 0,
-			// update dropdown
-			onChange: (value: number) => this.onChange(value)
+			onChange: (value: number) =>
+			{
+				// Changing selectedIndex triggers an onChange; setting this boolean
+				// makes the control ignore that onChange event.
+				this._isUpdatingSelectedIndex = true;
+				this._selectedIndex.set(value);
+				if (this._userOnChange)
+				{
+					this._userOnChange(value);
+				}
+				this._isUpdatingSelectedIndex = false;
+			}
 		};
+
+		// If items is an observable, ensure the spinner maximum is always updated
+		// when the item list changes.
 		const items = params.items;
 		if (isObservable(items))
 		{
@@ -75,16 +92,32 @@ class DropdownSpinnerControl extends DropdownControl
 		{
 			spinParams.maximum = items.length;
 		}
-		const spinner = new SpinnerControl(output, spinParams);
 
+		// Ensure selectedIndex is an observable, so we can update it easily when
+		// the spinner is used.
+		const selectedIndexParam = params.selectedIndex;
+		const selectedObservable = (isObservable(selectedIndexParam))
+			? selectedIndexParam : observable(selectedIndexParam || 0);
+
+		params.selectedIndex = selectedObservable;
+
+		const spinner = new SpinnerControl(output, spinParams);
 		super(output, params);
 		this._spinner = spinner;
+		this._selectedIndex = selectedObservable;
+		this._isUpdatingSelectedIndex = false;
+		this._userOnChange = params.onChange;
 
-		const inheritedCallback = this.onChange;
 		this.onChange = (idx): void =>
 		{
+			if (this._isUpdatingSelectedIndex)
+				return;
+
 			this._spinner._value.set(idx);
-			inheritedCallback(idx);
+			if (this._userOnChange)
+			{
+				this._userOnChange(idx);
+			}
 		};
 	}
 

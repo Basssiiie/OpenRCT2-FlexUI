@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, dropdown, label, spinner, viewport, window } from "openrct2-fluentui";
+import { box, button, dropdown, dropdownSpinner, label, spinner, toggle, viewport, window } from "openrct2-fluentui";
 
 
 const allWidgets = window({
@@ -13,16 +13,38 @@ const allWidgets = window({
 			text: "This is a label",
 		}),
 		box({
-			padding: 0,
 			content: label({
 				text: "This is a boxed label"
 			})
 		}),
+		box({
+			text: "Groupbox label",
+			content: label({
+				padding: [ "10px", "1w" ],
+				text: "This is a centred labeled boxed label"
+			})
+		}),
 		dropdown({
-			items: [ "First", "Second", "Third", "Fourth" ]
+			items: [ "First", "Second", "Third", "Fourth" ],
+			onChange: (index: number) => console.log(`Dropdown changed to index ${index}`)
 		}),
 		spinner({
-			maximum: 10
+			maximum: 10,
+			onChange: (value: number) => console.log(`Spinner changed to value ${value}`)
+		}),
+		dropdownSpinner({
+			items: [ "First", "Second", "Third", "Fourth" ],
+			onChange: (index: number) => console.log(`Dropdown spinner changed to value ${index}`)
+		}),
+		button({
+			text: "Press this button",
+			height: "28px",
+			onClick: () => console.log(`Button has been pressed`)
+		}),
+		toggle({
+			text: "Toggle this button",
+			height: "28px",
+			onChange: (isPressed: boolean) => console.log(`Toggle has been toggled ${isPressed ? "down" : "up"}`)
 		}),
 		viewport({
 			target: map.getAllEntities("car")[0]

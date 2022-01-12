@@ -85,7 +85,7 @@ test("Select event gets called", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, onSelect: (i) => hits.push(i) })
+			dropdown({ items: [ "a", "b", "c" ], selectedIndex: 2, onChange: (i) => hits.push(i) })
 		]
 	});
 	template.open();

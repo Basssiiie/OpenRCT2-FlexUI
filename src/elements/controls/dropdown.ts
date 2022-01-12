@@ -40,7 +40,7 @@ export interface DropdownParams extends ElementParams
 	/**
 	 * Triggers when the selected dropdown item changes.
 	 */
-	onSelect?: (index: number) => void;
+	onChange?: (index: number) => void;
 }
 
 
@@ -67,11 +67,10 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 {
 	items: string[] = [];
 	selectedIndex: number = 0;
-	onChange: (index: number) => void;
+	onChange?: (index: number) => void;
 
 	_disabledMessage: string | undefined;
 	_disableSingleItem: boolean;
-	_onSelect?: (index: number) => void;
 
 
 	constructor(output: BuildOutput, params: DropdownParams)
@@ -81,11 +80,15 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
 		binder.add(this, "selectedIndex", params.selectedIndex);
-		this.onChange = (idx): void => onChanged(this, idx);
+
+		const userOnChange = params.onChange;
+		if (userOnChange)
+		{
+			this.onChange = userOnChange;
+		}
 
 		this._disabledMessage = params.disabledMessage;
 		this._disableSingleItem = !!params.disableSingleItem;
-		this._onSelect = params.onSelect;
 
 		if (this._disabledMessage)
 		{
@@ -96,19 +99,5 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		{
 			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
 		}
-	}
-}
-
-
-/**
- * Called when the dropdown item is changed by the user.
- */
-function onChanged(control: DropdownControl, index: number): void
-{
-	control.selectedIndex = index;
-
-	if (control._onSelect)
-	{
-		control._onSelect(index);
 	}
 }
