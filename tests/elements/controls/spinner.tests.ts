@@ -23,9 +23,9 @@ test("Standard properties are set", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
-	t.is("spinner", widget.type);
-	t.is("45", widget.text);
-	t.is("spin me", widget.tooltip);
+	t.is(widget.type, "spinner");
+	t.is(widget.text, "45", );
+	t.is(widget.tooltip, "spin me");
 });
 
 
@@ -269,9 +269,9 @@ test("Throw error on minimum larger than maximum", t =>
 			]
 		});
 	});
-	t.true(error.message.includes("5678"));
-	t.true(error.message.includes("1234"));
-	t.true(error.message.includes("is equal to or larger than maximum"));
+	t.true(error?.message.includes("5678"));
+	t.true(error?.message.includes("1234"));
+	t.true(error?.message.includes("is equal to or larger than maximum"));
 });
 
 

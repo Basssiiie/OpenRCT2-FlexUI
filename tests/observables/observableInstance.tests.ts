@@ -24,23 +24,33 @@ test("set() changes get() value", t =>
 });
 
 
-test.cb("set() triggers subscription", t =>
+test("set() triggers subscription", t =>
 {
+	const events: string[] = [];
+
 	const observable = new ObservableInstance("Cheese");
-	observable.subscribe(() => t.end());
+	observable.subscribe(() =>
+	{
+		events.push("hit");
+	});
 	observable.set("Pineapple");
+
+	t.deepEqual(events, [ "hit" ]);
 });
 
 
-test.cb("subscription receives new value", t =>
+test("subscription receives new value", t =>
 {
+	const events: string[] = [];
+
 	const observable = new ObservableInstance("Cheese");
-	observable.subscribe(v =>
+	observable.subscribe(value =>
 	{
-		t.is(v, "Pineapple");
-		t.end();
+		events.push(value);
 	});
 	observable.set("Pineapple");
+
+	t.deepEqual(events, [ "Pineapple" ]);
 });
 
 

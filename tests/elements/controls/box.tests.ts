@@ -32,7 +32,7 @@ test("Standard properties are set", t =>
 	t.is(widget1.width, 28);
 	t.is(widget1.height, 18 + 4); // + default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 4 + 7 + 6); // incl. 6px default padding
@@ -68,7 +68,7 @@ test("Applies padding", t =>
 	t.is(widget1.width, 74);
 	t.is(widget1.height, 34 + 4); // + default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 3 + 6);
@@ -104,7 +104,7 @@ test("Box takes size of absolute child", t =>
 	t.is(widget1.width, 120 + 24);
 	t.is(widget1.height, 70 + 24 + 4); // + default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 12);

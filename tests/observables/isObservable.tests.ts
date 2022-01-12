@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { isObservable } from "@src/observables/isObservable";
 import { ObservableInstance } from "@src/observables/observableInstance";
 import test from "ava";
@@ -51,9 +52,9 @@ test("Observable contract is true", t =>
 {
 	const observable =
 	{
-		get: (): void => t.fail("Calling get is not allowed"),
-		set: (): void => t.fail("Calling set is not allowed"),
-		subscribe: (): void => t.fail("Calling subscribe is not allowed"),
+		get: () => t.fail("Calling get is not allowed"),
+		set: () => t.fail("Calling set is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed"),
 	};
 	t.true(isObservable(observable));
 });
@@ -63,8 +64,8 @@ test("Observable contract without get() is false", t =>
 {
 	const observable =
 	{
-		set: (): void => t.fail("Calling set is not allowed"),
-		subscribe: (): void => t.fail("Calling subscribe is not allowed"),
+		set: () => t.fail("Calling set is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed"),
 	};
 	t.false(isObservable(observable));
 });
@@ -74,8 +75,8 @@ test("Observable contract without set() is false", t =>
 {
 	const observable =
 	{
-		get: (): void => t.fail("Calling get is not allowed"),
-		subscribe: (): void => t.fail("Calling subscribe is not allowed"),
+		get: () => t.fail("Calling get is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed"),
 	};
 	t.false(isObservable(observable));
 });
@@ -85,8 +86,8 @@ test("Observable contract without subscribe() is false", t =>
 {
 	const observable =
 	{
-		get: (): void => t.fail("Calling get is not allowed"),
-		set: (): void => t.fail("Calling set is not allowed"),
+		get: () => t.fail("Calling get is not allowed"),
+		set: () => t.fail("Calling set is not allowed"),
 	};
 	t.false(isObservable(observable));
 });
