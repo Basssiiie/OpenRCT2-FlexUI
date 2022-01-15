@@ -1,9 +1,9 @@
 {
-	"name": "openrct2-fluentui",
+	"name": "openrct2-flexui",
 	"author": "Basssiiie",
 	"license": "MIT",
 	"version": "0.1.0",
-	"description": "Create fluent user interfaces for OpenRCT2 plugins.",
+	"description": "Create flexible user interfaces for OpenRCT2 plugins.",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
@@ -19,15 +19,15 @@
 		"clean": "rimraf ./dist/*",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
-		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-fluentui-0.1.0.tgz"
+		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-flexui-0.1.0.tgz"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Basssiiie/OpenRCT2-FluentUI.git"
+		"url": "git+https://github.com/Basssiiie/OpenRCT2-FlexUI.git"
 	},
-	"homepage": "https://github.com/Basssiiie/OpenRCT2-FluentUI#readme",
+	"homepage": "https://github.com/Basssiiie/OpenRCT2-FlexUI#readme",
 	"bugs": {
-		"url": "https://github.com/Basssiiie/OpenRCT2-FluentUI/issues"
+		"url": "https://github.com/Basssiiie/OpenRCT2-FlexUI/issues"
 	},
 	"devDependencies": {
 		"@ava/typescript": "^3.0.1",

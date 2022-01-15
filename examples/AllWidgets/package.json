@@ -7,7 +7,7 @@
 	"author": "Basssiiie",
 	"license": "MIT",
 	"dependencies": {
-		"openrct2-fluentui": "file:../.."
+		"openrct2-flexui": "file:../.."
 	},
 	"devDependencies": {
 		"@rollup/plugin-node-resolve": "^13.0.6",

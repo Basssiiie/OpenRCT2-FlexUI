@@ -136,7 +136,7 @@ const topBarSize: number = 15;
 
 
 /**
- * Create a new fluently designed window.
+ * Create a new flexiblely designed window.
  */
 export function window(params: WindowParams | TabbedWindowParams): WindowTemplate
 {

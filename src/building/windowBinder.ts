@@ -42,7 +42,8 @@ export class WindowBinder implements Binder
 
 	/**
 	 * Add a binding between a observable and a widget's property. An optional converter can be
-	 * supplied if the value needs to be converted from fluent ui usage to plugin api usage.
+	 * supplied if the value needs to be converted from an internal value to a different visual
+	 * representation of it.
 	 */
 	private createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, observable: Observable<T>, converter?: (value: T) => W[K]): void
 	{

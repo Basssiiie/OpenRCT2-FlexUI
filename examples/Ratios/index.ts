@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, horizontal, label, vertical, window } from "openrct2-fluentui";
+import { box, horizontal, label, vertical, window } from "openrct2-flexui";
 
 
 const ratios = window({

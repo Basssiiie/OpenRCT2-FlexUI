@@ -67,7 +67,7 @@ const config = [
 					comments: false,
 					quote_style: 1,
 					wrap_iife: true,
-					preamble: "// Get the latest version: https://github.com/Basssiiie/OpenRCT2-FluentUI",
+					preamble: "// Get the latest version: https://github.com/Basssiiie/OpenRCT2-FlexUI",
 
 					beautify: isDev,
 				},

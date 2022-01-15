@@ -20,7 +20,7 @@ import { parseFlexiblePosition } from "./parseFlexiblePosition";
 
 
 /**
- * Array of widgets created with fluent-ui.
+ * Array of widgets for use in a flexible layout container.
  */
 export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition>[];
 

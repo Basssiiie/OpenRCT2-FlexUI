@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, button, dropdown, dropdownSpinner, label, spinner, toggle, viewport, window } from "openrct2-fluentui";
+import { box, button, dropdown, dropdownSpinner, label, spinner, toggle, viewport, window } from "openrct2-flexui";
 
 
 const allWidgets = window({
