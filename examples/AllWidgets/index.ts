@@ -47,7 +47,7 @@ const allWidgets = window({
 			onChange: (isPressed: boolean) => console.log(`Toggle has been toggled ${isPressed ? "down" : "up"}`)
 		}),
 		viewport({
-			target: map.getAllEntities("car")[0]
+			target: map.getAllEntities("car")[0]?.id
 		})
 	]
 });

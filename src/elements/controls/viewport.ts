@@ -3,7 +3,7 @@ import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
 import { Bindable } from "@src/observables/bindable";
 import { isObservable } from "@src/observables/isObservable";
-import { isUndefined } from "@src/utilities/type";
+import { isNumber, isObject, isUndefined } from "@src/utilities/type";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -20,8 +20,8 @@ const FarAway: CoordsXY = { x: -9000, y: -9000 };
 export const enum ViewportFlags
 {
 	UndergroundInside = (1 << 0),
-	SeethroughRides = (1 << 1),
-	SeethroughScenery = (1 << 2),
+	SeeThroughRides = (1 << 1),
+	SeeThroughScenery = (1 << 2),
 	InvisibleSupports = (1 << 3),
 	LandHeights = (1 << 4),
 	TrackHeights = (1 << 5),
@@ -34,8 +34,8 @@ export const enum ViewportFlags
 	HideBase = (1 << 12),
 	HideVertical = (1 << 13),
 	InvisibleSprites = (1 << 14),
-	//Flag15 = (1 << 15),
-	SeethroughPaths = (1 << 16),
+	//Flag15 = (1 << 15), // not used anywhere in the game's source code
+	SeeThroughPaths = (1 << 16),
 	ClipView = (1 << 17),
 	HighlightPathIssues = (1 << 18),
 	TransparentBackground = (1 << 19),
@@ -55,7 +55,7 @@ export interface ViewportParams extends ElementParams
 	/**
 	 * The rotation to set the viewport to, from 0 to 3.
 	 */
-	rotation?: Bindable<number>;
+	rotation?: Bindable<0 | 1 | 2 | 3>;
 
 	/**
 	 * The zoom-level to set it to. Available zoom levels are 0 to 3 on all drawing engines.
@@ -90,7 +90,7 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<View
 class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
 {
 	target?: CoordsXY | CoordsXYZ | number;
-	rotation?: number;
+	rotation?: 0 | 1 | 2 | 3;
 	zoom?: number;
 	visibilityFlags?: ViewportFlags;
 
@@ -107,13 +107,14 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		super("viewport", output, params);
 
 		const target = params.target;
-		if (isObservable(target))
+		if (isObservable(target) || isNumber(target))
 		{
-			output.on("update", (context) => this.goToTarget(context));
+			output.on("update", (context) => updateViewport(context, this));
 		}
 		else
 		{
-			output.on("open", (context) => this.goToTarget(context));
+			// Flat coordinates do not need to be updated every frame.
+			output.on("open", (context) => updateViewport(context, this));
 		}
 
 		const binder = output.binder;
@@ -122,46 +123,55 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		binder.add(this, "zoom", params.zoom);
 		binder.add(this, "visibilityFlags", params.visibilityFlags);
 	}
+}
 
 
-	/**
-	 * Makes sure the viewport always targets the target.
-	 */
-	private goToTarget(context: WindowContext): void
+/**
+ * Finds the widget for the specified viewport control to update it.
+ */
+function updateViewport(context: WindowContext, control: ViewportControl): void
+{
+	const widget = context.getWidget<ViewportWidget>(control.name);
+	console.log("widget: " + control.name);
+	if (!widget)
+		return;
+
+	const viewport = widget.active;
+	if (!viewport || !viewport.viewport)
+		return;
+
+	goToTarget(viewport.viewport, control.target);
+}
+
+
+/**
+ * Updates the viewport to target the target.
+ */
+function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | undefined): void
+{
+	if (!isUndefined(target))
 	{
-		const widget = context.getWidget<ViewportWidget>(this.name);
-		if (!widget)
-			return;
-
-		const viewport = widget.active;
-		if (!viewport || !viewport.viewport)
-			return;
-
-		const target = this.target;
-		if (!isUndefined(target))
+		console.log("target: " + JSON.stringify(target));
+		if (isNumber(target))
 		{
-			const type = (typeof target);
-			if (type === "number")
+			const entity = map.getEntity(target);
+			if (entity)
 			{
-				const entity = map.getEntity(target as number);
-
-				if (entity)
-				{
-					viewport.viewport.scrollTo({
-						x: entity.x,
-						y: entity.y,
-						z: entity.z
-					});
-					return;
-				}
-			}
-			else if (type === "object")
-			{
-				viewport.viewport.moveTo(target as CoordsXY);
+				console.log("scroll: " + JSON.stringify({x: entity.x,y: entity.y,z: entity.z}));
+				viewport.moveTo({
+					x: entity.x,
+					y: entity.y,
+					z: entity.z
+				});
 				return;
 			}
 		}
-
-		viewport.viewport.moveTo(FarAway);
+		else if (isObject(target))
+		{
+			viewport.moveTo(target);
+			return;
+		}
 	}
+
+	viewport.moveTo(FarAway);
 }

@@ -5,10 +5,11 @@ W.I.P.
 A flexible user interface library for creating windows for OpenRCT2 plugins.
 
  - MVVM-like user interface binding;
- - Automatic window resizing;
+ - Automatically resizable windows;
  - Percentile or weighted sizing of widgets;
  - Nested widgets;
- - New widgets like toggle buttons, dropdownspinners and dropdownbuttons.
+ - New widgets like toggle buttons, dropdownspinners and dropdownbuttons;
+ - Tree-shakable and minifiable.
 
 Designed with a focus on ease of use, performance and flexibility.
 
