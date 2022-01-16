@@ -29,7 +29,7 @@ export { Rectangle } from "./positional/rectangle";
 
 // Internal components
 export { BuildOutput } from "./building/buildOutput";
-export { WidgetMap as WidgetContainer } from "./building/widgetMap";
+export { WidgetMap } from "./building/widgetMap";
 export { WidgetCreator } from "./building/widgetCreator";
 export { WindowEvent } from "./building/windowEvent";
 export { Layoutable } from "./building/layoutable";

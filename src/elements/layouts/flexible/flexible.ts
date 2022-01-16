@@ -37,7 +37,7 @@ export interface FlexibleLayoutParams
 
 	/**
 	 * Specify the amount of space between each child widget.
-	 * @default "5px"
+	 * @default "4px"
 	 */
 	spacing?: Scale;
 }
