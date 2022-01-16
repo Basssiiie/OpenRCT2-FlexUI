@@ -15,6 +15,7 @@ export interface ButtonParams extends ElementParams
 {
 	/**
 	 * The text on the button.
+	 * @default undefined
 	 */
 	text?: Bindable<string>;
 
@@ -25,6 +26,12 @@ export interface ButtonParams extends ElementParams
 	image?: Bindable<number>;
 
 	/**
+	 * Whether the button has a rectangle border or not.
+	 * @default true for text buttons, false for image buttons.
+	 */
+	border?: Bindable<boolean>;
+
+	/**
 	 * Whether the button starts off being pressed or not.
 	 * @default false
 	 */
@@ -32,6 +39,7 @@ export interface ButtonParams extends ElementParams
 
 	/**
 	 * Triggers when the button is pressed.
+	 * @default undefined
 	 */
 	onClick?: () => void;
 }
@@ -58,6 +66,7 @@ export class ButtonControl extends Control<ButtonWidget> implements ButtonWidget
 {
 	text?: string;
 	image?: number;
+	border?: boolean;
 	isPressed?: boolean;
 	onClick?: () => void;
 
@@ -69,6 +78,7 @@ export class ButtonControl extends Control<ButtonWidget> implements ButtonWidget
 		const binder = output.binder;
 		binder.add(this, "text", params.text);
 		binder.add(this, "image", params.image);
+		binder.add(this, "border", params.border);
 		binder.add(this, "isPressed", params.isPressed);
 		this.onClick = params.onClick;
 	}
