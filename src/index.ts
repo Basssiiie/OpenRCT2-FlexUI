@@ -1,8 +1,9 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
-export { store } from "./bindings/createStore";
 export { Store } from "./bindings/store";
+export { store } from "./bindings/createStore";
+export { map } from "./bindings/mapStore";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
