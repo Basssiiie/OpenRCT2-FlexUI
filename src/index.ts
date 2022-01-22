@@ -1,8 +1,11 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
+
+// Store related utilities
 export { Store } from "./bindings/store";
 export { store } from "./bindings/createStore";
+export { isStore } from "./bindings/isStore";
 export { map } from "./bindings/mapStore";
 
 // Widget controls
