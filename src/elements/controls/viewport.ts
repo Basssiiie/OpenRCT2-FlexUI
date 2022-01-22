@@ -1,5 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
-import { isObservable } from "@src/bindings/isObservable";
+import { isStore } from "@src/bindings/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
@@ -107,7 +107,7 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		super("viewport", output, params);
 
 		const target = params.target;
-		if (isObservable(target) || isNumber(target))
+		if (isStore(target) || isNumber(target))
 		{
 			output.on("update", (context) => updateViewport(context, this));
 		}
@@ -132,7 +132,6 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 function updateViewport(context: WindowContext, control: ViewportControl): void
 {
 	const widget = context.getWidget<ViewportWidget>(control.name);
-	console.log("widget: " + control.name);
 	if (!widget)
 		return;
 
@@ -151,13 +150,11 @@ function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | 
 {
 	if (!isUndefined(target))
 	{
-		console.log("target: " + JSON.stringify(target));
 		if (isNumber(target))
 		{
 			const entity = map.getEntity(target);
 			if (entity)
 			{
-				console.log("scroll: " + JSON.stringify({x: entity.x,y: entity.y,z: entity.z}));
 				viewport.moveTo({
 					x: entity.x,
 					y: entity.y,

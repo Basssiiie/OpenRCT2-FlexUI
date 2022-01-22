@@ -1,11 +1,11 @@
 import { Event, invoke } from "@src/utilities/event";
-import { Observable } from "./observable";
+import { Store } from "./store";
 
 
 /**
- * Internal implementation of an observable.
+ * The default implementation of a store.
  */
-export class ObservableInstance<T> implements Observable<T>
+export class DefaultStore<T> implements Store<T>
 {
 	private _value: T;
 	private _listeners?: Event<T>;

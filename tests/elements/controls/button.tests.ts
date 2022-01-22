@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { button } from "@src/elements/controls/button";
 import test from "ava";
@@ -34,7 +34,7 @@ test("Text is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const text = observable("bonjour");
+	const text = store("bonjour");
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -56,7 +56,7 @@ test("Image is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const image = observable(334);
+	const image = store(334);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -78,7 +78,7 @@ test("Is pressed is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const pressed = observable(false);
+	const pressed = store(false);
 	const template = window({
 		width: 100, height: 100,
 		content: [

@@ -9,7 +9,7 @@ import { WindowEvent } from "./windowEvent";
 export interface BuildOutput
 {
 	/**
-	 * The binder helps with binding observables from a viewmodel to a widget inside a window.
+	 * The binder helps with binding stores from a viewmodel to a widget inside a window.
 	 */
 	binder: Binder;
 

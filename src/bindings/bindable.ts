@@ -1,7 +1,7 @@
-import { Observable } from "./observable";
+import { Store } from "./store";
 
 
 /**
- * A value that can either be a constant or an observable value.
+ * A value that can either be a constant or a store value.
  */
-export type Bindable<T> = T | Observable<T>;
+export type Bindable<T> = T | Store<T>;

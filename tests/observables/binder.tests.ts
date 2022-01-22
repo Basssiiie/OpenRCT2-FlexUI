@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { ObservableInstance } from "@src/bindings/observableInstance";
+import { DefaultStore } from "@src/bindings/defaultStore";
 import { BuildContainer } from "@src/building/buildContainer";
 import { WindowBinder } from "@src/building/windowBinder";
 import { ElementVisibility } from "@src/elements/element";
@@ -30,7 +30,7 @@ test("read() sets values", t =>
 });
 
 
-test("read() adds observable to binder", t =>
+test("read() adds store to binder", t =>
 {
 	const label: LabelWidget =
 	{
@@ -41,15 +41,15 @@ test("read() adds observable to binder", t =>
 
 	t.falsy(binder["_bindings"]);
 
-	const observableNumber = new ObservableInstance(25);
-	binder.add(label, "y", observableNumber);
+	const storeNumber = new DefaultStore(25);
+	binder.add(label, "y", storeNumber);
 
 	t.truthy(binder["_bindings"]);
 	t.is(binder["_bindings"]?.length, 1);
 });
 
 
-test("read() sets observable in window template", t =>
+test("read() sets store in window template", t =>
 {
 	global.ui = Mock.ui();
 	const label: LabelWidget =
@@ -60,22 +60,22 @@ test("read() sets observable in window template", t =>
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
 	output._widgets.push(label);
 
-	const observableNumber = new ObservableInstance(25);
-	output.binder.add(label, "x", observableNumber);
+	const storeNumber = new DefaultStore(25);
+	output.binder.add(label, "x", storeNumber);
 	output.binder.bind(output._template);
 
 	output._template.open();
 	t.is(label.x, 25);
 
-	observableNumber.set(77);
+	storeNumber.set(77);
 	t.is(label.x, 77);
 
-	observableNumber.set(-50);
+	storeNumber.set(-50);
 	t.is(label.x, -50);
 });
 
 
-test("read() sets observable through converter", t =>
+test("read() sets store through converter", t =>
 {
 	global.ui = Mock.ui();
 	const label: LabelWidget =
@@ -86,19 +86,19 @@ test("read() sets observable through converter", t =>
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
 	output._widgets.push(label);
 
-	const observableNumber = new ObservableInstance<ElementVisibility>("visible");
-	output.binder.add(label, "isVisible", observableNumber, v => (v === "visible"));
+	const storeNumber = new DefaultStore<ElementVisibility>("visible");
+	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
 	output.binder.bind(output._template);
 
 	output._template.open();
 	t.true(label.isVisible);
 
-	observableNumber.set("hidden");
+	storeNumber.set("hidden");
 	t.false(label.isVisible);
 
-	observableNumber.set("visible");
+	storeNumber.set("visible");
 	t.true(label.isVisible);
 
-	observableNumber.set("none");
+	storeNumber.set("none");
 	t.false(label.isVisible);
 });

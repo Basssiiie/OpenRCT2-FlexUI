@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { WindowContext } from "@src/building/windowContext";
 import { button } from "@src/elements/controls/button";
@@ -191,10 +191,10 @@ test("Window updates to bindings", t =>
 	global.ui = Mock.ui();
 
 	const viewmodel = {
-		labelText: observable("test"),
-		labelAlign: observable<TextAlignment>("centred"),
-		buttonText: observable("click me"),
-		buttonPressed: observable(true)
+		labelText: store("test"),
+		labelAlign: store<TextAlignment>("centred"),
+		buttonText: store("click me"),
+		buttonPressed: store(true)
 	};
 
 	const template = window({

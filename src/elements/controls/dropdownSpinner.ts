@@ -1,6 +1,6 @@
-import { isObservable } from "@src/bindings/isObservable";
-import { Observable } from "@src/bindings/observable";
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
+import { isStore } from "@src/bindings/isStore";
+import { Store } from "@src/bindings/store";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
@@ -53,7 +53,7 @@ const spinnerControlsWidth = 25;
 class DropdownSpinnerControl extends DropdownControl
 {
 	_spinner: SpinnerControl;
-	_selectedIndex: Observable<number>;
+	_selectedIndex: Store<number>;
 	_isUpdatingSelectedIndex: boolean;
 	_userOnChange?: (index: number) => void;
 
@@ -79,12 +79,12 @@ class DropdownSpinnerControl extends DropdownControl
 			}
 		};
 
-		// If items is an observable, ensure the spinner maximum is always updated
+		// If items is a store, ensure the spinner maximum is always updated
 		// when the item list changes.
 		const items = params.items;
-		if (isObservable(items))
+		if (isStore(items))
 		{
-			const maximum = observable(0);
+			const maximum = store(0);
 			items.subscribe(v => maximum.set((v) ? v.length : 0));
 			spinParams.maximum = maximum;
 		}
@@ -93,18 +93,18 @@ class DropdownSpinnerControl extends DropdownControl
 			spinParams.maximum = items.length;
 		}
 
-		// Ensure selectedIndex is an observable, so we can update it easily when
+		// Ensure selectedIndex is a store, so we can update it easily when
 		// the spinner is used.
 		const selectedIndexParam = params.selectedIndex;
-		const selectedObservable = (isObservable(selectedIndexParam))
-			? selectedIndexParam : observable(selectedIndexParam || 0);
+		const selectedStore = (isStore(selectedIndexParam))
+			? selectedIndexParam : store(selectedIndexParam || 0);
 
-		params.selectedIndex = selectedObservable;
+		params.selectedIndex = selectedStore;
 
 		const spinner = new SpinnerControl(output, spinParams);
 		super(output, params);
 		this._spinner = spinner;
-		this._selectedIndex = selectedObservable;
+		this._selectedIndex = selectedStore;
 		this._isUpdatingSelectedIndex = false;
 		this._userOnChange = params.onChange;
 

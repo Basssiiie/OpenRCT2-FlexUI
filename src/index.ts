@@ -1,8 +1,8 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
-export { observable } from "./bindings/observableConstructor";
-export { Observable } from "./bindings/observable";
+export { store } from "./bindings/createStore";
+export { Store } from "./bindings/store";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";

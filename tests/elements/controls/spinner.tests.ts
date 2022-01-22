@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { spinner } from "@src/elements/controls/spinner";
 import test from "ava";
@@ -34,7 +34,7 @@ test("Value is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const value = observable(33);
+	const value = store(33);
 	const template = window({
 		width: 100, height: 100,
 		content: [

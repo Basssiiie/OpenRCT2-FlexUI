@@ -1,7 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
-import { isObservable } from "@src/bindings/isObservable";
-import { Observable } from "@src/bindings/observable";
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
+import { isStore } from "@src/bindings/isStore";
+import { Store } from "@src/bindings/store";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { clamp, wrap } from "@src/utilities/math";
@@ -109,7 +109,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	minimum: number = 0;
 	maximum: number = 0;
 
-	_value: Observable<number>;
+	_value: Store<number>;
 	_wrapMode: SpinnerWrapMode;
 	_onChange?: (value: number, adjustment: number) => void;
 
@@ -118,11 +118,11 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	{
 		super("spinner", output, params);
 
-		// Make value an observable regardless of user choice,
+		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.
 		const value = params.value;
-		this._value = (isObservable(value))
-			? value : observable(value || 0);
+		this._value = (isStore(value))
+			? value : store(value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		const format = (params.format)

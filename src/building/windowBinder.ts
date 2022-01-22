@@ -1,8 +1,8 @@
 import { Bindable } from "@src/bindings/bindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
-import { isObservable } from "@src/bindings/isObservable";
-import { Observable } from "@src/bindings/observable";
+import { isStore } from "@src/bindings/isStore";
+import { Store } from "@src/bindings/store";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
@@ -11,7 +11,7 @@ import { WidgetMap } from "./widgetMap";
 
 
 /**
- * Helper that can bind an observable from a viewmodel to a widget inside a window.
+ * Helper that can bind a store from a viewmodel to a widget inside a window.
  */
 export class WindowBinder implements Binder
 {
@@ -21,7 +21,7 @@ export class WindowBinder implements Binder
 
 	add<W extends WidgetBase, K extends keyof W, T>(widget: W, key: K, value: Bindable<T> | undefined, converter?: (value: T) => W[K]): void
 	{
-		if (isObservable(value))
+		if (isStore(value))
 		{
 			// bind
 			if (!widget.name)
@@ -41,11 +41,11 @@ export class WindowBinder implements Binder
 
 
 	/**
-	 * Add a binding between a observable and a widget's property. An optional converter can be
+	 * Add a binding between a store and a widget's property. An optional converter can be
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	private createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, observable: Observable<T>, converter?: (value: T) => W[K]): void
+	private createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, store: Store<T>, converter?: (value: T) => W[K]): void
 	{
 		function setter(widget: W, value: T): void
 		{
@@ -54,8 +54,8 @@ export class WindowBinder implements Binder
 		const binding = {
 			widgetName: widgetName,
 			setter: setter,
-			observable: observable,
-			unsubscribe: observable.subscribe(v =>
+			store: store,
+			unsubscribe: store.subscribe(v =>
 			{
 				const template = this._template;
 				if (!template || !template.window)
@@ -86,7 +86,7 @@ export class WindowBinder implements Binder
 
 	on<T, W extends WidgetBase, K extends keyof W>(bindable: Bindable<T> | undefined, widgetTemplate: W, property: K, callback: (value: T) => W[K]): void
 	{
-		if (isObservable(bindable))
+		if (isStore(bindable))
 		{
 			const name = widgetTemplate.name;
 			if (!name)
@@ -124,7 +124,7 @@ export class WindowBinder implements Binder
 			{
 				const binding = this._bindings[i];
 				const widget = widgets[binding.widgetName];
-				binding.setter(widget, binding.observable.get());
+				binding.setter(widget, binding.store.get());
 			}
 		}
 	}

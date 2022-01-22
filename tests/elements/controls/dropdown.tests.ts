@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { dropdown } from "@src/elements/controls/dropdown";
 import test from "ava";
@@ -34,7 +34,7 @@ test("Items are bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const items = observable([ "a", "b", "c" ]);
+	const items = store([ "a", "b", "c" ]);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -56,7 +56,7 @@ test("Selected index is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const selected = observable(2);
+	const selected = store(2);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -105,7 +105,7 @@ test("Disable message shows when disabled", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const disabled = observable(false);
+	const disabled = store(false);
 	const template = window({
 		width: 100, height: 100,
 		content: [

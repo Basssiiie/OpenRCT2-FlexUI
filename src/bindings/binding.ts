@@ -1,4 +1,4 @@
-import { Observable } from "./observable";
+import { Store } from "./store";
 
 
 /**
@@ -7,7 +7,7 @@ import { Observable } from "./observable";
 export interface Binding<W extends WidgetBase, T>
 {
 	readonly widgetName: string;
-	readonly observable: Observable<T>;
+	readonly store: Store<T>;
 	setter(widget: W, value: T): void;
 	unsubscribe(): void;
 }

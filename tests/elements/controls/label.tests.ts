@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { label } from "@src/elements/controls/label";
 import test from "ava";
@@ -38,7 +38,7 @@ test("Text is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const text = observable("Hello");
+	const text = store("Hello");
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -68,7 +68,7 @@ test("Alignment is bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const alignment = observable<TextAlignment>("centred");
+	const alignment = store<TextAlignment>("centred");
 	const template = window({
 		width: 100, height: 100,
 		content: [

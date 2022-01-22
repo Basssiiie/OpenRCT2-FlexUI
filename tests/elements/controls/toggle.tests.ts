@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
 import { window } from "@src/building/window";
 import { toggle } from "@src/elements/controls/toggle";
 import test from "ava";
@@ -34,7 +34,7 @@ test("Is pressed is still bindable", t =>
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const pressed = observable(true);
+	const pressed = store(true);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -78,12 +78,12 @@ test("Is pressed updates on toggle", t =>
 });
 
 
-test("Is pressed observable updates on toggle", t =>
+test("Is pressed store updates on toggle", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;
 
-	const pressed = observable(false);
+	const pressed = store(false);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -103,7 +103,7 @@ test("Is pressed observable updates on toggle", t =>
 	t.false(widget.isPressed);
 	t.false(pressed.get());
 
-	pressed.set(true); // also react to observable changes
+	pressed.set(true); // also react to store changes
 	t.true(widget.isPressed);
 	t.true(pressed.get());
 

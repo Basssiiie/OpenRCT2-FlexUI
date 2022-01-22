@@ -1,6 +1,6 @@
-import { isObservable } from "@src/bindings/isObservable";
-import { Observable } from "@src/bindings/observable";
-import { observable } from "@src/bindings/observableConstructor";
+import { store } from "@src/bindings/createStore";
+import { isStore } from "@src/bindings/isStore";
+import { Store } from "@src/bindings/store";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -42,15 +42,15 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 {
 	onChange?: (isPressed: boolean) => void;
 
-	_toggled: Observable<boolean>;
+	_toggled: Store<boolean>;
 
 	constructor(output: BuildOutput, params: ToggleParams & ButtonParams)
 	{
-		// Ensure isPressed is an observable, so we can update
+		// Ensure isPressed is a store, so we can update
 		// the live widget more easily.
 		const pressed = params.isPressed;
-		const toggled = (isObservable(pressed))
-			? pressed : observable(!!pressed);
+		const toggled = (isStore(pressed))
+			? pressed : store(!!pressed);
 
 		params.isPressed = toggled;
 		params.onClick = (): void => updateToggle(this);
@@ -67,10 +67,10 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
  */
 function updateToggle(toggle: ToggleControl): void
 {
-	const observable = toggle._toggled;
-	const newValue = !observable.get();
+	const store = toggle._toggled;
+	const newValue = !store.get();
 
-	observable.set(newValue);
+	store.set(newValue);
 	if (toggle.onChange)
 	{
 		toggle.onChange(newValue);
