@@ -1,4 +1,4 @@
-import { Bindable } from "@src/observables/bindable";
+import { Bindable } from "@src/bindings/bindable";
 
 /**
  * Whether the element is visible, hidden or gone completely.

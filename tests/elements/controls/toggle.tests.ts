@@ -1,8 +1,8 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
+import { observable } from "@src/bindings/observableConstructor";
 import { window } from "@src/building/window";
 import { toggle } from "@src/elements/controls/toggle";
-import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";

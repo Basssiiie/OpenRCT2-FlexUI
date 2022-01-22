@@ -1,5 +1,5 @@
-import { isObservable } from "@src/observables/isObservable";
-import { Observable } from "@src/observables/observable";
+import { isObservable } from "@src/bindings/isObservable";
+import { Observable } from "@src/bindings/observable";
 
 /**
  * Small editor that allows editing both the template and active widget, if present.

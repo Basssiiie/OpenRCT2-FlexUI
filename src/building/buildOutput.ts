@@ -1,4 +1,4 @@
-import { Binder } from "@src/observables/binder";
+import { Binder } from "@src/bindings/binder";
 import { WindowContext } from "./windowContext";
 import { WindowEvent } from "./windowEvent";
 

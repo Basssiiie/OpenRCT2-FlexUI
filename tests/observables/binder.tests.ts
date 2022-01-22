@@ -1,9 +1,9 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
+import { ObservableInstance } from "@src/bindings/observableInstance";
 import { BuildContainer } from "@src/building/buildContainer";
 import { WindowBinder } from "@src/building/windowBinder";
 import { ElementVisibility } from "@src/elements/element";
-import { ObservableInstance } from "@src/observables/observableInstance";
 import test from "ava";
 import Mock from "openrct2-mocks";
 

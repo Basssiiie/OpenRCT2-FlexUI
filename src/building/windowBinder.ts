@@ -1,13 +1,13 @@
-import { Bindable } from "@src/observables/bindable";
-import { Binder } from "@src/observables/binder";
-import { Binding } from "@src/observables/binding";
-import { isObservable } from "@src/observables/isObservable";
-import { Observable } from "@src/observables/observable";
+import { Bindable } from "@src/bindings/bindable";
+import { Binder } from "@src/bindings/binder";
+import { Binding } from "@src/bindings/binding";
+import { isObservable } from "@src/bindings/isObservable";
+import { Observable } from "@src/bindings/observable";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
-import { WidgetMap } from "./widgetMap";
 import { Template } from "./template";
+import { WidgetMap } from "./widgetMap";
 
 
 /**

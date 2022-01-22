@@ -1,11 +1,11 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
+import { observable } from "@src/bindings/observableConstructor";
 import { window } from "@src/building/window";
 import { WindowContext } from "@src/building/windowContext";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";
-import { observable } from "@src/observables/observableConstructor";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
 import { call } from "../helpers";

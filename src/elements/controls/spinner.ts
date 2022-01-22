@@ -1,9 +1,9 @@
+import { Bindable } from "@src/bindings/bindable";
+import { isObservable } from "@src/bindings/isObservable";
+import { Observable } from "@src/bindings/observable";
+import { observable } from "@src/bindings/observableConstructor";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
-import { Bindable } from "@src/observables/bindable";
-import { isObservable } from "@src/observables/isObservable";
-import { Observable } from "@src/observables/observable";
-import { observable } from "@src/observables/observableConstructor";
 import { clamp, wrap } from "@src/utilities/math";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../element";

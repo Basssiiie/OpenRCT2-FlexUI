@@ -1,8 +1,8 @@
+import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
-import { Bindable } from "@src/observables/bindable";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";

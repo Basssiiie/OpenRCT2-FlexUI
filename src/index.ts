@@ -1,8 +1,8 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
-export { observable } from "./observables/observableConstructor";
-export { Observable } from "./observables/observable";
+export { observable } from "./bindings/observableConstructor";
+export { Observable } from "./bindings/observable";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
@@ -33,5 +33,5 @@ export { WidgetMap } from "./building/widgetMap";
 export { WidgetCreator } from "./building/widgetCreator";
 export { WindowEvent } from "./building/windowEvent";
 export { Layoutable } from "./building/layoutable";
-export { Bindable } from "./observables/bindable";
-export { Binder } from "./observables/binder";
+export { Bindable } from "./bindings/bindable";
+export { Binder } from "./bindings/binder";

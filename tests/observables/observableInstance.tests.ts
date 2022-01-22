@@ -1,4 +1,4 @@
-import { ObservableInstance } from "@src/observables/observableInstance";
+import { ObservableInstance } from "@src/bindings/observableInstance";
 import test from "ava";
 
 

@@ -1,12 +1,12 @@
+import { isObservable } from "@src/bindings/isObservable";
+import { Observable } from "@src/bindings/observable";
+import { observable } from "@src/bindings/observableConstructor";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
-import { isObservable } from "@src/observables/isObservable";
-import { Observable } from "@src/observables/observable";
-import { observable } from "@src/observables/observableConstructor";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
-import { ButtonParams, ButtonControl } from "./button";
+import { ButtonControl, ButtonParams } from "./button";
 
 
 /**

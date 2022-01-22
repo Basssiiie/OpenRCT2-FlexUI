@@ -1,6 +1,6 @@
+import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
-import { Bindable } from "@src/observables/bindable";
 import { TextColour } from "@src/utilities/colour";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../element";

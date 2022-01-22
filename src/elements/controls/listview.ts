@@ -1,7 +1,7 @@
+import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
-import { Bindable } from "@src/observables/bindable";
 import { Direction } from "@src/positional/direction";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";

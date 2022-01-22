@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { isObservable } from "@src/observables/isObservable";
-import { ObservableInstance } from "@src/observables/observableInstance";
+import { isObservable } from "@src/bindings/isObservable";
+import { ObservableInstance } from "@src/bindings/observableInstance";
 import test from "ava";
 
 

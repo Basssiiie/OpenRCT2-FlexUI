@@ -1,8 +1,8 @@
+import { Bindable } from "@src/bindings/bindable";
+import { isObservable } from "@src/bindings/isObservable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
-import { Bindable } from "@src/observables/bindable";
-import { isObservable } from "@src/observables/isObservable";
 import { isNumber, isObject, isUndefined } from "@src/utilities/type";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";

@@ -1,17 +1,17 @@
+import { isObservable } from "@src/bindings/isObservable";
+import { Observable } from "@src/bindings/observable";
+import { observable } from "@src/bindings/observableConstructor";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
-import { isObservable } from "@src/observables/isObservable";
-import { Observable } from "@src/observables/observable";
-import { observable } from "@src/observables/observableConstructor";
 import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { fillLayout } from "../layouts/fillLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
-import { DropdownParams, DropdownControl } from "./dropdown";
-import { SpinnerWrapMode, SpinnerControl, SpinnerParams } from "./spinner";
+import { DropdownControl, DropdownParams } from "./dropdown";
+import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 
 
 /**
