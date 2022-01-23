@@ -6,7 +6,7 @@ export { WindowTemplate } from "./building/windowTemplate";
 export { Store } from "./bindings/store";
 export { store } from "./bindings/createStore";
 export { isStore } from "./bindings/isStore";
-export { map } from "./bindings/mapStore";
+export { compute } from "./bindings/compute";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
