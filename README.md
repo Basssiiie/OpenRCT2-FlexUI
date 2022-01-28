@@ -1,6 +1,6 @@
 # FlexUI for OpenRCT2 plugins
 
-W.I.P.
+**W.I.P.**
 
 A flexible user interface library for creating windows for OpenRCT2 plugins.
 
@@ -11,7 +11,9 @@ A flexible user interface library for creating windows for OpenRCT2 plugins.
  - New widgets like toggle buttons, dropdownspinners and dropdownbuttons;
  - Tree-shakable and minifiable.
 
-Designed with a focus on ease of use, performance and flexibility.
+Designed with a focus on ease of use, performancen, light-weighted and flexibility.
+
+For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-FlexUI/tree/main/examples).
 
 ---
 
