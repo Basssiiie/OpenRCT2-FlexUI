@@ -8,7 +8,7 @@ A flexible user interface library for creating windows for OpenRCT2 plugins.
     - Bind models to your user interface and have your UI automatically update when the values in your models change.
  - Automatically resizable windows;
  - Percentile or weighted sizing of widgets;
-    - Put your widgets in columns or rows, sized to 10% or 1/3 of the size of the parent, or something like that.
+    - Put your widgets in columns or rows, sized to 10% or 2/3 of the size of the parent, or something like that.
  - Nested widgets;
  - New widgets like toggle buttons, dropdownspinners and dropdownbuttons;
  - Tree-shakable and minifiable.
