@@ -5,6 +5,7 @@
 A flexible user interface library for creating windows for OpenRCT2 plugins.
 
  - MVVM-like user interface binding;
+    - Bind models to your user interface and have your UI automatically update when the values in your models change.
  - Automatically resizable windows;
  - Percentile or weighted sizing of widgets;
  - Nested widgets;
