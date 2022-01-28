@@ -10,8 +10,9 @@ A flexible user interface library for creating windows for OpenRCT2 plugins.
  - Percentile or weighted sizing of widgets;
     - Put your widgets in columns or rows, sized to 10% or 2/3 of the size of the parent, or something like that.
  - Nested widgets;
- - New widgets like toggle buttons, dropdownspinners and dropdownbuttons;
+ - New widgets like toggle buttons, dropdown-spinners and dropdown-buttons;
  - Tree-shakable and minifiable.
+    - If you use a tree-shaker then code from the library that you don't use will not be shipped with your plugin.
 
 Designed with a focus on ease of use, performance, light-weighted and flexibility.
 
