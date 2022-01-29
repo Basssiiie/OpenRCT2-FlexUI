@@ -74,6 +74,11 @@ interface BaseWindowParams extends Paddable
 	maxHeight?: number;
 
 	/**
+	 * Event that gets triggered when the window is opened.
+	 */
+	onOpen?: () => void;
+
+	/**
 	 * Event that gets triggered for every tick the window is open.
 	 */
 	onUpdate?: () => void;
@@ -174,6 +179,10 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	{
 		// Unbind binder on close event.
 		close.push(() => binder.unbind());
+	}
+	if (params.onOpen)
+	{
+		open.push(params.onOpen);
 	}
 	if (params.onUpdate)
 	{

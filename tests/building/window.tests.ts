@@ -292,6 +292,7 @@ test("Window events are triggered", t =>
 
 	const template = window({
 		width: 150, height: 100,
+		onOpen: ((c: WindowContext) => hits.push(["open", c])) as unknown as (() => void),
 		onUpdate: ((c: WindowContext) => hits.push(["update", c])) as unknown as (() => void),
 		onClose: ((c: WindowContext) => hits.push(["close", c])) as unknown as (() => void),
 		content: [
@@ -302,15 +303,17 @@ test("Window events are triggered", t =>
 	template.open();
 
 	const created = (global.ui as UiMock).createdWindows[0];
-	t.is(hits.length, 0);
-
-	call(created.onUpdate);
 	t.is(hits.length, 1);
-	t.is(hits[0][0], "update");
+	t.is(hits[0][0], "open");
 	t.truthy(hits[0][1]);
 
-	call(created.onClose);
+	call(created.onUpdate);
 	t.is(hits.length, 2);
-	t.is(hits[1][0], "close");
+	t.is(hits[1][0], "update");
 	t.truthy(hits[1][1]);
+
+	call(created.onClose);
+	t.is(hits.length, 3);
+	t.is(hits[2][0], "close");
+	t.truthy(hits[2][1]);
 });
