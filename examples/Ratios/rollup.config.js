@@ -8,7 +8,7 @@ import typescript from "@rollup/plugin-typescript";
 const config = {
 	input: "./index.ts",
 	output: {
-		file: "./dist/FUI-Ratios.js",
+		file: "../dist/FUI-Ratios.js",
 		format: "iife",
 	},
 	plugins: [
