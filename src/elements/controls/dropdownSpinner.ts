@@ -63,6 +63,8 @@ class DropdownSpinnerControl extends DropdownControl
 		const spinParams: SpinnerParams =
 		{
 			tooltip: params.tooltip,
+			disabled: params.disabled,
+			visibility: params.visibility,
 			minimum: 0,
 			maximum: 0,
 			onChange: (value: number) =>
@@ -95,9 +97,9 @@ class DropdownSpinnerControl extends DropdownControl
 
 		// Ensure selectedIndex is a store, so we can update it easily when
 		// the spinner is used.
-		const selectedIndexParam = params.selectedIndex;
-		const selectedStore = (isStore(selectedIndexParam))
-			? selectedIndexParam : store(selectedIndexParam || 0);
+		const selected = params.selectedIndex;
+		const selectedStore = (isStore(selected))
+			? selected : store(selected || 0);
 
 		params.selectedIndex = selectedStore;
 

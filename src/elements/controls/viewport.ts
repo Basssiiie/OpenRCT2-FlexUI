@@ -50,7 +50,7 @@ export interface ViewportParams extends ElementParams
 	/**
 	 * The target coordinates or entity id to view within the viewport.
 	 */
-	target?: Bindable<CoordsXY | CoordsXYZ | number>;
+	target?: Bindable<CoordsXY | CoordsXYZ | number | null>;
 
 	/**
 	 * The rotation to set the viewport to, from 0 to 3.
@@ -118,7 +118,7 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		}
 
 		const binder = output.binder;
-		binder.add(this, "target", params.target);
+		binder.add(this, "target", target);
 		binder.add(this, "rotation", params.rotation);
 		binder.add(this, "zoom", params.zoom);
 		binder.add(this, "visibilityFlags", params.visibilityFlags);

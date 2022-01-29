@@ -28,7 +28,7 @@ export class WindowBinder implements Binder
 			{
 				widget.name = identifier();
 			}
-			this.createBinding(widget.name, key, value, converter);
+			this._createBinding(widget.name, key, value, converter);
 			const val = value.get();
 			widget[key] = (converter) ? converter(val) : val as never;
 		}
@@ -45,13 +45,14 @@ export class WindowBinder implements Binder
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	private createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, store: Store<T>, converter?: (value: T) => W[K]): void
+	private _createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, store: Store<T>, converter?: (value: T) => W[K]): void
 	{
 		function setter(widget: W, value: T): void
 		{
 			widget[property] = (converter) ? converter(value) : value as never;
 		}
-		const binding = {
+		const binding: Binding<WidgetBase, unknown> =
+		{
 			widgetName: widgetName,
 			setter: setter,
 			store: store,
@@ -70,7 +71,7 @@ export class WindowBinder implements Binder
 				}
 				setter(widget, v);
 			})
-		} as Binding<WidgetBase, unknown>;
+		};
 
 		if (!this._bindings)
 		{

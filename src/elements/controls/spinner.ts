@@ -1,7 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
-import { store } from "@src/bindings/createStore";
-import { isStore } from "@src/bindings/isStore";
 import { Store } from "@src/bindings/store";
+import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { clamp, wrap } from "@src/utilities/math";
@@ -121,8 +120,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.
 		const value = params.value;
-		this._value = (isStore(value))
-			? value : store(value || 0);
+		this._value = storify(value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		const format = (params.format)
