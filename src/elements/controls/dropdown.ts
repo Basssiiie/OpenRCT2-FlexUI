@@ -1,4 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
+import { isStore } from "@src/bindings/isStore";
+import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { ensureDefaultLineHeight } from "../constants";
@@ -77,9 +79,23 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	{
 		super("dropdown", output, params);
 
+		const items = params.items;
+		const selected = params.selectedIndex;
+
+		if (isStore(items))
+		{
+			// Reset selected index when the updated list is shorted than the current index.
+			const resetSelection = storify(selected || 0);
+			items.subscribe(i =>
+			{
+				if (i.length <= resetSelection.get())
+					resetSelection.set(0);
+			});
+		}
+
 		const binder = output.binder;
-		binder.add(this, "items", params.items);
-		binder.add(this, "selectedIndex", params.selectedIndex);
+		binder.add(this, "items", items);
+		binder.add(this, "selectedIndex", selected);
 
 		const userOnChange = params.onChange;
 		if (userOnChange)

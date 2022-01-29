@@ -195,3 +195,29 @@ test("Disable single item enabled when more than one item", t =>
 	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
 	t.false(widget.isDisabled);
 });
+
+
+test("Reset selected index if too few new items", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const items = store([ "a", "b", "c", "d" ]);
+	const selected = store(3);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items, selectedIndex: selected })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
+	t.is(widget.selectedIndex, 3);
+
+	items.set(["e", "f"]);
+	t.deepEqual(widget.items, ["e", "f"]);
+	t.is(widget.selectedIndex, 0);
+	t.is(selected.get(), 0);
+});
