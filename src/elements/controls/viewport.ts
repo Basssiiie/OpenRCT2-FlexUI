@@ -3,7 +3,7 @@ import { isStore } from "@src/bindings/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
-import { isNumber, isObject, isUndefined } from "@src/utilities/type";
+import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { ElementParams } from "../element";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -89,6 +89,7 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<View
  */
 class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
 {
+	// template variables
 	target?: CoordsXY | CoordsXYZ | number;
 	rotation?: 0 | 1 | 2 | 3;
 	zoom?: number;
@@ -106,15 +107,16 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 	{
 		super("viewport", output, params);
 
+		const name = this.name;
 		const target = params.target;
 		if (isStore(target) || isNumber(target))
 		{
-			output.on("update", (context) => updateViewport(context, this));
+			output.on("update", (context) => updateViewport(context, name, target));
 		}
-		else
+		else if (!isNullOrUndefined(target))
 		{
 			// Flat coordinates do not need to be updated every frame.
-			output.on("open", (context) => updateViewport(context, this));
+			output.on("open", (context) => updateViewport(context, name, target));
 		}
 
 		const binder = output.binder;
@@ -122,6 +124,8 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		binder.add(this, "rotation", params.rotation);
 		binder.add(this, "zoom", params.zoom);
 		binder.add(this, "visibilityFlags", params.visibilityFlags);
+
+		console.log(`${this.target} <- ${target}`);
 	}
 }
 
@@ -129,9 +133,9 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 /**
  * Finds the widget for the specified viewport control to update it.
  */
-function updateViewport(context: WindowContext, control: ViewportControl): void
+function updateViewport(context: WindowContext, widgetName: string, target: Bindable<CoordsXY | CoordsXYZ | number | null>): void
 {
-	const widget = context.getWidget<ViewportWidget>(control.name);
+	const widget = context.getWidget<ViewportWidget>(widgetName);
 	if (!widget)
 		return;
 
@@ -139,16 +143,17 @@ function updateViewport(context: WindowContext, control: ViewportControl): void
 	if (!viewport || !viewport.viewport)
 		return;
 
-	goToTarget(viewport.viewport, control.target);
+	const targ = isStore(target) ? target.get() : target;
+	goToTarget(viewport.viewport, targ);
 }
 
 
 /**
  * Updates the viewport to target the target.
  */
-function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | undefined): void
+function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | null): void
 {
-	if (!isUndefined(target))
+	if (!isNullOrUndefined(target))
 	{
 		if (isNumber(target))
 		{
