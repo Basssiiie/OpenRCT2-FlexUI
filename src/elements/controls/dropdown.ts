@@ -71,49 +71,56 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	selectedIndex: number = 0;
 	onChange?: (index: number) => void;
 
-	_disabledMessage: string | undefined;
-	_disableSingleItem: boolean;
-
 
 	constructor(output: BuildOutput, params: DropdownParams)
 	{
 		super("dropdown", output, params);
 
 		const items = params.items;
-		const selected = params.selectedIndex;
+		const itemsIsStore = isStore(items);
+		let selected = params.selectedIndex;
 
-		if (isStore(items))
+		if (itemsIsStore)
 		{
 			// Reset selected index when the updated list is shorted than the current index.
-			const resetSelection = storify(selected || 0);
+			const reset = selected = storify(selected || 0);
 			items.subscribe(i =>
 			{
-				if (i.length <= resetSelection.get())
-					resetSelection.set(0);
+				if (i.length <= reset.get())
+					reset.set(0);
 			});
 		}
 
+
 		const binder = output.binder;
-		binder.add(this, "items", items);
+		const disabledMessage = params.disabledMessage;
+		let isDisabledConverter;
+
+		if (disabledMessage)
+		{
+			// If disabled, it should show a special message, if not show the (binded) items.
+			binder.on(params.disabled, this, "items", (isDisabled) =>
+			{
+				if (isDisabled)
+					return [ disabledMessage ];
+
+				return (itemsIsStore) ? items.get() : items;
+			});
+			isDisabledConverter = (itemArray: string[]): this["items"] => (this.isDisabled) ? [ disabledMessage ] : itemArray;
+		}
+		if (params.disableSingleItem)
+		{
+			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
+		}
+
+		binder.add(this, "items", items, isDisabledConverter);
 		binder.add(this, "selectedIndex", selected);
 
 		const userOnChange = params.onChange;
 		if (userOnChange)
 		{
-			this.onChange = userOnChange;
-		}
-
-		this._disabledMessage = params.disabledMessage;
-		this._disableSingleItem = !!params.disableSingleItem;
-
-		if (this._disabledMessage)
-		{
-			const items = this.items; // get local reference
-			binder.on(params.disabled, this, "items", (value) => (value) ? [ this._disabledMessage || "" ] : items);
-		}
-		if (this._disableSingleItem)
-		{
-			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
+			// Ensure index is never negative (= uninitialised state)
+			this.onChange = (idx: number): void => userOnChange((idx < 0) ? 0 : idx);
 		}
 	}
 }

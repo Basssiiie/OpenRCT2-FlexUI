@@ -161,6 +161,48 @@ test("Disable message doesn't show when always enabled", t =>
 });
 
 
+test("Disable message shows with items and disabled stores", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const items = store<string[]>([]);
+	const disabled = store(false);
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items, disabled, disabledMessage: "Sorry!" })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, []);
+	t.false(widget.isDisabled);
+
+	items.set([ "a", "b" ]);
+	t.deepEqual(widget.items, [ "a", "b" ]);
+	t.false(widget.isDisabled);
+
+	disabled.set(true);
+	t.deepEqual(widget.items, [ "Sorry!" ]);
+	t.true(widget.isDisabled);
+
+	items.set([ "c", "d", "e" ]);
+	t.deepEqual(widget.items, [ "Sorry!" ]);
+	t.true(widget.isDisabled);
+
+	disabled.set(false);
+	t.deepEqual(widget.items, [ "c", "d", "e" ]);
+	t.false(widget.isDisabled);
+
+	items.set([ "f", "g" ]);
+	t.deepEqual(widget.items, [ "f", "g" ]);
+	t.false(widget.isDisabled);
+});
+
+
 test("Disable single item disables when just one item", t =>
 {
 	const mock = Mock.ui();
