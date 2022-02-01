@@ -7,7 +7,7 @@ import { Padding } from "@src/positional/padding";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Rectangle } from "@src/positional/rectangle";
-import { WindowColour } from "@src/utilities/colour";
+import { Colour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
 import { identifier } from "@src/utilities/identifier";
 import { isUndefined } from "@src/utilities/type";
@@ -103,7 +103,7 @@ export interface WindowParams extends BaseWindowParams, FlexibleLayoutParams
 	 *  1. Used for the window background.
 	 *  2. Used for widget backgrounds.
 	 */
-	colours?: [WindowColour, WindowColour];
+	colours?: [Colour, Colour];
 }
 
 
@@ -121,7 +121,7 @@ export interface TabbedWindowParams extends BaseWindowParams
 	 *  2. Used for the background of each tab.
 	 *  3. Used for widget details and backgrounds.
 	 */
-	colours?: [WindowColour, WindowColour, WindowColour];
+	colours?: [Colour, Colour, Colour];
 
 	/**
 	 * Specify which tab the window should open on. Starts at 0.

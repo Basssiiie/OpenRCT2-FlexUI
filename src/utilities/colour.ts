@@ -19,11 +19,10 @@ export type TextColour
 	;
 
 /**
- * All the available window colours in OpenRCT2.
- *
- * Note: these are the regular selectable colours from left-to-right and top-to-bottom.
+ * All the available colours in OpenRCT2 for windows and colour pickers.
+ * These are the regular selectable colours from left-to-right and top-to-bottom.
  */
-export const enum WindowColour
+export const enum Colour
 {
 	Black,
 	Grey,

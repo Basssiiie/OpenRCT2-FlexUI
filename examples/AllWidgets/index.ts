@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, button, dropdown, dropdownSpinner, label, spinner, toggle, viewport, window } from "openrct2-flexui";
+import { box, button, Colour, colourPicker, dropdown, dropdownSpinner, horizontal, label, spinner, toggle, viewport, window } from "openrct2-flexui";
 
 
 const allWidgets = window({
@@ -24,6 +24,24 @@ const allWidgets = window({
 				text: "This is a centred labeled boxed label"
 			})
 		}),
+		horizontal([
+			label({
+				text: "Colours:",
+				width: "50%"
+			}),
+			colourPicker({
+				colour: Colour.SaturatedRed,
+				onChange: (colour: Colour) => console.log(`Colour picker #1 changed to colour id ${colour}`)
+			}),
+			colourPicker({
+				colour: Colour.White,
+				onChange: (colour: Colour) => console.log(`Colour picker #2 changed to colour id ${colour}`)
+			}),
+			colourPicker({
+				colour: Colour.DarkBlue,
+				onChange: (colour: Colour) => console.log(`Colour picker #3 changed to colour id ${colour}`)
+			})
+		]),
 		dropdown({
 			items: [ "First", "Second", "Third", "Fourth" ],
 			onChange: (index: number) => console.log(`Dropdown changed to index ${index}`)

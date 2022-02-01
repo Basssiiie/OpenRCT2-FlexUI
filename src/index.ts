@@ -13,6 +13,7 @@ export { compute } from "./bindings/compute";
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
 export { box, BoxParams } from "./elements/controls/box";
 export { button, ButtonParams } from "./elements/controls/button";
+export { colourPicker, ColourPickerParams } from "./elements/controls/colourPicker";
 export { dropdown, DropdownParams } from "./elements/controls/dropdown";
 export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
 export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
@@ -23,7 +24,7 @@ export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/vie
 
 // Widget parameter types
 export { ElementVisibility } from "./elements/element";
-export { WindowColour } from "./utilities/colour";
+export { Colour } from "./utilities/colour";
 
 // Layout information
 export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
