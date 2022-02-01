@@ -1,4 +1,4 @@
-import { isStore } from "@src/bindings/isStore";
+import { read } from "@src/bindings/read";
 import { Store } from "@src/bindings/store";
 
 /**
@@ -17,7 +17,7 @@ export class WidgetEditor<T extends Widget>
 
 	set<K extends keyof T>(key: K, value: T[K] | Store<T[K]>): void
 	{
-		const actual = (isStore(value)) ? value.get() : value;
+		const actual = read(value);
 		if (this.active)
 		{
 			(this.active)[key] = actual;

@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/isStore";
+import { read } from "@src/bindings/read";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
@@ -124,8 +125,6 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		binder.add(this, "rotation", params.rotation);
 		binder.add(this, "zoom", params.zoom);
 		binder.add(this, "visibilityFlags", params.visibilityFlags);
-
-		console.log(`${this.target} <- ${target}`);
 	}
 }
 
@@ -143,8 +142,7 @@ function updateViewport(context: WindowContext, widgetName: string, target: Bind
 	if (!viewport || !viewport.viewport)
 		return;
 
-	const targ = isStore(target) ? target.get() : target;
-	goToTarget(viewport.viewport, targ);
+	goToTarget(viewport.viewport, read(target));
 }
 
 
