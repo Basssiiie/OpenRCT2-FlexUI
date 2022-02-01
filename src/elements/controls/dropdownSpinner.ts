@@ -1,6 +1,7 @@
 import { store } from "@src/bindings/createStore";
 import { isStore } from "@src/bindings/isStore";
 import { Store } from "@src/bindings/store";
+import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
@@ -81,6 +82,20 @@ class DropdownSpinnerControl extends DropdownControl
 			}
 		};
 
+		// Setup dropdown callback
+		const userOnChange = params.onChange;
+		params.onChange = (idx): void =>
+		{
+			if (this._isUpdatingSelectedIndex)
+				return;
+
+			this._spinner._value.set(idx);
+			if (this._userOnChange)
+			{
+				this._userOnChange(idx);
+			}
+		};
+
 		// If items is a store, ensure the spinner maximum is always updated
 		// when the item list changes.
 		const items = params.items;
@@ -98,29 +113,16 @@ class DropdownSpinnerControl extends DropdownControl
 		// Ensure selectedIndex is a store, so we can update it easily when
 		// the spinner is used.
 		const selected = params.selectedIndex;
-		const selectedStore = (isStore(selected))
-			? selected : store(selected || 0);
-
+		const selectedStore = storify(selected || 0);
 		params.selectedIndex = selectedStore;
 
 		const spinner = new SpinnerControl(output, spinParams);
 		super(output, params);
+
 		this._spinner = spinner;
 		this._selectedIndex = selectedStore;
 		this._isUpdatingSelectedIndex = false;
-		this._userOnChange = params.onChange;
-
-		this.onChange = (idx): void =>
-		{
-			if (this._isUpdatingSelectedIndex)
-				return;
-
-			this._spinner._value.set(idx);
-			if (this._userOnChange)
-			{
-				this._userOnChange(idx);
-			}
-		};
+		this._userOnChange = userOnChange;
 	}
 
 

@@ -1,4 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
+import { read } from "@src/bindings/read";
 import { Store } from "@src/bindings/store";
 import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
@@ -104,11 +105,10 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	onIncrement: () => void;
 	onDecrement: () => void;
 
-	step: number = 1;
-	minimum: number = 0;
-	maximum: number = 0;
-
 	_value: Store<number>;
+	_step: Bindable<number>;
+	_minimum: Bindable<number>;
+	_maximum: Bindable<number>;
 	_wrapMode: SpinnerWrapMode;
 	_onChange?: (value: number, adjustment: number) => void;
 
@@ -119,27 +119,26 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.
-		const value = params.value;
-		this._value = storify(value || 0);
+		this._value = storify(params.value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
-		const format = (params.format)
-			? params.format
-			: ((value: number): string => value.toString());
+		const format = (params.format || ((value: number): string => value.toString()));
 
 		const binder = output.binder;
 		binder.add(this, "text", this._value, format);
-		binder.add(this, "step", params.step);
-		binder.add(this, "minimum", params.minimum);
-		binder.add(this, "maximum", params.maximum);
+
+		this._step = (params.step || 1);
+		this._minimum = (params.minimum || 0);
+		this._maximum = params.maximum;
 		this._wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this._onChange = params.onChange;
-		this.onIncrement = (): void => updateSpinnerValue(this, this.step);
-		this.onDecrement = (): void => updateSpinnerValue(this, -this.step);
 
-		if (this.minimum > this.maximum)
+		this.onIncrement = (): void => updateSpinnerValue(this, 1);
+		this.onDecrement = (): void => updateSpinnerValue(this, -1);
+
+		if (this._minimum > this._maximum)
 		{
-			throw Error(`Spinner: minimum ${this.minimum} is equal to or larger than maximum ${this.maximum}.`);
+			throw Error(`Spinner: minimum ${this._minimum} is larger than maximum ${this._maximum}.`);
 		}
 	}
 }
@@ -148,14 +147,15 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 /**
  * Callback for when the value of the spinner is incremented or decremented.
  */
-function updateSpinnerValue(spinner: SpinnerControl, step: number): void
+function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 {
-	const min = spinner.minimum;
-	const max = spinner.maximum;
+	const min = read(spinner._minimum);
+	const max = read(spinner._maximum);
 
 	if (min >= max)
 		return;
 
+	const step = (read(spinner._step) * direction);
 	const oldValue = spinner._value.get();
 	const newValue = (oldValue + step);
 

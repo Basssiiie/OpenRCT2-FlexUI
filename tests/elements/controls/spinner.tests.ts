@@ -271,7 +271,7 @@ test("Throw error on minimum larger than maximum", t =>
 	});
 	t.true(error?.message.includes("5678"));
 	t.true(error?.message.includes("1234"));
-	t.true(error?.message.includes("is equal to or larger than maximum"));
+	t.true(error?.message.includes("is larger than maximum"));
 });
 
 
@@ -292,4 +292,94 @@ test("Minimum equal to maximum does nothing", t =>
 	call(widget.onIncrement);
 	call(widget.onDecrement);
 	t.pass();
+});
+
+
+test("Step is bindable", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const step = store(1);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ step, maximum: 1000 })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	call(widget.onIncrement);
+	t.is(widget.text, "1");
+
+	step.set(4);
+	call(widget.onIncrement);
+	t.is(widget.text, "5");
+
+	step.set(16);
+	call(widget.onIncrement);
+	t.is(widget.text, "21");
+
+	step.set(18);
+	call(widget.onDecrement);
+	t.is(widget.text, "3");
+});
+
+
+test("Minimum is bindable", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const minimum = store(0);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ minimum, maximum: 10 })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	call(widget.onDecrement);
+	t.is(widget.text, "9");
+
+	minimum.set(8);
+	call(widget.onDecrement);
+	t.is(widget.text, "8");
+	call(widget.onDecrement);
+	t.is(widget.text, "9");
+});
+
+
+test("Maximum is bindable", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const maximum = store(2);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ maximum })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	call(widget.onIncrement);
+	t.is(widget.text, "1");
+	call(widget.onIncrement);
+	t.is(widget.text, "0");
+
+	maximum.set(4);
+	call(widget.onIncrement);
+	t.is(widget.text, "1");
+	call(widget.onIncrement);
+	t.is(widget.text, "2");
+	call(widget.onIncrement);
+	t.is(widget.text, "3");
+	call(widget.onIncrement);
+	t.is(widget.text, "0");
 });
