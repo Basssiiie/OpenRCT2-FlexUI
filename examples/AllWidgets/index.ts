@@ -5,8 +5,8 @@ import { box, button, dropdown, dropdownSpinner, label, spinner, toggle, viewpor
 
 const allWidgets = window({
 	title: "All Widgets (fui example)",
-	width: 200, minWidth: 75, maxWidth: 10000,
-	height: 300, minHeight: 75, maxHeight: 10000,
+	width: 200, minWidth: 75, maxWidth: 10_000,
+	height: 300, minHeight: 75, maxHeight: 10_000,
 	padding: 5,
 	content: [
 		label({

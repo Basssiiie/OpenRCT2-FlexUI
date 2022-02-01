@@ -15,7 +15,7 @@
 		"watch": "nodemon --watch ./src --ext js,ts",
 		"build": "npm run clean && npm run lint && rollup --config rollup.config.js --environment BUILD:production",
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
-		"build:examples": "npm run build --prefix examples/AllWidgets && npm run build --prefix examples/Ratios",
+		"build:examples": "npm run build --prefix examples/AllWidgets && npm run build --prefix examples/BirdStalker && npm run build --prefix examples/Ratios",
 		"clean": "rimraf ./dist/*",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
