@@ -1,5 +1,4 @@
 import { Bindable } from "@src/bindings/bindable";
-import { read } from "@src/bindings/read";
 import { Store } from "@src/bindings/store";
 import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
@@ -105,10 +104,11 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	onIncrement: () => void;
 	onDecrement: () => void;
 
+	step: number = 1;
+	min: number = 0;
+	max: number = 0;
+
 	_value: Store<number>;
-	_step: Bindable<number>;
-	_minimum: Bindable<number>;
-	_maximum: Bindable<number>;
 	_wrapMode: SpinnerWrapMode;
 	_onChange?: (value: number, adjustment: number) => void;
 
@@ -126,19 +126,19 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		const binder = output.binder;
 		binder.add(this, "text", this._value, format);
+		binder.add(this, "step", params.step);
+		binder.add(this, "min", params.minimum);
+		binder.add(this, "max", params.maximum);
 
-		this._step = (params.step || 1);
-		this._minimum = (params.minimum || 0);
-		this._maximum = params.maximum;
 		this._wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this._onChange = params.onChange;
 
 		this.onIncrement = (): void => updateSpinnerValue(this, 1);
 		this.onDecrement = (): void => updateSpinnerValue(this, -1);
 
-		if (this._minimum > this._maximum)
+		if (this.min > this.max)
 		{
-			throw Error(`Spinner: minimum ${this._minimum} is larger than maximum ${this._maximum}.`);
+			throw Error(`Spinner: minimum ${this.min} is larger than maximum ${this.max}.`);
 		}
 	}
 }
@@ -149,13 +149,11 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
  */
 function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 {
-	const min = read(spinner._minimum);
-	const max = read(spinner._maximum);
-
+	const min = spinner.min, max = spinner.max;
 	if (min >= max)
 		return;
 
-	const step = (read(spinner._step) * direction);
+	const step = (spinner.step * direction);
 	const oldValue = spinner._value.get();
 	const newValue = (oldValue + step);
 
