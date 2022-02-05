@@ -47,29 +47,29 @@ export class WindowBinder implements Binder
 	 */
 	private _createBinding<W extends WidgetBase, K extends keyof W, T>(widgetName: string, property: K, store: Store<T>, converter?: (value: T) => W[K]): void
 	{
-		function setter(widget: W, value: T): void
-		{
-			widget[property] = (converter) ? converter(value) : value as never;
-		}
 		const binding: Binding<WidgetBase, unknown> =
 		{
 			widgetName: widgetName,
-			setter: setter,
 			store: store,
+			setter: (widget: W, value: T): void =>
+			{
+				widget[property] = (converter) ? converter(value) : value as never;
+			},
 			unsubscribe: store.subscribe(v =>
 			{
 				const template = this._template;
+				// Only update if window is open.
 				if (!template || !template.window)
 					return;
 
-				// Only update visible widget.
-				const widget = template.window.findWidget<W>(widgetName);
-				if (!widget)
+				const editor = template.getWidget<W>(widgetName);
+				if (!editor)
 				{
 					Log.debug(`Binder: widget '${widgetName}' not found on window for updating property '${property}' with value '${v}'.`);
 					return;
 				}
-				setter(widget, v);
+				const finalValue = (converter) ? converter(v) : v;
+				editor.set(property, finalValue as never);
 			})
 		};
 

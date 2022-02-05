@@ -58,12 +58,13 @@ test("read() sets store in window template", t =>
 		x: 0, y: 0, height: 10, width: 100,
 	};
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
-	output._widgets.push(label);
+	output.add(label);
 
 	const storeNumber = new DefaultStore(25);
 	output.binder.add(label, "x", storeNumber);
 	output.binder.bind(output._template);
 
+	output._template.build();
 	output._template.open();
 	t.is(label.x, 25);
 
@@ -84,12 +85,13 @@ test("read() sets store through converter", t =>
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
 	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
-	output._widgets.push(label);
+	output.add(label);
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
 	output.binder.bind(output._template);
 
+	output._template.build();
 	output._template.open();
 	t.true(label.isVisible);
 
