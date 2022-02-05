@@ -1,6 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/isStore";
-import { read } from "@src/bindings/read";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
@@ -90,8 +89,7 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<View
  */
 class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
 {
-	// template variables
-	target?: CoordsXY | CoordsXYZ | number;
+	target?: CoordsXY | CoordsXYZ | number | null;
 	rotation?: 0 | 1 | 2 | 3;
 	zoom?: number;
 	visibilityFlags?: ViewportFlags;
@@ -108,16 +106,15 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 	{
 		super("viewport", output, params);
 
-		const name = this.name;
 		const target = params.target;
 		if (isStore(target) || isNumber(target))
 		{
-			output.on("update", (context) => updateViewport(context, name, target));
+			output.on("update", (context) => updateViewport(this, context));
 		}
 		else if (!isNullOrUndefined(target))
 		{
 			// Flat coordinates do not need to be updated every frame.
-			output.on("open", (context) => updateViewport(context, name, target));
+			output.on("open", (context) => updateViewport(this, context));
 		}
 
 		const binder = output.binder;
@@ -132,9 +129,9 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 /**
  * Finds the widget for the specified viewport control to update it.
  */
-function updateViewport(context: WindowContext, widgetName: string, target: Bindable<CoordsXY | CoordsXYZ | number | null>): void
+function updateViewport(control: ViewportControl, context: WindowContext): void
 {
-	const widget = context.getWidget<ViewportWidget>(widgetName);
+	const widget = context.getWidget<ViewportWidget>(control.name);
 	if (!widget)
 		return;
 
@@ -142,14 +139,14 @@ function updateViewport(context: WindowContext, widgetName: string, target: Bind
 	if (!viewport || !viewport.viewport)
 		return;
 
-	goToTarget(viewport.viewport, read(target));
+	goToTarget(viewport.viewport, control.target);
 }
 
 
 /**
  * Updates the viewport to target the target.
  */
-function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | null): void
+function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | null | undefined): void
 {
 	if (!isNullOrUndefined(target))
 	{
