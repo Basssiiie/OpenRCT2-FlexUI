@@ -10,10 +10,10 @@ import { WindowTemplate } from "./windowTemplate";
  */
 export class Template implements WindowTemplate, WindowContext
 {
-	window: Window | null = null;
+	_window: Window | null = null;
 
-	templateWidgets: WidgetMap | null = null;
-	openWidgets: WidgetMap | null = null;
+	_templateWidgets: WidgetMap | null = null;
+	_openWidgets: WidgetMap | null = null;
 
 
 	/**
@@ -32,7 +32,7 @@ export class Template implements WindowTemplate, WindowContext
 	build(): void
 	{
 		const widgets = this.description.widgets;
-		this.templateWidgets = (widgets) ? createWidgetMap(widgets) : null;
+		this._templateWidgets = (widgets) ? createWidgetMap(widgets) : null;
 	}
 
 	open(): void
@@ -42,7 +42,7 @@ export class Template implements WindowTemplate, WindowContext
 
 		if (binder && binder.hasBindings())
 		{
-			const widgets = this.templateWidgets;
+			const widgets = this._templateWidgets;
 			if (widgets)
 			{
 				// Update the template widgets always before the window opens.
@@ -52,8 +52,8 @@ export class Template implements WindowTemplate, WindowContext
 		}
 
 		const window = ui.openWindow(description);
-		this.window = window;
-		this.openWidgets = createWidgetMap(window.widgets);
+		this._window = window;
+		this._openWidgets = createWidgetMap(window.widgets);
 
 		if (this.onOpen)
 		{
@@ -64,35 +64,35 @@ export class Template implements WindowTemplate, WindowContext
 	close(): void
 	{
 		ui.closeWindows(this.description.classification);
-		this.window = null;
-		this.openWidgets = null;
+		this._window = null;
+		this._openWidgets = null;
 	}
 
 	focus(): void
 	{
-		if (this.window)
+		if (this._window)
 		{
-			this.window.bringToFront();
+			this._window.bringToFront();
 		}
 	}
 
 	getWidget<T extends Widget>(name: string): WidgetEditor<T> | null
 	{
-		const widgets = this.templateWidgets;
+		const widgets = this._templateWidgets;
 		if (widgets)
 		{
 			const template = <T>widgets[name];
 			if (template)
 			{
-				const window = this.window;
+				const window = this._window;
 				let active: T | undefined;
 				if (window)
 				{
 					// Create map of open widgets lazily if it has not been created yet.
-					let openWidgets = this.openWidgets;
+					let openWidgets = this._openWidgets;
 					if (!openWidgets)
 					{
-						this.openWidgets = openWidgets = createWidgetMap(window.widgets);
+						this._openWidgets = openWidgets = createWidgetMap(window.widgets);
 					}
 					active = <T>openWidgets[name];
 				}
