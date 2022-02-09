@@ -4,7 +4,7 @@ import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { ensureDefaultLineHeight } from "../constants";
-import { ElementParams } from "../element";
+import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
@@ -91,7 +91,6 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			});
 		}
 
-
 		const binder = output.binder;
 		const disabledMessage = params.disabledMessage;
 		let isDisabledConverter;
@@ -99,7 +98,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		if (disabledMessage)
 		{
 			// If disabled, it should show a special message, if not show the (binded) items.
-			binder.on(params.disabled, this, "items", (isDisabled) =>
+			binder.add(this, "items", params.disabled, (isDisabled) =>
 			{
 				if (isDisabled)
 					return [ disabledMessage ];
@@ -110,7 +109,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		}
 		if (params.disableSingleItem)
 		{
-			binder.on(params.items, this, "isDisabled", (value) => (!value || value.length <= 1));
+			binder.add(this, "isDisabled", items, (value) => (!value || value.length <= 1));
 		}
 
 		binder.add(this, "items", items, isDisabledConverter);

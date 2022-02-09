@@ -9,7 +9,7 @@ import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/par
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { ElementParams } from "../element";
+import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { setDesiredSpaceForChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";

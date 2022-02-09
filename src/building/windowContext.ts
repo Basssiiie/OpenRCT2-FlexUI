@@ -10,4 +10,9 @@ export interface WindowContext
 	 */
 	getWidget<T extends Widget>(name: string): WidgetEditor<T> | null;
 	getWidget(name: string): WidgetEditor<Widget> | null;
+
+	/**
+	 * Start a redraw of the window where all widgets will be relayouted.
+	 */
+	redraw(): void;
 }

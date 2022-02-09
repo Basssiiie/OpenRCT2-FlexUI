@@ -1,14 +1,18 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
+import { store } from "@src/bindings/createStore";
 import { BuildContainer } from "@src/building/buildContainer";
 import { createWidgetMap } from "@src/building/widgetMap";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
+import { ElementVisibility } from "@src/elements/elementParams";
 import { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal, vertical } from "@src/elements/layouts/flexible/flexible";
 import { Direction } from "@src/positional/direction";
 import { Rectangle } from "@src/positional/rectangle";
+import { invoke } from "@src/utilities/event";
 import test from "ava";
+import Mock from "openrct2-mocks";
 
 
 test("Simple layouts with widgets", t =>
@@ -461,7 +465,8 @@ test("Works without children", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output._widgets), rect);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
 
 	const widgets = output._widgets;
 	t.is(widgets.length, 0);
@@ -482,7 +487,8 @@ test("Spacing: 10 pixels between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output._widgets), rect);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
 
 	const widget1 = output._widgets[0];
 	t.is(widget1.x, 0);
@@ -511,7 +517,8 @@ test("Spacing: default space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Vertical);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output._widgets), rect);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 7);
@@ -541,7 +548,8 @@ test("Spacing: percentile space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output._widgets), rect);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -571,7 +579,8 @@ test("Spacing: weighted space between two elements", t =>
 	};
 	const creator = flexible(params, Direction.Horizontal);
 	const control = creator.create(output);
-	control.layout(createWidgetMap(output._widgets), rect);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
@@ -794,4 +803,146 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	t.is(label4.y, 135 + 23 + 15 - 7);
 	t.is(label4.width, 240);
 	t.is(label4.height, 14);
+});
+
+
+test("Child with visibility 'none' is not updated", t =>
+{
+	global.ui = Mock.ui();
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 28, y: 20, width: 43, height: 60 };
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			label({ text: "abc", height: "1w" }),
+			label({ text: "nada", visibility: "none" }),
+			label({ text: "def", height: "1w" }),
+		]
+	}, Direction.Vertical);
+
+	const control = creator.create(output);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
+
+	const widgets = output._widgets;
+	t.is(widgets.length, 3);
+
+	const widget1 = output._widgets[0] as LabelWidget;
+	t.is(widget1.text, "abc");
+	t.is(widget1.x, 28);
+	t.is(widget1.y, 20);
+	t.is(widget1.width, 43);
+	t.is(widget1.height, 25);
+
+	const widget2 = output._widgets[1] as LabelWidget;
+	t.is(widget2.text, "nada");
+	t.is(widget2.x, 0);
+	t.is(widget2.y, 0);
+	t.is(widget2.width, 0);
+	t.is(widget2.height, 0);
+
+	const widget3 = output._widgets[2] as LabelWidget;
+	t.is(widget3.text, "def");
+	t.is(widget3.x, 28);
+	t.is(widget3.y, 20 + 25 + 10);
+	t.is(widget3.width, 43);
+	t.is(widget3.height, 25);
+});
+
+
+test("None update if all children have visibility set to 'none'", t =>
+{
+	global.ui = Mock.ui();
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
+	const creator = flexible({
+		content: [
+			label({ text: "abc", visibility: "none" }),
+			label({ text: "def", visibility: "none" }),
+			label({ text: "ghi", visibility: "none" }),
+		]
+	}, Direction.Vertical);
+
+	const control = creator.create(output);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
+
+	const widgets = output._widgets;
+	t.is(widgets.length, 3);
+
+	const widget1 = output._widgets[0] as LabelWidget;
+	t.is(widget1.text, "abc");
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0);
+	t.is(widget1.width, 0);
+	t.is(widget1.height, 0);
+
+	const widget2 = output._widgets[1] as LabelWidget;
+	t.is(widget2.text, "def");
+	t.is(widget2.x, 0);
+	t.is(widget2.y, 0);
+	t.is(widget2.width, 0);
+	t.is(widget2.height, 0);
+
+	const widget3 = output._widgets[2] as LabelWidget;
+	t.is(widget3.text, "ghi");
+	t.is(widget3.x, 0);
+	t.is(widget3.y, 0);
+	t.is(widget3.width, 0);
+	t.is(widget3.height, 0);
+});
+
+
+test("Child visibility is updated by store", t =>
+{
+	global.ui = Mock.ui();
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 80 };
+	const visibility = store<ElementVisibility>("visible");
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			label({ text: "abc", height: "1w" }),
+			label({ text: "wow", height: "1w", visibility: visibility }),
+			label({ text: "def", height: "1w" }),
+		]
+	}, Direction.Vertical);
+
+	const control = creator.create(output);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
+
+	// Ensure context is set
+	invoke(output.open, <never>
+	{
+		// ensure context is set
+		redraw: () => control.layout(widgetMap, rect)
+	});
+
+	const widgets = output._widgets;
+	t.is(widgets.length, 3);
+
+	const widget1 = output._widgets[0] as LabelWidget;
+	const widget2 = output._widgets[1] as LabelWidget;
+	const widget3 = output._widgets[2] as LabelWidget;
+	t.is(widget1.y, 3);
+	t.is(widget2.y, 3 + 10 + 20);
+	t.is(widget3.y, 3 + 10 + 20 + 10 + 20);
+	t.is(widget1.height, 20);
+	t.is(widget2.height, 20);
+	t.is(widget3.height, 20);
+
+	visibility.set("none");
+	t.is(widget1.y, 3);
+	t.is(widget3.y, 3 + 10 + 35);
+	t.is(widget1.height, 35);
+	t.is(widget3.height, 35);
+
+	visibility.set("visible");
+	t.is(widget1.y, 3);
+	t.is(widget2.y, 3 + 10 + 20);
+	t.is(widget3.y, 3 + 10 + 20 + 10 + 20);
+	t.is(widget1.height, 20);
+	t.is(widget2.height, 20);
+	t.is(widget3.height, 20);
 });

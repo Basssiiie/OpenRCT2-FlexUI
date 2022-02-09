@@ -1,9 +1,11 @@
+import { isStore } from "@src/bindings/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { WidgetMap } from "@src/building/widgetMap";
+import { WindowContext } from "@src/building/windowContext";
 import { Rectangle } from "@src/positional/rectangle";
 import { identifier } from "@src/utilities/identifier";
-import { ElementParams } from "../element";
+import { ElementParams } from "../elementParams";
 import { fillLayout } from "../layouts/fillLayout";
 
 
@@ -23,14 +25,35 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 	isDisabled?: boolean;
 	isVisible?: boolean;
 
+	skip?: boolean;
+	_context?: WindowContext | null;
+
 	constructor(type: T["type"], output: BuildOutput, params: ElementParams)
 	{
 		this.type = type;
 
-		const binder = output.binder;
+		const binder = output.binder, visibility = params.visibility;
 		binder.add(this, "tooltip", params.tooltip);
 		binder.add(this, "isDisabled", params.disabled);
-		binder.add(this, "isVisible", params.visibility, v => (v === "visible"));
+		binder.add(this, "isVisible", visibility, v => (v === "visible"));
+
+		// Redraw UI if the visibility changes to and from "none"
+		binder.on(visibility, v =>
+		{
+			const oldValue = this.skip;
+			const newValue = (v === "none");
+			this.skip = newValue;
+
+			if (this._context && (oldValue || newValue))
+			{
+				this._context.redraw();
+			}
+		});
+		if (isStore(visibility))
+		{
+			output.on("open", c => this._context = c);
+			output.on("close", () => this._context = null);
+		}
 
 		output.add(<Widget>this);
 	}

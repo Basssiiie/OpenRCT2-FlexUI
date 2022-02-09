@@ -9,7 +9,7 @@ import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
 import { defaultScale, zeroPadding, zeroScale } from "../constants";
-import { ElementParams } from "../element";
+import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { flexibleLayout } from "../layouts/flexible/flexibleLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -122,8 +122,8 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 	 */
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		const params = this._columnWidths;
-		if (!params)
+		const widths = this._columnWidths;
+		if (!widths)
 		{
 			super.layout(widgets, area);
 			return;
@@ -133,7 +133,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		if (widget.width !== area.width)
 		{
 			const columns = this.columns;
-			flexibleLayout(params, area, Direction.Horizontal, zeroScale, (idx, subarea) =>
+			flexibleLayout(widths, area, Direction.Horizontal, zeroScale, (idx, subarea) =>
 			{
 				columns[idx].width = subarea.width;
 			});

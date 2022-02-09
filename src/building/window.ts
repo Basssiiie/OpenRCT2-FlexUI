@@ -1,19 +1,13 @@
-import { defaultScale } from "@src/elements/constants";
 import { flexible, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
-import { applyPadding } from "@src/elements/layouts/paddingHelpers";
 import { Direction } from "@src/positional/direction";
 import { Paddable } from "@src/positional/paddable";
 import { Padding } from "@src/positional/padding";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
-import { Rectangle } from "@src/positional/rectangle";
 import { Colour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
 import { identifier } from "@src/utilities/identifier";
 import { isUndefined } from "@src/utilities/type";
 import { BuildContainer } from "./buildContainer";
-import { Layoutable } from "./layoutable";
-import { createWidgetMap } from "./widgetMap";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -137,7 +131,6 @@ export interface TabbedWindowParams extends BaseWindowParams
 
 
 const defaultPadding: Padding = 5;
-const topBarSize: number = 15;
 
 
 /**
@@ -194,11 +187,11 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	}
 
 	const template = output._template;
-	template.build();
+	template._build();
 
 	if (open.length > 0)
 	{
-		template.onOpen = (): void => invoke(open, template);
+		template._onOpen = (): void => invoke(open, template);
 	}
 	if (update.length > 0)
 	{
@@ -209,7 +202,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		window.onClose = (): void => invoke(close, template);
 	}
 
-	return output._template;
+	return template;
 }
 
 
@@ -219,18 +212,18 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
 	const creator = flexible(params, Direction.Vertical);
-	const control = creator.create(output);
+	const template = output._template;
+	template._body = creator.create(output);
 
 	// Check if padding was specified..
 	const suppliedPadding = params.padding;
-	const parsedPadding = parsePadding((!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding);
+	template._padding = parsePadding((!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding);
 
 	window.widgets = output._widgets;
-	performLayout(output._widgets, control, window.width, window.height, parsedPadding);
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
-		setWindowLayoutResizing(output, window, control, parsedPadding);
+		setWindowLayoutResizing(output);
 	}
 }
 
@@ -238,36 +231,19 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 /**
  * Enables resizing the window by the user.
  */
-function setWindowLayoutResizing(output: BuildContainer, window: WindowDesc, control: Layoutable, padding?: ParsedPadding): void
+function setWindowLayoutResizing(output: BuildContainer): void
 {
-	const previous = { name: window.classification, width: window.width, height: window.height };
+	const template = output._template;
 	output.update.push((): void =>
 	{
-		const instance = ui.getWindow(previous.name);
+		const instance = ui.getWindow(template._description.classification);
 		const width = instance.width, height = instance.height;
 
-		if (width === previous.width && height === previous.height)
+		if (width === template._width && height === template._height)
 			return;
 
-		previous.width = width;
-		previous.height = height;
-
-		performLayout(instance.widgets, control, width, height, padding);
+		template._width = width;
+		template._height = height;
+		template.redraw();
 	});
-}
-
-
-/**
- * Recalculate the whole layout.
- */
-function performLayout(widgets: Widget[], control: Layoutable, width: number, height: number, padding?: ParsedPadding): void
-{
-	// Skip the top bar (15px)
-	const area: Rectangle = { x: 0, y: topBarSize, width: width, height: height - topBarSize };
-	if (padding)
-	{
-		applyPadding(area, defaultScale, defaultScale, padding);
-	}
-	const container = createWidgetMap(widgets);
-	control.layout(container, area);
 }

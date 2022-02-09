@@ -16,7 +16,7 @@ import { WidgetMap } from "./widgetMap";
 export class WindowBinder implements Binder
 {
 	private _template: Template | null = null;
-	private _bindings?: Binding<WidgetBase, unknown>[];
+	private _bindings: Binding<WidgetBase, unknown>[] = [];
 
 
 	add<W extends WidgetBase, K extends keyof W, T>(widget: W, key: K, value: Bindable<T> | undefined, converter?: (value: T) => W[K]): void
@@ -59,7 +59,7 @@ export class WindowBinder implements Binder
 			{
 				const template = this._template;
 				// Only update if window is open.
-				if (!template || !template.window)
+				if (!template || !template._window)
 					return;
 
 				const editor = template.getWidget<W>(widgetName);
@@ -73,43 +73,20 @@ export class WindowBinder implements Binder
 			})
 		};
 
-		if (!this._bindings)
-		{
-			this._bindings = [binding];
-		}
-
-		else
-		{
-			this._bindings.push(binding);
-		}
+		this._bindings.push(binding);
 	}
 
 
-	on<T, W extends WidgetBase, K extends keyof W>(bindable: Bindable<T> | undefined, widgetTemplate: W, property: K, callback: (value: T) => W[K]): void
+	on<T>(bindable: Bindable<T> | undefined, callback: (value: T) => void): void
 	{
 		if (isStore(bindable))
 		{
-			const name = widgetTemplate.name;
-			if (!name)
-				return;
-
-			bindable.subscribe(value =>
-			{
-				const template = this._template;
-				if (template)
-				{
-					const widget = template.getWidget<W>(name);
-					if (widget)
-					{
-						widget.set(property, callback(value));
-					}
-				}
-			});
+			bindable.subscribe(callback);
 		}
 		else if (!isUndefined(bindable))
 		{
 			// Write callback straight back to the widget template.
-			widgetTemplate[property] = callback(bindable);
+			callback(bindable);
 		}
 	}
 
@@ -151,12 +128,13 @@ export class WindowBinder implements Binder
 	 */
 	hasBindings(): boolean
 	{
-		return (!isUndefined(this._bindings) && this._bindings.length > 0);
+		return (this._bindings.length > 0);
 	}
 
 	/**
 	 * Disposes all subscriptions for this binder.
 	 */
+	/*
 	dispose(): void
 	{
 		if (this._bindings)
@@ -167,4 +145,5 @@ export class WindowBinder implements Binder
 			}
 		}
 	}
+	*/
 }

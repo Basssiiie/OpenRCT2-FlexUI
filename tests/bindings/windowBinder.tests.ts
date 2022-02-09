@@ -3,7 +3,7 @@
 import { DefaultStore } from "@src/bindings/defaultStore";
 import { BuildContainer } from "@src/building/buildContainer";
 import { WindowBinder } from "@src/building/windowBinder";
-import { ElementVisibility } from "@src/elements/element";
+import { ElementVisibility } from "@src/elements/elementParams";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
@@ -39,13 +39,11 @@ test("read() adds store to binder", t =>
 	};
 	const binder = new WindowBinder();
 
-	t.falsy(binder["_bindings"]);
+	t.deepEqual(binder["_bindings"], []);
 
 	const storeNumber = new DefaultStore(25);
 	binder.add(label, "y", storeNumber);
-
-	t.truthy(binder["_bindings"]);
-	t.is(binder["_bindings"]?.length, 1);
+	t.is(binder["_bindings"].length, 1);
 });
 
 
@@ -64,7 +62,7 @@ test("read() sets store in window template", t =>
 	output.binder.add(label, "x", storeNumber);
 	output.binder.bind(output._template);
 
-	output._template.build();
+	output._template._build();
 	output._template.open();
 	t.is(label.x, 25);
 
@@ -91,7 +89,7 @@ test("read() sets store through converter", t =>
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
 	output.binder.bind(output._template);
 
-	output._template.build();
+	output._template._build();
 	output._template.open();
 	t.true(label.isVisible);
 

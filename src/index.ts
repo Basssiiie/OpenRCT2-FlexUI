@@ -23,7 +23,7 @@ export { toggle, ToggleParams } from "./elements/controls/toggle";
 export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/viewport";
 
 // Widget parameter types
-export { ElementVisibility } from "./elements/element";
+export { ElementParams, ElementVisibility } from "./elements/elementParams";
 export { Colour } from "./utilities/colour";
 
 // Layout information

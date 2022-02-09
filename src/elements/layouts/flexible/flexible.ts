@@ -85,11 +85,13 @@ export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer
 }
 
 
+type FlexibleLayoutChild = Parsed<FlexiblePosition> & { _layoutable: Layoutable };
+
+
 class FlexibleLayoutControl implements Layoutable
 {
+	_children: FlexibleLayoutChild[];
 	_direction: Direction;
-	_childLayoutFunctions: Layoutable[];
-	_childPositions: Parsed<FlexiblePosition>[];
 	_spacing: ParsedScale;
 
 	constructor(output: BuildOutput, params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: Direction)
@@ -105,28 +107,29 @@ class FlexibleLayoutControl implements Layoutable
 
 		const items = (isArray(params)) ? params : params.content;
 		const count = items.length;
-		const functions = Array<Layoutable>(count);
-		const positions = Array<Parsed<FlexiblePosition>>(count);
+		const children = Array<FlexibleLayoutChild>(count);
 
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			functions[i] = child.create(output);
-			const pos = parseFlexiblePosition(child.params);
-			positions[i] = pos;
+			const layoutable = child.create(output);
+
+			const position = parseFlexiblePosition(child.params) as FlexibleLayoutChild;
+			position._layoutable = layoutable;
+			children[i] = position;
 		}
 
-		setDesiredSpaceForChildren(params, positions, <ParsedScale>spacing, direction);
-
-		this._childLayoutFunctions = functions;
-		this._childPositions = positions;
+		setDesiredSpaceForChildren(params, children, <ParsedScale>spacing, direction);
+		this._children = children;
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		flexibleLayout(this._childPositions, area, this._direction, this._spacing, (idx, subarea) =>
+		const renderableChildren = this._children.filter(c => !c._layoutable.skip);
+
+		flexibleLayout(renderableChildren, area, this._direction, this._spacing, (idx, subarea) =>
 		{
-			this._childLayoutFunctions[idx].layout(widgets, subarea);
+			renderableChildren[idx]._layoutable.layout(widgets, subarea);
 		});
 	}
 }

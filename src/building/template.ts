@@ -1,8 +1,16 @@
 import { WindowBinder } from "@src/building/windowBinder";
+import { defaultScale } from "../elements/constants";
+import { applyPadding } from "../elements/layouts/paddingHelpers";
+import { ParsedPadding } from "../positional/parsing/parsedPadding";
+import { Rectangle } from "../positional/rectangle";
+import { Layoutable } from "./layoutable";
 import { WidgetEditor } from "./widgetEditor";
 import { createWidgetMap, WidgetMap } from "./widgetMap";
 import { WindowContext } from "./windowContext";
 import { WindowTemplate } from "./windowTemplate";
+
+
+const topBarSize: number = 15;
 
 
 /**
@@ -11,6 +19,11 @@ import { WindowTemplate } from "./windowTemplate";
 export class Template implements WindowTemplate, WindowContext
 {
 	_window: Window | null = null;
+	_body: Layoutable | null = null;
+
+	_width: number;
+	_height: number;
+	_padding: ParsedPadding | null = null;
 
 	_templateWidgets: WidgetMap | null = null;
 	_openWidgets: WidgetMap | null = null;
@@ -19,26 +32,44 @@ export class Template implements WindowTemplate, WindowContext
 	/**
 	 * Callback that gets called when the window is opened.
 	 */
-	onOpen?: () => void;
+	_onOpen?: () => void;
 
 
-	constructor(private readonly description: WindowDesc, private readonly binder?: WindowBinder)
+	constructor(
+		readonly _description: WindowDesc,
+		readonly _binder?: WindowBinder)
 	{
+		this._width = _description.width;
+		this._height = _description.height;
 	}
 
 	/**
 	 * Builds the final template.
 	 */
-	build(): void
+	_build(): void
 	{
-		const widgets = this.description.widgets;
-		this._templateWidgets = (widgets) ? createWidgetMap(widgets) : null;
+		const widgets = this._description.widgets;
+		if (widgets)
+		{
+			const map = createWidgetMap(widgets);
+			this._templateWidgets = map;
+			performLayout(this, map);
+		}
+	}
+
+	redraw(): void
+	{
+		const widgets = this._openWidgets;
+		if (!widgets)
+			return;
+
+		performLayout(this, widgets);
 	}
 
 	open(): void
 	{
-		const description = this.description;
-		const binder = this.binder;
+		const description = this._description;
+		const binder = this._binder;
 
 		if (binder && binder.hasBindings())
 		{
@@ -55,15 +86,15 @@ export class Template implements WindowTemplate, WindowContext
 		this._window = window;
 		this._openWidgets = createWidgetMap(window.widgets);
 
-		if (this.onOpen)
+		if (this._onOpen)
 		{
-			this.onOpen();
+			this._onOpen();
 		}
 	}
 
 	close(): void
 	{
-		ui.closeWindows(this.description.classification);
+		ui.closeWindows(this._description.classification);
 		this._window = null;
 		this._openWidgets = null;
 	}
@@ -100,5 +131,23 @@ export class Template implements WindowTemplate, WindowContext
 			}
 		}
 		return null;
+	}
+}
+
+
+/**
+ * Recalculate the whole layout.
+ */
+function performLayout(template: Template, widgets: WidgetMap): void
+{
+	// Skip the top bar (15px)
+	const area: Rectangle = { x: 0, y: topBarSize, width: template._width, height: template._height - topBarSize };
+	if (template._padding)
+	{
+		applyPadding(area, defaultScale, defaultScale, template._padding);
+	}
+	if (template._body)
+	{
+		template._body.layout(widgets, area);
 	}
 }

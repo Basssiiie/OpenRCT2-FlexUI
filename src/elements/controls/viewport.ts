@@ -4,7 +4,7 @@ import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
-import { ElementParams } from "../element";
+import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";

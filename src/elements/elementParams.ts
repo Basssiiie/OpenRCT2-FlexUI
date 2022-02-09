@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 
+
 /**
  * Whether the element is visible, hidden or gone completely.
  *
@@ -19,13 +20,11 @@ export interface ElementParams
 	 */
 	tooltip?: Bindable<string>;
 
-
 	/**
 	 * Whether or not the element starts active.
 	 * @default false
 	 */
 	disabled?: Bindable<boolean>;
-
 
 	/**
 	 * Whether the element is visible, hidden or gone completely.

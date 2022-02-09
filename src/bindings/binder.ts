@@ -15,8 +15,7 @@ export interface Binder
 
 	/**
 	 * Adds a callback that responds to the state of the bindable.
-	 *
 	 * If it's a store, it will subscribe. If it's a constant, it will be immediately applied.
 	 */
-	on<T, W extends WidgetBase, K extends keyof W>(bindable: Bindable<T> | undefined, widgetTemplate: W, property: K, callback: (value: T) => W[K]): void;
+	on<T>(bindable: Bindable<T> | undefined, callback: (value: T) => void): void;
 }
