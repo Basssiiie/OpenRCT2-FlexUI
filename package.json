@@ -61,6 +61,7 @@
 			"./tests/_setup.js",
 			"ts-node/register"
 		],
-		"verbose": true
+		"verbose": true,
+		"workerThreads": false
 	}
 }
