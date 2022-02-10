@@ -2,7 +2,7 @@
 	"name": "openrct2-flexui",
 	"author": "Basssiiie",
 	"license": "MIT",
-	"version": "0.1.0",
+	"version": "0.1.1-prerelease.0",
 	"description": "Create flexible user interfaces for OpenRCT2 plugins.",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
