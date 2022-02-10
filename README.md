@@ -28,9 +28,7 @@ For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-Fle
 Requirements: [Node](https://nodejs.org/en/), NPM.
 
 1. Open command prompt, use `cd` to change your current directory to the root folder of this project and run `npm install`.
-2. Find `openrct2.d.ts` TypeScript API declaration file in OpenRCT2 files and copy it to `lib` folder (this file can usually be found in `C:/Users/<YOUR NAME>/Documents/OpenRCT2/bin/` or `C:/Program Files/OpenRCT2/`).
-    - Alternatively, you can make a symbolic link instead of copying the file, which will keep the file up to date whenever you install new versions of OpenRCT2.
-3. Run `npm run build` (production build) or `npm run build:dev` (development build) to build the project.
+2. Run `npm run build` (production build) or `npm run build:dev` (development build) to build the project.
     - The output folder for the packaged library is `(project directory)/dist`.
 
 ### Using a development build
