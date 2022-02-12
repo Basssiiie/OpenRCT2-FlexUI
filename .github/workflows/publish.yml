@@ -1,4 +1,4 @@
-name: publish package
+name: update changeset
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  publish:
+  changeset:
     if: github.repository == 'Basssiiie/OpenRCT2-FlexUI'
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,7 @@ jobs:
         with:
           title: Increment version and publish new pre-release
           commit: Increment version and publish new pre-release
-          version: npm version prerelease --preid=prerelease
+          version: npm run version:prerelease
           publish: npm run publish:changeset
         id: changesets
         env:
