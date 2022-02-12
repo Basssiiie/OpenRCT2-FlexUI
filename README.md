@@ -1,7 +1,5 @@
 # FlexUI for OpenRCT2 plugins
 
-**W.I.P.**
-
 A flexible user interface library for creating windows for OpenRCT2 plugins.
 
  - Simple declarative approach to designing your windows;
@@ -20,6 +18,19 @@ A flexible user interface library for creating windows for OpenRCT2 plugins.
 Designed with a focus on ease of use, performance, light-weighted and flexibility.
 
 For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-FlexUI/tree/main/examples).
+
+---
+
+## Installing a pre-release
+
+> **This library is still in development. It may contain bugs or missing features. There may be breaking changes.**
+>
+> If you find a bug or have a feature request, please report it under [Issues](https://github.com/Basssiiie/OpenRCT2-FlexUI/issues) or find me on Discord in the [OpenRCT2 server](https://github.com/OpenRCT2/OpenRCT2#chat).
+
+Install the latest pre-release directly from the NPM registry with:
+```
+npm install openrct2-flexui
+```
 
 ---
 
