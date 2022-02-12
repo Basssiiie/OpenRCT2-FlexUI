@@ -4,6 +4,15 @@
 	"license": "MIT",
 	"version": "0.1.0-prerelease.0",
 	"description": "Create flexible user interfaces for OpenRCT2 plugins.",
+	"keywords": [
+		"openrct2",
+		"plugin",
+		"user interface",
+		"ui",
+		"framework",
+		"declarative",
+		"binding"
+	],
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
