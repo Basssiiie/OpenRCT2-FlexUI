@@ -23,7 +23,7 @@ jobs:
           title: Increment version and publish new pre-release
           commit: Increment version and publish new pre-release
           version: npm version prerelease --preid=prerelease
-          publish: npm run build && changeset publish
+          publish: npm run publish:changeset
         id: changesets
         env:
           GITHUB_TOKEN: ${{secrets.github_token}}

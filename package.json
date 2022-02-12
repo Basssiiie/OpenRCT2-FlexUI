@@ -19,7 +19,8 @@
 		"clean": "rimraf ./dist/*",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
-		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-flexui-0.1.0.tgz"
+		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-flexui-0.1.0.tgz",
+		"publish:changeset": "npm run build && changeset publish"
 	},
 	"repository": {
 		"type": "git",
