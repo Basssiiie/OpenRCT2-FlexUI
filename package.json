@@ -25,12 +25,12 @@
 		"build": "npm run clean && npm run lint && rollup --config rollup.config.js --environment BUILD:production",
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
 		"build:examples": "npm run build --prefix examples/AllWidgets && npm run build --prefix examples/BirdStalker && npm run build --prefix examples/Ratios",
-		"clean": "rimraf ./dist/*",
+		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\"",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
 		"version:prerelease": "npm version prerelease --preid=prerelease",
-		"publish:local": "npm run build && cd dist && npm pack .. && npm install --global openrct2-flexui-0.1.0.tgz",
-		"publish:prerelease": "npm run build && release-it --prerelease=prerelease"
+		"publish:local": "npm install --global",
+		"publish:prerelease": "release-it --prerelease=prerelease"
 	},
 	"repository": {
 		"type": "git",
@@ -53,7 +53,6 @@
 		"nyc": "^15.1.0",
 		"openrct2-mocks": "^0.1.0",
 		"release-it": "^14.12.4",
-		"rimraf": "^3.0.2",
 		"rollup": "^2.56.2",
 		"rollup-plugin-dts": "^4.0.0",
 		"rollup-plugin-terser": "^7.0.2",
@@ -77,8 +76,13 @@
 		"workerThreads": false
 	},
 	"release-it": {
+		"git": {
+			"commitMessage": "Release v${version}"
+		},
 		"github": {
-			"release": true
+			"releaseName": "v${version}",
+			"release": true,
+			"preRelease": true
 		}
 	}
 }
