@@ -13,6 +13,7 @@ import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
 import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
+import * as Log from "@src/utilities/logger";
 
 
 /**
@@ -60,6 +61,12 @@ class DropdownSpinnerControl extends DropdownControl
 
 	constructor(output: BuildOutput, params: DropdownSpinnerParams)
 	{
+		// Ensure selectedIndex is a store, so we can update it easily when
+		// the spinner is used.
+		const selected = params.selectedIndex;
+		const selectedStore = storify(selected || 0);
+		params.selectedIndex = selectedStore;
+
 		// Setup internal spinner control
 		const spinParams: SpinnerParams =
 		{
@@ -68,10 +75,12 @@ class DropdownSpinnerControl extends DropdownControl
 			visibility: params.visibility,
 			minimum: 0,
 			maximum: 0,
+			value: selectedStore,
 			onChange: (value: number) =>
 			{
 				// Changing selectedIndex triggers an onChange; setting this boolean
 				// makes the control ignore that onChange event.
+				Log.debug(`Dropdown spinner '${this.name}' spin value has changed: ${this._selectedIndex.get()} -> ${value}.`);
 				this._isUpdatingSelectedIndex = true;
 				this._selectedIndex.set(value);
 				if (this._userOnChange)
@@ -89,7 +98,8 @@ class DropdownSpinnerControl extends DropdownControl
 			if (this._isUpdatingSelectedIndex)
 				return;
 
-			this._spinner._value.set(idx);
+			Log.debug(`Dropdown spinner '${this.name}' selectedIndex has changed: ${this._selectedIndex.get()} -> ${idx}.`);
+			this._selectedIndex.set(idx);
 			if (this._userOnChange)
 			{
 				this._userOnChange(idx);
@@ -109,12 +119,6 @@ class DropdownSpinnerControl extends DropdownControl
 		{
 			spinParams.maximum = items.length;
 		}
-
-		// Ensure selectedIndex is a store, so we can update it easily when
-		// the spinner is used.
-		const selected = params.selectedIndex;
-		const selectedStore = storify(selected || 0);
-		params.selectedIndex = selectedStore;
 
 		const spinner = new SpinnerControl(output, spinParams);
 		super(output, params);
