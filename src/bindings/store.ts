@@ -1,6 +1,9 @@
 /**
  * An object that can be subscribed to and whose subscriptions will be notified
  * when the value has changed.
+ *
+ * Tip: Stores work best if you only use them for binding a model to your user
+ * interface, and nowhere else.
  */
 export interface Store<T>
 {

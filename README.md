@@ -1,6 +1,6 @@
 # FlexUI for OpenRCT2 plugins
 
-A flexible user interface library for creating windows for OpenRCT2 plugins.
+A flexible no-nonsense user interface library for creating windows for OpenRCT2 plugins.
 
  - Simple declarative approach to designing your windows;
  - Bind models to your interface components using MVVM-like bindings;
@@ -44,7 +44,10 @@ Requirements: [Node](https://nodejs.org/en/), NPM.
 
 ### Using a development build
 
-To publish a local version of FlexUI for use in your own plugins; run `npm run publish:local` to install a local build into your global npm packages directory. Then in the main folder of your new plugin; run `npm link openrct2-flexui` to temporarily link the local FlexUI build to your new plugin.
+To publish a local version of FlexUI for use in your own plugins;
+1. Make a local build using `npm run build` or `npm run build:dev`.
+2. Run `npm run publish:local` to install a local build into your global npm packages directory.
+3. In the main folder of your new plugin; run `npm link openrct2-flexui` to temporarily link the local FlexUI build to your new plugin.
 
 ### Unit tests
 
