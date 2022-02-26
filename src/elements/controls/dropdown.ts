@@ -3,6 +3,8 @@ import { isStore } from "@src/bindings/isStore";
 import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
+import { findIndex } from "@src/utilities/array";
+import * as Log from "@src/utilities/logger";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -71,6 +73,8 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	selectedIndex: number = 0;
 	onChange?: (index: number) => void;
 
+	_previousItems?: string[];
+
 
 	constructor(output: BuildOutput, params: DropdownParams)
 	{
@@ -82,12 +86,22 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 
 		if (itemsIsStore)
 		{
-			// Reset selected index when the updated list is shorted than the current index.
-			const reset = selected = storify(selected || 0);
-			items.subscribe(i =>
+			this._previousItems = items.get();
+			const selectStore = selected = storify(selected || 0);
+			items.subscribe(newItems =>
 			{
-				if (i.length <= reset.get())
-					reset.set(0);
+				// Update selected index to same item as in old list, if it is still present.
+				if (this._previousItems)
+				{
+					const
+						lastSelectIdx = selectStore.get(),
+						lastSelected = this._previousItems[lastSelectIdx],
+						newSelectIdx = findIndex(newItems, s => s === lastSelected);
+
+					Log.debug(`Dropdown '${this.name}' items have changed, update selectedIndex: ${lastSelectIdx} -> ${newSelectIdx}`);
+					selectStore.set(newSelectIdx || 0);
+				}
+				this._previousItems = newItems;
 			});
 		}
 
@@ -100,6 +114,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			// If disabled, it should show a special message, if not show the (binded) items.
 			binder.add(this, "items", params.disabled, (isDisabled) =>
 			{
+				Log.debug(`Dropdown '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
 				if (isDisabled)
 					return [ disabledMessage ];
 

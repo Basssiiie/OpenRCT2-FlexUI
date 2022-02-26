@@ -22,10 +22,13 @@ export class DefaultStore<T> implements Store<T>
 
 	set(value: T): void
 	{
-		this._value = value;
-		if (this._listeners)
+		if (this._value !== value)
 		{
-			invoke(this._listeners, value);
+			this._value = value;
+			if (this._listeners)
+			{
+				invoke(this._listeners, value);
+			}
 		}
 	}
 

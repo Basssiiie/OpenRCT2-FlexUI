@@ -239,7 +239,7 @@ test("Disable single item enabled when more than one item", t =>
 });
 
 
-test("Reset selected index if too few new items", t =>
+test("Update selected index if item at different index in new list", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;
@@ -258,8 +258,60 @@ test("Reset selected index if too few new items", t =>
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
 
-	items.set(["e", "f"]);
-	t.deepEqual(widget.items, ["e", "f"]);
+	items.set(["c", "d", "e", "f"]);
+	t.deepEqual(widget.items, ["c", "d", "e", "f"]);
+	t.is(widget.selectedIndex, 1);
+	t.is(selected.get(), 1);
+});
+
+
+test("Do not change selected index if item at same index in new list", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const items = store([ "a", "b", "c", "d" ]);
+	const selected = store(2);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items, selectedIndex: selected })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
+	t.is(widget.selectedIndex, 2);
+
+	items.set(["e", "d", "c", "f"]);
+	t.deepEqual(widget.items, ["e", "d", "c", "f"]);
+	t.is(widget.selectedIndex, 2);
+	t.is(selected.get(), 2);
+});
+
+
+test("Reset selected index if item not present in new list", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const items = store([ "a", "b", "c", "d" ]);
+	const selected = store(3);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items, selectedIndex: selected })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
+	t.is(widget.selectedIndex, 3);
+
+	items.set(["e", "f", "c", "b", "a"]);
+	t.deepEqual(widget.items, ["e", "f", "c", "b", "a"]);
 	t.is(widget.selectedIndex, 0);
 	t.is(selected.get(), 0);
 });
