@@ -3,6 +3,7 @@ import { Store } from "@src/bindings/store";
 import { storify } from "@src/bindings/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
+import * as Log from "@src/utilities/logger";
 import { clamp, wrap } from "@src/utilities/math";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -122,9 +123,22 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		this._value = storify(params.value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
-		const format = (params.format || ((value: number): string => value.toString()));
+		let format = (params.format || ((value: number): string => value.toString()));
 
 		const binder = output.binder;
+		const disabledMessage = params.disabledMessage;
+		if (disabledMessage)
+		{
+			// If disabled, it should show a special message, if not show the (binded) items.
+			binder.add(this, "text", params.disabled, (isDisabled) =>
+			{
+				Log.debug(`Spinner '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
+				return (isDisabled) ? disabledMessage : format(this._value.get());
+			});
+			const originalFormat = format;
+			format = (val: number): string => (this.isDisabled) ? disabledMessage : originalFormat(val);
+		}
+
 		binder.add(this, "text", this._value, format);
 		binder.add(this, "step", params.step);
 		binder.add(this, "min", params.minimum);

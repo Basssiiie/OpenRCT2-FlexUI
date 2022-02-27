@@ -383,3 +383,37 @@ test("Maximum is bindable", t =>
 	call(widget.onIncrement);
 	t.is(widget.text, "0");
 });
+
+
+test("Disabled message shows on disabled", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const disabled = store(false);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ disabled, disabledMessage: "I won't do anything!", maximum: 10 })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	call(widget.onIncrement);
+	t.is(widget.text, "1");
+
+	disabled.set(true);
+	t.is(widget.text, "I won't do anything!");
+	call(widget.onIncrement);
+	t.is(widget.text, "I won't do anything!");
+	call(widget.onDecrement);
+	t.is(widget.text, "I won't do anything!");
+
+	disabled.set(false);
+	t.is(widget.text, "1");
+	call(widget.onIncrement);
+	t.is(widget.text, "2");
+	call(widget.onIncrement);
+	t.is(widget.text, "3");
+});
