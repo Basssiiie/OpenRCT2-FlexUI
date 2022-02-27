@@ -203,7 +203,7 @@ test("Disable message shows with items and disabled stores", t =>
 });
 
 
-test("Disable single item disables when just one item", t =>
+test("Auto disable on single item disables when just one item", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;
@@ -211,7 +211,7 @@ test("Disable single item disables when just one item", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items: [ "a" ], disableSingleItem: true })
+			dropdown({ items: [ "a" ], autoDisable: "single" })
 		]
 	});
 	template.open();
@@ -221,7 +221,7 @@ test("Disable single item disables when just one item", t =>
 });
 
 
-test("Disable single item enabled when more than one item", t =>
+test("Auto disable on single item enabled when more than one item", t =>
 {
 	const mock = Mock.ui();
 	global.ui = mock;
@@ -229,13 +229,67 @@ test("Disable single item enabled when more than one item", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items: [ "a", "b" ], disableSingleItem: true })
+			dropdown({ items: [ "a", "b" ], autoDisable: "single" })
 		]
 	});
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
 	t.false(widget.isDisabled);
+});
+
+
+test("Auto disable on empty disables when empty", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items: [], autoDisable: "empty" })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.true(widget.isDisabled);
+});
+
+
+test("Auto disable on empty enabled when at least one item", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items: [ "a" ], autoDisable: "empty" })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.false(widget.isDisabled);
+});
+
+
+test("Auto disable on never is never disabled", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({ items: [], autoDisable: "never" })
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	t.falsy(widget.isDisabled);
 });
 
 

@@ -14,6 +14,12 @@ import { Control } from "./control";
 
 
 /**
+ * Automatically disable the dropdown if it is empty, or has a single item at most.
+ */
+export type DropdownDisableMode = "never" | "empty" | "single";
+
+
+/**
  * The parameters for configuring the dropdown.
  */
 export interface DropdownParams extends ElementParams
@@ -36,10 +42,10 @@ export interface DropdownParams extends ElementParams
 	disabledMessage?: string;
 
 	/**
-	 * Automatically disables the dropdown if it has a single item.
-	 * @default false
+	 * Automatically disable the dropdown if it is empty, or has a single item at most.
+	 * @default "never"
 	 */
-	disableSingleItem?: boolean;
+	autoDisable?: DropdownDisableMode;
 
 	/**
 	 * Triggers when the selected dropdown item changes.
@@ -122,9 +128,20 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			});
 			isDisabledConverter = (itemArray: string[]): this["items"] => (this.isDisabled) ? [ disabledMessage ] : itemArray;
 		}
-		if (params.disableSingleItem)
+		const disableMode = params.autoDisable;
+		if (disableMode)
 		{
-			binder.add(this, "isDisabled", items, (value) => (!value || value.length <= 1));
+			let disableCount: number;
+			switch (disableMode)
+			{
+				case "empty": disableCount = 0; break;
+				case "single": disableCount = 1; break;
+				default: disableCount = -1; break;
+			}
+			if (disableCount >= 0)
+			{
+				binder.add(this, "isDisabled", items, (value) => (!value || value.length <= disableCount));
+			}
 		}
 
 		binder.add(this, "items", items, isDisabledConverter);
