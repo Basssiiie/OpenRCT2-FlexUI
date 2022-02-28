@@ -14,7 +14,7 @@ export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./eleme
 export { box, BoxParams } from "./elements/controls/box";
 export { button, ButtonParams } from "./elements/controls/button";
 export { colourPicker, ColourPickerParams } from "./elements/controls/colourPicker";
-export { dropdown, DropdownParams } from "./elements/controls/dropdown";
+export { dropdown, DropdownParams, DropdownDisableMode } from "./elements/controls/dropdown";
 export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
 export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
 export { label, LabelParams } from "./elements/controls/label";
