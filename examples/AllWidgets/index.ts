@@ -1,6 +1,12 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, button, Colour, colourPicker, dropdown, dropdownSpinner, horizontal, label, spinner, toggle, viewport, window } from "openrct2-flexui";
+import
+{
+	box, button, Colour, colourPicker, dropdown, dropdownButton,
+	dropdownSpinner, horizontal, label, spinner, toggle, viewport,
+	window
+}
+from "openrct2-flexui";
 
 
 const allWidgets = window({
@@ -53,6 +59,14 @@ const allWidgets = window({
 		dropdownSpinner({
 			items: [ "First", "Second", "Third", "Fourth" ],
 			onChange: (index: number) => console.log(`Dropdown spinner changed to value ${index}`)
+		}),
+		dropdownButton({
+			buttons:
+			[
+				{ text: "First", onClick: (): void => console.log("Dropdown button's first option has been pressed") },
+				{ text: "Second", onClick: (): void => console.log("Dropdown button's second option has been pressed") },
+				{ text: "Third", onClick: (): void => console.log("Dropdown button's third option has been pressed") }
+			]
 		}),
 		button({
 			text: "Press this button",

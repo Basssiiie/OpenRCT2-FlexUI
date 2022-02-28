@@ -1,4 +1,16 @@
-import { DropdownParams } from "./dropdown";
+import { store } from "@src/bindings/createStore";
+import { BuildOutput } from "@src/building/buildOutput";
+import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetMap } from "@src/building/widgetMap";
+import { Rectangle } from "@src/positional/rectangle";
+import { ensureDefaultLineHeight } from "../constants";
+import { ElementParams } from "../elementParams";
+import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
+import { fillLayout } from "../layouts/fillLayout";
+import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
+import { Positions } from "../layouts/positions";
+import { ButtonControl, ButtonParams } from "./button";
+import { DropdownControl, DropdownParams } from "./dropdown";
 
 
 /**
@@ -6,15 +18,22 @@ import { DropdownParams } from "./dropdown";
  */
 export interface DropdownButtonAction
 {
+	/**
+	 * The text on the button.
+	 */
 	text: string;
-	onClick: () => void;
+
+	/**
+	 * Triggers when the button is pressed.
+	 */
+	onClick?: () => void;
 }
 
 
 /**
  * The parameters for configuring the dropdown button.
  */
-export interface DropdownButtonParams extends DropdownParams
+export interface DropdownButtonParams extends ElementParams
 {
 	/**
 	 * All the available buttons in this dropdown button.
@@ -24,8 +43,88 @@ export interface DropdownButtonParams extends DropdownParams
 
 
 /**
- * A dropdown with a button on the side.
+ * Create a button widget with multiple selectable options, which can be selected from
+ * a dropdown on the right side of the button.
  */
-export default class DropdownButtonComponent// extends DropdownControl
+export function dropdownButton(params: DropdownButtonParams & FlexiblePosition): WidgetCreator<DropdownButtonParams & FlexiblePosition>;
+export function dropdownButton(params: DropdownButtonParams & AbsolutePosition): WidgetCreator<DropdownButtonParams & AbsolutePosition>;
+export function dropdownButton(params: DropdownButtonParams & Positions): WidgetCreator<DropdownButtonParams>
 {
+	ensureDefaultLineHeight(params);
+
+	return {
+		params,
+		create: (output: BuildOutput): DropdownButtonComponent => new DropdownButtonComponent(output, params)
+	};
+}
+
+
+/**
+ * A button with a dropdown on the side for more options.
+ */
+class DropdownButtonComponent extends DropdownControl
+{
+	_button: ButtonControl;
+	_selectedButton: number;
+
+
+	constructor(output: BuildOutput, params: DropdownButtonParams)
+	{
+		// Split button actions into labels and seperate actions
+		const
+			buttons = params.buttons,
+			count = buttons.length,
+			labels = Array<string>(count),
+			actions = Array<(() => void) | undefined>(count);
+
+		for (let i = 0; i < count; i++)
+		{
+			const button = buttons[i];
+			labels[i] = button.text;
+			actions[i] = button.onClick;
+		}
+
+		const buttonText = store(labels[0] || "");
+
+		// Setup dropdown part, reusing params object
+		const dropdownParams = <DropdownParams><never>params;
+		dropdownParams.items = labels;
+		dropdownParams.onChange = (idx): void =>
+		{
+			this._selectedButton = idx;
+			buttonText.set(labels[idx] || "");
+		};
+		super(output, dropdownParams);
+
+		// Setup button part, reusing params object
+		const buttonParams = <ButtonParams>params;
+		buttonParams.text = buttonText,
+		buttonParams.onClick = (): void =>
+		{
+			const action = actions[this._selectedButton];
+			if (action)
+			{
+				action();
+			}
+		};
+		this._button = new ButtonControl(output, buttonParams);
+		this._selectedButton = 0;
+	}
+
+
+	/**
+	 * Positions the two widgets in the proper location.
+	 */
+	override layout(widgets: WidgetMap, area: Rectangle): void
+	{
+		// Position dropdown (take all space in behind button)
+		fillLayout(widgets, this.name, area);
+
+		// Position button (leave space for dropdown control)
+		area.x++;
+		area.y++;
+		area.width -= 13;
+		area.height -= 2;
+		fillLayout(widgets, this._button.name, area);
+	}
 }
