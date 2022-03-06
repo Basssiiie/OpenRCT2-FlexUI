@@ -1,4 +1,4 @@
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
@@ -27,9 +27,9 @@ export function applyPadding(area: Rectangle, contentWidth: ParsedScale, content
 /**
  * Applies padding to a specific area as a whole on the specified direction.
  */
-export function applyPaddingToDirection(area: Rectangle, direction: Direction, contentSpace: ParsedScale, padding: ParsedPadding): void
+export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, contentSpace: ParsedScale, padding: ParsedPadding): void
 {
-	if (direction === Direction.Horizontal)
+	if (direction === LayoutDirection.Horizontal)
 	{
 		applyHorizontalPadding(area, contentSpace, padding);
 	}

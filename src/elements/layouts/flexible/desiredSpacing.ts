@@ -1,4 +1,4 @@
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { isUndefined } from "@src/utilities/type";
@@ -28,7 +28,7 @@ export function setDesiredSpaceForChild(target: Positions, item: Parsed<Flexible
 /**
  * Sets the desired space on the parent if all children ask for absolute positioning.
  */
-export function setDesiredSpaceForChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: Direction): void
+export function setDesiredSpaceForChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: LayoutDirection): void
 {
 	const hasAbsoluteSpacing = isAbsolute(spacing);
 	let widthCanBeAbsolute: boolean = isUndefined(target.width),
@@ -38,7 +38,7 @@ export function setDesiredSpaceForChildren(target: Positions, items: Parsed<Flex
 	if (!hasAbsoluteSpacing || (!widthCanBeAbsolute && !widthCanBeAbsolute))
 		return;
 
-	const count = items.length, isHorizontal = (direction === Direction.Horizontal);
+	const count = items.length, isHorizontal = (direction === LayoutDirection.Horizontal);
 	let absoluteWidth: number = 0, absoluteHeight: number = 0;
 
 	const totalSpacing = (spacing[0] * (count - 1));

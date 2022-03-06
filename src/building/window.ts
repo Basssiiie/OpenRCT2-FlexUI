@@ -1,5 +1,5 @@
 import { flexible, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Paddable } from "@src/positional/paddable";
 import { Padding } from "@src/positional/padding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
@@ -211,7 +211,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const template = output._template;
 	template._body = creator.create(output);
 

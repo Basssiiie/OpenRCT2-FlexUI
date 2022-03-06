@@ -8,7 +8,7 @@ import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal, vertical } from "@src/elements/layouts/flexible/flexible";
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Rectangle } from "@src/positional/rectangle";
 import { invoke } from "@src/utilities/event";
 import test from "ava";
@@ -32,7 +32,7 @@ test("Simple layouts with widgets", t =>
 			}),
 			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
-	}, Direction.Vertical);
+	}, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -91,7 +91,7 @@ test("Pixel sizes ignore leftover space", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -135,7 +135,7 @@ test("Percentage sizes", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -179,7 +179,7 @@ test("Weighted sizes", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -220,7 +220,7 @@ test("Relative percentage fills leftover space", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -251,7 +251,7 @@ test("Relative weight fills leftover space", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -277,7 +277,7 @@ test("Padding: single number value", t =>
 			button({ text: "a", padding: 5 })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -301,7 +301,7 @@ test("Padding: single pixel value", t =>
 			button({ text: "a", padding: "5px" })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -325,7 +325,7 @@ test("Padding: single percentage value", t =>
 			button({ text: "a", padding: "20%" })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -349,7 +349,7 @@ test("Padding: single weighted value", t =>
 			button({ text: "a", width: "2w", height: "1w", padding: "0.4w" })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -378,7 +378,7 @@ test("Padding: tuple with 2 values", t =>
 			})
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -410,7 +410,7 @@ test("Padding: weighted value with absolute size", t =>
 			button({ text: "a", width: "10px", padding: "1w" })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -433,7 +433,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 			button({ text: "a", width: "1w", height: "1w" }),
 			button({ text: "b", width: "10px", padding: [ "8px", "1w" ] })
 		]
-	}, Direction.Vertical);
+	}, LayoutDirection.Vertical);
 
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -463,7 +463,7 @@ test("Works without children", t =>
 	{
 		content: []
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -485,7 +485,7 @@ test("Spacing: 10 pixels between two elements", t =>
 			button({ text: "b" })
 		]
 	};
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -515,7 +515,7 @@ test("Spacing: default space between two elements", t =>
 			label({ text: "b" })
 		]
 	};
-	const creator = flexible(params, Direction.Vertical);
+	const creator = flexible(params, LayoutDirection.Vertical);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -546,7 +546,7 @@ test("Spacing: percentile space between two elements", t =>
 			label({ text: "b", width: "40%" })
 		]
 	};
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -577,7 +577,7 @@ test("Spacing: weighted space between two elements", t =>
 			label({ text: "b", width: "1w" })
 		]
 	};
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control.layout(widgetMap, rect);
@@ -607,7 +607,7 @@ test("Absolute children make parent absolutely sized", t =>
 			label({ text: "b", width: 15, height: "5px" })
 		]
 	};
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	creator.create(output); // todo: create() should not required for this to work
 	const pos = creator.params;
 
@@ -627,7 +627,7 @@ test("Absolutely sized parent includes spacing", t =>
 			label({ text: "b", width: 15, height: "5px" })
 		]
 	};
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	creator.create(output); // todo: create() should not required for this to work
 	const pos = creator.params;
 
@@ -644,14 +644,14 @@ test("Absolute children make all parents absolutely sized", t =>
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
 			label({ text: "b", width: 15, height: "5px" })
-		], Direction.Vertical),
+		], LayoutDirection.Vertical),
 		label({ text: "c", width: "20px", height: "10px" }),
 		flexible([
 			label({ text: "c", width: "33px", height: 11 }),
 			label({ text: "d", width: 8, height: "51px" })
-		], Direction.Horizontal)
+		], LayoutDirection.Horizontal)
 	];
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	creator.create(output); // todo: create() should not required for this to work
 	const pos = creator.params;
 
@@ -668,14 +668,14 @@ test("Single non-absolute child width makes parents width unknown", t =>
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
 			label({ text: "b", width: "1w", height: "5px" }) // <- non-absolute
-		], Direction.Vertical),
+		], LayoutDirection.Vertical),
 		label({ text: "c", width: "10px", height: "20px" }),
 		flexible([
 			label({ text: "c", width: "33px", height: 11 }),
 			label({ text: "d", width: 8, height: "51px" })
-		], Direction.Horizontal)
+		], LayoutDirection.Horizontal)
 	];
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	creator.create(output); // todo: create() should not required for this to work
 	const pos = creator.params;
 
@@ -692,14 +692,14 @@ test("Single non-absolute child height makes parents height unknown", t =>
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
 			label({ text: "b", width: 15, height: "5px" })
-		], Direction.Vertical),
+		], LayoutDirection.Vertical),
 		label({ text: "c", width: "10px", height: "20px" }),
 		flexible([
 			label({ text: "d", width: "33px", height: 11 }),
 			label({ text: "e", width: 8, height: "60%" }) // <- non-absolute
-		], Direction.Horizontal)
+		], LayoutDirection.Horizontal)
 	];
-	const creator = flexible(params, Direction.Horizontal);
+	const creator = flexible(params, LayoutDirection.Horizontal);
 	creator.create(output); // todo: create() should not required for this to work
 	const pos = creator.params;
 
@@ -818,7 +818,7 @@ test("Child with visibility 'none' is not updated", t =>
 			label({ text: "nada", visibility: "none" }),
 			label({ text: "def", height: "1w" }),
 		]
-	}, Direction.Vertical);
+	}, LayoutDirection.Vertical);
 
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -861,7 +861,7 @@ test("None update if all children have visibility set to 'none'", t =>
 			label({ text: "def", visibility: "none" }),
 			label({ text: "ghi", visibility: "none" }),
 		]
-	}, Direction.Vertical);
+	}, LayoutDirection.Vertical);
 
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -906,7 +906,7 @@ test("Child visibility is updated by store", t =>
 			label({ text: "wow", height: "1w", visibility: visibility }),
 			label({ text: "def", height: "1w" }),
 		]
-	}, Direction.Vertical);
+	}, LayoutDirection.Vertical);
 
 	const control = creator.create(output);
 	const widgetMap = createWidgetMap(output._widgets);

@@ -2,7 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
@@ -133,7 +133,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		if (widget.width !== area.width)
 		{
 			const columns = this.columns;
-			flexibleLayout(widths, area, Direction.Horizontal, zeroScale, (idx, subarea) =>
+			flexibleLayout(widths, area, LayoutDirection.Horizontal, zeroScale, (idx, subarea) =>
 			{
 				columns[idx].width = subarea.width;
 			});

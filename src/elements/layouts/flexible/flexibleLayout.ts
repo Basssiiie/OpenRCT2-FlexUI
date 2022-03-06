@@ -1,5 +1,5 @@
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -11,7 +11,7 @@ import { applyPaddingToDirection, hasPadding } from "../paddingHelpers";
 /**
  * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, direction: Direction, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
+export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, direction: LayoutDirection, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
 {
 	const elementCount = elements.length;
 	if (!elementCount)
@@ -69,10 +69,10 @@ type SizeKey = "width" | "height";
 // Contains the keys to use for laying out the widgets.
 interface DirectionKeys
 {
-	_mainDirection: Direction;
+	_mainDirection: LayoutDirection;
 	_mainAxis: AxisKey;
 	_mainSize: SizeKey;
-	_otherDirection: Direction;
+	_otherDirection: LayoutDirection;
 	_otherAxis: AxisKey;
 	_otherSize: SizeKey;
 }
@@ -149,15 +149,15 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
  * Gets the property keys which should be used to lay out the widgets in the
  * specified direction.
  */
-function getDirectionKeys(direction: Direction): DirectionKeys
+function getDirectionKeys(direction: LayoutDirection): DirectionKeys
 {
-	if (direction === Direction.Vertical)
+	if (direction === LayoutDirection.Vertical)
 	{
 		return {
 			_mainDirection: direction,
 			_mainAxis: "y",
 			_mainSize: "height",
-			_otherDirection: Direction.Horizontal,
+			_otherDirection: LayoutDirection.Horizontal,
 			_otherAxis: "x",
 			_otherSize: "width"
 		};
@@ -168,7 +168,7 @@ function getDirectionKeys(direction: Direction): DirectionKeys
 			_mainDirection: direction,
 			_mainAxis: "x",
 			_mainSize: "width",
-			_otherDirection: Direction.Vertical,
+			_otherDirection: LayoutDirection.Vertical,
 			_otherAxis: "y",
 			_otherSize: "height"
 		};

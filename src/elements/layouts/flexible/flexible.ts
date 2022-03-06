@@ -3,7 +3,7 @@ import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { defaultSpacing } from "@src/elements/constants";
-import { Direction } from "@src/positional/direction";
+import { LayoutDirection as LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { parseScale } from "@src/positional/parsing/parseScale";
@@ -52,7 +52,7 @@ export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): Wid
 export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
 export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
-	return flexible(<never>params, Direction.Horizontal);
+	return flexible(<never>params, LayoutDirection.Horizontal);
 }
 
 
@@ -65,18 +65,18 @@ export function vertical(params: FlexibleLayoutParams & FlexiblePosition): Widge
 export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
 export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
-	return flexible(<never>params, Direction.Vertical);
+	return flexible(<never>params, LayoutDirection.Vertical);
 }
 
 
 /**
  * Add a flexible row with one or more child widgets in the specified direction.
  */
-export function flexible(params: FlexibleLayoutContainer & FlexiblePosition, direction: Direction): WidgetCreator<FlexibleLayoutContainer & FlexiblePosition>;
-export function flexible(params: FlexibleLayoutContainer & AbsolutePosition, direction: Direction): WidgetCreator<FlexibleLayoutContainer & AbsolutePosition>;
-export function flexible(params: FlexibleLayoutParams & FlexiblePosition, direction: Direction): WidgetCreator<FlexibleLayoutParams & FlexiblePosition>;
-export function flexible(params: FlexibleLayoutParams & AbsolutePosition, direction: Direction): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
-export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: Direction): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
+export function flexible(params: FlexibleLayoutContainer & FlexiblePosition, direction: LayoutDirection): WidgetCreator<FlexibleLayoutContainer & FlexiblePosition>;
+export function flexible(params: FlexibleLayoutContainer & AbsolutePosition, direction: LayoutDirection): WidgetCreator<FlexibleLayoutContainer & AbsolutePosition>;
+export function flexible(params: FlexibleLayoutParams & FlexiblePosition, direction: LayoutDirection): WidgetCreator<FlexibleLayoutParams & FlexiblePosition>;
+export function flexible(params: FlexibleLayoutParams & AbsolutePosition, direction: LayoutDirection): WidgetCreator<FlexibleLayoutParams & AbsolutePosition>;
+export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: LayoutDirection): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
 	return {
 		params: params,
@@ -91,10 +91,10 @@ type FlexibleLayoutChild = Parsed<FlexiblePosition> & { _layoutable: Layoutable 
 class FlexibleLayoutControl implements Layoutable
 {
 	_children: FlexibleLayoutChild[];
-	_direction: Direction;
+	_direction: LayoutDirection;
 	_spacing: ParsedScale;
 
-	constructor(output: BuildOutput, params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: Direction)
+	constructor(output: BuildOutput, params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: LayoutDirection)
 	{
 		this._direction = direction;
 
