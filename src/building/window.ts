@@ -1,4 +1,4 @@
-import { flexible, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { FlexibleLayoutControl, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Paddable } from "@src/positional/paddable";
 import { Padding } from "@src/positional/padding";
@@ -211,9 +211,8 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
-	const creator = flexible(params, LayoutDirection.Vertical);
 	const template = output._template;
-	template._body = creator.create(output);
+	template._body = new FlexibleLayoutControl(output, params, LayoutDirection.Vertical);
 
 	// Check if padding was specified..
 	const suppliedPadding = params.padding;
