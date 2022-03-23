@@ -35,7 +35,7 @@ export function setDesiredSpaceForChildren(target: Positions, items: Parsed<Flex
 		heightCanBeAbsolute: boolean = isUndefined(target.height);
 
 	// Skip if spacing is not absolute, or both width and height are already set.
-	if (!hasAbsoluteSpacing || (!widthCanBeAbsolute && !widthCanBeAbsolute))
+	if (!hasAbsoluteSpacing || (!widthCanBeAbsolute && !heightCanBeAbsolute))
 		return;
 
 	const count = items.length, isHorizontal = (direction === LayoutDirection.Horizontal);
@@ -51,7 +51,7 @@ export function setDesiredSpaceForChildren(target: Positions, items: Parsed<Flex
 		absoluteHeight += totalSpacing;
 	}
 
-	for (let i = 0; i < items.length; i++)
+	for (let i = 0; i < items.length && (widthCanBeAbsolute || heightCanBeAbsolute); i++)
 	{
 		// Determine if all children are absolutely sized,
 		// if so, then size itself accordingly.
