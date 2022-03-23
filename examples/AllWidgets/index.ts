@@ -2,9 +2,8 @@
 
 import
 {
-	box, button, Colour, colourPicker, dropdown, dropdownButton,
-	dropdownSpinner, horizontal, label, spinner, toggle, viewport,
-	window
+	box, button, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
+	groupbox, label, LayoutDirection, spinner, toggle, viewport, window
 }
 from "openrct2-flexui";
 
@@ -12,7 +11,7 @@ from "openrct2-flexui";
 const allWidgets = window({
 	title: "All Widgets (fui example)",
 	width: 200, minWidth: 75, maxWidth: 10_000,
-	height: 300, minHeight: 75, maxHeight: 10_000,
+	height: 350, minHeight: 75, maxHeight: 10_000,
 	padding: 5,
 	content: [
 		label({
@@ -30,24 +29,25 @@ const allWidgets = window({
 				text: "This is a centred labeled boxed label"
 			})
 		}),
-		horizontal([
-			label({
-				text: "Colours:",
-				width: "50%"
-			}),
-			colourPicker({
-				colour: Colour.SaturatedRed,
-				onChange: (colour: Colour) => console.log(`Colour picker #1 changed to colour id ${colour}`)
-			}),
-			colourPicker({
-				colour: Colour.White,
-				onChange: (colour: Colour) => console.log(`Colour picker #2 changed to colour id ${colour}`)
-			}),
-			colourPicker({
-				colour: Colour.DarkBlue,
-				onChange: (colour: Colour) => console.log(`Colour picker #3 changed to colour id ${colour}`)
-			})
-		]),
+		groupbox({
+			text: "Colours",
+			direction: LayoutDirection.Horizontal,
+			gap: { left: "100%" },
+			content: [
+				colourPicker({
+					colour: Colour.SaturatedRed,
+					onChange: (colour: Colour) => console.log(`Colour picker #1 changed to colour id ${colour}`)
+				}),
+				colourPicker({
+					colour: Colour.White,
+					onChange: (colour: Colour) => console.log(`Colour picker #2 changed to colour id ${colour}`)
+				}),
+				colourPicker({
+					colour: Colour.DarkBlue,
+					onChange: (colour: Colour) => console.log(`Colour picker #3 changed to colour id ${colour}`)
+				})
+			]
+		}),
 		dropdown({
 			items: [ "First", "Second", "Third", "Fourth" ],
 			onChange: (index: number) => console.log(`Dropdown changed to index ${index}`)

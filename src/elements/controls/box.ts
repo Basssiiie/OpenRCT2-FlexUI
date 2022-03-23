@@ -3,6 +3,7 @@ import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
+import { Padding } from "@src/positional/padding";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -38,13 +39,14 @@ export interface BoxParams extends ElementParams
 
 	/**
 	 * An optionel label to show at the top of the box.
+	 * @default undefined
 	 */
 	text?: Bindable<string>;
 }
 
 
 /**
- * Create a visual box for grouping one or widgets with the specified parameters.
+ * Create a visually drawn box for bringing focus to an inner widget.
  */
 export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<BoxContainer & FlexiblePosition>;
 export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<BoxContainer & AbsolutePosition>;
@@ -59,14 +61,20 @@ export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreat
 }
 
 
-const defaultPadding: ParsedPadding = parsePadding(6);
+/**
+ * Default padding for content in box widgets.
+ */
+export const defaultBoxPadding: Padding = 6;
+
+
+const parsedDefaultPadding: ParsedPadding = parsePadding(defaultBoxPadding);
 const trimTop: number = 4;
 
 
 /**
  * A controller class for a groupbox widget.
  */
-class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
+export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 {
 	text?: string;
 
@@ -95,7 +103,7 @@ class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
 
 		this._child = content.create(output);
 
-		const childPos = parseFlexiblePosition(content.params, defaultPadding);
+		const childPos = parseFlexiblePosition(content.params, parsedDefaultPadding);
 		this._childPos = childPos;
 		setDesiredSpaceForChild(params, childPos);
 	}

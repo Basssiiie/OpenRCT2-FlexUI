@@ -4,6 +4,7 @@ import { defaultScale } from "@src/elements/constants";
 import { applyPadding } from "@src/elements/layouts/paddingHelpers";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
+import { parseScale } from "@src/positional/parsing/parseScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import test from "ava";
@@ -76,4 +77,20 @@ test("Apply weighted padding with absolute child content", t =>
 	t.is(area.y, 20 + 45);
 	t.is(area.width, 70);
 	t.is(area.height, 20);
+});
+
+
+test("Missing key applies fallback", t =>
+{
+	const area: Rectangle = { x: 10, y: 20, width: 77, height: 200 };
+	const fallbackScale = parseScale(15);
+	const fallback = { top: fallbackScale, right: fallbackScale, bottom: fallbackScale, left: fallbackScale };
+
+	const padding: ParsedPadding = parsePadding({ top: "25px" }, fallback);
+	applyPadding(area, defaultScale, defaultScale, padding);
+
+	t.is (area.x, 10 + 15);
+	t.is(area.y, 20 + 25);
+	t.is(area.width, 47);
+	t.is(area.height, 160);
 });

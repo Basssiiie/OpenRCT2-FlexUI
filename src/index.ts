@@ -18,6 +18,7 @@ export { dropdown, DropdownParams, DropdownDisableMode } from "./elements/contro
 export { dropdownButton, DropdownButtonParams, DropdownButtonAction } from "./elements/controls/dropdownButton";
 export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
 export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
+export { groupbox, GroupBoxParams } from "./elements/controls/groupbox";
 export { label, LabelParams } from "./elements/controls/label";
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
 export { toggle, ToggleParams } from "./elements/controls/toggle";
@@ -30,6 +31,7 @@ export { Colour } from "./utilities/colour";
 // Layout information
 export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
 export { FlexiblePosition } from "./elements/layouts/flexible/flexiblePosition";
+export { LayoutDirection } from "./elements/layouts/flexible/layoutDirection";
 export { Scale } from "./positional/scale";
 export { Padding } from "./positional/padding";
 export { Rectangle } from "./positional/rectangle";

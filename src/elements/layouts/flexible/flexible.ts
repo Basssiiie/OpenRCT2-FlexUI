@@ -3,7 +3,7 @@ import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { defaultSpacing } from "@src/elements/constants";
-import { LayoutDirection as LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { parseScale } from "@src/positional/parsing/parseScale";
@@ -79,7 +79,7 @@ export function flexible(params: FlexibleLayoutParams & AbsolutePosition, direct
 export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: LayoutDirection): WidgetCreator<(FlexibleLayoutParams | FlexibleLayoutContainer)>
 {
 	return {
-		params: params,
+		params,
 		create: (output: BuildOutput): FlexibleLayoutControl => new FlexibleLayoutControl(output, params, direction)
 	};
 }
@@ -88,7 +88,7 @@ export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer
 type FlexibleLayoutChild = Parsed<FlexiblePosition> & { _layoutable: Layoutable };
 
 
-class FlexibleLayoutControl implements Layoutable
+export class FlexibleLayoutControl implements Layoutable
 {
 	_children: FlexibleLayoutChild[];
 	_direction: LayoutDirection;

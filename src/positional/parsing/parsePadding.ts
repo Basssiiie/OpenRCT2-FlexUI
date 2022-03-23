@@ -1,16 +1,15 @@
+import { zeroPadding } from "@src/elements/constants";
 import { isArray, isObject, isUndefined } from "@src/utilities/type";
 import { Padding } from "../padding";
 import { ParsedPadding } from "./parsedPadding";
 import { ParsedScale } from "./parsedScale";
-import { parseScaleOrZero } from "./parseScale";
+import { parseScaleOrFallback, parseScaleOrZero } from "./parseScale";
 
 
 /**
  * Parses the padding to usable tuples of parsed scales.
  */
-export function parsePadding(padding: Padding): ParsedPadding;
-export function parsePadding(padding: Padding | undefined): ParsedPadding | undefined;
-export function parsePadding(padding: Padding | undefined): ParsedPadding | undefined
+export function parsePadding(padding: Padding | undefined, fallbackPadding: ParsedPadding = zeroPadding): ParsedPadding
 {
 	let returnValue: ParsedPadding | undefined;
 	if (isUndefined(padding))
@@ -24,6 +23,7 @@ export function parsePadding(padding: Padding | undefined): ParsedPadding | unde
 		const length = padding.length;
 		if (length === 2)
 		{
+			// Todo: do we need to take in account `undefined` for fallback ?
 			const vertical = parseScaleOrZero(padding[0]);
 			const horizontal = parseScaleOrZero(padding[1]);
 			returnValue = createParsed(vertical, horizontal, vertical, horizontal);
@@ -44,10 +44,10 @@ export function parsePadding(padding: Padding | undefined): ParsedPadding | unde
 	{
 		// padding specified as object
 		returnValue = createParsed(
-			parseScaleOrZero(padding.top),
-			parseScaleOrZero(padding.right),
-			parseScaleOrZero(padding.bottom),
-			parseScaleOrZero(padding.left)
+			parseScaleOrFallback(padding.top, fallbackPadding.top),
+			parseScaleOrFallback(padding.right, fallbackPadding.right),
+			parseScaleOrFallback(padding.bottom, fallbackPadding.bottom),
+			parseScaleOrFallback(padding.left, fallbackPadding.left)
 		);
 	}
 	else
@@ -56,7 +56,7 @@ export function parsePadding(padding: Padding | undefined): ParsedPadding | unde
 		const value = parseScaleOrZero(padding);
 		returnValue = createParsed(value, value, value, value);
 	}
-	return returnValue;
+	return returnValue || fallbackPadding;
 }
 
 

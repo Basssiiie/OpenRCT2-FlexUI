@@ -68,11 +68,12 @@ export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, p
 		absoluteContentSpace = isAbsolute(contentSpace),
 		// If content space is absolute, leftover space is the rest.
 		// Otherwise apply inward padding over all the space.
-		leftoverSpace = (absoluteContentSpace) ? (area[size] - contentSpace[0]) : area[size],
+		leftoverSpace = calculateLeftoverSpace(area[size], contentSpace[0], absoluteContentSpace, padding[start], padding[end]),
 		totalWeight = calculateTotalWeight(contentSpace, padding[start], padding[end]),
 		startPixels = convertToPixels(padding[start], leftoverSpace, totalWeight),
 		endPixels = convertToPixels(padding[end], leftoverSpace, totalWeight);
 
+	// fixme; incorrect place with both static and dynamic padding together
 	area[axis] += startPixels;
 
 	// If parent space is absolute, subtract from original pixel space.
@@ -84,6 +85,25 @@ export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, p
 	{
 		area[size] -= (startPixels + endPixels);
 	}
+}
+
+
+/**
+ * Leftover space is the current space minus the absolute space for the content,
+ * and minus any absolute padding that should be added at the end.
+ */
+function calculateLeftoverSpace(currentSpace: number, contentSpace: number, isContentSpaceAbsolute: boolean, paddingStart: ParsedScale, paddingEnd: ParsedScale): number
+{
+	let leftoverSpace = currentSpace;
+
+	if (isContentSpaceAbsolute)
+		leftoverSpace -= contentSpace;
+	if (isAbsolute(paddingStart))
+		leftoverSpace -= paddingStart[0];
+	if (isAbsolute(paddingEnd))
+		leftoverSpace -= paddingEnd[0];
+
+	return leftoverSpace;
 }
 
 
