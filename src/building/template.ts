@@ -68,6 +68,13 @@ export class Template implements WindowTemplate, WindowContext
 
 	open(): void
 	{
+		if (this._window)
+		{
+			// Multiple windows currently not supported, just refocus current window.
+			this.focus();
+			return;
+		}
+
 		const description = this._description;
 		const binder = this._binder;
 
