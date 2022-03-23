@@ -23,7 +23,7 @@ const allWidgets = window({
 			})
 		}),
 		box({
-			text: "Groupbox label",
+			text: "Boxed label",
 			content: label({
 				padding: [ "10px", "1w" ],
 				text: "This is a centred labeled boxed label"
