@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@ava/typescript": "^3.0.1",
-		"@rollup/plugin-replace": "^3.0.0",
+		"@rollup/plugin-replace": "^4.0.0",
 		"@rollup/plugin-typescript": "^8.2.5",
 		"@typescript-eslint/eslint-plugin": "^5.1.0",
 		"@typescript-eslint/parser": "^5.1.0",
@@ -72,8 +72,7 @@
 			"./tests/_setup.js",
 			"ts-node/register"
 		],
-		"verbose": true,
-		"workerThreads": false
+		"verbose": true
 	},
 	"release-it": {
 		"git": {
@@ -82,7 +81,8 @@
 		"github": {
 			"releaseName": "v${version}",
 			"release": true,
-			"preRelease": true
+			"preRelease": true,
+			"web": true
 		}
 	}
 }
