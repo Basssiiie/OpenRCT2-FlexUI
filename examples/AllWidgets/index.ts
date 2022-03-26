@@ -2,7 +2,7 @@
 
 import
 {
-	box, button, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
+	box, button, checkbox, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
 	groupbox, label, LayoutDirection, spinner, toggle, viewport, window
 }
 from "openrct2-flexui";
@@ -47,6 +47,10 @@ const allWidgets = window({
 					onChange: (colour: Colour) => console.log(`Colour picker #3 changed to colour id ${colour}`)
 				})
 			]
+		}),
+		checkbox({
+			text: "Toggle this checkbox",
+			onChange: (checked: boolean) => console.log(`Checkbox has changed to ${checked ? '' : 'not '}checked`)
 		}),
 		dropdown({
 			items: [ "First", "Second", "Third", "Fourth" ],

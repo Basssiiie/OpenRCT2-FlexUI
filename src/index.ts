@@ -13,6 +13,7 @@ export { compute } from "./bindings/compute";
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
 export { box, BoxParams } from "./elements/controls/box";
 export { button, ButtonParams } from "./elements/controls/button";
+export { checkbox, CheckboxParams } from "./elements/controls/checkbox";
 export { colourPicker, ColourPickerParams } from "./elements/controls/colourPicker";
 export { dropdown, DropdownParams, DropdownDisableMode } from "./elements/controls/dropdown";
 export { dropdownButton, DropdownButtonParams, DropdownButtonAction } from "./elements/controls/dropdownButton";
