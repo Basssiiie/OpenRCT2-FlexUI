@@ -83,6 +83,9 @@
 			"release": true,
 			"preRelease": true,
 			"web": true
+		},
+		"npm": {
+			"tag": [ "next", "latest" ]
 		}
 	}
 }
