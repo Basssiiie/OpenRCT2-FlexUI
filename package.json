@@ -85,10 +85,7 @@
 			"web": true
 		},
 		"npm": {
-			"tag": [
-				"next",
-				"latest"
-			]
+			"tag": "next"
 		}
 	}
 }

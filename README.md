@@ -29,7 +29,7 @@ For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-Fle
 
 Install the latest pre-release directly from the NPM registry with:
 ```
-npm install openrct2-flexui
+npm install openrct2-flexui@next
 ```
 
 ---
