@@ -49,8 +49,8 @@ export class WindowBinder implements Binder
 	{
 		const binding: Binding<WidgetBase, unknown> =
 		{
-			widgetName: widgetName,
-			store: store,
+			widgetName,
+			store,
 			setter: (widget: W, value: T): void =>
 			{
 				widget[property] = (converter) ? converter(value) : value as never;
@@ -130,20 +130,4 @@ export class WindowBinder implements Binder
 	{
 		return (this._bindings.length > 0);
 	}
-
-	/**
-	 * Disposes all subscriptions for this binder.
-	 */
-	/*
-	dispose(): void
-	{
-		if (this._bindings)
-		{
-			for (const subscription of this._bindings)
-			{
-				subscription.unsubscribe();
-			}
-		}
-	}
-	*/
 }

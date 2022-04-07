@@ -51,7 +51,7 @@ export function parseScale(value: Scale | undefined): ParsedScale | undefined
 
 		if (!isUndefined(type))
 		{
-			const num = Number.parseFloat(trimmed.substring(0, endIdx));
+			const num = parseFloat(trimmed.substring(0, endIdx));
 			return [num, type];
 		}
 	}
