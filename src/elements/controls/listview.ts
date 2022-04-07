@@ -52,7 +52,7 @@ export function listview(params: ListViewParams & AbsolutePosition): WidgetCreat
 export function listview(params: ListViewParams & Positions): WidgetCreator<ListViewParams>
 {
 	return {
-		params: params,
+		params,
 		create: (output: BuildOutput): ListViewControl => new ListViewControl(output, params)
 	};
 }

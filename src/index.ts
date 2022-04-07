@@ -21,6 +21,7 @@ export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/drop
 export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
 export { groupbox, GroupBoxParams } from "./elements/controls/groupbox";
 export { label, LabelParams } from "./elements/controls/label";
+export { listview, ListViewParams, ListViewColumnParams } from "./elements/controls/listview";
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
 export { toggle, ToggleParams } from "./elements/controls/toggle";
 export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/viewport";
