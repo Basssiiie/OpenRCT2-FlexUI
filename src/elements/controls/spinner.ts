@@ -104,6 +104,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	text?: string;
 	onIncrement: () => void;
 	onDecrement: () => void;
+	onClick: () => void;
 
 	step: number = 1;
 	min: number = 0;
@@ -147,8 +148,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		this._wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
 		this._onChange = params.onChange;
 
-		this.onIncrement = (): void => updateSpinnerValue(this, 1);
-		this.onDecrement = (): void => updateSpinnerValue(this, -1);
+		this.onIncrement = (): void => updateSpinnerValue(this, this.step);
+		this.onDecrement = (): void => updateSpinnerValue(this, -this.step);
+		this.onClick = (): void => showNumberInputBox(this);
 
 		if (this.min > this.max)
 		{
@@ -158,18 +160,73 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 }
 
 
+function showNumberInputBox(spinner: SpinnerControl): void
+{
+	console.log("TEST click");
+	ui.showTextInput({
+		title: "Enter a new value",
+		description: `Enter a new value between ${spinner.min} and ${spinner.max}.`,
+		maxLength: 24,
+		callback: v => onEnterInput(spinner, v)
+	});
+}
+
+
+/**
+ * Parses and validates the entered input.
+ */
+function onEnterInput(spinner: SpinnerControl, value: string): void
+{
+	// Parse more liberal than parseFloat(); just concatenate all numbers
+	// and the comma is equal to the period. All other characters are bad input.
+	let resultString: string = '', badInput = false;
+	for (const c of value)
+	{
+		if ((c >= '0' && c <= '9') || c === '-')
+		{
+			resultString += c;
+		}
+		else if (c === '.' || c === ',')
+		{
+			resultString += '.';
+		}
+		else if (c !== ' ')
+		{
+			badInput = true;
+			break;
+		}
+	}
+	let resultNumber: number;
+	if (!badInput && !isNaN(resultNumber = parseFloat(resultString)))
+	{
+		const min = spinner.min, max = spinner.max;
+		if (min <= resultNumber && resultNumber < max)
+		{
+			const oldValue = spinner._value.get();
+			updateSpinnerValue(spinner, resultNumber - oldValue);
+			return;
+		}
+		ui.showError("Incorrect input", `Input '${value}' is outside of the range of ${min} to ${max}.`);
+	}
+	else
+	{
+		ui.showError("Incorrect input", `Input '${value}' is not a valid number.`);
+	}
+	showNumberInputBox(spinner);
+}
+
+
 /**
  * Callback for when the value of the spinner is incremented or decremented.
  */
-function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
+function updateSpinnerValue(spinner: SpinnerControl, adjustment: number): void
 {
 	const min = spinner.min, max = spinner.max;
 	if (min >= max)
 		return;
 
-	const step = (spinner.step * direction);
 	const oldValue = spinner._value.get();
-	const newValue = (oldValue + step);
+	const newValue = (oldValue + adjustment);
 
 	let result: number;
 	switch (spinner._wrapMode)
@@ -197,6 +254,6 @@ function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 
 	if (spinner._onChange)
 	{
-		spinner._onChange(result, step);
+		spinner._onChange(result, adjustment);
 	}
 }
