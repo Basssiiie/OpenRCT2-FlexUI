@@ -57,6 +57,17 @@ export class Template implements WindowTemplate, WindowContext
 		}
 	}
 
+	_unbind(): void
+	{
+		const binder = this._binder;
+		if (binder)
+		{
+			binder.unbind();
+		}
+		this._window = null;
+		this._openWidgets = null;
+	}
+
 	redraw(): void
 	{
 		const widgets = this._openWidgets;
@@ -101,9 +112,11 @@ export class Template implements WindowTemplate, WindowContext
 
 	close(): void
 	{
-		ui.closeWindows(this._description.classification);
-		this._window = null;
-		this._openWidgets = null;
+		if (this._window)
+		{
+			this._window.close();
+		}
+		this._unbind();
 	}
 
 	focus(): void

@@ -241,7 +241,7 @@ test("Window applies padding", t =>
 		title: "test window", width: 150, height: 100,
 		padding: 15,
 		content: [
-			button({ text: "click"	})
+			button({ text: "click" })
 		]
 	});
 	template.open();
@@ -316,4 +316,53 @@ test("Window events are triggered", t =>
 	t.is(hits.length, 3);
 	t.is(hits[2][0], "close");
 	t.truthy(hits[2][1]);
+});
+
+
+test("Window focuses on double open", t =>
+{
+	global.ui = Mock.ui();
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		content: [
+			button({ text: "click" })
+		]
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.true(created[0].isOpen);
+
+	template.open();
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.true(created[0].isOpen);
+});
+
+
+test("Window can be reopened after closing", t =>
+{
+	global.ui = Mock.ui();
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		content: [
+			button({ text: "click" })
+		]
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+
+	call(created[0].onClose); // emulate click on close
+
+	template.open();
+	t.is(created.length, 2);
+	t.is(created[0].title, "test window");
+	t.is(created[1].title, "test window");
 });

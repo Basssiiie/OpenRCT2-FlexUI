@@ -163,16 +163,10 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 
 	}*/
 
-	const binder = output.binder;
 	const open = output.open;
 	const update = output.update;
 	const close = output.close;
 
-	if (binder.hasBindings())
-	{
-		// Unbind binder on close event.
-		close.push(() => binder.unbind());
-	}
 	if (params.onOpen)
 	{
 		open.push(params.onOpen);
@@ -187,6 +181,9 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	}
 
 	const template = output._template;
+
+	// Unbind template on close.
+	close.push(() => template._unbind());
 	template._build();
 
 	if (open.length > 0)
