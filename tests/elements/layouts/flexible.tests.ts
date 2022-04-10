@@ -455,6 +455,38 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 });
 
 
+test("Padding: included in cursor tracking", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 5, y: 5, width: 60, height: 100 };
+	const creator = flexible({
+		spacing: 3,
+		content: [
+			button({ text: "a", height: 30, padding: 12 }),
+			button({ text: "b" })
+		]
+	}, LayoutDirection.Vertical);
+
+	const control = creator.create(output);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output._widgets[0] as ButtonWidget;
+	t.is(widget1.text, "a");
+	t.is(widget1.x, 5 + 12);
+	t.is(widget1.y, 5 + 12);
+	t.is(widget1.width, 60 - 24);
+	t.is(widget1.height, 30);
+
+	const widget2 = output._widgets[1] as ButtonWidget;
+	t.is(widget2.text, "b");
+	t.is(widget2.x, 5);
+	t.is(widget2.y, 5 + 24 + 30 + 3);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 100 - (24 + 30 + 3));
+});
+
+
 test("Works without children", t =>
 {
 	const output: BuildContainer = new BuildContainer({} as WindowDesc);

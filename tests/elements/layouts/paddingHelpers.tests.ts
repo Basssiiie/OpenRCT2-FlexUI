@@ -1,5 +1,6 @@
 
-import { applyHorizontalPadding, applyVerticalPadding, hasPadding } from "@src/elements/layouts/paddingHelpers";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { applyPaddingToDirection, hasPadding } from "@src/elements/layouts/paddingHelpers";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
@@ -68,7 +69,7 @@ test("Apply horizontal pixel padding", t =>
 	const contentSpace: ParsedScale = [100, px];
 	const padding: ParsedPadding = { top: [8, px], right: [5, pc], bottom: [3, w], left: [2, px] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 2);
 	t.is(area.y, 20);
@@ -83,7 +84,7 @@ test("Apply vertical pixel padding", t =>
 	const contentSpace: ParsedScale = [100, px];
 	const padding: ParsedPadding = { top: [8, px], right: [5, pc], bottom: [3, w], left: [2, px] };
 
-	applyVerticalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Vertical, contentSpace, padding);
 
 	t.is(area.x, 10);
 	t.is(area.y, 20 + 8);
@@ -98,7 +99,7 @@ test("Apply weighted padding on horizontal pixel space", t =>
 	const contentSpace: ParsedScale = [50, px];
 	const padding: ParsedPadding = { top: [8, px], right: [3, w], bottom: [3, w], left: [2, w] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 40);
 	t.is(area.y, 20);
@@ -113,7 +114,7 @@ test("Apply pixel padding on horizontal weighted space", t =>
 	const contentSpace: ParsedScale = [2, w];
 	const padding: ParsedPadding = { top: [8, px], right: [30, px], bottom: [3, px], left: [25, px] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 25);
 	t.is(area.y, 20);
@@ -128,7 +129,7 @@ test("Apply weighted padding on horizontal weighted space", t =>
 	const contentSpace: ParsedScale = [5, w];
 	const padding: ParsedPadding = { top: [8, px], right: [3, w], bottom: [3, w], left: [2, w] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 40);
 	t.is(area.y, 20);
@@ -143,7 +144,7 @@ test("Apply weighted left padding on horizontal pixel space", t =>
 	const contentSpace: ParsedScale = [50, px];
 	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [1, w] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 135);
 	t.is(area.y, 20);
@@ -158,7 +159,7 @@ test("Apply weighted right padding on horizontal pixel space", t =>
 	const contentSpace: ParsedScale = [50, px];
 	const padding: ParsedPadding = { top: [8, px], right: [1, w], bottom: [3, px], left: [25, px] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 25);
 	t.is(area.y, 20);
@@ -173,7 +174,7 @@ test("Apply weighted left padding on horizontal weighted space", t =>
 	const contentSpace: ParsedScale = [3, w];
 	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [2, w] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 74);
 	t.is(area.y, 20);
@@ -188,7 +189,7 @@ test("Apply weighted right padding on horizontal weighted space", t =>
 	const contentSpace: ParsedScale = [3, w];
 	const padding: ParsedPadding = { top: [8, px], right: [2, w], bottom: [3, px], left: [25, px] };
 
-	applyHorizontalPadding(area, contentSpace, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentSpace, padding);
 
 	t.is(area.x, 10 + 25);
 	t.is(area.y, 20);

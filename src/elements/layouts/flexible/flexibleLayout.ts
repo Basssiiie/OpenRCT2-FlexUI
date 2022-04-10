@@ -5,24 +5,25 @@ import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { applyPaddingToDirection, hasPadding } from "../paddingHelpers";
+import { applyPaddingToDirection, axisKeys, endKeys, hasPadding, sizeKeys, startKeys } from "../paddingHelpers";
 
 
 /**
  * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, direction: LayoutDirection, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
+export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, layoutDirection: LayoutDirection, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
 {
 	const elementCount = elements.length;
 	if (!elementCount)
 		return;
 
-	const keys = getDirectionKeys(direction);
+	const otherDirection = (layoutDirection === LayoutDirection.Horizontal)
+		? LayoutDirection.Vertical : LayoutDirection.Horizontal;
 
 	// First pass: calculate available and used space.
 	const
-		stack = parseFlexibleElements(elements, spacing, keys),
-		leftoverSpace = (parentArea[keys._mainSize] - stack._absoluteSpace),
+		stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection),
+		leftoverSpace = (parentArea[sizeKeys[layoutDirection]] - stack._absoluteSpace),
 		spaceInPixels = convertToPixels(spacing, leftoverSpace, stack._weightedTotal);
 
 	// Second pass: compute locations and update widgets.
@@ -31,50 +32,33 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 	{
 		const
 			parsed = stack._elements[i],
-			mainAxis = (cursor + parentArea[keys._mainAxis]),
+			mainAxis = (cursor + parentArea[axisKeys[layoutDirection]]),
 			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, stack._weightedTotal),
-			otherAxis = parentArea[keys._otherAxis],
-			otherSize = parentArea[keys._otherSize],
+			otherAxis = parentArea[axisKeys[otherDirection]],
+			otherSize = parentArea[sizeKeys[otherDirection]],
 			padding = parsed._padding;
 
 		const childArea = {} as Rectangle;
-		childArea[keys._mainAxis] = mainAxis;
-		childArea[keys._mainSize] = mainSize;
-		childArea[keys._otherAxis] = otherAxis;
-		childArea[keys._otherSize] = otherSize; // set to full size first, for padding.
+		childArea[axisKeys[layoutDirection]] = mainAxis;
+		childArea[sizeKeys[layoutDirection]] = mainSize;
+		childArea[axisKeys[otherDirection]] = otherAxis;
+		childArea[sizeKeys[otherDirection]] = otherSize; // set to full size first, for padding.
 
 		if (hasPadding(padding))
 		{
-			applyPaddingToDirection(childArea, keys._mainDirection, parsed._mainSize, padding);
-			applyPaddingToDirection(childArea, keys._otherDirection, parsed._otherSize, padding);
+			cursor += applyPaddingToDirection(childArea, layoutDirection, parsed._mainSize, padding);
+			applyPaddingToDirection(childArea, otherDirection, parsed._otherSize, padding);
 		}
 		else
 		{
+			cursor += mainSize;
 			// If the child requested a smaller size, apply it here.
-			childArea[keys._otherSize] = convertToPixels(parsed._otherSize, otherSize);
+			childArea[sizeKeys[otherDirection]] = convertToPixels(parsed._otherSize, otherSize);
 		}
 
 		apply(i, childArea);
-
-		cursor += mainSize;
 		cursor += spaceInPixels;
 	}
-}
-
-
-type AxisKey = "x" | "y";
-type SizeKey = "width" | "height";
-
-
-// Contains the keys to use for laying out the widgets.
-interface DirectionKeys
-{
-	_mainDirection: LayoutDirection;
-	_mainAxis: AxisKey;
-	_mainSize: SizeKey;
-	_otherDirection: LayoutDirection;
-	_otherAxis: AxisKey;
-	_otherSize: SizeKey;
 }
 
 
@@ -98,7 +82,7 @@ interface ParsedStackElement
 /**
  * Parses all specified child positions
  */
-function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, keys: DirectionKeys): ParsedStack
+function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, mainDirection: LayoutDirection, otherDirection: LayoutDirection): ParsedStack
 {
 	const elementCount = elements.length;
 	const stack: ParsedStack = {
@@ -124,8 +108,8 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 		const params = elements[i], padding = params.padding;
 		const parsed: ParsedStackElement =
 		{
-			_mainSize: params[keys._mainSize],
-			_otherSize: params[keys._otherSize],
+			_mainSize: params[sizeKeys[mainDirection]],
+			_otherSize: params[sizeKeys[otherDirection]],
 			_padding: padding
 		};
 		stack._elements[i] = parsed;
@@ -139,38 +123,20 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 		else if (isAbsolute(size))
 		{
 			stack._absoluteSpace += parsed._mainSize[0];
+
+			// Absolute padding on absolute size expands outwards instead of inwards.
+			const
+				start = parsed._padding[startKeys[mainDirection]],
+				end = parsed._padding[endKeys[mainDirection]];
+			if (isAbsolute(start))
+			{
+				stack._absoluteSpace += start[0];
+			}
+			if (isAbsolute(end))
+			{
+				stack._absoluteSpace += end[0];
+			}
 		}
 	}
 	return stack;
-}
-
-
-/**
- * Gets the property keys which should be used to lay out the widgets in the
- * specified direction.
- */
-function getDirectionKeys(direction: LayoutDirection): DirectionKeys
-{
-	if (direction === LayoutDirection.Vertical)
-	{
-		return {
-			_mainDirection: direction,
-			_mainAxis: "y",
-			_mainSize: "height",
-			_otherDirection: LayoutDirection.Horizontal,
-			_otherAxis: "x",
-			_otherSize: "width"
-		};
-	}
-	else
-	{
-		return {
-			_mainDirection: direction,
-			_mainAxis: "x",
-			_mainSize: "width",
-			_otherDirection: LayoutDirection.Vertical,
-			_otherAxis: "y",
-			_otherSize: "height"
-		};
-	}
 }

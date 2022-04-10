@@ -6,6 +6,16 @@ import { Rectangle } from "@src/positional/rectangle";
 
 
 /**
+ * Keys for accessing values directionally
+ */
+export const
+	axisKeys = ["y", "x"] as const,
+	sizeKeys = ["height", "width"] as const,
+	startKeys = ["top", "left"] as const,
+	endKeys = ["bottom", "right"] as const;
+
+
+/**
  * Returns true if any of the padding sides has a non-zero value.
  */
 export function hasPadding(padding: ParsedPadding | undefined): boolean
@@ -19,50 +29,26 @@ export function hasPadding(padding: ParsedPadding | undefined): boolean
  */
 export function applyPadding(area: Rectangle, contentWidth: ParsedScale, contentHeight: ParsedScale, padding: ParsedPadding): void
 {
-	applyHorizontalPadding(area, contentWidth, padding);
-	applyVerticalPadding(area, contentHeight, padding);
+	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentWidth, padding);
+	applyPaddingToDirection(area, LayoutDirection.Vertical, contentHeight, padding);
 }
 
 
 /**
- * Applies padding to a specific area as a whole on the specified direction.
+ * Applies padding to a specific area as a whole on the specified direction. Returns total space used.
  */
-export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, contentSpace: ParsedScale, padding: ParsedPadding): void
+export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, contentSpace: ParsedScale, padding: ParsedPadding): number
 {
-	if (direction === LayoutDirection.Horizontal)
-	{
-		applyHorizontalPadding(area, contentSpace, padding);
-	}
-	else
-	{
-		applyVerticalPadding(area, contentSpace, padding);
-	}
+	return applyPaddingToAxis(area, contentSpace, padding, axisKeys[direction], sizeKeys[direction], startKeys[direction], endKeys[direction]);
 }
 
 
 /**
- * Applies padding to a specific area as a whole on the horizontal axis.
- */
-export function applyHorizontalPadding(area: Rectangle, contentSpace: ParsedScale, padding: ParsedPadding): void
-{
-	applyPaddingToAxis(area, contentSpace, padding, "x", "width", "left", "right");
-}
-
-
-/**
- * Applies padding to a specific area as a whole on the vertical axis.
- */
-export function applyVerticalPadding(area: Rectangle, parentSpace: ParsedScale, padding: ParsedPadding): void
-{
-	applyPaddingToAxis(area, parentSpace, padding, "y", "height", "top", "bottom");
-}
-
-
-/**
- * Applies padding to the specified axis.
+ * Applies padding to the specified axis. Returns total space used.
  */
 export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, padding: ParsedPadding,
-	axis: "x" | "y", size: "width" | "height", start: "left" | "top", end: "right" | "bottom"): void
+	axis: typeof axisKeys[number], size: typeof sizeKeys[number],
+	start: typeof startKeys[number], end: typeof endKeys[number]): number
 {
 	const
 		absoluteContentSpace = isAbsolute(contentSpace),
@@ -76,15 +62,19 @@ export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, p
 	// fixme; incorrect place with both static and dynamic padding together
 	area[axis] += startPixels;
 
+	let totalSpace: number;
 	// If parent space is absolute, subtract from original pixel space.
 	if (absoluteContentSpace)
 	{
+		totalSpace = (contentSpace[0] + startPixels + endPixels);
 		area[size] = contentSpace[0];
 	}
 	else
 	{
+		totalSpace = area[size];
 		area[size] -= (startPixels + endPixels);
 	}
+	return totalSpace;
 }
 
 

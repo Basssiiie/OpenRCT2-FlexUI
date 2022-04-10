@@ -155,7 +155,7 @@ test("Groupbox takes size of absolute child", t =>
 	t.is(widget3.type, "button");
 	t.is(widget3.text, "inside a box too!");
 	t.is(widget3.x, 10 + 3 + 5);
-	t.is(widget3.y, 10 + 3 + 70 + 4 + 5 + 15); // inc. 70px prev. item, 4px spacing
+	t.is(widget3.y, 10 + 3 + 70 + 24 + 4 + 5 + 15); // inc. 70+24px prev. item, 4px spacing
 	t.is(widget3.width, 100);
 	t.is(widget3.height, 30);
 });
@@ -209,4 +209,49 @@ test("Groupbox uses default fallback padding for gap", t =>
 	t.is(widget3.y, 415 - (10 + 30 + 6));
 	t.is(widget3.width, 100);
 	t.is(widget3.height, 30);
+});
+
+
+test("Groupbox has correct size with padding in flex layout", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 150, height: 200, padding: 5, spacing: 2,
+		content: [
+			groupbox({
+				padding: 15,
+				gap: 6,
+				content: [
+					button({ height: 20, text: "click" })
+				]
+			}),
+			button({ text: "press" }),
+		]
+	});
+	template.open();
+
+	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	t.is(widget1.type, "groupbox");
+	t.is(widget1.x, 5 + 15);
+	t.is(widget1.y, (5 + 15 + 15) - 4); // - default top pad
+	t.is(widget1.width, 150 - (10 + 30));
+	t.is(widget1.height, 20 + 12 + 4); // + default top pad
+
+	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	t.is(widget2.type, "button");
+	t.is(widget2.text, "click");
+	t.is(widget2.x, 5 + 15 + 6);
+	t.is(widget2.y, 5 + 15 + 6 + 15);
+	t.is(widget2.width, 150 - (10 + 30 + 12));
+	t.is(widget2.height, 20);
+
+	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
+	t.is(widget3.type, "button");
+	t.is(widget3.text, "press");
+	t.is(widget3.x, 5);
+	t.is(widget3.y, 5 + 30 + 12 + 20 + 2 + 15);
+	t.is(widget3.width, 150 - 10);
+	t.is(widget3.height, 200 - (10 + 2 + 30 + 12 + 20 + 15));
 });
