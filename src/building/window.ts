@@ -181,23 +181,16 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	}
 
 	const template = output._template;
-
-	// Unbind template on close.
-	close.push(() => template._unbind());
+	update.push(() => template._onRedraw());
+	close.push(() => template._onClose());
 	template._build();
 
 	if (open.length > 0)
 	{
 		template._onOpen = (): void => invoke(open, template);
 	}
-	if (update.length > 0)
-	{
-		window.onUpdate = (): void => invoke(update, template);
-	}
-	if (close.length > 0)
-	{
-		window.onClose = (): void => invoke(close, template);
-	}
+	window.onUpdate = (): void => invoke(update, template);
+	window.onClose = (): void => invoke(close, template);
 
 	return template;
 }

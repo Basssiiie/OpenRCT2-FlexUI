@@ -12,7 +12,7 @@ export interface WindowContext
 	getWidget(name: string): WidgetEditor<Widget> | null;
 
 	/**
-	 * Start a redraw of the window where all widgets will be relayouted.
+	 * Start a redraw of the window where all widgets will be relayouted in the next tick.
 	 */
 	redraw(): void;
 }

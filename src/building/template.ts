@@ -1,4 +1,5 @@
 import { WindowBinder } from "@src/building/windowBinder";
+import * as Log from "@src/utilities/logger";
 import { defaultScale } from "../elements/constants";
 import { applyPadding } from "../elements/layouts/paddingHelpers";
 import { ParsedPadding } from "../positional/parsing/parsedPadding";
@@ -27,6 +28,7 @@ export class Template implements WindowTemplate, WindowContext
 
 	_templateWidgets: WidgetMap | null = null;
 	_openWidgets: WidgetMap | null = null;
+	_redrawNextTick: boolean = false;
 
 
 	/**
@@ -57,7 +59,23 @@ export class Template implements WindowTemplate, WindowContext
 		}
 	}
 
-	_unbind(): void
+	/**
+	 * Checks if the template has been marked dirty, and redraws if that's the case.
+	 */
+	_onRedraw(): void
+	{	const widgets = this._openWidgets;
+		if (this._redrawNextTick && widgets)
+		{
+			Log.debug("Redrawing window layout...");
+			performLayout(this, widgets);
+			this._redrawNextTick = false;
+		}
+	}
+
+	/**
+	 * Unbinds all bindings from the currently open window.
+	 */
+	_onClose(): void
 	{
 		const binder = this._binder;
 		if (binder)
@@ -70,11 +88,10 @@ export class Template implements WindowTemplate, WindowContext
 
 	redraw(): void
 	{
-		const widgets = this._openWidgets;
-		if (!widgets)
-			return;
-
-		performLayout(this, widgets);
+		if (this._openWidgets)
+		{
+			this._redrawNextTick = true;
+		}
 	}
 
 	open(): void
@@ -116,7 +133,7 @@ export class Template implements WindowTemplate, WindowContext
 		{
 			this._window.close();
 		}
-		this._unbind();
+		this._onClose();
 	}
 
 	focus(): void
