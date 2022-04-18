@@ -66,7 +66,7 @@ export class Template implements WindowTemplate, WindowContext
 	{	const widgets = this._openWidgets;
 		if (this._redrawNextTick && widgets)
 		{
-			Log.debug("Redrawing window layout...");
+			Log.debug(`Redrawing window layout (${this._window?.width} x ${this._window?.height})...`);
 			performLayout(this, widgets);
 			this._redrawNextTick = false;
 		}

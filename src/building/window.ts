@@ -46,24 +46,28 @@ interface BaseWindowParams extends Paddable
 	/**
 	 * The absolute minimum width the window can be resized to. If set, the
 	 * window will be rescalable by the user.
+	 * @default this.width
 	 */
 	minWidth?: number;
 
 	/**
 	 * The absolute minimum height the window can be resized to. If set, the
 	 * window will be rescalable by the user.
+	 * @default this.height
 	 */
 	minHeight?: number;
 
 	/**
 	 * The absolute maximum width the window can be resized to. If set, the
 	 * window will be rescalable by the user.
+	 * @default this.width
 	 */
 	maxWidth?: number;
 
 	/**
 	 * The absolute maximum height the window can be resized to. If set, the
 	 * window will be rescalable by the user.
+	 * @default this.height
 	 */
 	maxHeight?: number;
 
@@ -212,6 +216,12 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
+		const width = window.width, height = window.height;
+		window.minWidth ||= width;
+		window.maxWidth ||= width;
+		window.minHeight ||= height;
+		window.maxHeight ||= height;
+
 		setWindowLayoutResizing(output);
 	}
 }
