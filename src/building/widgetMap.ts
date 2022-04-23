@@ -1,19 +1,19 @@
 /**
  * Defines a dictionary set that contains widgets by name.
  */
-export type WidgetMap = Record<string, Widget>;
+export type WidgetMap = Record<string, WidgetBase>;
 
 
 /**
  * Creates a map of all widgets in the window, for quick access from layout functions
  * and window events.
  */
-export function createWidgetMap(widgets: Widget[]): WidgetMap
+export function createWidgetMap(widgets: WidgetBase[]): WidgetMap
 {
-	const dictionary: Record<string, Widget> = {};
-	for (let i = 0; i < widgets.length; i++)
+	const dictionary: Record<string, WidgetBase> = {};
+
+	for (const widget of widgets)
 	{
-		const widget = widgets[i];
 		const name = widget.name;
 		if (name && !(name in dictionary))
 		{

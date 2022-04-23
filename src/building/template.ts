@@ -1,4 +1,4 @@
-import { WindowBinder } from "@src/building/windowBinder";
+import { WindowBinder } from "@src/building/binders/windowBinder";
 import * as Log from "@src/utilities/logger";
 import { defaultScale } from "../elements/constants";
 import { applyPadding } from "../elements/layouts/paddingHelpers";
@@ -39,7 +39,7 @@ export class Template implements WindowTemplate, WindowContext
 
 	constructor(
 		readonly _description: WindowDesc,
-		readonly _binder?: WindowBinder)
+		private _binder: WindowBinder | null)
 	{
 		this._width = _description.width;
 		this._height = _description.height;
@@ -56,6 +56,12 @@ export class Template implements WindowTemplate, WindowContext
 			const map = createWidgetMap(widgets);
 			this._templateWidgets = map;
 			performLayout(this, map);
+		}
+		const binder = this._binder;
+		if (binder && !binder._hasBindings())
+		{
+			// Clean up binder if it is not used.
+			this._binder = null;
 		}
 	}
 
@@ -80,7 +86,7 @@ export class Template implements WindowTemplate, WindowContext
 		const binder = this._binder;
 		if (binder)
 		{
-			binder.unbind();
+			binder._unbind();
 		}
 		this._window = null;
 		this._openWidgets = null;
@@ -106,15 +112,9 @@ export class Template implements WindowTemplate, WindowContext
 		const description = this._description;
 		const binder = this._binder;
 
-		if (binder && binder.hasBindings())
+		if (binder && binder._hasBindings())
 		{
-			const widgets = this._templateWidgets;
-			if (widgets)
-			{
-				// Update the template widgets always before the window opens.
-				binder.update(widgets);
-			}
-			binder.bind(this);
+			binder._bind(this);
 		}
 
 		const window = ui.openWindow(description);

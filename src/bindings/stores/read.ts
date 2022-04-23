@@ -1,4 +1,4 @@
-import { Bindable } from "./bindable";
+import { Bindable } from "../bindable";
 import { isStore } from "./isStore";
 
 

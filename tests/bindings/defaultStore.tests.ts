@@ -1,4 +1,4 @@
-import { DefaultStore } from "@src/bindings/defaultStore";
+import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import test from "ava";
 
 

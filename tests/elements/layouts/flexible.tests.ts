@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { store } from "@src/bindings/createStore";
+import { store } from "@src/bindings/stores/createStore";
 import { BuildContainer } from "@src/building/buildContainer";
 import { createWidgetMap } from "@src/building/widgetMap";
 import { box } from "@src/elements/controls/box";

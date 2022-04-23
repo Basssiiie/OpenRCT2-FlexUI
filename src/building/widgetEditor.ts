@@ -1,5 +1,5 @@
-import { read } from "@src/bindings/read";
-import { Store } from "@src/bindings/store";
+import { read } from "@src/bindings/stores/read";
+import { Store } from "@src/bindings/stores/store";
 
 /**
  * Small editor that allows editing both the template and active widget, if present.

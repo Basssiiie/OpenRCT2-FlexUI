@@ -1,8 +1,8 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { DefaultStore } from "@src/bindings/defaultStore";
+import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { BuildContainer } from "@src/building/buildContainer";
-import { WindowBinder } from "@src/building/windowBinder";
+import { WidgetBinder } from "@src/building/binders/widgetBinder";
 import { ElementVisibility } from "@src/elements/elementParams";
 import test from "ava";
 import Mock from "openrct2-mocks";
@@ -15,7 +15,7 @@ test("read() sets values", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const binder = new WindowBinder();
+	const binder = new WidgetBinder();
 
 	binder.add(label, "text", "hello");
 	binder.add(label, "textAlign", "centred");
@@ -37,7 +37,7 @@ test("read() adds store to binder", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const binder = new WindowBinder();
+	const binder = new WidgetBinder();
 
 	t.deepEqual(binder["_bindings"], []);
 
@@ -60,7 +60,7 @@ test("read() sets store in window template", t =>
 
 	const storeNumber = new DefaultStore(25);
 	output.binder.add(label, "x", storeNumber);
-	output.binder.bind(output._template);
+	output.binder._bind(output._template);
 
 	output._template._build();
 	output._template.open();
@@ -87,7 +87,7 @@ test("read() sets store through converter", t =>
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
-	output.binder.bind(output._template);
+	output.binder._bind(output._template);
 
 	output._template._build();
 	output._template.open();

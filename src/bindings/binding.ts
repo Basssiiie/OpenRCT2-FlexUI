@@ -1,13 +1,22 @@
-import { Store } from "./store";
+import { Store } from "./stores/store";
+
 
 
 /**
  * Internally saved binding information.
  */
-export interface Binding<W extends WidgetBase, T>
+export class Binding<TTarget, TKey extends keyof TTarget, TValue>
 {
-	readonly widgetName: string;
-	readonly store: Store<T>;
-	setter(widget: W, value: T): void;
-	unsubscribe(): void;
+	readonly unsubscribe: () => void;
+
+
+	constructor(
+		readonly id: string,
+		readonly key: TKey,
+		readonly store: Store<TValue>,
+		readonly converter: ((value: TValue) => TTarget[TKey]) | undefined,
+		callback: (value: TValue) => void
+	){
+		this.unsubscribe = store.subscribe(callback);
+	}
 }

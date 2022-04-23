@@ -1,4 +1,4 @@
-import { store } from "@src/bindings/createStore";
+import { store } from "@src/bindings/stores/createStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";

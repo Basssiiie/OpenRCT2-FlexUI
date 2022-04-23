@@ -1,6 +1,6 @@
-import { DefaultStore } from "@src/bindings/defaultStore";
-import { isStore } from "@src/bindings/isStore";
-import { storify } from "@src/bindings/storify";
+import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { storify } from "@src/bindings/stores/storify";
 import test from "ava";
 
 

@@ -1,6 +1,6 @@
-import { DefaultStore } from "@src/bindings/defaultStore";
-import { isStore } from "@src/bindings/isStore";
-import { compute } from "@src/bindings/compute";
+import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { compute } from "@src/bindings/stores/compute";
 import test from "ava";
 
 

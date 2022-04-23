@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { store } from "@src/bindings/createStore";
+import { store } from "@src/bindings/stores/createStore";
 import { window } from "@src/building/window";
 import { WindowContext } from "@src/building/windowContext";
 import { button } from "@src/elements/controls/button";
@@ -230,6 +230,39 @@ test("Window updates to bindings", t =>
 	t.is(label1.textAlign, "left");
 	t.is(button1.text, "clicked!");
 	t.false(button1.isPressed);
+});
+
+
+test("Window title is bindable", t =>
+{
+	global.ui = Mock.ui();
+
+	const viewmodel = {
+		title: store("test")
+	};
+
+	const template = window({
+		title: viewmodel.title, width: 100, height: 100,
+		content: [
+			label({ text: "some text" })
+		]
+	});
+	template.open();
+
+	const created1 = (global.ui as UiMock).createdWindows[0];
+	t.is(created1.title, "test");
+
+	viewmodel.title.set("blub");
+	t.is(created1.title, "blub");
+
+	template.close();
+	viewmodel.title.set("bobby");
+	t.is(created1.title, "blub"); // dont update on close
+
+	template.open();
+	const created2 = (global.ui as UiMock).createdWindows[0];
+	t.is(created1.title, "blub");
+	t.is(created2.title, "bobby");
 });
 
 

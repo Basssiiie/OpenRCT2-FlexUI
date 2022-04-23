@@ -3,11 +3,11 @@ export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
 
 // Store related utilities
-export { Store } from "./bindings/store";
-export { store } from "./bindings/createStore";
-export { isStore } from "./bindings/isStore";
-export { read } from "./bindings/read";
-export { compute } from "./bindings/compute";
+export { Store } from "./bindings/stores/store";
+export { store } from "./bindings/stores/createStore";
+export { isStore } from "./bindings/stores/isStore";
+export { read } from "./bindings/stores/read";
+export { compute } from "./bindings/stores/compute";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";

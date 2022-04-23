@@ -1,4 +1,5 @@
-import { isStore } from "@src/bindings/isStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { on } from "@src/bindings/stores/on";
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { WidgetMap } from "@src/building/widgetMap";
@@ -38,7 +39,7 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 		binder.add(this, "isVisible", visibility, v => (v === "visible"));
 
 		// Redraw UI if the visibility changes to and from "none"
-		binder.on(visibility, v =>
+		on(visibility, v =>
 		{
 			const oldValue = this.skip;
 			const newValue = (v === "none");
@@ -55,7 +56,7 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 			output.on("close", () => this._context = null);
 		}
 
-		output.add(<Widget>this);
+		output.add(this);
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void

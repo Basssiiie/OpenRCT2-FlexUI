@@ -11,12 +11,12 @@ export interface BuildOutput
 	/**
 	 * The binder helps with binding stores from a viewmodel to a widget inside a window.
 	 */
-	binder: Binder;
+	binder: Binder<WidgetBase>;
 
 	/**
-	 * Add a widget to the build output.
+	 * Add a widget to the build output that will be rendered.
 	 */
-	add(widget: Widget): void;
+	add(widget: WidgetBase): void;
 
 	/**
 	 * Subscribe to an event on the created window.

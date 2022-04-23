@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { DefaultStore } from "@src/bindings/defaultStore";
-import { isStore } from "@src/bindings/isStore";
+import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { isStore } from "@src/bindings/stores/isStore";
 import test from "ava";
 
 

@@ -1,6 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
-import { Store } from "@src/bindings/store";
-import { storify } from "@src/bindings/storify";
+import { Store } from "@src/bindings/stores/store";
+import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import * as Log from "@src/utilities/logger";

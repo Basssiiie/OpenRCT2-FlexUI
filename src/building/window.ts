@@ -1,3 +1,4 @@
+import { Bindable } from "@src/bindings/bindable";
 import { FlexibleLayoutControl, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Paddable } from "@src/positional/paddable";
@@ -19,7 +20,7 @@ interface BaseWindowParams extends Paddable
 	/**
 	 * The title at the top of the window.
 	 */
-	title?: string;
+	title?: Bindable<string>;
 
 	/**
 	 * The initial width of the window in pixels.
@@ -145,7 +146,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	const window: WindowDesc =
 	{
 		classification: `fui-${identifier()}`,
-		title: (params.title) ? params.title : "",
+		title: "",
 		colours: params.colours,
 		width: params.width,
 		height: params.height,
@@ -158,6 +159,8 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	};
 
 	const output = new BuildContainer(window);
+	output._windowBinder.add(window, "title", params.title);
+
 	if ("content" in params)
 	{
 		createWindowLayout(output, window, params);

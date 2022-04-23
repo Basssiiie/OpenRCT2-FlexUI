@@ -1,6 +1,6 @@
-import { store } from "@src/bindings/createStore";
-import { isStore } from "@src/bindings/isStore";
-import { Store } from "@src/bindings/store";
+import { store } from "@src/bindings/stores/createStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { Store } from "@src/bindings/stores/store";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";

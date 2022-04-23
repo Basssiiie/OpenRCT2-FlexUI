@@ -18,5 +18,5 @@ function hasStoreContact(target: unknown): target is Store<unknown>
 		return false;
 
 	const record = <Record<string, unknown>>target;
-	return isFunction(record["get"]) && isFunction(record["set"]) && isFunction(record["subscribe"]);
+	return isFunction(record.get) && isFunction(record.set) && isFunction(record.subscribe);
 }

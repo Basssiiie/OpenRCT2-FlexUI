@@ -1,5 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
-import { isStore } from "@src/bindings/isStore";
+import { isStore } from "@src/bindings/stores/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";

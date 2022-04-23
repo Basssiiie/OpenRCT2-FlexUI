@@ -1,7 +1,7 @@
-import { store } from "@src/bindings/createStore";
-import { isStore } from "@src/bindings/isStore";
-import { Store } from "@src/bindings/store";
-import { storify } from "@src/bindings/storify";
+import { store } from "@src/bindings/stores/createStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { Store } from "@src/bindings/stores/store";
+import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
