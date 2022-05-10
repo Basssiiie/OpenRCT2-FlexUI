@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import test from "ava";
@@ -14,6 +15,13 @@ test("Store string is true", t =>
 test("Store number is true", t =>
 {
 	const store = new DefaultStore(54);
+	t.true(isStore(store));
+});
+
+
+test("Array store is true", t =>
+{
+	const store = new DefaultArrayStore([ "a", "b" ]);
 	t.true(isStore(store));
 });
 

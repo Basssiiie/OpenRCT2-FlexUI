@@ -7,7 +7,8 @@ import { Store } from "./store";
  */
 export class DefaultStore<T> implements Store<T>
 {
-	private _value: T;
+	protected _value: T;
+
 	private _listeners?: Event<T>;
 
 	constructor(value: T)
@@ -25,10 +26,7 @@ export class DefaultStore<T> implements Store<T>
 		if (this._value !== value)
 		{
 			this._value = value;
-			if (this._listeners)
-			{
-				invoke(this._listeners, value);
-			}
+			this._updateListeners();
 		}
 	}
 
@@ -52,5 +50,13 @@ export class DefaultStore<T> implements Store<T>
 				subscriptions.splice(index, 1);
 			}
 		};
+	}
+
+	protected _updateListeners(): void
+	{
+		if (this._listeners)
+		{
+			invoke(this._listeners, this._value);
+		}
 	}
 }

@@ -4,7 +4,8 @@ export { WindowTemplate } from "./building/windowTemplate";
 
 // Store related utilities
 export { Store } from "./bindings/stores/store";
-export { store } from "./bindings/stores/createStore";
+export { ArrayStore } from "./bindings/stores/arrayStore";
+export { store, arrayStore } from "./bindings/stores/createStore";
 export { isStore } from "./bindings/stores/isStore";
 export { read } from "./bindings/stores/read";
 export { compute } from "./bindings/stores/compute";
