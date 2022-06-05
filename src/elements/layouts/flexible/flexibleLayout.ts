@@ -5,7 +5,7 @@ import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { applyPaddingToDirection, axisKeys, endKeys, hasPadding, sizeKeys, startKeys } from "../paddingHelpers";
+import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingToDirection, sizeKeys, startKeys } from "../paddingHelpers";
 
 
 /**
@@ -24,7 +24,8 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 	const
 		stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection),
 		leftoverSpace = (parentArea[sizeKeys[layoutDirection]] - stack._absoluteSpace),
-		spaceInPixels = convertToPixels(spacing, leftoverSpace, stack._weightedTotal);
+		weightedTotal = stack._weightedTotal,
+		spaceInPixels = convertToPixels(spacing, leftoverSpace, weightedTotal);
 
 	// Second pass: compute locations and update widgets.
 	let cursor = 0;
@@ -33,28 +34,17 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		const
 			parsed = stack._elements[i],
 			mainAxis = (cursor + parentArea[axisKeys[layoutDirection]]),
-			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, stack._weightedTotal),
-			otherAxis = parentArea[axisKeys[otherDirection]],
-			otherSize = parentArea[sizeKeys[otherDirection]],
+			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, weightedTotal),
 			padding = parsed._padding;
 
 		const childArea = {} as Rectangle;
 		childArea[axisKeys[layoutDirection]] = mainAxis;
 		childArea[sizeKeys[layoutDirection]] = mainSize;
-		childArea[axisKeys[otherDirection]] = otherAxis;
-		childArea[sizeKeys[otherDirection]] = otherSize; // set to full size first, for padding.
+		childArea[axisKeys[otherDirection]] = parentArea[axisKeys[otherDirection]];
+		childArea[sizeKeys[otherDirection]] = parentArea[sizeKeys[otherDirection]];
 
-		if (hasPadding(padding))
-		{
-			cursor += applyPaddingToDirection(childArea, layoutDirection, parsed._mainSize, padding);
-			applyPaddingToDirection(childArea, otherDirection, parsed._otherSize, padding);
-		}
-		else
-		{
-			cursor += mainSize;
-			// If the child requested a smaller size, apply it here.
-			childArea[sizeKeys[otherDirection]] = convertToPixels(parsed._otherSize, otherSize);
-		}
+		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal);
+		setSizeWithPaddingToDirection(childArea, otherDirection, parsed._otherSize, padding);
 
 		apply(i, childArea);
 		cursor += spaceInPixels;
@@ -92,15 +82,7 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 	};
 
 	// Parse spacing in between elements
-	if (isAbsolute(spacing))
-	{
-		const pixelSize = (spacing[0] * (elementCount - 1));
-		stack._absoluteSpace += pixelSize;
-	}
-	else if (isWeighted(spacing))
-	{
-		stack._weightedTotal += (spacing[0] * (elementCount - 1));
-	}
+	addScaleToStack(spacing, stack, (elementCount - 1));
 
 	// First pass: parse all values to numbers.
 	for (let i = 0; i < elementCount; i++)
@@ -115,28 +97,31 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 		stack._elements[i] = parsed;
 
 		// Add size of current element to totals
-		const size = parsed._mainSize;
-		if (isWeighted(size))
-		{
-			stack._weightedTotal += parsed._mainSize[0];
-		}
-		else if (isAbsolute(size))
-		{
-			stack._absoluteSpace += parsed._mainSize[0];
+		const
+			size = parsed._mainSize,
+			start = parsed._padding[startKeys[mainDirection]],
+			end = parsed._padding[endKeys[mainDirection]];
 
-			// Absolute padding on absolute size expands outwards instead of inwards.
-			const
-				start = parsed._padding[startKeys[mainDirection]],
-				end = parsed._padding[endKeys[mainDirection]];
-			if (isAbsolute(start))
-			{
-				stack._absoluteSpace += start[0];
-			}
-			if (isAbsolute(end))
-			{
-				stack._absoluteSpace += end[0];
-			}
-		}
+		addScaleToStack(size, stack);
+		addScaleToStack(start, stack);
+		addScaleToStack(end, stack);
 	}
 	return stack;
+}
+
+
+/**
+ * Adds the specified scale to the stack's weighted total or absolute space,
+ * depending on whether it's a weighted or absolute scale.
+ */
+function addScaleToStack(scale: ParsedScale, stack: ParsedStack, multiplier: number = 1): void
+{
+	if (isWeighted(scale))
+	{
+		stack._weightedTotal += (scale[0] * multiplier);
+	}
+	else if (isAbsolute(scale))
+	{
+		stack._absoluteSpace += (scale[0] * multiplier);
+	}
 }

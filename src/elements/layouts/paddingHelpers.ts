@@ -27,54 +27,55 @@ export function hasPadding(padding: ParsedPadding | undefined): boolean
 /**
  * Applies padding to a specific area as a whole.
  */
-export function applyPadding(area: Rectangle, contentWidth: ParsedScale, contentHeight: ParsedScale, padding: ParsedPadding): void
+export function setSizeWithPadding(area: Rectangle, width: ParsedScale, height: ParsedScale, padding: ParsedPadding): void
 {
-	applyPaddingToDirection(area, LayoutDirection.Horizontal, contentWidth, padding);
-	applyPaddingToDirection(area, LayoutDirection.Vertical, contentHeight, padding);
+	setSizeWithPaddingToDirection(area, LayoutDirection.Horizontal, width, padding);
+	setSizeWithPaddingToDirection(area, LayoutDirection.Vertical, height, padding);
+}
+
+
+/**
+ * Sets the size and padding to a specific area as a whole on the specified direction. Area is
+ * interpreted as the available space and updated accordingly. Returns total space used.
+ */
+export function setSizeWithPaddingToDirection(area: Rectangle, direction: LayoutDirection, size: ParsedScale, padding: ParsedPadding): number
+{
+	const
+		sizeKey = sizeKeys[direction],
+		paddingStart = padding[startKeys[direction]],
+		paddingEnd = padding[endKeys[direction]],
+		leftoverSpace = calculateLeftoverSpace(area[sizeKey], size, paddingStart, paddingEnd),
+		weightedTotal = calculateTotalWeight(size, paddingStart, paddingEnd),
+		sizePixels = convertToPixels(size, leftoverSpace, weightedTotal);
+
+	area[sizeKey] = sizePixels;
+
+	return applyPaddingToDirection(area, direction, padding, leftoverSpace, weightedTotal);
 }
 
 
 /**
  * Applies padding to a specific area as a whole on the specified direction. Returns total space used.
  */
-export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, contentSpace: ParsedScale, padding: ParsedPadding): number
+export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number): number
 {
-	return applyPaddingToAxis(area, contentSpace, padding, axisKeys[direction], sizeKeys[direction], startKeys[direction], endKeys[direction]);
+	return applyPaddingToAxis(area, padding, leftoverSpace, weightedTotal, axisKeys[direction], sizeKeys[direction], startKeys[direction], endKeys[direction]);
 }
 
 
 /**
  * Applies padding to the specified axis. Returns total space used.
  */
-export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, padding: ParsedPadding,
-	axis: typeof axisKeys[number], size: typeof sizeKeys[number],
-	start: typeof startKeys[number], end: typeof endKeys[number]): number
+export function applyPaddingToAxis(area: Rectangle, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number,
+	axisKey: typeof axisKeys[number], sizeKey: typeof sizeKeys[number],
+	startKey: typeof startKeys[number], endKey: typeof endKeys[number]): number
 {
 	const
-		absoluteContentSpace = isAbsolute(contentSpace),
-		// If content space is absolute, leftover space is the rest.
-		// Otherwise apply inward padding over all the space.
-		leftoverSpace = calculateLeftoverSpace(area[size], contentSpace[0], absoluteContentSpace, padding[start], padding[end]),
-		totalWeight = calculateTotalWeight(contentSpace, padding[start], padding[end]),
-		startPixels = convertToPixels(padding[start], leftoverSpace, totalWeight),
-		endPixels = convertToPixels(padding[end], leftoverSpace, totalWeight);
+		startPixels = convertToPixels(padding[startKey], leftoverSpace, weightedTotal),
+		endPixels = convertToPixels(padding[endKey], leftoverSpace, weightedTotal);
 
-	// fixme; incorrect place with both static and dynamic padding together
-	area[axis] += startPixels;
-
-	let totalSpace: number;
-	// If parent space is absolute, subtract from original pixel space.
-	if (absoluteContentSpace)
-	{
-		totalSpace = (contentSpace[0] + startPixels + endPixels);
-		area[size] = contentSpace[0];
-	}
-	else
-	{
-		totalSpace = area[size];
-		area[size] -= (startPixels + endPixels);
-	}
-	return totalSpace;
+	area[axisKey] += startPixels;
+	return (startPixels + area[sizeKey] + endPixels);
 }
 
 
@@ -82,12 +83,12 @@ export function applyPaddingToAxis(area: Rectangle, contentSpace: ParsedScale, p
  * Leftover space is the current space minus the absolute space for the content,
  * and minus any absolute padding that should be added at the end.
  */
-function calculateLeftoverSpace(currentSpace: number, contentSpace: number, isContentSpaceAbsolute: boolean, paddingStart: ParsedScale, paddingEnd: ParsedScale): number
+export function calculateLeftoverSpace(availableSpace: number, size: ParsedScale, paddingStart: ParsedScale, paddingEnd: ParsedScale): number
 {
-	let leftoverSpace = currentSpace;
+	let leftoverSpace = availableSpace;
 
-	if (isContentSpaceAbsolute)
-		leftoverSpace -= contentSpace;
+	if (isAbsolute(size))
+		leftoverSpace -= size[0];
 	if (isAbsolute(paddingStart))
 		leftoverSpace -= paddingStart[0];
 	if (isAbsolute(paddingEnd))
@@ -100,16 +101,16 @@ function calculateLeftoverSpace(currentSpace: number, contentSpace: number, isCo
 /**
  * Inner total weight is the sum of the base weight and both sides of padding.
  */
-function calculateTotalWeight(base: ParsedScale, start: ParsedScale, end: ParsedScale): number
+export function calculateTotalWeight(size: ParsedScale, paddingStart: ParsedScale, paddingEnd: ParsedScale): number
 {
 	let totalWeight = 0;
 
-	if (isWeighted(base))
-		totalWeight += base[0];
-	if (isWeighted(start))
-		totalWeight += start[0];
-	if (isWeighted(end))
-		totalWeight += end[0];
+	if (isWeighted(size))
+		totalWeight += size[0];
+	if (isWeighted(paddingStart))
+		totalWeight += paddingStart[0];
+	if (isWeighted(paddingEnd))
+		totalWeight += paddingEnd[0];
 
 	return totalWeight;
 }

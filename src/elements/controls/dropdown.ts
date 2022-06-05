@@ -104,7 +104,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 						lastSelected = this._previousItems[lastSelectIdx],
 						newSelectIdx = findIndex(newItems, s => s === lastSelected);
 
-					Log.debug(`Dropdown '${this.name}' items have changed, update selectedIndex: ${lastSelectIdx} -> ${newSelectIdx}`);
+					Log.debug(`Dropdown '${this.name}' items have changed, update selectedIndex: ${lastSelectIdx} -> ${newSelectIdx} (${lastSelected} -> ${newSelectIdx !== null ? newItems[newSelectIdx] : null})`);
 					selectStore.set(newSelectIdx || 0);
 				}
 				this._previousItems = newItems;
@@ -151,7 +151,11 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		if (userOnChange)
 		{
 			// Ensure index is never negative (= uninitialised state)
-			this.onChange = (idx: number): void => userOnChange((idx < 0) ? 0 : idx);
+			this.onChange = (idx: number): void =>
+			{
+				Log.debug(`Dropdown '${this.name}' selectedIndex changed by user: ${this.selectedIndex} -> ${idx} (${this.items[this.selectedIndex]} -> ${this.items[idx]})`);
+				return userOnChange((idx < 0) ? 0 : idx);
+			};
 		}
 	}
 }

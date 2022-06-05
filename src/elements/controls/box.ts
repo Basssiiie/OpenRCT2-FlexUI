@@ -15,7 +15,7 @@ import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { setDesiredSpaceForChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
-import { applyPadding, hasPadding } from "../layouts/paddingHelpers";
+import { setSizeWithPadding, hasPadding } from "../layouts/paddingHelpers";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
@@ -120,7 +120,7 @@ export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidge
 		const { width, height, padding } = this._childPos;
 		if (hasPadding(padding))
 		{
-			applyPadding(area, width, height, padding);
+			setSizeWithPadding(area, width, height, padding);
 		}
 		else
 		{

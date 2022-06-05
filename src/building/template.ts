@@ -1,7 +1,7 @@
 import { WindowBinder } from "@src/building/binders/windowBinder";
 import * as Log from "@src/utilities/logger";
 import { defaultScale } from "../elements/constants";
-import { applyPadding } from "../elements/layouts/paddingHelpers";
+import { setSizeWithPadding } from "../elements/layouts/paddingHelpers";
 import { ParsedPadding } from "../positional/parsing/parsedPadding";
 import { Rectangle } from "../positional/rectangle";
 import { Layoutable } from "./layoutable";
@@ -181,7 +181,7 @@ function performLayout(template: Template, widgets: WidgetMap): void
 	const area: Rectangle = { x: 0, y: topBarSize, width: template._width, height: template._height - topBarSize };
 	if (template._padding)
 	{
-		applyPadding(area, defaultScale, defaultScale, template._padding);
+		setSizeWithPadding(area, defaultScale, defaultScale, template._padding);
 	}
 	if (template._body)
 	{

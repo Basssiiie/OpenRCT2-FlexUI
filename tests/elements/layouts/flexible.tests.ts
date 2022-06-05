@@ -322,7 +322,7 @@ test("Padding: single percentage value", t =>
 	{
 		spacing: 0,
 		content: [
-			button({ text: "a", padding: "20%" })
+			button({ text: "a", height: "60%", padding: "20%" })
 		]
 	};
 	const creator = flexible(params, LayoutDirection.Vertical);
@@ -333,7 +333,7 @@ test("Padding: single percentage value", t =>
 	const widget = output._widgets[0];
 	t.is(widget.x, 12);
 	t.is(widget.y, 8);
-	t.is(widget.width, 36);
+	t.is(widget.width, 60);
 	t.is(widget.height, 24);
 });
 
@@ -365,16 +365,16 @@ test("Padding: single weighted value", t =>
 test("Padding: tuple with 2 values", t =>
 {
 	const output: BuildContainer = new BuildContainer({} as WindowDesc);
-	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 48 };
 	const params: FlexibleLayoutParams =
 	{
 		spacing: 0,
 		content: [
 			label({
-				text: "a", height: "4w", padding: ["1w", "7px"]
+				text: "a", width: "1w", height: "4w", padding: ["1w", "7px"]
 			}),
 			label({
-				text: "b", height: "6w", padding: ["2w", "10%"]
+				text: "b", width: "80%", height: "6w", padding: ["2w", "10%"]
 			})
 		]
 	};
@@ -388,14 +388,14 @@ test("Padding: tuple with 2 values", t =>
 	t.is(label1.x, 7);
 	t.is(label1.y, 3);
 	t.is(label1.width, 46);
-	t.is(label1.height, 11);
+	t.is(label1.height, 12);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.text, "b");
 	t.is(label2.x, 6);
-	t.is(label2.y, 16 + 5);
+	t.is(label2.y, 12 + 6 + 6);
 	t.is(label2.width, 48);
-	t.is(label2.height, 14);
+	t.is(label2.height, 18);
 });
 
 
@@ -431,7 +431,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 		spacing: "0.5w",
 		content: [
 			button({ text: "a", width: "1w", height: "1w" }),
-			button({ text: "b", width: "10px", padding: [ "8px", "1w" ] })
+			button({ text: "b", width: "10px", height: "1w", padding: [ "8px", "1w" ] })
 		]
 	}, LayoutDirection.Vertical);
 
@@ -444,14 +444,14 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 	t.is(widget1.x, 5);
 	t.is(widget1.y, 5);
 	t.is(widget1.width, 60);
-	t.is(widget1.height, 40);
+	t.is(widget1.height, 34);
 
 	const widget2 = output._widgets[1] as ButtonWidget;
 	t.is(widget2.text, "b");
 	t.is(widget2.x, 5 + 25);
-	t.is(widget2.y, 5 + 60 + 8);
+	t.is(widget2.y, 5 + 34 + 16 + 8);
 	t.is(widget2.width, 10);
-	t.is(widget2.height, 40 - 16);
+	t.is(widget2.height, 34);
 });
 
 
@@ -484,6 +484,46 @@ test("Padding: included in cursor tracking", t =>
 	t.is(widget2.y, 5 + 24 + 30 + 3);
 	t.is(widget2.width, 60);
 	t.is(widget2.height, 100 - (24 + 30 + 3));
+});
+
+
+test("Padding: used as spacing for single element", t =>
+{
+	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const rect: Rectangle = { x: 5, y: 5, width: 100, height: 30 };
+	const creator = flexible({
+		spacing: 3, padding: 0,
+		content: [
+			button({ text: "a", width: 16 }),
+			button({ text: "b", width: 17 }),
+			button({ text: "c", width: 18, padding: { left: "1w" } })
+		]
+	}, LayoutDirection.Horizontal);
+
+	const control = creator.create(output);
+	const widgetMap = createWidgetMap(output._widgets);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output._widgets[0] as ButtonWidget;
+	t.is(widget1.text, "a");
+	t.is(widget1.x, 5);
+	t.is(widget1.y, 5);
+	t.is(widget1.width, 16);
+	t.is(widget1.height, 30);
+
+	const widget2 = output._widgets[1] as ButtonWidget;
+	t.is(widget2.text, "b");
+	t.is(widget2.x, 5 + 16 + 3);
+	t.is(widget2.y, 5);
+	t.is(widget2.width, 17);
+	t.is(widget2.height, 30);
+
+	const widget3 = output._widgets[2] as ButtonWidget;
+	t.is(widget3.text, "c");
+	t.is(widget3.x, 5 + (100 - 18));
+	t.is(widget3.y, 5);
+	t.is(widget3.width, 18);
+	t.is(widget3.height, 30);
 });
 
 

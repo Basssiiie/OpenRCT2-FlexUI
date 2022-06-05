@@ -70,6 +70,8 @@ test("Groupbox applies padding and default gap", t =>
 		content: [
 			groupbox({
 				padding: 3,
+				gap: "6px",
+				spacing: "4px",
 				content: [
 					button({
 						padding: [ 4, 6 ],
@@ -98,15 +100,15 @@ test("Groupbox applies padding and default gap", t =>
 	t.is(widget2.x, 10 + 3 + 6 + 6); // inc. 6px default gap
 	t.is(widget2.y, 10 + 3 + 6 + 4 + 15); // inc. 6px default gap
 	t.is(widget2.width, 50);
-	t.is(widget2.height, 11);
+	t.is(widget2.height, 13);
 
 	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
 	t.is(widget3.type, "button");
 	t.is(widget3.text, "labelled");
 	t.is(widget3.x, 10 + 3 + 6 + 1); // inc. 6px default gap
-	t.is(widget3.y, 10 + 3 + 6 + 19 + 4 + 2 + 15); // inc. 4px spacing, 19px (4+11+4) prev. item
+	t.is(widget3.y, 10 + 3 + 6 + 21 + 4 + 2 + 15); // inc. 4px spacing, 21px (4+13+4) prev. item
 	t.is(widget3.width, 60);
-	t.is(widget3.height, 15);
+	t.is(widget3.height, 13);
 });
 
 
