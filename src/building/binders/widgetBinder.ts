@@ -44,7 +44,7 @@ export class WidgetBinder extends GenericBinder<WidgetBase>
 			const editor = template.getWidget<T>(targetName);
 			if (!editor)
 			{
-				Log.debug(`Binder: widget '${targetName}' not found on window for updating property '${property}' with value '${value}'.`);
+				Log.debug(`Binder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
 				return;
 			}
 			editor.set(property, this._convert(value, converter));
