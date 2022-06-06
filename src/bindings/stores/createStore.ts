@@ -25,9 +25,9 @@ export function store<T>(initialValue?: T): Store<T | undefined>
  * Tip: Stores work best if you only use them for binding a model to your user
  * interface, and nowhere else.
  */
-export function arrayStore<U extends []>(): ArrayStore<U | undefined>;
-export function arrayStore<T extends []>(initialValue: T): ArrayStore<T>;
-export function arrayStore<T extends []>(initialValue?: T): ArrayStore<T | undefined>
+export function arrayStore<T>(): ArrayStore<T>;
+export function arrayStore<T>(initialValue: T[]): ArrayStore<T>;
+export function arrayStore<T>(initialValue?: T[]): ArrayStore<T>
 {
-	return new DefaultArrayStore<T | undefined>(initialValue || []);
+	return new DefaultArrayStore<T>(initialValue || []);
 }
