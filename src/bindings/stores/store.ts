@@ -13,7 +13,8 @@ export interface Store<T>
 	get(): T;
 
 	/**
-	 * Updates the current value to a new one, and notifies all subscribers of this change.
+	 * Updates the current value to a new one. If the new value is different from the
+	 * old one, it will notifies all subscribers of this change.
 	 * @param value The new value.
 	 */
 	set(value: T): void;
