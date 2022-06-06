@@ -40,7 +40,7 @@ export function dropdownSpinner(params: DropdownSpinnerParams & Positions): Widg
 	ensureDefaultLineHeight(params);
 
 	return {
-		params: params,
+		params,
 		create: (output: BuildOutput): DropdownSpinnerControl => new DropdownSpinnerControl(output, params)
 	};
 }
@@ -73,8 +73,8 @@ class DropdownSpinnerControl extends DropdownControl
 			tooltip: params.tooltip,
 			disabled: params.disabled,
 			visibility: params.visibility,
+			wrapMode: params.wrapMode || "wrap",
 			minimum: 0,
-			maximum: 0,
 			value: selectedStore,
 			onChange: (value: number) =>
 			{

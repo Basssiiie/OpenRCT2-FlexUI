@@ -16,7 +16,7 @@ test("Standard properties are set", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 45, maximum: 222, tooltip: "spin me" })
+			spinner({ value: 45, tooltip: "spin me" })
 		]
 	});
 
@@ -60,7 +60,7 @@ test("Value can be incremented/decremented", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 41, step: 4,	maximum: 222 })
+			spinner({ value: 41, step: 4, minimum: 0, maximum: 222 })
 		]
 	});
 
@@ -85,7 +85,7 @@ test("Incremented value gets clamped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 15, step: 10, maximum: 20, wrapMode: "clamp" })
+			spinner({ value: 15, step: 10, minimum: 0, maximum: 20, wrapMode: "clamp" })
 		]
 	});
 
@@ -135,7 +135,7 @@ test("Incremented value gets wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 6, step: 8, maximum: 10, wrapMode: "wrap" })
+			spinner({ value: 6, step: 8, minimum: 0, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 
@@ -160,7 +160,7 @@ test("Decremented value gets wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 4, step: 8, maximum: 10, wrapMode: "wrap" })
+			spinner({ value: 4, step: 8, minimum: 0, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 
@@ -185,7 +185,7 @@ test("Incremented value gets clamped then wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 6, step: 8, maximum: 10, wrapMode: "clampThenWrap" })
+			spinner({ value: 6, step: 8, minimum: 0, maximum: 10, wrapMode: "clampThenWrap" })
 		]
 	});
 
@@ -210,7 +210,7 @@ test("Decremented value gets clamped then wrapped", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 4, step: 8, maximum: 10, wrapMode: "clampThenWrap" })
+			spinner({ value: 4, step: 8, minimum: 0, maximum: 10, wrapMode: "clampThenWrap" })
 		]
 	});
 
@@ -236,7 +236,7 @@ test("Change event gets called", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ step: 3, maximum: 8, onChange: (v, a) => hits.push([v, a]) })
+			spinner({ step: 3, minimum: 0, maximum: 8, wrapMode: "wrap", onChange: (v, a) => hits.push([v, a]) })
 		]
 	});
 
@@ -265,7 +265,7 @@ test("Throw error on minimum larger than maximum", t =>
 		window({
 			width: 100, height: 100,
 			content: [
-				spinner({ value: 4, minimum: 5678, maximum: 1234 })
+				spinner({ value: 4, minimum: 5678, maximum: 1234, wrapMode: "wrap" })
 			]
 		});
 	});
@@ -283,7 +283,7 @@ test("Minimum equal to maximum does nothing", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 4, minimum: 10, maximum: 10, onChange: () => t.fail() })
+			spinner({ value: 4, minimum: 10, maximum: 10, wrapMode: "wrap", onChange: () => t.fail() })
 		]
 	});
 	template.open();
@@ -304,7 +304,7 @@ test("Step is bindable", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ step, maximum: 1000 })
+			spinner({ step, minimum: 0, maximum: 1000, wrapMode: "wrap" })
 		]
 	});
 	template.open();
@@ -336,7 +336,7 @@ test("Minimum is bindable", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ minimum, maximum: 10 })
+			spinner({ minimum, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 	template.open();
@@ -362,7 +362,7 @@ test("Maximum is bindable", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ maximum })
+			spinner({ minimum: 0, maximum, wrapMode: "wrap" })
 		]
 	});
 	template.open();
@@ -394,7 +394,7 @@ test("Disabled message shows on disabled", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ disabled, disabledMessage: "I won't do anything!", maximum: 10 })
+			spinner({ disabled, disabledMessage: "I won't do anything!", minimum: 0, maximum: 10, wrapMode: "wrap" })
 		]
 	});
 	template.open();
@@ -416,4 +416,48 @@ test("Disabled message shows on disabled", t =>
 	t.is(widget.text, "2");
 	call(widget.onIncrement);
 	t.is(widget.text, "3");
+});
+
+
+test("Default minimum is clamped at smallest 32-bit signed integer", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ value: 1, step: 3_000_000_000 })
+		]
+	});
+
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	t.is(widget.type, "spinner");
+
+	widget.onDecrement?.();
+	t.is(widget.text, "-2147483648");
+});
+
+
+test("Default maximum is clamped at largest 32-bit signed integer", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ value: 1, step: 3_000_000_000 })
+		]
+	});
+
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	t.is(widget.type, "spinner");
+
+	widget.onIncrement?.();
+	t.is(widget.text, "2147483647");
 });

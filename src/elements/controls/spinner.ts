@@ -32,15 +32,16 @@ export interface SpinnerParams extends ElementParams
 
 	/**
 	 * The minimum possible value that the spinner can reach. (Inclusive)
-	 * @default 0
+	 * @default -(2^31) (min. 32-bit signed integer)
 	 */
 	minimum?: Bindable<number>;
 
 
 	/**
 	 * The maximum possible value that the spinner can reach. (Exclusive)
+	 * @default (2^31) (max. 32-bit signed integer)
 	 */
-	maximum: Bindable<number>;
+	maximum?: Bindable<number>;
 
 
 	/**
@@ -52,7 +53,7 @@ export interface SpinnerParams extends ElementParams
 
 	/**
 	 * Sets whether the spinner value wraps around or clamps to its boundaries.
-	 * @default "wrap"
+	 * @default "clamp"
 	 */
 	wrapMode?: SpinnerWrapMode;
 
@@ -60,7 +61,6 @@ export interface SpinnerParams extends ElementParams
 	/**
 	 * Sets the message that will show when the spinner is not available.
 	 * @default undefined
-	 * @todo Implement.
 	 */
 	disabledMessage?: string;
 
@@ -90,7 +90,7 @@ export function spinner(params: SpinnerParams & Positions): WidgetCreator<Spinne
 	ensureDefaultLineHeight(params);
 
 	return {
-		params: params,
+		params,
 		create: (output: BuildOutput): SpinnerControl => new SpinnerControl(output, params)
 	};
 }
@@ -106,8 +106,8 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	onDecrement: () => void;
 
 	step: number = 1;
-	min: number = 0;
-	max: number = 0;
+	min: number = -(2 ** 31); // min. 32-bit signed integer
+	max: number = (2 ** 31); // max. 32-bit signed integer
 
 	_value: Store<number>;
 	_wrapMode: SpinnerWrapMode;
@@ -144,7 +144,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		binder.add(this, "min", params.minimum);
 		binder.add(this, "max", params.maximum);
 
-		this._wrapMode = (params.wrapMode) ? params.wrapMode : "wrap";
+		this._wrapMode = (params.wrapMode || "clamp");
 		this._onChange = params.onChange;
 
 		this.onIncrement = (): void => updateSpinnerValue(this, 1);
@@ -163,7 +163,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
  */
 function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 {
-	const min = spinner.min, max = spinner.max;
+	const { min, max } = spinner;
 	if (min >= max)
 		return;
 
@@ -176,12 +176,12 @@ function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 	{
 		default:
 		{
-			result = wrap(newValue, min, max);
+			result = clamp(newValue, min, max);
 			break;
 		}
-		case "clamp":
+		case "wrap":
 		{
-			result = clamp(newValue, min, max);
+			result = wrap(newValue, min, max);
 			break;
 		}
 		case "clampThenWrap":
