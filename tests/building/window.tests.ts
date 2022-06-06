@@ -399,3 +399,78 @@ test("Window can be reopened after closing", t =>
 	t.is(created[0].title, "test window");
 	t.is(created[1].title, "test window");
 });
+
+
+test("Window opens at unspecified default position", t =>
+{
+	global.ui = Mock.ui({ width: 1920, height: 1080 });
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		content: []
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.is<number|undefined, number|undefined>(created[0].x, undefined);
+	t.is<number|undefined, number|undefined>(created[0].y, undefined);
+});
+
+
+test("Window opens at specified default position", t =>
+{
+	global.ui = Mock.ui({ width: 1920, height: 1080 });
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		position: "default",
+		content: []
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.is<number|undefined, number|undefined>(created[0].x, undefined);
+	t.is<number|undefined, number|undefined>(created[0].y, undefined);
+});
+
+
+test("Window opens at center position", t =>
+{
+	global.ui = Mock.ui({ width: 1920, height: 1080 });
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		position: "center",
+		content: []
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.is(created[0].x, (1920 / 2) - (150 / 2));
+	t.is(created[0].y, (1080 / 2) - (100 / 2));
+});
+
+
+test("Window opens at specified position", t =>
+{
+	global.ui = Mock.ui({ width: 1920, height: 1080 });
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		position: { x: 100, y: 950 },
+		content: []
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows;
+	t.is(created.length, 1);
+	t.is(created[0].title, "test window");
+	t.is(created[0].x, 100);
+	t.is(created[0].y, 950);
+});

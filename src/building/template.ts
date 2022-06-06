@@ -7,8 +7,12 @@ import { Rectangle } from "../positional/rectangle";
 import { Layoutable } from "./layoutable";
 import { WidgetEditor } from "./widgetEditor";
 import { createWidgetMap, WidgetMap } from "./widgetMap";
+import { BaseWindowParams } from "./window";
 import { WindowContext } from "./windowContext";
 import { WindowTemplate } from "./windowTemplate";
+
+
+type WindowPosition = BaseWindowParams["position"];
 
 
 const topBarSize: number = 15;
@@ -25,6 +29,7 @@ export class Template implements WindowTemplate, WindowContext
 	_width: number;
 	_height: number;
 	_padding: ParsedPadding | null = null;
+	_position?: WindowPosition;
 
 	_templateWidgets: WidgetMap | null = null;
 	_openWidgets: WidgetMap | null = null;
@@ -110,8 +115,9 @@ export class Template implements WindowTemplate, WindowContext
 		}
 
 		const description = this._description;
-		const binder = this._binder;
+		setWindowPosition(this, description, this._position);
 
+		const binder = this._binder;
 		if (binder && binder._hasBindings())
 		{
 			binder._bind(this);
@@ -187,4 +193,24 @@ function performLayout(template: Template, widgets: WidgetMap): void
 	{
 		template._body.layout(widgets, area);
 	}
+}
+
+
+/**
+ * Updates the x and y of the window description to match the preferred position.
+ */
+function setWindowPosition(template: Template, description: WindowDesc, position: WindowPosition): void
+{
+	if (!position || position === "default")
+		return;
+
+	if (position === "center")
+	{
+		description.x = (ui.width / 2) - (template._width / 2);
+		description.y = (ui.height / 2) - (template._height / 2);
+		return;
+	}
+
+	description.x = position.x;
+	description.y = position.y;
 }

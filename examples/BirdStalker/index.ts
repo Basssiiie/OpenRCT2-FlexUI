@@ -23,6 +23,7 @@ const birdStalker = window({
 	title: "Bird Stalker (fui example)",
 	width: 350, minWidth: 220, maxWidth: 500,
 	height: 300, minHeight: 220, maxHeight: 400,
+	position: "center",
 	padding: 8,
 	onOpen: () =>
 	{

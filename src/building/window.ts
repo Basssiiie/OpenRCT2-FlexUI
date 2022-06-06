@@ -15,7 +15,7 @@ import { WindowTemplate } from "./windowTemplate";
 /**
  * Parameters that apply to both the regular and tabbed window.
  */
-interface BaseWindowParams extends Paddable
+export interface BaseWindowParams extends Paddable
 {
 	/**
 	 * The title at the top of the window.
@@ -33,16 +33,15 @@ interface BaseWindowParams extends Paddable
 	height: number;
 
 	/**
-	 * The initial starting position of the window in pixels. If not set, the
-	 * game finds the most suitable location on screen for you.
+	 * The initial starting position of the window in pixels.
+	 *
+	 * **Example usage:**
+	 *  * `position: "default"` - the game finds the most suitable location on screen for you.
+	 *  * `position: "center"` - the window will always open in the center of the screen.
+	 *  * `position: { x, y }` - the window will always open at the specified screen location.
+	 * @default "default"
 	 */
-	x?: number;
-
-	/**
-	 * The initial starting position of the window in pixels. If not set, the
-	 * game finds the most suitable location on screen for you.
-	 */
-	y?: number;
+	position?: "default" | "center" | { x: number; y: number };
 
 	/**
 	 * The absolute minimum width the window can be resized to. If set, the
@@ -150,8 +149,6 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		colours: params.colours,
 		width: params.width,
 		height: params.height,
-		x: params.x,
-		y: params.y,
 		minWidth: params.minWidth,
 		minHeight: params.minHeight,
 		maxWidth: params.maxWidth,
@@ -170,9 +167,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 
 	}*/
 
-	const open = output.open;
-	const update = output.update;
-	const close = output.close;
+	const { open, update, close } = output;
 
 	if (params.onOpen)
 	{
@@ -188,6 +183,8 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	}
 
 	const template = output._template;
+	template._position = params.position;
+
 	update.push(() => template._onRedraw());
 	close.push(() => template._onClose());
 	template._build();
@@ -219,7 +216,7 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
-		const width = window.width, height = window.height;
+		const { width, height } = window;
 		window.minWidth ||= width;
 		window.maxWidth ||= width;
 		window.minHeight ||= height;
@@ -239,7 +236,7 @@ function setWindowLayoutResizing(output: BuildContainer): void
 	output.update.push((): void =>
 	{
 		const instance = ui.getWindow(template._description.classification);
-		const width = instance.width, height = instance.height;
+		const { width, height } = instance;
 
 		if (width === template._width && height === template._height)
 			return;
