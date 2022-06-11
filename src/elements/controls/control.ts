@@ -2,8 +2,10 @@ import { isStore } from "@src/bindings/stores/isStore";
 import { on } from "@src/bindings/stores/on";
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetMap } from "@src/building/widgetMap";
 import { WindowContext } from "@src/building/windowContext";
+import { Parsed } from "@src/positional/parsing/parsed";
 import { Rectangle } from "@src/positional/rectangle";
 import { identifier } from "@src/utilities/identifier";
 import { ElementParams } from "../elementParams";
@@ -27,11 +29,16 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 	isVisible?: boolean;
 
 	skip?: boolean;
+	_position: Parsed<object>;
+	_parent: ParentControl;
 	_context?: WindowContext | null;
 
-	constructor(type: T["type"], output: BuildOutput, params: ElementParams)
+
+	constructor(type: T["type"], parent: ParentControl, output: BuildOutput, params: ElementParams)
 	{
 		this.type = type;
+		this._position = parent.parse(params);
+		this._parent = parent;
 
 		const binder = output.binder, visibility = params.visibility;
 		binder.add(this, "tooltip", params.tooltip);
@@ -57,6 +64,11 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 		}
 
 		output.add(this);
+	}
+
+	position(): Parsed<object>
+	{
+		return this._position;
 	}
 
 	layout(widgets: WidgetMap, area: Rectangle): void

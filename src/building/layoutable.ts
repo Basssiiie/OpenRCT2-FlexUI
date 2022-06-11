@@ -1,3 +1,5 @@
+import { Positions } from "@src/elements/layouts/positions";
+import { Parsed } from "@src/positional/parsing/parsed";
 import { Rectangle } from "@src/positional/rectangle";
 import { WidgetMap } from "./widgetMap";
 
@@ -5,7 +7,7 @@ import { WidgetMap } from "./widgetMap";
 /**
  * Object that can be layout over a specific area.
  */
-export interface Layoutable
+export interface Layoutable<TPos extends Positions>
 {
 	/**
 	 * Whether to skip rendering of the element. If `true`, the element will be
@@ -13,7 +15,9 @@ export interface Layoutable
 	 * regular rendering technique.
 	 * @default false
 	 */
-	skip?: boolean;
+	readonly skip?: boolean;
+
+	position(): Parsed<TPos>;
 
 	/**
 	 * Function that can update the positions for a specific set of widgets

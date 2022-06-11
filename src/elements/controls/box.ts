@@ -2,6 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { WidgetCreator } from "@src/building/widgetCreator";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetMap } from "@src/building/widgetMap";
 import { Padding } from "@src/positional/padding";
 import { Parsed } from "@src/positional/parsing/parsed";
@@ -12,12 +13,13 @@ import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { setDesiredSpaceForChild } from "../layouts/flexible/desiredSpacing";
+import { setDesiredSpaceFromChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
 import { setSizeWithPadding, hasPadding } from "../layouts/paddingHelpers";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
+import { isUndefined } from "@src/utilities/type";
 
 
 /**
@@ -55,7 +57,7 @@ export function box(params: BoxParams & AbsolutePosition): WidgetCreator<BoxPara
 export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreator<(BoxParams | BoxContainer) & Positions>
 {
 	return {
-		params: params,
+		params,
 		create: (output: BuildOutput): BoxControl => new BoxControl(output, params)
 	};
 }
@@ -67,57 +69,74 @@ export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreat
 export const defaultBoxPadding: Padding = 6;
 
 
+const enum BoxFlags
+{
+	IsWidthSet = (1 << 0),
+	IsHeightSet = (1 << 1)
+}
+
+
 const parsedDefaultPadding: ParsedPadding = parsePadding(defaultBoxPadding);
-const trimTop: number = 4;
+const trimTopWithoutText: number = 4;
 
 
 /**
  * A controller class for a groupbox widget.
  */
-export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget
+export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget, ParentControl<FlexiblePosition>
 {
 	text?: string;
 
-	_child: Layoutable;
-	_childPos: Parsed<FlexiblePosition>;
+	_child: Layoutable<FlexiblePosition>;
+	_flags: BoxFlags;
+	_topOffset: number;
 
-	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & Positions)
+	constructor(parent: ParentControl, output: BuildOutput, params: (BoxParams | BoxContainer) & Positions)
 	{
 		const type = "groupbox";
 		let content: WidgetCreator<FlexiblePosition>;
 		if ("create" in params)
 		{
 			// Is BoxContainer (flat params, just a creator)
-			super(type, output, {});
+			super(type, parent, output, {});
 			content = params;
+			this._topOffset = trimTopWithoutText;
 		}
 		else
 		{
 			// Is BoxParams (complex object)
-			super(type, output, params);
+			super(type, parent, output, params);
 			content = params.content;
 
-			const binder = output.binder;
-			binder.add(this, "text", params.text);
+			const binder = output.binder, text = params.text;
+			binder.add(this, "text", text);
+			this._topOffset = (text) ? 0 : trimTopWithoutText;
 		}
 
-		this._child = content.create(output);
+		this._flags = (isUndefined(params.width) ?
+			+ (isUndefined(params.height) << 1))
 
-		const childPos = parseFlexiblePosition(content.params, parsedDefaultPadding);
-		this._childPos = childPos;
-		setDesiredSpaceForChild(params, childPos);
+		const child = content.create(this, output);
+		this._child = child;
+	}
+
+	override position(): Parsed<object>
+	{
+		setDesiredSpaceFromChild(this._position, child.position);
+		return this._position;
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Align visual box with layout box, will move label slightly out of bounds.
-		area.y -= trimTop;
-		area.height += trimTop;
+		const trim = this._topOffset;
+		area.y -= trim;
+		area.height += trim;
 		super.layout(widgets, area);
-		area.y += trimTop;
-		area.height -= trimTop;
+		area.y += trim;
+		area.height -= trim;
 
-		const { width, height, padding } = this._childPos;
+		const { width, height, padding } = this._child.position;
 		if (hasPadding(padding))
 		{
 			setSizeWithPadding(area, width, height, padding);
@@ -130,6 +149,11 @@ export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidge
 
 		const child = this._child;
 		child.layout(widgets, area);
+	}
+
+	parse(position: FlexiblePosition): Parsed<FlexiblePosition>
+	{
+		return parseFlexiblePosition(position, parsedDefaultPadding);
 	}
 }
 

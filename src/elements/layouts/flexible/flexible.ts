@@ -12,7 +12,7 @@ import { Scale } from "@src/positional/scale";
 import { isArray } from "@src/utilities/type";
 import { AbsolutePosition } from "../absolute/absolutePosition";
 import { Positions } from "../positions";
-import { setDesiredSpaceForChildren } from "./desiredSpacing";
+import { setDesiredSpaceFromChildren } from "./desiredSpacing";
 import { flexibleLayout } from "./flexibleLayout";
 import { FlexiblePosition } from "./flexiblePosition";
 import { parseFlexiblePosition } from "./parseFlexiblePosition";
@@ -119,7 +119,7 @@ export class FlexibleLayoutControl implements Layoutable
 			children[i] = position;
 		}
 
-		setDesiredSpaceForChildren(params, children, <ParsedScale>spacing, direction);
+		setDesiredSpaceFromChildren(params, children, <ParsedScale>spacing, direction);
 		this._children = children;
 	}
 

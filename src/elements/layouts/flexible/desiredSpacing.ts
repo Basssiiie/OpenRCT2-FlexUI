@@ -10,9 +10,9 @@ import { FlexiblePosition } from "./flexiblePosition";
  * Sets the desired space on the parent for a single child if the child asks for
  * absolute positioning.
  */
-export function setDesiredSpaceForChild(target: Positions, item: Parsed<FlexiblePosition>): void
+export function setDesiredSpaceFromChild(target: Positions, item: Parsed<FlexiblePosition>): void
 {
-	const width = item.width, height = item.height, padding = item.padding;
+	const { width, height, padding } = item;
 
 	if (isUndefined(target.width) && isAxisAbsolute(width, padding.left, padding.right))
 	{
@@ -28,7 +28,7 @@ export function setDesiredSpaceForChild(target: Positions, item: Parsed<Flexible
 /**
  * Sets the desired space on the parent if all children ask for absolute positioning.
  */
-export function setDesiredSpaceForChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: LayoutDirection): void
+export function setDesiredSpaceFromChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: LayoutDirection): void
 {
 	const hasAbsoluteSpacing = isAbsolute(spacing);
 	let widthCanBeAbsolute: boolean = isUndefined(target.width),
@@ -55,7 +55,7 @@ export function setDesiredSpaceForChildren(target: Positions, items: Parsed<Flex
 	{
 		// Determine if all children are absolutely sized,
 		// if so, then size itself accordingly.
-		const pos = items[i], width = pos.width, height = pos.height, padding = pos.padding;
+		const pos = items[i], { width, height, padding } = pos;
 
 		if (widthCanBeAbsolute && isAxisAbsolute(width, padding.left, padding.right))
 		{
