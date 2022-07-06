@@ -1,9 +1,12 @@
+import { Positions } from "@src/elements/layouts/positions";
 import { Parsed } from "@src/positional/parsing/parsed";
 
 
 
-export interface ParentControl<TPos extends object = object>
+export interface ParentControl<TPos extends Positions = Positions>
 {
+	readonly depth: number;
+
 	/**
 	 *
 	 */
@@ -12,5 +15,5 @@ export interface ParentControl<TPos extends object = object>
 	/**
 	 * @todo
 	 */
-	//redraw(): void;
+	redraw(): void;
 }

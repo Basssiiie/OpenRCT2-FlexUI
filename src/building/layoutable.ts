@@ -7,16 +7,21 @@ import { WidgetMap } from "./widgetMap";
 /**
  * Object that can be layout over a specific area.
  */
-export interface Layoutable<TPos extends Positions>
+export interface Layoutable<TPos extends Positions = Positions>
 {
+	readonly depth: number;
+
 	/**
-	 * Whether to skip rendering of the element. If `true`, the element will be
-	 * skipped and `layout()` shall not be called. If `false` it will apply the
+	 * Whether to skip rendering of the element. If `true`, the element has to be
+	 * skipped and `layout()` should not be called. If `false` it will apply the
 	 * regular rendering technique.
 	 * @default false
 	 */
 	readonly skip?: boolean;
 
+	/**
+	 * Get preferred position in parsed format.
+	 */
 	position(): Parsed<TPos>;
 
 	/**

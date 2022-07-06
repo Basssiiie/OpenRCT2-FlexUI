@@ -112,7 +112,7 @@ export class FlexibleLayoutControl implements Layoutable
 		for (let i = 0; i < items.length; i++)
 		{
 			const child = items[i];
-			const layoutable = child.create(output);
+			const layoutable = child.create(this, output);
 
 			const position = parseFlexiblePosition(child.params) as FlexibleLayoutChild;
 			position._layoutable = layoutable;

@@ -13,7 +13,7 @@ export interface WidgetCreator<TPos extends object>
 	 * The parameters that were specified for these widgets.
 	 * @deprecated
 	 */
-	readonly params: Readonly<TPos>;
+	//readonly params: Readonly<TPos>;
 
 	/**
 	 * Write all widgets required by the params to the output. Returns an

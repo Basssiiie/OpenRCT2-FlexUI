@@ -182,7 +182,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		close.push(params.onClose);
 	}
 
-	const template = output._template;
+	const template = output.context;
 	template._position = params.position;
 
 	update.push(() => template._onRedraw());
@@ -205,7 +205,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
-	const template = output._template;
+	const template = output.context;
 	template._body = new FlexibleLayoutControl(output, params, LayoutDirection.Vertical);
 
 	// Check if padding was specified..
@@ -232,7 +232,7 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
  */
 function setWindowLayoutResizing(output: BuildContainer): void
 {
-	const template = output._template;
+	const template = output.context;
 	output.update.push((): void =>
 	{
 		const instance = ui.getWindow(template._description.classification);

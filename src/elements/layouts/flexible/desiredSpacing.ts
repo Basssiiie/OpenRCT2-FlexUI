@@ -2,33 +2,36 @@ import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection"
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { isUndefined } from "@src/utilities/type";
+import { endKeys, sizeKeys, startKeys } from "../paddingHelpers";
 import { Positions } from "../positions";
 import { FlexiblePosition } from "./flexiblePosition";
 
 
 /**
- * Sets the desired space on the parent for a single child if the child asks for
- * absolute positioning.
+ * Gets the desired space on the parent for a single child if the child asks for
+ * absolute positioning, for a single direction.
  */
-export function setDesiredSpaceFromChild(target: Positions, item: Parsed<FlexiblePosition>): void
+export function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: LayoutDirection): number | null
 {
-	const { width, height, padding } = item;
+	const
+		sizeKey = sizeKeys[direction],
+		size = item[sizeKey],
+		padding = item.padding,
+		start = padding[startKeys[direction]],
+		end = padding[endKeys[direction]];
 
-	if (isUndefined(target.width) && isAxisAbsolute(width, padding.left, padding.right))
+	if (isAxisAbsolute(size, start, end))
 	{
-		target.width = (width[0] + padding.left[0] + padding.right[0]);
+		return (size[0] + start[0] + end[0]);
 	}
-	if (isUndefined(target.height) && isAxisAbsolute(height, padding.top, padding.bottom))
-	{
-		target.height = (height[0] + padding.top[0] + padding.bottom[0]);
-	}
+	return null;
 }
 
 
 /**
  * Sets the desired space on the parent if all children ask for absolute positioning.
  */
-export function setDesiredSpaceFromChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: LayoutDirection): void
+export function setDesiredSpaceFromChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, layoutDirection: LayoutDirection): void
 {
 	const hasAbsoluteSpacing = isAbsolute(spacing);
 	let widthCanBeAbsolute: boolean = isUndefined(target.width),
@@ -38,7 +41,7 @@ export function setDesiredSpaceFromChildren(target: Positions, items: Parsed<Fle
 	if (!hasAbsoluteSpacing || (!widthCanBeAbsolute && !heightCanBeAbsolute))
 		return;
 
-	const count = items.length, isHorizontal = (direction === LayoutDirection.Horizontal);
+	const count = items.length, isHorizontal = (layoutDirection === LayoutDirection.Horizontal);
 	let absoluteWidth: number = 0, absoluteHeight: number = 0;
 
 	const totalSpacing = (spacing[0] * (count - 1));
@@ -84,6 +87,48 @@ export function setDesiredSpaceFromChildren(target: Positions, items: Parsed<Fle
 	{
 		target.height = absoluteHeight;
 	}
+}
+
+
+/**
+ * Gets the total desired space for all children, if they are absolutely positioned.
+ */
+export function getDesiredSpaceFromChildrenForDirection(items: Parsed<FlexiblePosition>[], spacing: ParsedScale, layoutDirection: LayoutDirection, axisDirection: LayoutDirection): number | null
+{
+	const axisIsLayoutDirection = (layoutDirection === axisDirection);
+
+	let absoluteSize = 0;
+	if (axisIsLayoutDirection)
+	{
+		if (!isAbsolute(spacing))
+		{
+			return null;
+		}
+		absoluteSize += (spacing[0] * (items.length - 1));
+	}
+
+	const
+		sizeKey = sizeKeys[axisDirection],
+		startKey = startKeys[axisDirection],
+		endKey = endKeys[axisDirection];
+
+	for (const item of items)
+	{
+		// Determine if all children are absolutely sized,
+		// if so, then size itself accordingly.
+		const
+			size = item[sizeKey],
+			padding = item.padding,
+			start = padding[startKey],
+			end = padding[endKey];
+
+		if (isAxisAbsolute(size, start, end))
+		{
+			absoluteSize = addOrMax(absoluteSize, size[0] + start[0] + end[0], axisIsLayoutDirection);
+		}
+		else return null;
+	}
+	return absoluteSize;
 }
 
 

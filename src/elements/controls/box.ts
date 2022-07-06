@@ -13,13 +13,15 @@ import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { setDesiredSpaceFromChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
-import { setSizeWithPadding, hasPadding } from "../layouts/paddingHelpers";
+import { setSizeWithPadding, hasPadding, sizeKeys } from "../layouts/paddingHelpers";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
-import { isUndefined } from "@src/utilities/type";
+import { isNull, isUndefined } from "@src/utilities/type";
+import { getDesiredSpaceFromChildForDirection } from "../layouts/flexible/desiredSpacing";
+import { LayoutDirection } from "../layouts/flexible/layoutDirection";
+import { ScaleType } from "@src/positional/parsing/scaleType";
 
 
 /**
@@ -50,16 +52,13 @@ export interface BoxParams extends ElementParams
 /**
  * Create a visually drawn box for bringing focus to an inner widget.
  */
-export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<BoxContainer & FlexiblePosition>;
-export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<BoxContainer & AbsolutePosition>;
-export function box(params: BoxParams & FlexiblePosition): WidgetCreator<BoxParams & FlexiblePosition>;
-export function box(params: BoxParams & AbsolutePosition): WidgetCreator<BoxParams & AbsolutePosition>;
-export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreator<(BoxParams | BoxContainer) & Positions>
+export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function box(params: BoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function box(params: BoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreator<Positions>
 {
-	return {
-		params,
-		create: (output: BuildOutput): BoxControl => new BoxControl(output, params)
-	};
+	return { create: (parent, output): BoxControl => new BoxControl(parent, output, params) };
 }
 
 
@@ -71,8 +70,8 @@ export const defaultBoxPadding: Padding = 6;
 
 const enum BoxFlags
 {
-	IsWidthSet = (1 << 0),
-	IsHeightSet = (1 << 1)
+	InheritWidth = (1 << 0),
+	InheritHeight = (1 << 1)
 }
 
 
@@ -113,17 +112,11 @@ export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidge
 			this._topOffset = (text) ? 0 : trimTopWithoutText;
 		}
 
-		this._flags = (isUndefined(params.width) ?
-			+ (isUndefined(params.height) << 1))
+		this._flags = (isUndefined(params.width) ? BoxFlags.InheritWidth : 0)
+			& (isUndefined(params.height) ? BoxFlags.InheritHeight : 0);
 
 		const child = content.create(this, output);
 		this._child = child;
-	}
-
-	override position(): Parsed<object>
-	{
-		setDesiredSpaceFromChild(this._position, child.position);
-		return this._position;
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
@@ -136,7 +129,7 @@ export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidge
 		area.y += trim;
 		area.height -= trim;
 
-		const { width, height, padding } = this._child.position;
+		const { width, height, padding } = this._child.position();
 		if (hasPadding(padding))
 		{
 			setSizeWithPadding(area, width, height, padding);
@@ -155,8 +148,35 @@ export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidge
 	{
 		return parseFlexiblePosition(position, parsedDefaultPadding);
 	}
+
+	redraw(): void
+	{
+		// recalculate child sizes here
+		const flags = this._flags;
+		if (flags > 0)
+		{
+			const
+				boxPosition = this._position,
+				childPos = this._child.position();
+
+			tryInheritSize(boxPosition, flags & BoxFlags.InheritWidth, childPos, LayoutDirection.Horizontal);
+			tryInheritSize(boxPosition, flags & BoxFlags.InheritHeight, childPos, LayoutDirection.Vertical);
+		}
+	}
 }
 
+
+/**
+ * Try to inherit the size from the child, if the inherit flag is set.
+ */
+function tryInheritSize(boxPosition: Parsed<Positions>, inheritFlag: number, childPosition: Parsed<FlexiblePosition>, direction: LayoutDirection): void
+{
+	let value: number | null;
+	if (inheritFlag && !isNull(value = getDesiredSpaceFromChildForDirection(childPosition, direction)))
+	{
+		boxPosition[sizeKeys[direction]] = [value, ScaleType.Pixel];
+	}
+}
 
 /**
  * Sets the size of the axis, using the parent space for calculating leftover space.

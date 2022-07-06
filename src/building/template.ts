@@ -5,6 +5,7 @@ import { setSizeWithPadding } from "../elements/layouts/paddingHelpers";
 import { ParsedPadding } from "../positional/parsing/parsedPadding";
 import { Rectangle } from "../positional/rectangle";
 import { Layoutable } from "./layoutable";
+import { ParentControl } from "./parentControl";
 import { WidgetEditor } from "./widgetEditor";
 import { createWidgetMap, WidgetMap } from "./widgetMap";
 import { BaseWindowParams } from "./window";
@@ -16,6 +17,7 @@ type WindowPosition = BaseWindowParams["position"];
 
 
 const topBarSize: number = 15;
+
 
 
 /**
@@ -33,7 +35,7 @@ export class Template implements WindowTemplate, WindowContext
 
 	_templateWidgets: WidgetMap | null = null;
 	_openWidgets: WidgetMap | null = null;
-	_redrawNextTick: boolean = false;
+	_toBeRedrawed: Layoutable[] = [];
 
 
 	/**
@@ -74,12 +76,29 @@ export class Template implements WindowTemplate, WindowContext
 	 * Checks if the template has been marked dirty, and redraws if that's the case.
 	 */
 	_onRedraw(): void
-	{	const widgets = this._openWidgets;
-		if (this._redrawNextTick && widgets)
+	{
+		const widgets = this._openWidgets;
+		if (!widgets)
+			return;
+
+		const redraws = this._toBeRedrawed, drawcount = redraws.length;
+		if (drawcount > 0)
 		{
 			Log.debug(`Redrawing window layout (${this._window?.width} x ${this._window?.height})...`);
 			performLayout(this, widgets);
-			this._redrawNextTick = false;
+
+			if (drawcount > 1)
+			{
+				// Order by depth ascending, redraw closest to root first.
+				redraws.sort((l, r) => l.depth - r.depth);
+			}
+
+			for (let i = 0; i < redraws.length; i++)
+			{
+				// todo: need to know parent size lol
+			}
+
+			redraws.length = 0;
 		}
 	}
 
@@ -97,11 +116,25 @@ export class Template implements WindowTemplate, WindowContext
 		this._openWidgets = null;
 	}
 
-	redraw(): void
+	redraw(layoutable: Layoutable, toggle: boolean): void
 	{
-		if (this._openWidgets)
+		if (!this._openWidgets)
+			return;
+
+		const redraws = this._toBeRedrawed;
+		if (toggle)
 		{
-			this._redrawNextTick = true;
+			// Add to redraw list
+			redraws.push(layoutable);
+		}
+		else
+		{
+			// Remove from redraw list
+			const idx = redraws.indexOf(layoutable);
+			if (idx >= 0)
+			{
+				redraws.splice(idx, 1);
+			}
 		}
 	}
 

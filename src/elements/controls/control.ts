@@ -10,6 +10,7 @@ import { Rectangle } from "@src/positional/rectangle";
 import { identifier } from "@src/utilities/identifier";
 import { ElementParams } from "../elementParams";
 import { fillLayout } from "../layouts/fillLayout";
+import { Positions } from "../layouts/positions";
 
 
 /**
@@ -28,15 +29,17 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 	isDisabled?: boolean;
 	isVisible?: boolean;
 
+	depth: number;
 	skip?: boolean;
-	_position: Parsed<object>;
+	_position: Parsed<Positions>;
 	_parent: ParentControl;
 	_context?: WindowContext | null;
 
 
-	constructor(type: T["type"], parent: ParentControl, output: BuildOutput, params: ElementParams)
+	constructor(type: T["type"], parent: ParentControl, output: BuildOutput, params: ElementParams & Positions)
 	{
 		this.type = type;
+		this.depth = (parent.depth + 1);
 		this._position = parent.parse(params);
 		this._parent = parent;
 
@@ -66,7 +69,7 @@ export abstract class Control<T extends WidgetBase> implements WidgetBase, Layou
 		output.add(this);
 	}
 
-	position(): Parsed<object>
+	position(): Parsed<Positions>
 	{
 		return this._position;
 	}
