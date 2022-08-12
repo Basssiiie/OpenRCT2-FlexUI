@@ -1,89 +1,148 @@
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
-import { isUndefined } from "@src/utilities/type";
+import { ScaleType } from "@src/positional/parsing/scaleType";
+import { isNull, isUndefined } from "@src/utilities/type";
+import { endKeys, sizeKeys, startKeys } from "../paddingHelpers";
 import { Positions } from "../positions";
 import { FlexiblePosition } from "./flexiblePosition";
 
 
 /**
- * Sets the desired space on the parent for a single child if the child asks for
- * absolute positioning.
+ * Flags that indicate whether it is possible to inherit certain positional axis.
  */
-export function setDesiredSpaceForChild(target: Positions, item: Parsed<FlexiblePosition>): void
+export const enum InheritFlags
 {
-	const width = item.width, height = item.height, padding = item.padding;
+	Width = (1 << 0),
+	Height = (1 << 1),
 
-	if (isUndefined(target.width) && isAxisAbsolute(width, padding.left, padding.right))
-	{
-		target.width = (width[0] + padding.left[0] + padding.right[0]);
-	}
-	if (isUndefined(target.height) && isAxisAbsolute(height, padding.top, padding.bottom))
-	{
-		target.height = (height[0] + padding.top[0] + padding.bottom[0]);
-	}
+	All = (Width | Height),
+	Count = (1 << 2)
 }
 
 
 /**
- * Sets the desired space on the parent if all children ask for absolute positioning.
+ * Get flags that indicate whether it is possible to inherit certain positional axis.
  */
-export function setDesiredSpaceForChildren(target: Positions, items: Parsed<FlexiblePosition>[], spacing: ParsedScale, direction: LayoutDirection): void
+export function getInheritanceFlags(position: Positions): InheritFlags
 {
-	const hasAbsoluteSpacing = isAbsolute(spacing);
-	let widthCanBeAbsolute: boolean = isUndefined(target.width),
-		heightCanBeAbsolute: boolean = isUndefined(target.height);
+	return (isUndefined(position.width) ? InheritFlags.Width : 0)
+		| (isUndefined(position.height) ? InheritFlags.Height : 0);
+}
 
-	// Skip if spacing is not absolute, or both width and height are already set.
-	if (!hasAbsoluteSpacing || (!widthCanBeAbsolute && !heightCanBeAbsolute))
-		return;
 
-	const count = items.length, isHorizontal = (direction === LayoutDirection.Horizontal);
-	let absoluteWidth: number = 0, absoluteHeight: number = 0;
+/**
+ * Recalculates `position` based on the size of the specified child, if the required inheritance flags are set.
+ */
+export function recalculateInheritedSpaceFromChild(position: Parsed<Positions>, flags: InheritFlags, child: Parsed<FlexiblePosition>): boolean
+{
+	return recalculateInheritedSpace(position, flags, (direction) => getDesiredSpaceFromChildForDirection(child, direction));
+}
 
-	const totalSpacing = (spacing[0] * (count - 1));
-	if (isHorizontal)
+
+/**
+ * Recalculates `position` based on the size of the specified children, if the required inheritance flags are set.
+ */
+export function recalculateInheritedSpaceFromChildren(position: Parsed<Positions>, flags: InheritFlags, children: Parsed<FlexiblePosition>[], spacing: ParsedScale, layoutDirection: LayoutDirection): boolean
+{
+	return recalculateInheritedSpace(position, flags, (direction) => getDesiredSpaceFromChildrenForDirection(children, spacing, layoutDirection, direction));
+}
+
+
+/**
+ * Recalculates `position` based on the size of the specified children, if the required inheritance flags are set.
+ */
+function recalculateInheritedSpace(position: Parsed<Positions>, flags: InheritFlags, getChildrenSpace: (direction: LayoutDirection) => number | null): boolean
+{
+	if ((flags & InheritFlags.All)
+		&& (tryInheritSize(position, flags & InheritFlags.Width, LayoutDirection.Horizontal, getChildrenSpace)
+			| tryInheritSize(position, flags & InheritFlags.Height, LayoutDirection.Vertical, getChildrenSpace)))
 	{
-		absoluteWidth += totalSpacing;
+		return true;
 	}
-	else
+	return false;
+}
+
+
+/**
+ * Try to inherit the size from the child, if the inherit flag is set.
+ */
+function tryInheritSize(position: Parsed<Positions>, inheritFlag: number, direction: LayoutDirection, getChildrenSpace: (direction: LayoutDirection) => number | null): number
+{
+	let value: number | null;
+	if (inheritFlag && !isNull(value = getChildrenSpace(direction)))
 	{
-		absoluteHeight += totalSpacing;
+		const key = sizeKeys[direction], original = position[key];
+		if (original[0] !== value || original[1] !== ScaleType.Pixel)
+		{
+			position[key] = [value, ScaleType.Pixel];
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+/**
+ * Gets the desired space on the parent for a single child if the child asks for
+ * absolute positioning, for a single direction.
+ */
+export function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: LayoutDirection): number | null
+{
+	const
+		sizeKey = sizeKeys[direction],
+		size = item[sizeKey],
+		padding = item.padding,
+		start = padding[startKeys[direction]],
+		end = padding[endKeys[direction]];
+
+	if (isAxisAbsolute(size, start, end))
+	{
+		return (size[0] + start[0] + end[0]);
+	}
+	return null;
+}
+
+
+/**
+ * Gets the total desired space for all children, if they are absolutely positioned.
+ */
+export function getDesiredSpaceFromChildrenForDirection(items: Parsed<FlexiblePosition>[], spacing: ParsedScale, layoutDirection: LayoutDirection, axisDirection: LayoutDirection): number | null
+{
+	const axisIsLayoutDirection = (layoutDirection === axisDirection);
+
+	let absoluteSize = 0;
+	if (axisIsLayoutDirection)
+	{
+		if (!isAbsolute(spacing))
+		{
+			return null;
+		}
+		absoluteSize += (spacing[0] * (items.length - 1));
 	}
 
-	for (let i = 0; i < items.length && (widthCanBeAbsolute || heightCanBeAbsolute); i++)
+	const
+		sizeKey = sizeKeys[axisDirection],
+		startKey = startKeys[axisDirection],
+		endKey = endKeys[axisDirection];
+
+	for (const item of items)
 	{
 		// Determine if all children are absolutely sized,
 		// if so, then size itself accordingly.
-		const pos = items[i], width = pos.width, height = pos.height, padding = pos.padding;
+		const
+			size = item[sizeKey],
+			padding = item.padding,
+			start = padding[startKey],
+			end = padding[endKey];
 
-		if (widthCanBeAbsolute && isAxisAbsolute(width, padding.left, padding.right))
+		if (isAxisAbsolute(size, start, end))
 		{
-			absoluteWidth = addOrMax(absoluteWidth, width[0] + padding.left[0] + padding.right[0], isHorizontal);
+			absoluteSize = addOrMax(absoluteSize, size[0] + start[0] + end[0], axisIsLayoutDirection);
 		}
-		else
-		{
-			widthCanBeAbsolute = false;
-		}
-
-		if (heightCanBeAbsolute && isAxisAbsolute(height, padding.top, padding.bottom))
-		{
-			absoluteHeight = addOrMax(absoluteHeight, height[0] + padding.top[0] + padding.bottom[0], !isHorizontal);
-		}
-		else
-		{
-			heightCanBeAbsolute = false;
-		}
+		else return null;
 	}
-
-	if (widthCanBeAbsolute)
-	{
-		target.width = absoluteWidth;
-	}
-	if (heightCanBeAbsolute)
-	{
-		target.height = absoluteHeight;
-	}
+	return absoluteSize;
 }
 
 

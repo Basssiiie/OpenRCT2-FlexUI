@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -37,16 +38,13 @@ export interface CheckboxParams extends ElementParams
 /**
  * Create a checkbox that can toggle a setting or a choice.
  */
-export function checkbox(params: CheckboxParams & FlexiblePosition): WidgetCreator<CheckboxParams & FlexiblePosition>;
-export function checkbox(params: CheckboxParams & AbsolutePosition): WidgetCreator<CheckboxParams & AbsolutePosition>;
-export function checkbox(params: CheckboxParams & Positions): WidgetCreator<CheckboxParams & Positions>
+export function checkbox(params: CheckboxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function checkbox(params: CheckboxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function checkbox(params: CheckboxParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params); // todo check for different size without text
 
-	return {
-		params,
-		create: (output: BuildOutput): CheckboxControl => new CheckboxControl(output, params)
-	};
+	return (parent, output) => new CheckboxControl(parent, output, params);
 }
 
 
@@ -60,9 +58,9 @@ export class CheckboxControl extends Control<CheckboxWidget> implements Checkbox
 	onChange?: (isChecked: boolean) => void;
 
 
-	constructor(output: BuildOutput, params: CheckboxParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: CheckboxParams)
 	{
-		super("checkbox", output, params);
+		super("checkbox", parent, output, params);
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);

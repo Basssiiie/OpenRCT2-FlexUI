@@ -1,5 +1,4 @@
 import { Bindable } from "@src/bindings/bindable";
-import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
@@ -49,11 +48,11 @@ export interface GroupBoxParams extends FlexibleLayoutParams, ElementParams
  * a flexible control internally. This widget is essentially a combination between `box()`
  * and `flexible()`.
  */
-export function groupbox(params: BoxContainer[] & FlexiblePosition): WidgetCreator<BoxContainer[] & FlexiblePosition>;
-export function groupbox(params: BoxContainer[] & AbsolutePosition): WidgetCreator<BoxContainer[] & AbsolutePosition>;
-export function groupbox(params: GroupBoxParams & FlexiblePosition): WidgetCreator<GroupBoxParams & FlexiblePosition>;
-export function groupbox(params: GroupBoxParams & AbsolutePosition): WidgetCreator<GroupBoxParams & AbsolutePosition>;
-export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions): WidgetCreator<(GroupBoxParams | BoxContainer[]) & Positions>
+export function groupbox(params: BoxContainer[] & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function groupbox(params: BoxContainer[] & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function groupbox(params: GroupBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function groupbox(params: GroupBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions): WidgetCreator<Positions>
 {
 	let content: BoxContainer[],
 		gap: Padding | undefined,
@@ -79,14 +78,7 @@ export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions):
 
 	const boxParams = <BoxParams & FlexiblePosition><never>params;
 	const flexParams = { content, spacing, padding: gap };
-	boxParams.content =
-	{
-		params: flexParams,
-		create: (output: BuildOutput) => new FlexibleLayoutControl(output, flexParams, direction)
-	};
+	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams, direction));
 
-	return {
-		params,
-		create: (output: BuildOutput) => new BoxControl(output, boxParams)
-	};
+	return (parent, output) => new BoxControl(parent, output, boxParams);
 }

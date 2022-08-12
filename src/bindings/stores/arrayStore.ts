@@ -29,11 +29,11 @@ export interface ArrayStore<T> extends Store<T[]> {
 	 */
 	pop(): T | undefined;
 
-    /**
-     * Inserts new elements at the start of the array and returns its new length.
+	/**
+	 * Inserts new elements at the start of the array and returns its new length.
 	 * Notifies all listeners with the updated array.
-     */
-    unshift(...items: T[]): number;
+	 */
+	unshift(...items: T[]): number;
 
 	/**
 	 * Removes the first element from the array and returns it.
@@ -54,5 +54,5 @@ export interface ArrayStore<T> extends Store<T[]> {
 	 * or otherwise in ASCII character order.
 	 * Notifies all listeners with the updated array.
 	 */
-    sort(compareFn?: (a: T, b: T) => number): void;
+	sort(compareFn?: (a: T, b: T) => number): void;
 }

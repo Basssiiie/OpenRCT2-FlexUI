@@ -14,6 +14,7 @@ import { Positions } from "../layouts/positions";
 import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 import * as Log from "@src/utilities/logger";
+import { ParentControl } from "@src/building/parentControl";
 
 
 /**
@@ -33,16 +34,13 @@ export interface DropdownSpinnerParams extends DropdownParams
  * Create a dropdown widget with multiple selectable options, which can be navigated
  * through with [+] and [-] buttons from a spinner widget.
  */
-export function dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition): WidgetCreator<DropdownSpinnerParams & FlexiblePosition>;
-export function dropdownSpinner(params: DropdownSpinnerParams & AbsolutePosition): WidgetCreator<DropdownSpinnerParams & AbsolutePosition>;
-export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<DropdownSpinnerParams>
+export function dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function dropdownSpinner(params: DropdownSpinnerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function dropdownSpinner(params: DropdownSpinnerParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params);
 
-	return {
-		params,
-		create: (output: BuildOutput): DropdownSpinnerControl => new DropdownSpinnerControl(output, params)
-	};
+	return (parent, output) => new DropdownSpinnerControl(parent, output, params);
 }
 
 
@@ -59,7 +57,7 @@ class DropdownSpinnerControl extends DropdownControl
 	_isUpdatingSelectedIndex: boolean;
 	_userOnChange?: (index: number) => void;
 
-	constructor(output: BuildOutput, params: DropdownSpinnerParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: DropdownSpinnerParams)
 	{
 		// Ensure selectedIndex is a store, so we can update it easily when
 		// the spinner is used.
@@ -120,8 +118,8 @@ class DropdownSpinnerControl extends DropdownControl
 			spinParams.maximum = items.length;
 		}
 
-		const spinner = new SpinnerControl(output, spinParams);
-		super(output, params);
+		const spinner = new SpinnerControl(parent, output, spinParams);
+		super(parent, output, params);
 
 		this._spinner = spinner;
 		this._selectedIndex = selectedStore;

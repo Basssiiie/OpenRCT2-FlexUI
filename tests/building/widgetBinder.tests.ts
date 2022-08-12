@@ -60,10 +60,10 @@ test("read() sets store in window template", t =>
 
 	const storeNumber = new DefaultStore(25);
 	output.binder.add(label, "x", storeNumber);
-	output.binder._bind(output._template);
+	output.binder._bind(output.context);
 
-	output._template._build();
-	output._template.open();
+	output.context._build();
+	output.context.open();
 	t.is(label.x, 25);
 
 	storeNumber.set(77);
@@ -87,10 +87,10 @@ test("read() sets store through converter", t =>
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
-	output.binder._bind(output._template);
+	output.binder._bind(output.context);
 
-	output._template._build();
-	output._template.open();
+	output.context._build();
+	output.context.open();
 	t.true(label.isVisible);
 
 	storeNumber.set("hidden");

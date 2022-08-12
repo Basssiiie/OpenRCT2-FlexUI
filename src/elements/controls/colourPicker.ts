@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { Colour } from "@src/utilities/colour";
 import { isUndefined } from "@src/utilities/type";
@@ -35,9 +36,9 @@ export interface ColourPickerParams extends ElementParams
 /**
  * Create a colour picker that can pick one from many colours.
  */
-export function colourPicker(params: ColourPickerParams & FlexiblePosition): WidgetCreator<ColourPickerParams & FlexiblePosition>;
-export function colourPicker(params: ColourPickerParams & AbsolutePosition): WidgetCreator<ColourPickerParams & AbsolutePosition>;
-export function colourPicker(params: ColourPickerParams & Positions): WidgetCreator<ColourPickerParams & Positions>
+export function colourPicker(params: ColourPickerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function colourPicker(params: ColourPickerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function colourPicker(params: ColourPickerParams & Positions): WidgetCreator<Positions>
 {
 	if (isUndefined(params.width))
 	{
@@ -47,10 +48,7 @@ export function colourPicker(params: ColourPickerParams & Positions): WidgetCrea
 	{
 		params.height = defaultColorSize;
 	}
-	return {
-		params: params,
-		create: (output: BuildOutput): ColourPickerControl => new ColourPickerControl(output, params)
-	};
+	return (parent, output) => new ColourPickerControl(parent, output, params);
 }
 
 
@@ -63,9 +61,9 @@ class ColourPickerControl extends Control<ColourPickerWidget> implements ColourP
 	onChange?: (colour: number) => void;
 
 
-	constructor(output: BuildOutput, params: ColourPickerParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ColourPickerParams)
 	{
-		super("colourpicker", output, params);
+		super("colourpicker", parent, output, params);
 
 		const binder = output.binder;
 		binder.add(this, "colour", params.colour);

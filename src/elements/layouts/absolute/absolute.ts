@@ -1,7 +1,12 @@
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
+import { WindowContext } from "@src/building/windowContext";
+import { VisualElement } from "@src/elements/controls/visualElement";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { isArray } from "@src/utilities/type";
 import { FlexiblePosition } from "../flexible/flexiblePosition";
@@ -31,45 +36,54 @@ export interface AbsoluteLayoutParams
 /**
  * Add an area with widgets positioned at absolute.
  */
-export function absolute(params: AbsoluteLayoutContainer & FlexiblePosition): WidgetCreator<AbsoluteLayoutContainer & FlexiblePosition>;
-export function absolute(params: AbsoluteLayoutContainer & AbsolutePosition): WidgetCreator<AbsoluteLayoutContainer & AbsolutePosition>;
-export function absolute(params: AbsoluteLayoutParams & FlexiblePosition): WidgetCreator<AbsoluteLayoutParams & FlexiblePosition>;
-export function absolute(params: AbsoluteLayoutParams & AbsolutePosition): WidgetCreator<AbsoluteLayoutParams & AbsolutePosition>;
-export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions): WidgetCreator<(AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions>
+export function absolute(params: AbsoluteLayoutContainer & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function absolute(params: AbsoluteLayoutContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function absolute(params: AbsoluteLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function absolute(params: AbsoluteLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions): WidgetCreator<Positions>
 {
-	return {
-		params: params,
-		create: (output: BuildOutput): AbsoluteLayoutControl => new AbsoluteLayoutControl(output, params)
-	};
+	return (parent, output) => new AbsoluteLayoutControl(parent, output, params);
 }
 
 
-class AbsoluteLayoutControl implements Layoutable
+class AbsoluteLayoutControl extends VisualElement implements ParentControl<AbsolutePosition>
 {
-	_childPositions: AbsolutePosition[];
-	_childLayoutFunctions: Layoutable[];
+	_children: Layoutable<AbsolutePosition>[];
+	_context: WindowContext;
 
-	constructor(output: BuildOutput, params: AbsoluteLayoutParams | AbsoluteLayoutContainer)
+	constructor(parent: ParentControl, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions)
 	{
-		// TODO: this code is almost equal to flexlayout, make shared helper function
-		const items = (isArray(params)) ? params : params.content;
-		const count = items.length;
-		this._childPositions = Array<AbsolutePosition>(count);
-		this._childLayoutFunctions = Array<Layoutable>(count);
+		super(parent, params);
+		this._context = output.context;
 
-		for (let i = 0; i < items.length; i++)
+		const childCreators = (isArray(params)) ? params : params.content;
+		const count = childCreators.length;
+		this._children = Array<Layoutable<AbsolutePosition>>(count);
+
+		for (let i = 0; i < childCreators.length; i++)
 		{
-			const child = items[i];
-			this._childPositions[i] = child.params;
-			this._childLayoutFunctions[i] = child.create(output);
+			const creator = childCreators[i];
+			this._children[i] = creator(this, output);
 		}
 	}
 
-	layout(widgets: WidgetMap, area: Rectangle): void
+	parse(position: AbsolutePosition): Parsed<AbsolutePosition>
 	{
-		absoluteLayout(this._childPositions, area, (idx, subarea) =>
-		{
-			this._childLayoutFunctions[idx].layout(widgets, subarea);
-		});
+		return {
+			x: parseScale(position.x),
+			y: parseScale(position.y),
+			width: parseScale(position.width),
+			height: parseScale(position.height)
+		};
+	}
+
+	recalculate(): void
+	{
+		// Nothing else to recalculate
+	}
+
+	override layout(widgets: WidgetMap, area: Rectangle): void
+	{
+		absoluteLayout(this._children, area, widgets);
 	}
 }

@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { TextColour } from "@src/utilities/colour";
 import { ensureDefaultLineHeight } from "../constants";
@@ -38,16 +39,13 @@ export interface LabelParams extends ElementParams
 /**
  * Create a textual label with the specified parameters.
  */
-export function label(params: LabelParams & FlexiblePosition): WidgetCreator<LabelParams & FlexiblePosition>;
-export function label(params: LabelParams & AbsolutePosition): WidgetCreator<LabelParams & AbsolutePosition>;
-export function label(params: LabelParams & Positions): WidgetCreator<LabelParams>
+export function label(params: LabelParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function label(params: LabelParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function label(params: LabelParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params);
 
-	return {
-		params: params,
-		create: (output: BuildOutput): LabelControl => new LabelControl(output, params)
-	};
+	return (parent, output) => new LabelControl(parent, output, params);
 }
 
 
@@ -59,9 +57,9 @@ class LabelControl extends Control<LabelWidget> implements LabelWidget
 	text: string = "";
 	textAlign?: TextAlignment;
 
-	constructor(output: BuildOutput, params: LabelParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: LabelParams)
 	{
-		super("label", output, params);
+		super("label", parent, output, params);
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);

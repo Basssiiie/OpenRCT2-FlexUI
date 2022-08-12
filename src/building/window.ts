@@ -7,6 +7,7 @@ import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Colour } from "@src/utilities/colour";
 import { invoke } from "@src/utilities/event";
 import { identifier } from "@src/utilities/identifier";
+import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
 import { BuildContainer } from "./buildContainer";
 import { WindowTemplate } from "./windowTemplate";
@@ -182,7 +183,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		close.push(params.onClose);
 	}
 
-	const template = output._template;
+	const template = output.context;
 	template._position = params.position;
 
 	update.push(() => template._onRedraw());
@@ -205,8 +206,8 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
  */
 function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
 {
-	const template = output._template;
-	template._body = new FlexibleLayoutControl(output, params, LayoutDirection.Vertical);
+	const template = output.context;
+	template._body = new FlexibleLayoutControl(template, output, params, LayoutDirection.Vertical);
 
 	// Check if padding was specified..
 	const suppliedPadding = params.padding;
@@ -232,7 +233,7 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
  */
 function setWindowLayoutResizing(output: BuildContainer): void
 {
-	const template = output._template;
+	const template = output.context;
 	output.update.push((): void =>
 	{
 		const instance = ui.getWindow(template._description.classification);
@@ -241,6 +242,7 @@ function setWindowLayoutResizing(output: BuildContainer): void
 		if (width === template._width && height === template._height)
 			return;
 
+		Log.debug(`User has resized the window from ${template._width}x${template._height} to ${width}x${height}.`);
 		template._width = width;
 		template._height = height;
 		template.redraw();

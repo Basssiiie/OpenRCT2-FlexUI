@@ -1,5 +1,8 @@
-import { isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
-import { convertToPixels, parseScaleOrZero } from "@src/positional/parsing/parseScale";
+import { Layoutable } from "@src/building/layoutable";
+import { WidgetMap } from "@src/building/widgetMap";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { isWeighted } from "@src/positional/parsing/parsedScale";
+import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { AbsolutePosition } from "./absolutePosition";
 
@@ -7,23 +10,22 @@ import { AbsolutePosition } from "./absolutePosition";
 /**
  * Lay out all elements over at absolute positions relative to the parent area, then calls apply for each element.
  */
-export function absoluteLayout(elements: AbsolutePosition[], parentArea: Rectangle, apply: (index: number, childArea: Rectangle) => void): void
+export function absoluteLayout(elements: Layoutable<AbsolutePosition>[], parentArea: Rectangle, widgetMap: WidgetMap): void
 {
 	const elementCount = elements.length;
 	const leftoverWidth = parentArea.width;
 	const leftoverHeight = parentArea.height;
-	const parsedElements = Array<ParsedAbsoluteElement>(elementCount);
+	const parsedElements = Array<Parsed<AbsolutePosition>>(elementCount);
 
 	// First pass: collect and parse positional data
 	let weightedTotalWidth = 0, weightedTotalHeight = 0;
 	for (let i = 0; i < elementCount; i++)
 	{
 		const element = elements[i];
-		const x = parseScaleOrZero(element.x);
-		const y = parseScaleOrZero(element.y);
-		const width = parseScaleOrZero(element.width);
-		const height = parseScaleOrZero(element.height);
+		if (element.skip)
+			continue;
 
+		const position = element.position(), { width, height } = position;
 		if (isWeighted(width))
 		{
 			weightedTotalWidth += width[0];
@@ -32,31 +34,20 @@ export function absoluteLayout(elements: AbsolutePosition[], parentArea: Rectang
 		{
 			weightedTotalHeight += height[0];
 		}
-
-		const parsed: ParsedAbsoluteElement = { x, y, width, height };
-		parsedElements[i] = parsed;
+		parsedElements[i] = position;
 	}
 
 	// Second pass: calculate position and apply it
+	const rect = <Rectangle>{}; // Reuse the rect for every element to reduce allocation.
 	for (let i = 0; i < elementCount; i++)
 	{
-		// (Reuse the same already allocated object...)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const element = <Record<keyof Rectangle, any>>parsedElements[i];
-		element.x = (parentArea.x + convertToPixels(element.x, leftoverWidth, weightedTotalWidth));
-		element.y = (parentArea.y + convertToPixels(element.y, leftoverHeight, weightedTotalHeight));
-		element.width = convertToPixels(element.width, leftoverWidth, weightedTotalWidth);
-		element.height = convertToPixels(element.height, leftoverHeight, weightedTotalHeight);
+		const element = parsedElements[i];
 
-		apply(i, <Rectangle>element);
+		rect.x = (parentArea.x + convertToPixels(element.x, leftoverWidth, weightedTotalWidth));
+		rect.y = (parentArea.y + convertToPixels(element.y, leftoverHeight, weightedTotalHeight));
+		rect.width = convertToPixels(element.width, leftoverWidth, weightedTotalWidth);
+		rect.height = convertToPixels(element.height, leftoverHeight, weightedTotalHeight);
+
+		elements[i].layout(widgetMap, rect);
 	}
-}
-
-
-interface ParsedAbsoluteElement
-{
-	x: ParsedScale;
-	y: ParsedScale;
-	width: ParsedScale;
-	height: ParsedScale;
 }

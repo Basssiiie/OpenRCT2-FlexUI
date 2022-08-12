@@ -1,6 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
@@ -73,14 +74,11 @@ export interface ViewportParams extends ElementParams
 /**
  * Add a viewport for displaying a location somewhere on the map.
  */
-export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreator<ViewportParams & FlexiblePosition>;
-export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<ViewportParams & AbsolutePosition>;
-export function viewport(params: ViewportParams & Positions): WidgetCreator<ViewportParams>
+export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function viewport(params: ViewportParams & Positions): WidgetCreator<Positions>
 {
-	return {
-		params: params,
-		create: (output: BuildOutput): ViewportControl => new ViewportControl(output, params)
-	};
+	return (parent, output) => new ViewportControl(parent, output, params);
 }
 
 
@@ -102,9 +100,9 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 	/**
 	 * Create a viewport control with the specified parameters.
 	 */
-	constructor(output: BuildOutput, params: ViewportParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ViewportParams)
 	{
-		super("viewport", output, params);
+		super("viewport", parent, output, params);
 
 		const target = params.target;
 		if (isStore(target) || isNumber(target))

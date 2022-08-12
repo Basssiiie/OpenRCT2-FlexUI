@@ -1,5 +1,6 @@
 import { store } from "@src/bindings/stores/createStore";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
@@ -46,16 +47,13 @@ export interface DropdownButtonParams extends ElementParams
  * Create a button widget with multiple selectable options, which can be selected from
  * a dropdown on the right side of the button.
  */
-export function dropdownButton(params: DropdownButtonParams & FlexiblePosition): WidgetCreator<DropdownButtonParams & FlexiblePosition>;
-export function dropdownButton(params: DropdownButtonParams & AbsolutePosition): WidgetCreator<DropdownButtonParams & AbsolutePosition>;
-export function dropdownButton(params: DropdownButtonParams & Positions): WidgetCreator<DropdownButtonParams>
+export function dropdownButton(params: DropdownButtonParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function dropdownButton(params: DropdownButtonParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function dropdownButton(params: DropdownButtonParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params);
 
-	return {
-		params,
-		create: (output: BuildOutput): DropdownButtonComponent => new DropdownButtonComponent(output, params)
-	};
+	return (parent, output) => new DropdownButtonComponent(parent, output, params);
 }
 
 
@@ -68,7 +66,7 @@ class DropdownButtonComponent extends DropdownControl
 	_selectedButton: number;
 
 
-	constructor(output: BuildOutput, params: DropdownButtonParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: DropdownButtonParams)
 	{
 		// Split button actions into labels and seperate actions
 		const
@@ -94,7 +92,7 @@ class DropdownButtonComponent extends DropdownControl
 			this._selectedButton = idx;
 			buttonText.set(labels[idx] || "");
 		};
-		super(output, dropdownParams);
+		super(parent, output, dropdownParams);
 
 		// Setup button part, reusing params object
 		const buttonParams = <ButtonParams>params;
@@ -107,7 +105,7 @@ class DropdownButtonComponent extends DropdownControl
 				action();
 			}
 		};
-		this._button = new ButtonControl(output, buttonParams);
+		this._button = new ButtonControl(parent, output, buttonParams);
 		this._selectedButton = 0;
 	}
 

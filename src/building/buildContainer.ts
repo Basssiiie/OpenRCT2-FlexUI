@@ -13,9 +13,9 @@ import { WidgetBinder } from "./binders/widgetBinder";
 export class BuildContainer implements BuildOutput
 {
 	binder: WidgetBinder;
+	context: Template;
 	_windowBinder: WindowBinder;
 	_widgets: WidgetBase[] = [];
-	_template: Template;
 
 	open: Event<WindowContext> = [];
 	update: Event<WindowContext> = [];
@@ -25,8 +25,8 @@ export class BuildContainer implements BuildOutput
 	{
 		const binder = new WindowBinder();
 		this.binder = binder._widgets;
+		this.context = new Template(window, binder);
 		this._windowBinder = binder;
-		this._template = new Template(window, binder);
 	}
 
 	add(widget: WidgetBase): void

@@ -38,9 +38,9 @@ test("Standard properties are set", t =>
 	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 4 + 7);
-	t.is(widget1.y, 4 + 7 + 15 - 4); // - default top pad
-	t.is(widget1.width, 28);
-	t.is(widget1.height, 18 + 4); // + default top pad
+	t.is(widget1.y, 4 + 7 + 15);
+	t.is(widget1.width, 28 - 1);
+	t.is(widget1.height, 18 - 1);
 
 	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
@@ -48,7 +48,7 @@ test("Standard properties are set", t =>
 	t.is(widget2.x, 4 + 7 + 3);
 	t.is(widget2.y, 4 + 7 + 3 + 15);
 	t.is(widget2.width, 8);
-	t.is(widget2.height, 12);
+	t.is(widget2.height, 12 - 1);
 
 	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
 	t.is(widget3.type, "button");
@@ -56,7 +56,7 @@ test("Standard properties are set", t =>
 	t.is(widget3.x, 4 + 7 + 3 + 8 + 6); // incl. 6px spacing
 	t.is(widget3.y, 4 + 7 + 3 + 15);
 	t.is(widget3.width, 8);
-	t.is(widget3.height, 12);
+	t.is(widget3.height, 12 - 1);
 });
 
 
@@ -91,15 +91,15 @@ test("Groupbox applies padding and default gap", t =>
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 10 + 3);
 	t.is(widget1.y, 10 + 3 + 15 - 4); // - default top pad
-	t.is(widget1.width, 74);
-	t.is(widget1.height, 54 + 4); // + default top pad
+	t.is(widget1.width, 74 - 1);
+	t.is(widget1.height, 54 + 4 - 1); // + default top pad
 
 	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 3 + 6 + 6); // inc. 6px default gap
 	t.is(widget2.y, 10 + 3 + 6 + 4 + 15); // inc. 6px default gap
-	t.is(widget2.width, 50);
+	t.is(widget2.width, 50 - 1);
 	t.is(widget2.height, 13);
 
 	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
@@ -107,7 +107,7 @@ test("Groupbox applies padding and default gap", t =>
 	t.is(widget3.text, "labelled");
 	t.is(widget3.x, 10 + 3 + 6 + 1); // inc. 6px default gap
 	t.is(widget3.y, 10 + 3 + 6 + 21 + 4 + 2 + 15); // inc. 4px spacing, 21px (4+13+4) prev. item
-	t.is(widget3.width, 60);
+	t.is(widget3.width, 60 - 1);
 	t.is(widget3.height, 13);
 });
 
@@ -194,13 +194,13 @@ test("Groupbox uses default fallback padding for gap", t =>
 	t.is(widget1.x, 10);
 	t.is(widget1.y, 10 + 15 - 4); // - default top pad
 	t.is(widget1.width, 120 + 6 + 6); // inc. gap
-	t.is(widget1.height, 415 - (15 + 10 + 6)); // + default top pad
+	t.is(widget1.height, 415 - (15 + 10 + 6 + 1)); // + default top pad
 
 	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 6); // 6px default padding
-	t.is(widget2.y, 415 - (10 + 30 + 12 + 70 + 6));
+	t.is(widget2.y, 415 - (10 + 30 + 12 + 70 + 6 + 1));
 	t.is(widget2.width, 120);
 	t.is(widget2.height, 70);
 
@@ -208,7 +208,7 @@ test("Groupbox uses default fallback padding for gap", t =>
 	t.is(widget3.type, "button");
 	t.is(widget3.text, "inside a box too!");
 	t.is(widget3.x, 10 + 6); // 6px default padding
-	t.is(widget3.y, 415 - (10 + 30 + 6));
+	t.is(widget3.y, 415 - (10 + 30 + 6 + 1));
 	t.is(widget3.width, 100);
 	t.is(widget3.height, 30);
 });
@@ -238,7 +238,7 @@ test("Groupbox has correct size with padding in flex layout", t =>
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 5 + 15);
 	t.is(widget1.y, (5 + 15 + 15) - 4); // - default top pad
-	t.is(widget1.width, 150 - (10 + 30));
+	t.is(widget1.width, 150 - (10 + 30 + 1));
 	t.is(widget1.height, 20 + 12 + 4); // + default top pad
 
 	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
@@ -246,7 +246,7 @@ test("Groupbox has correct size with padding in flex layout", t =>
 	t.is(widget2.text, "click");
 	t.is(widget2.x, 5 + 15 + 6);
 	t.is(widget2.y, 5 + 15 + 6 + 15);
-	t.is(widget2.width, 150 - (10 + 30 + 12));
+	t.is(widget2.width, 150 - (10 + 30 + 12 + 1));
 	t.is(widget2.height, 20);
 
 	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
@@ -254,6 +254,6 @@ test("Groupbox has correct size with padding in flex layout", t =>
 	t.is(widget3.text, "press");
 	t.is(widget3.x, 5);
 	t.is(widget3.y, 5 + 30 + 12 + 20 + 2 + 15);
-	t.is(widget3.width, 150 - 10);
-	t.is(widget3.height, 200 - (10 + 2 + 30 + 12 + 20 + 15));
+	t.is(widget3.width, 150 - (10 + 1));
+	t.is(widget3.height, 200 - (10 + 2 + 30 + 12 + 20 + 15 + 1));
 });

@@ -29,7 +29,7 @@ export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/vie
 
 // Widget parameter types
 export { ElementParams, ElementVisibility } from "./elements/elementParams";
-export { Colour } from "./utilities/colour";
+export { Colour, TextColour } from "./utilities/colour";
 
 // Layout information
 export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
@@ -37,13 +37,20 @@ export { FlexiblePosition } from "./elements/layouts/flexible/flexiblePosition";
 export { LayoutDirection } from "./elements/layouts/flexible/layoutDirection";
 export { Scale } from "./positional/scale";
 export { Padding } from "./positional/padding";
+export { Paddable } from "./positional/paddable";
 export { Rectangle } from "./positional/rectangle";
 
 // Internal components
 export { BuildOutput } from "./building/buildOutput";
 export { WidgetMap } from "./building/widgetMap";
 export { WidgetCreator } from "./building/widgetCreator";
+export { WidgetEditor } from "./building/widgetEditor";
+export { WindowContext } from "./building/windowContext";
 export { WindowEvent } from "./building/windowEvent";
-export { Layoutable } from "./building/layoutable";
+export { ParentControl } from "./building/parentControl";
 export { Bindable } from "./bindings/bindable";
 export { Binder } from "./bindings/binder";
+export { Layoutable } from "./building/layoutable";
+export { Parsed } from "./positional/parsing/parsed";
+export { ParsedPadding } from "./positional/parsing/parsedPadding";
+export { ParsedScale } from "./positional/parsing/parsedScale";

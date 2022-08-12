@@ -1,10 +1,13 @@
 import { WindowBinder } from "@src/building/binders/windowBinder";
+import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
+import { parseFlexiblePosition } from "@src/elements/layouts/flexible/parseFlexiblePosition";
 import * as Log from "@src/utilities/logger";
+import { FlexiblePosition } from "..";
 import { defaultScale } from "../elements/constants";
 import { setSizeWithPadding } from "../elements/layouts/paddingHelpers";
 import { ParsedPadding } from "../positional/parsing/parsedPadding";
 import { Rectangle } from "../positional/rectangle";
-import { Layoutable } from "./layoutable";
+import { ParentControl } from "./parentControl";
 import { WidgetEditor } from "./widgetEditor";
 import { createWidgetMap, WidgetMap } from "./widgetMap";
 import { BaseWindowParams } from "./window";
@@ -21,10 +24,13 @@ const topBarSize: number = 15;
 /**
  * Internal template that keeps track of the window.
  */
-export class Template implements WindowTemplate, WindowContext
+export class Template implements WindowTemplate, WindowContext, ParentControl<FlexiblePosition>
 {
+	parse = parseFlexiblePosition;
+	recalculate = this.redraw;
+
 	_window: Window | null = null;
-	_body: Layoutable | null = null;
+	_body: FlexibleLayoutControl | null = null;
 
 	_width: number;
 	_height: number;
@@ -33,7 +39,7 @@ export class Template implements WindowTemplate, WindowContext
 
 	_templateWidgets: WidgetMap | null = null;
 	_openWidgets: WidgetMap | null = null;
-	_redrawNextTick: boolean = false;
+	_redrawNextTick: boolean = true;
 
 
 	/**
@@ -55,6 +61,7 @@ export class Template implements WindowTemplate, WindowContext
 	 */
 	_build(): void
 	{
+		Log.debug("Template: build() started");
 		const widgets = this._description.widgets;
 		if (widgets)
 		{
@@ -74,13 +81,14 @@ export class Template implements WindowTemplate, WindowContext
 	 * Checks if the template has been marked dirty, and redraws if that's the case.
 	 */
 	_onRedraw(): void
-	{	const widgets = this._openWidgets;
-		if (this._redrawNextTick && widgets)
-		{
-			Log.debug(`Redrawing window layout (${this._window?.width} x ${this._window?.height})...`);
-			performLayout(this, widgets);
-			this._redrawNextTick = false;
-		}
+	{
+		const widgets = this._openWidgets;
+		if (!widgets || !this._redrawNextTick)
+			return;
+
+		Log.debug(`Template.onRedraw() window size: (${this._window?.width} x ${this._window?.height})...`);
+		performLayout(this, widgets);
+		this._redrawNextTick = false;
 	}
 
 	/**
@@ -99,10 +107,10 @@ export class Template implements WindowTemplate, WindowContext
 
 	redraw(): void
 	{
-		if (this._openWidgets)
-		{
-			this._redrawNextTick = true;
-		}
+		if (!this._openWidgets)
+			return;
+
+		this._redrawNextTick = true;
 	}
 
 	open(): void
@@ -183,16 +191,19 @@ export class Template implements WindowTemplate, WindowContext
  */
 function performLayout(template: Template, widgets: WidgetMap): void
 {
+	const body = template._body;
+	if (!body || body.skip)
+		return;
+
 	// Skip the top bar (15px)
-	const area: Rectangle = { x: 0, y: topBarSize, width: template._width, height: template._height - topBarSize };
+	const area: Rectangle = { x: 0, y: topBarSize, width: template._width - 1, height: template._height - (topBarSize + 1) };
 	if (template._padding)
 	{
 		setSizeWithPadding(area, defaultScale, defaultScale, template._padding);
 	}
-	if (template._body)
-	{
-		template._body.layout(widgets, area);
-	}
+
+	body._recalculateSizeFromChildren();
+	body.layout(widgets, area);
 }
 
 

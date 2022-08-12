@@ -46,7 +46,7 @@ test("Simple window with widgets", t =>
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 0);
 	t.is(label1.y, 15);
-	t.is(label1.width, 200);
+	t.is(label1.width, 200 - 1);
 	t.is(label1.height, 50);
 
 	const button1 = created.widgets[1] as ButtonWidget;
@@ -70,8 +70,8 @@ test("Simple window with widgets", t =>
 	t.is(label2.text, "big area");
 	t.is(label2.textAlign, "centred");
 	t.is(label2.x, 0);
-	t.is(label2.y, 100 + 15);
-	t.is(label2.width, 200);
+	t.is(label2.y, 100 + 15 - 1);
+	t.is(label2.width, 200 - 1);
 	t.is(label2.height, 50);
 });
 
@@ -109,7 +109,7 @@ test("Window adjusts to resize", t =>
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 15);
-	t.is(label1.width, 400);
+	t.is(label1.width, 400 - 1);
 	t.is(label1.height, 100);
 
 	const button1 = created.widgets[1] as ButtonWidget;
@@ -126,8 +126,8 @@ test("Window adjusts to resize", t =>
 
 	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 200 + 15);
-	t.is(label2.width, 400);
+	t.is(label2.y, 200 + 15 - 1);
+	t.is(label2.width, 400 - 1);
 	t.is(label2.height, 100);
 });
 
@@ -163,7 +163,7 @@ test("Window does not resize if size hasn't changed", t =>
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
 	t.is(label1.y, 15);
-	t.is(label1.width, 200);
+	t.is(label1.width, 200 - 1);
 	t.is(label1.height, 50);
 
 	const button1 = created.widgets[1] as ButtonWidget;
@@ -180,8 +180,8 @@ test("Window does not resize if size hasn't changed", t =>
 
 	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 100 + 15);
-	t.is(label2.width, 200);
+	t.is(label2.y, 100 + 15 - 1);
+	t.is(label2.width, 200 - 1);
 	t.is(label2.height, 50);
 });
 
@@ -284,8 +284,8 @@ test("Window applies padding", t =>
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 15);
 	t.is(button1.y, 15 + 15);
-	t.is(button1.width, 120);
-	t.is(button1.height, 70 - 15);
+	t.is(button1.width, 120 - 1);
+	t.is(button1.height, 70 - (15 + 1));
 });
 
 
@@ -313,8 +313,8 @@ test("Window applies padding to resizes", t =>
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 20);
 	t.is(button1.y, 20 + 15);
-	t.is(button1.width, 210);
-	t.is(button1.height, 260 - 15);
+	t.is(button1.width, 210 - 1);
+	t.is(button1.height, 260 - (15 + 1));
 });
 
 

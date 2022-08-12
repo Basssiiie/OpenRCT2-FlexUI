@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -48,14 +49,11 @@ export interface ButtonParams extends ElementParams
 /**
  * Create a clickable button that can perform an action.
  */
-export function button(params: ButtonParams & FlexiblePosition): WidgetCreator<ButtonParams & FlexiblePosition>;
-export function button(params: ButtonParams & AbsolutePosition): WidgetCreator<ButtonParams & AbsolutePosition>;
-export function button(params: ButtonParams & Positions): WidgetCreator<ButtonParams & Positions>
+export function button(params: ButtonParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function button(params: ButtonParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function button(params: ButtonParams & Positions): WidgetCreator<Positions>
 {
-	return {
-		params: params,
-		create: (output: BuildOutput): ButtonControl => new ButtonControl(output, params)
-	};
+	return (parent, output) => new ButtonControl(parent, output, params);
 }
 
 
@@ -71,9 +69,9 @@ export class ButtonControl extends Control<ButtonWidget> implements ButtonWidget
 	onClick?: () => void;
 
 
-	constructor(output: BuildOutput, params: ButtonParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ButtonParams)
 	{
-		super("button", output, params);
+		super("button", parent, output, params);
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);

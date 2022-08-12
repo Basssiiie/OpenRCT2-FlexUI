@@ -5,7 +5,7 @@
  */
 export function findIndex<T>(array: T[], predicate: (item: T) => boolean): number | null
 {
-	for (let i = 0; i < array.length; i++)
+	for (let i = 0, e = array.length; i < e; i++)
 	{
 		if (predicate(array[i]))
 		{

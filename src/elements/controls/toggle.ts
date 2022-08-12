@@ -2,6 +2,7 @@ import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import { Store } from "@src/bindings/stores/store";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -24,14 +25,11 @@ export interface ToggleParams extends Omit<ButtonParams, "onClick">
 /**
  * Add a button that can be toggled on and off.
  */
-export function toggle(params: ToggleParams & FlexiblePosition): WidgetCreator<ToggleParams & FlexiblePosition>;
-export function toggle(params: ToggleParams & AbsolutePosition): WidgetCreator<ToggleParams & AbsolutePosition>;
-export function toggle(params: ToggleParams & Positions): WidgetCreator<ToggleParams>
+export function toggle(params: ToggleParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function toggle(params: ToggleParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function toggle(params: ToggleParams & Positions): WidgetCreator<Positions>
 {
-	return {
-		params: params,
-		create: (output: BuildOutput): ToggleControl => new ToggleControl(output, params)
-	};
+	return (parent, output) => new ToggleControl(parent, output, params);
 }
 
 
@@ -44,7 +42,7 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 
 	_toggled: Store<boolean>;
 
-	constructor(output: BuildOutput, params: ToggleParams & ButtonParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ToggleParams & ButtonParams)
 	{
 		// Ensure isPressed is a store, so we can update
 		// the live widget more easily.
@@ -55,7 +53,7 @@ class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
 		params.isPressed = toggled;
 		params.onClick = (): void => updateToggle(this);
 
-		super(output, params);
+		super(parent, output, params);
 		this._toggled = toggled;
 		this.onChange = params.onChange;
 	}

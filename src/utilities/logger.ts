@@ -124,3 +124,24 @@ class AssertError extends Error
 		this.name = "AssertError";
 	}
 }
+
+
+/**
+ * Stringifies the object to json in a compact fashion, useful for logging.
+ */
+export function stringify(obj: unknown): string
+{
+	if (typeof obj !== "object" || obj === null)
+		return JSON.stringify(obj);
+
+	if (Array.isArray(obj))
+		return `[${obj.map(stringify).join(", ")}]`;
+
+	const pairs = [];
+	for (const key in obj)
+	{
+		// @ts-expect-error key is fine for indexing object
+		pairs.push(`${String(key)}: ${stringify(obj[key])}`);
+	}
+	return `{ ${pairs.join(", ")} }`;
+}

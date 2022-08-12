@@ -2,6 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { Store } from "@src/bindings/stores/store";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import * as Log from "@src/utilities/logger";
 import { clamp, wrap } from "@src/utilities/math";
@@ -83,16 +84,13 @@ export interface SpinnerParams extends ElementParams
 /**
  * Add a spinner widget with [+] and [-] buttons.
  */
-export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator<SpinnerParams & FlexiblePosition>;
-export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<SpinnerParams & AbsolutePosition>;
-export function spinner(params: SpinnerParams & Positions): WidgetCreator<SpinnerParams>
+export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function spinner(params: SpinnerParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params);
 
-	return {
-		params,
-		create: (output: BuildOutput): SpinnerControl => new SpinnerControl(output, params)
-	};
+	return (parent, output) => new SpinnerControl(parent, output, params);
 }
 
 
@@ -114,9 +112,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	_onChange?: (value: number, adjustment: number) => void;
 
 
-	constructor(output: BuildOutput, params: SpinnerParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: SpinnerParams)
 	{
-		super("spinner", output, params);
+		super("spinner", parent, output, params);
 
 		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.

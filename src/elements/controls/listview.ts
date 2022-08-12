@@ -1,9 +1,11 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { WidgetMap } from "@src/building/widgetMap";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
+import { isAbsolute, isPercentile, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
@@ -35,7 +37,7 @@ export interface ListViewColumnParams
  */
 export interface ListViewParams extends ElementParams
 {
-	columns?: ListViewColumn[] | WidgetCreator<ListViewColumnParams>[];
+	columns?: ListViewColumn[] | ListViewColumnParams[];
 	items?: Bindable<string[] | ListViewItem[]>;
 
 	scrollbars?: ScrollbarType;
@@ -47,14 +49,11 @@ export interface ListViewParams extends ElementParams
 /**
  * Add a listbox for displaying data in rows and columns.
  */
-export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<ListViewParams & FlexiblePosition>;
-export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<ListViewParams & AbsolutePosition>;
-export function listview(params: ListViewParams & Positions): WidgetCreator<ListViewParams>
+export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function listview(params: ListViewParams & Positions): WidgetCreator<Positions>
 {
-	return {
-		params,
-		create: (output: BuildOutput): ListViewControl => new ListViewControl(output, params)
-	};
+	return (parent, output) => new ListViewControl(parent, output, params);
 }
 
 
@@ -70,12 +69,13 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 	canSelect?: boolean;
 	isStriped?: boolean;
 
+	/** @todo: fix this so it doesnt need to be a complex object, and can just be a ParsedScale instead. */
 	_columnWidths?: Parsed<FlexiblePosition>[];
 
 
-	constructor(output: BuildOutput, params: ListViewParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ListViewParams)
 	{
-		super("listview", output, params);
+		super("listview", parent, output, params);
 
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
@@ -86,34 +86,51 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 
 		// Figure out if default columns or custom columns were configured..
 		const columns = params.columns;
-		if (!columns || columns.length === 0 || !("create" in columns[0]))
+		this.columns = <ListViewColumn[]>columns;
+
+		if (!columns)
 		{
-			this.columns = <ListViewColumn[]>columns;
 			return;
 		}
 
 		const count = columns.length;
-		const columWidths = Array<Parsed<FlexiblePosition>>(count);
-		const columWidgets = Array<ListViewColumn>(count);
+		const columWidths = Array<ParsedScale>(count);
+		let hasPercentileWidth = false;
 
 		for (let i = 0; i < count; i++)
 		{
-			const column = (<WidgetCreator<ListViewColumnParams>>columns[i]).params;
+			const parsedWidth = parseScaleOrFallback(columns[i].width, defaultScale);
+			hasPercentileWidth ||= isPercentile(parsedWidth);
+			columWidths[i] = parsedWidth;
+		}
 
-			columWidths[i] = {
-				width: parseScaleOrFallback(column.width, defaultScale),
+		// If there is percentile width, let the plugin handle calculation.
+		if (hasPercentileWidth)
+		{
+			this._columnWidths = columWidths.map(w =>
+			({
+				width: w,
 				height: zeroScale,
 				padding: zeroPadding
-			};
-			columWidgets[i] = {
-				header: column.header,
-				headerTooltip: column.tooltip,
-				canSort: column.canSort,
-				sortOrder: column.sortOrder
-			};
+			}));
+			return;
 		}
-		this._columnWidths = columWidths;
-		this.columns = columWidgets;
+
+		// If there is none, pass it to OpenRCT2 and forget about it.
+		for (let i = 0; i < count; i++)
+		{
+			const column = <ListViewColumn>columns[i], width = columWidths[i];
+
+			if (isAbsolute(width))
+			{
+				column.width = width[0];
+			}
+			else // = weighted scale
+			{
+				column.width = undefined;
+				column.ratioWidth = width[0];
+			}
+		}
 	}
 
 
@@ -130,14 +147,14 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		}
 
 		const widget = <ListViewWidget>widgets[this.name];
-		if (widget.width !== area.width)
+		const columnWidths = this._columnWidths;
+		if (columnWidths && widget.width !== area.width)
 		{
-			const columns = this.columns;
 			flexibleLayout(widths, area, LayoutDirection.Horizontal, zeroScale, (idx, subarea) =>
 			{
-				columns[idx].width = subarea.width;
+				this.columns[idx].width = subarea.width;
 			});
-			widget.columns = columns;
+			widget.columns = this.columns;
 			widget.width = area.width;
 		}
 		widget.x = area.x;

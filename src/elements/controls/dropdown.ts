@@ -2,6 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
+import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgetCreator";
 import { findIndex } from "@src/utilities/array";
 import * as Log from "@src/utilities/logger";
@@ -57,16 +58,13 @@ export interface DropdownParams extends ElementParams
 /**
  * Create a dropdown widget with one or more selectable options.
  */
-export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreator<DropdownParams & FlexiblePosition>;
-export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<DropdownParams & AbsolutePosition>;
-export function dropdown(params: DropdownParams & Positions): WidgetCreator<DropdownParams>
+export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function dropdown(params: DropdownParams & Positions): WidgetCreator<Positions>
 {
 	ensureDefaultLineHeight(params);
 
-	return {
-		params: params,
-		create: (output: BuildOutput): DropdownControl => new DropdownControl(output, params)
-	};
+	return (parent, output) => new DropdownControl(parent, output, params);
 }
 
 
@@ -82,9 +80,9 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	_previousItems?: string[];
 
 
-	constructor(output: BuildOutput, params: DropdownParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: DropdownParams)
 	{
-		super("dropdown", output, params);
+		super("dropdown", parent, output, params);
 
 		const items = params.items;
 		const itemsIsStore = isStore(items);

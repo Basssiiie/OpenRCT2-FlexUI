@@ -79,6 +79,15 @@ export function parseScaleOrZero(value: Scale | undefined): ParsedScale
 
 
 /**
+ * Returns true if the two parsed scales are of equal size and type, or false if not.
+ */
+export function isParsedScaleEqual(left: ParsedScale, right: ParsedScale): boolean
+{
+	return (left[0] === right[0] && left[1] === right[1]);
+}
+
+
+/**
  * Calculates the pixel scale using the leftover space and weighted total if necessary.
  */
 export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number): number
