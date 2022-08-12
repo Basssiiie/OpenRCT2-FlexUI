@@ -12,21 +12,21 @@ const allWidgets = window({
 	title: "All Widgets (fui example)",
 	width: 200, minWidth: 75, maxWidth: 10_000,
 	height: 350, minHeight: 75, maxHeight: 10_000,
-	padding: 5,
 	content: [
 		label({
 			text: "This is a label",
 		}),
 		box({
 			content: label({
-				text: "This is a boxed label"
+				text: "This is a label in a box "
 			})
 		}),
 		box({
-			text: "Boxed label",
+			text: "Label on top of a box",
 			content: label({
-				padding: [ "10px", "1w" ],
-				text: "This is a centred labeled boxed label"
+				width: "140px",
+				padding: { left: "1w" },
+				text: "This is a right aligned label"
 			})
 		}),
 		groupbox({

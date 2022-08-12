@@ -46,7 +46,6 @@ const birdStalker = window({
 			text: "Duck-o-cam",
 			content: viewport({
 				target: compute(model.selectedDuck, duck => (duck) ? duck.id : null),
-				padding: 12,
 			})
 		}),
 		label({
@@ -71,7 +70,7 @@ const birdStalker = window({
 				items: compute(model.allDucks, v => v.map(d => `Duck #${d.id}`)),
 				selectedIndex: model.selectedDuckIndex,
 				disabled: compute(model.allDucks, v => v.length === 0),
-				disabledMessage: "No ducks detected",
+				disabledMessage: "Duck not found",
 				onChange: (index: number) => model.selectedDuckIndex.set(index)
 			}),
 			button({
