@@ -86,9 +86,13 @@ export class Template implements WindowTemplate, WindowContext, ParentControl<Fl
 		if (!widgets || !this._redrawNextTick)
 			return;
 
+		const startTime = Log.time();
 		Log.debug(`Template.onRedraw() window size: (${this._window?.width} x ${this._window?.height})...`);
+
 		performLayout(this, widgets);
 		this._redrawNextTick = false;
+
+		Log.debug(`Template.onRedraw() finished in ${Log.time() - startTime} ms`);
 	}
 
 	/**

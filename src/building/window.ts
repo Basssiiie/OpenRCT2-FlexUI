@@ -143,6 +143,7 @@ const defaultPadding: Padding = 5;
  */
 export function window(params: WindowParams | TabbedWindowParams): WindowTemplate
 {
+	const startTime = Log.time();
 	const window: WindowDesc =
 	{
 		classification: `fui-${identifier()}`,
@@ -197,6 +198,7 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 	window.onUpdate = (): void => invoke(update, template);
 	window.onClose = (): void => invoke(close, template);
 
+	Log.debug(`window() creation time: ${Log.time() - startTime} ms`);
 	return template;
 }
 

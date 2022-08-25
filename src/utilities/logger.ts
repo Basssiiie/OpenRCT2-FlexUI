@@ -145,3 +145,16 @@ export function stringify(obj: unknown): string
 	}
 	return `{ ${pairs.join(", ")} }`;
 }
+
+
+/**
+ * Returns the current time on milliseconds, including fractions. Useful for performance timing.
+ */
+export function time(): number
+{
+	if (Environment.isDevelopment)
+	{
+		return performance.now();
+	}
+	return 0;
+}
