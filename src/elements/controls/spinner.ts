@@ -1,4 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
+import { on } from "@src/bindings/stores/on";
 import { Store } from "@src/bindings/stores/store";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
@@ -124,7 +125,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		let format = (params.format || ((value: number): string => value.toString()));
 
 		const binder = output.binder;
-		const disabledMessage = params.disabledMessage;
+		const { disabledMessage, minimum, maximum } = params;
 		if (disabledMessage)
 		{
 			// If disabled, it should show a special message, if not show the (binded) items.
@@ -139,8 +140,23 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 
 		binder.add(this, "text", this._value, format);
 		binder.add(this, "step", params.step);
-		binder.add(this, "min", params.minimum);
-		binder.add(this, "max", params.maximum);
+		binder.add(this, "min", minimum);
+		binder.add(this, "max", maximum);
+
+		on(minimum, min =>
+		{
+			if (this._value.get() < min)
+			{
+				this._value.set(min);
+			}
+		});
+		on(maximum, max =>
+		{
+			if (this._value.get() >= max)
+			{
+				this._value.set(max - 1);
+			}
+		});
 
 		this._wrapMode = (params.wrapMode || "clamp");
 		this._onChange = params.onChange;

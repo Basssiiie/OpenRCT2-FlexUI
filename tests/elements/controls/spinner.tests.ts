@@ -461,3 +461,57 @@ test("Default maximum is clamped at largest 32-bit signed integer", t =>
 	widget.onIncrement?.();
 	t.is(widget.text, "2147483647");
 });
+
+
+test("Update maximum clamps value", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const maximum = store(100);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ value: 65, maximum })
+		]
+	});
+
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	t.is(widget.type, "spinner");
+	t.is(widget.text, "65");
+
+	maximum.set(80);
+	t.is(widget.text, "65");
+
+	maximum.set(50);
+	t.is(widget.text, "49");
+});
+
+
+test("Update minimum clamps value", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const minimum = store(10);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({ value: 65, minimum })
+		]
+	});
+
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	t.is(widget.type, "spinner");
+	t.is(widget.text, "65");
+
+	minimum.set(40);
+	t.is(widget.text, "65");
+
+	minimum.set(80);
+	t.is(widget.text, "80");
+});

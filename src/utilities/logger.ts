@@ -58,7 +58,7 @@ if (Environment.isDevelopment && isDuktapeAvailable)
 {
 	Duktape.errCreate = function onError(error): Error
 	{
-		error.message += ("\r\n" + stacktrace());
+		error.message += `\r\n${stacktrace()}`;
 		return error;
 	};
 }
@@ -94,7 +94,7 @@ export function error(message: string): void
 {
 	if (Environment.isDevelopment)
 	{
-		message += ("\r\n" + stacktrace());
+		message += `\r\n${stacktrace()}`;
 	}
 	print("error", message);
 }
@@ -108,21 +108,9 @@ export function assert(condition: boolean, message: string): void
 {
 	if (Environment.isDevelopment && !condition)
 	{
-		throw new AssertError(message);
+		throw Error(`Assertion failed! ${message}`);
 	}
-}
-
-
-/**
- * Throwable error for asserts.
- */
-class AssertError extends Error
-{
-	constructor(message: string)
-	{
-		super(message);
-		this.name = "AssertError";
-	}
+	return <never>0;
 }
 
 
