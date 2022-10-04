@@ -29,7 +29,7 @@
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
 		"version:prerelease": "npm version prerelease --preid=prerelease",
-		"publish:local": "npm run build:dev && npm install --global",
+		"publish:local": "npm run build && npm install --global",
 		"publish:prerelease": "npm run build && release-it --prerelease=prerelease"
 	},
 	"repository": {
