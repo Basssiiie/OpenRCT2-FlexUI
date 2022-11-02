@@ -3,7 +3,7 @@ import { isStore } from "@src/bindings/stores/isStore";
 import { Store } from "@src/bindings/stores/store";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";

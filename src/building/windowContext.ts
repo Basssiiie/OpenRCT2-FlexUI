@@ -1,4 +1,4 @@
-import { WidgetEditor } from "./widgetEditor";
+import { WidgetEditor } from "./widgets/widgetEditor";
 
 /**
  * Defines a context for window events so they can get their widgets by name.

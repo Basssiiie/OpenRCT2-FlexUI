@@ -4,7 +4,7 @@ import { Store } from "@src/bindings/stores/store";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import * as Log from "@src/utilities/logger";
 import { clamp, wrap } from "@src/utilities/math";
 import { ensureDefaultLineHeight } from "../constants";

@@ -3,7 +3,7 @@ import { isStore } from "@src/bindings/stores/isStore";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { findIndex } from "@src/utilities/array";
 import * as Log from "@src/utilities/logger";
 import { ensureDefaultLineHeight } from "../constants";

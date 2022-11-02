@@ -42,9 +42,9 @@ export { Rectangle } from "./positional/rectangle";
 
 // Internal components
 export { BuildOutput } from "./building/buildOutput";
-export { WidgetMap } from "./building/widgetMap";
-export { WidgetCreator } from "./building/widgetCreator";
-export { WidgetEditor } from "./building/widgetEditor";
+export { WidgetMap } from "./building/widgets/widgetMap";
+export { WidgetCreator } from "./building/widgets/widgetCreator";
+export { WidgetEditor } from "./building/widgets/widgetEditor";
 export { WindowContext } from "./building/windowContext";
 export { WindowEvent } from "./building/windowEvent";
 export { ParentControl } from "./building/parentControl";

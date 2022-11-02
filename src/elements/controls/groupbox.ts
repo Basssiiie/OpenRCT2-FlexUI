@@ -1,5 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";

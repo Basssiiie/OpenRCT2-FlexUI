@@ -1,7 +1,7 @@
 import { Positions } from "@src/elements/layouts/positions";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { Rectangle } from "@src/positional/rectangle";
-import { WidgetMap } from "./widgetMap";
+import { WidgetMap } from "./widgets/widgetMap";
 
 
 /**

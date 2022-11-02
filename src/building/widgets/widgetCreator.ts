@@ -1,6 +1,6 @@
-import { BuildOutput } from "./buildOutput";
-import { Layoutable } from "./layoutable";
-import { ParentControl } from "./parentControl";
+import { BuildOutput } from "../buildOutput";
+import { Layoutable } from "../layoutable";
+import { ParentControl } from "../parentControl";
 
 
 /**

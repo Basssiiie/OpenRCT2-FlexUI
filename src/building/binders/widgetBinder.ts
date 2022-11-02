@@ -1,7 +1,7 @@
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
 import { Template } from "@src/building/template";
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { GenericBinder } from "./genericBinder";

@@ -1,4 +1,4 @@
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { round } from "@src/utilities/math";
 

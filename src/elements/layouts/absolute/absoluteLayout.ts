@@ -1,5 +1,5 @@
 import { Layoutable } from "@src/building/layoutable";
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isWeighted } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";

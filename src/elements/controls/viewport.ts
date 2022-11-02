@@ -2,7 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { WindowContext } from "@src/building/windowContext";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";

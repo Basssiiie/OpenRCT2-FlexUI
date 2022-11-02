@@ -1,8 +1,8 @@
 import { store } from "@src/bindings/stores/createStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";

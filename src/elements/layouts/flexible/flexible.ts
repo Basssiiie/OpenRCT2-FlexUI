@@ -1,8 +1,8 @@
 import { BuildOutput } from "@src/building/buildOutput";
 import { Layoutable } from "@src/building/layoutable";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { defaultSpacing } from "@src/elements/constants";
 import { VisualElement } from "@src/elements/controls/visualElement";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";

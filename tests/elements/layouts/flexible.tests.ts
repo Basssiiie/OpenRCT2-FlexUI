@@ -3,7 +3,7 @@
 import { store } from "@src/bindings/stores/createStore";
 import { BuildContainer } from "@src/building/buildContainer";
 import { ParentControl } from "@src/building/parentControl";
-import { createWidgetMap } from "@src/building/widgetMap";
+import { createWidgetMap } from "@src/building/widgets/widgetMap";
 import { defaultScale } from "@src/elements/constants";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";

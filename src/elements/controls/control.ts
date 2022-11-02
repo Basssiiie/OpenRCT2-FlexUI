@@ -1,7 +1,7 @@
 import { on } from "@src/bindings/stores/on";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetMap } from "@src/building/widgetMap";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";

@@ -1,7 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgetCreator";
+import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { TextColour } from "@src/utilities/colour";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
