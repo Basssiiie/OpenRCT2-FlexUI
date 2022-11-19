@@ -3,7 +3,6 @@ import { Layoutable } from "@src/building/layoutable";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { WidgetMap } from "@src/building/widgets/widgetMap";
-import { WindowContext } from "@src/building/windowContext";
 import { VisualElement } from "@src/elements/controls/visualElement";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { parseScale } from "@src/positional/parsing/parseScale";
@@ -49,12 +48,10 @@ export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer
 class AbsoluteLayoutControl extends VisualElement implements ParentControl<AbsolutePosition>
 {
 	_children: Layoutable<AbsolutePosition>[];
-	_context: WindowContext;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions)
 	{
 		super(parent, params);
-		this._context = output.context;
 
 		const childCreators = (isArray(params)) ? params : params.content;
 		const count = childCreators.length;

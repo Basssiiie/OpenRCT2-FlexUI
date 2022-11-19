@@ -2,7 +2,7 @@
 
 import { store } from "@src/bindings/stores/createStore";
 import { window } from "@src/building/window";
-import { WindowContext } from "@src/building/windowContext";
+import { FrameContext } from "@src/building/frames/frameContext";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";
@@ -321,13 +321,13 @@ test("Window applies padding to resizes", t =>
 test("Window events are triggered", t =>
 {
 	global.ui = Mock.ui();
-	const hits: [string, WindowContext][] = [];
+	const hits: [string, FrameContext][] = [];
 
 	const template = window({
 		width: 150, height: 100,
-		onOpen: ((c: WindowContext) => hits.push(["open", c])) as unknown as (() => void),
-		onUpdate: ((c: WindowContext) => hits.push(["update", c])) as unknown as (() => void),
-		onClose: ((c: WindowContext) => hits.push(["close", c])) as unknown as (() => void),
+		onOpen: ((c: FrameContext) => hits.push(["open", c])) as unknown as (() => void),
+		onUpdate: ((c: FrameContext) => hits.push(["update", c])) as unknown as (() => void),
+		onClose: ((c: FrameContext) => hits.push(["close", c])) as unknown as (() => void),
 		content: [
 			button({ image: 342 }),
 			label({ text: "hello"})

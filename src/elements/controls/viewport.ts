@@ -3,7 +3,7 @@ import { isStore } from "@src/bindings/stores/isStore";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { WindowContext } from "@src/building/windowContext";
+import { FrameContext } from "@src/building/frames/frameContext";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -127,13 +127,9 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 /**
  * Finds the widget for the specified viewport control to update it.
  */
-function updateViewport(control: ViewportControl, context: WindowContext): void
+function updateViewport(control: ViewportControl, context: FrameContext): void
 {
-	const widget = context.getWidget<ViewportWidget>(control.name);
-	if (!widget)
-		return;
-
-	const viewport = widget.active;
+	const viewport = context.getWidget<ViewportWidget>(control.name);
 	if (!viewport || !viewport.viewport)
 		return;
 

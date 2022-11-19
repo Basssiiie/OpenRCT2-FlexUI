@@ -1,6 +1,7 @@
 // Window related components
 export { window, WindowParams, TabbedWindowParams } from "./building/window";
 export { WindowTemplate } from "./building/windowTemplate";
+export { tab, TabParams } from "./building/tabs/tab";
 
 // Store related utilities
 export { Store } from "./bindings/stores/store";
@@ -44,13 +45,14 @@ export { Rectangle } from "./positional/rectangle";
 export { BuildOutput } from "./building/buildOutput";
 export { WidgetMap } from "./building/widgets/widgetMap";
 export { WidgetCreator } from "./building/widgets/widgetCreator";
-export { WidgetEditor } from "./building/widgets/widgetEditor";
-export { WindowContext } from "./building/windowContext";
-export { WindowEvent } from "./building/windowEvent";
+export { TabCreator } from "./building/tabs/tabCreator";
+export { FrameContext } from "./building/frames/frameContext";
+export { FrameEvent } from "./building/frames/frameEvent";
 export { ParentControl } from "./building/parentControl";
 export { Bindable } from "./bindings/bindable";
 export { Binder } from "./bindings/binder";
 export { Layoutable } from "./building/layoutable";
+export { TabLayoutable } from "./building/tabs/tabLayoutable";
 export { Parsed } from "./positional/parsing/parsed";
 export { ParsedPadding } from "./positional/parsing/parsedPadding";
 export { ParsedScale } from "./positional/parsing/parsedScale";

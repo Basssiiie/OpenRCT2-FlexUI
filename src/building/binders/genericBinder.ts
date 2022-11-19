@@ -2,7 +2,6 @@ import { Bindable } from "@src/bindings/bindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
 import { isUndefined } from "@src/utilities/type";
-import { Template } from "../template";
 import { isStore } from "../../bindings/stores/isStore";
 import { Store } from "../../bindings/stores/store";
 
@@ -10,10 +9,10 @@ import { Store } from "../../bindings/stores/store";
 /**
  * Generic binder that can bind to a specific target.
  */
-export abstract class GenericBinder<TTarget> implements Binder<TTarget>
+export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 {
 	protected readonly _bindings: Binding<TTarget, keyof TTarget, unknown>[] = [];
-	protected _template: Template | null = null;
+	protected _source: TSource | null = null;
 
 
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void
@@ -61,12 +60,9 @@ export abstract class GenericBinder<TTarget> implements Binder<TTarget>
 
 
 	/**
-	 * Bind a window to this binder.
+	 * Bind a source instance to this binder.
 	 */
-	_bind(template: Template): void
-	{
-		this._template = template;
-	}
+	abstract _bind(source: TSource): void;
 
 
 	/**
@@ -74,7 +70,7 @@ export abstract class GenericBinder<TTarget> implements Binder<TTarget>
 	 */
 	_unbind(): void
 	{
-		this._template = null;
+		this._source = null;
 	}
 
 	/**

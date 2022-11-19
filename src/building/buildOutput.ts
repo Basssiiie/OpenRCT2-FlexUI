@@ -1,6 +1,6 @@
 import { Binder } from "@src/bindings/binder";
-import { WindowContext } from "./windowContext";
-import { WindowEvent } from "./windowEvent";
+import { FrameContext } from "./frames/frameContext";
+import { FrameEvent } from "./frames/frameEvent";
 
 
 /**
@@ -14,9 +14,9 @@ export interface BuildOutput
 	readonly binder: Binder<WidgetBase>;
 
 	/**
-	 * A context which can be used to interact with the window as a whole.
+	 * A context which can be used to interact with the window or tab as a whole.
 	 */
-	readonly context: WindowContext;
+	readonly context: FrameContext;
 
 	/**
 	 * Add a widget to the build output that will be rendered.
@@ -26,5 +26,5 @@ export interface BuildOutput
 	/**
 	 * Subscribe to an event on the created window.
 	 */
-	on(event: WindowEvent, callback: (context: WindowContext) => void): void;
+	on(event: FrameEvent, callback: (context: FrameContext) => void): void;
 }

@@ -1,7 +1,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { BuildContainer } from "@src/building/buildContainer";
+import { FrameBuilder } from "@src/building/frames/frameBuilder";
 import { ParentControl } from "@src/building/parentControl";
 import { createWidgetMap } from "@src/building/widgets/widgetMap";
 import { defaultScale } from "@src/elements/constants";
@@ -31,7 +31,7 @@ const parentMock: ParentControl<FlexiblePosition> =
 
 test("Simple layouts with widgets", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
 	const creator = flexible({
 		spacing: 0,
@@ -89,7 +89,7 @@ test("Simple layouts with widgets", t =>
 
 test("Pixel sizes ignore leftover space", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -133,7 +133,7 @@ test("Pixel sizes ignore leftover space", t =>
 
 test("Percentage sizes", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -177,7 +177,7 @@ test("Percentage sizes", t =>
 
 test("Weighted sizes", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -221,7 +221,7 @@ test("Weighted sizes", t =>
 
 test("Relative percentage fills leftover space", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
 	const creator = flexible({
 		spacing: 0,
@@ -252,7 +252,7 @@ test("Relative percentage fills leftover space", t =>
 
 test("Relative weight fills leftover space", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -283,7 +283,7 @@ test("Relative weight fills leftover space", t =>
 
 test("Padding: single number value", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
@@ -307,7 +307,7 @@ test("Padding: single number value", t =>
 
 test("Padding: single pixel value", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
@@ -331,7 +331,7 @@ test("Padding: single pixel value", t =>
 
 test("Padding: single percentage value", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
@@ -355,7 +355,7 @@ test("Padding: single percentage value", t =>
 
 test("Padding: single weighted value", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: 0,
@@ -379,7 +379,7 @@ test("Padding: single weighted value", t =>
 
 test("Padding: tuple with 2 values", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 48 };
 	const creator = flexible({
 		spacing: 0,
@@ -416,7 +416,7 @@ test("Padding: tuple with 2 values", t =>
 
 test("Padding: weighted value with absolute size", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
@@ -440,7 +440,7 @@ test("Padding: weighted value with absolute size", t =>
 
 test("Padding: multiple weighted values mixed with absolute sizes", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: "0.5w",
@@ -473,7 +473,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 
 test("Padding: included in cursor tracking", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: 3,
@@ -506,7 +506,7 @@ test("Padding: included in cursor tracking", t =>
 
 test("Padding: used as spacing for single element", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 100, height: 30 };
 	const creator = flexible({
 		spacing: 3, padding: 0,
@@ -547,7 +547,7 @@ test("Padding: used as spacing for single element", t =>
 
 test("Works without children", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		content: []
@@ -565,7 +565,7 @@ test("Works without children", t =>
 
 test("Spacing: 10 pixels between two elements", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 10,
@@ -596,7 +596,7 @@ test("Spacing: 10 pixels between two elements", t =>
 
 test("Spacing: default space between two elements", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 7, y: 20, width: 78, height: 35 };
 	const creator = flexible({
 		content: [
@@ -626,7 +626,7 @@ test("Spacing: default space between two elements", t =>
 
 test("Spacing: percentile space between two elements", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 5, y: 10, width: 50, height: 15 };
 	const creator = flexible({
 		spacing: "20%",
@@ -657,7 +657,7 @@ test("Spacing: percentile space between two elements", t =>
 
 test("Spacing: weighted space between two elements", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 5, y: 0, width: 30, height: 15 };
 	const creator = flexible({
 		spacing: "1w",
@@ -688,7 +688,7 @@ test("Spacing: weighted space between two elements", t =>
 
 test("Absolute children make parent absolutely sized", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const creator = flexible({
 		spacing: 0,
 		content: [
@@ -707,7 +707,7 @@ test("Absolute children make parent absolutely sized", t =>
 
 test("Absolutely sized parent includes spacing", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const creator = flexible({
 		spacing: 8,
 		content: [
@@ -726,7 +726,7 @@ test("Absolutely sized parent includes spacing", t =>
 
 test("Absolute children make all parents absolutely sized", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const creator = flexible([
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
@@ -749,7 +749,7 @@ test("Absolute children make all parents absolutely sized", t =>
 
 test("Single non-absolute child width makes parents width unknown", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const creator = flexible([
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
@@ -772,7 +772,7 @@ test("Single non-absolute child width makes parents width unknown", t =>
 
 test("Single non-absolute child height makes parents height unknown", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const creator = flexible([
 		flexible([
 			label({ text: "a", width: 20, height: "12px" }),
@@ -795,7 +795,7 @@ test("Single non-absolute child height makes parents height unknown", t =>
 
 test("Nested layouts with boxed labels using percentage padding", t =>
 {
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 32, y: 15, width: 240, height: 180 };
 	const creator = vertical({
 		spacing: "0px",
@@ -895,7 +895,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 test("Child with visibility 'none' is not updated", t =>
 {
 	global.ui = Mock.ui();
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 28, y: 20, width: 43, height: 60 };
 	const creator = flexible({
 		spacing: 10,
@@ -940,7 +940,7 @@ test("Child with visibility 'none' is not updated", t =>
 test("None update if all children have visibility set to 'none'", t =>
 {
 	global.ui = Mock.ui();
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		content: [
@@ -984,7 +984,7 @@ test("None update if all children have visibility set to 'none'", t =>
 test("Child visibility is updated by store", t =>
 {
 	global.ui = Mock.ui();
-	const output: BuildContainer = new BuildContainer({} as WindowDesc);
+	const output: FrameBuilder = new FrameBuilder({ content: [] }, [], [], []);
 	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 80 };
 	const visibility = store<ElementVisibility>("visible");
 	const creator = flexible({

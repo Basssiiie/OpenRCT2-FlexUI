@@ -1,26 +1,29 @@
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
-import { Template } from "@src/building/template";
 import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import { FrameControl } from "../frames/frameControl";
 import { GenericBinder } from "./genericBinder";
 
 
 /**
  * Helper that can bind a store from a viewmodel to a widget inside a window.
  */
-export class WidgetBinder extends GenericBinder<WidgetBase>
+export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 {
-	override _bind(template: Template): void
+	/**
+	 * Bind a source frame to this binder and specify which set of widgets to refresh.
+	 */
+	override _bind(frame: FrameControl): void
 	{
-		const widgets = template._templateWidgets;
+		const widgets = frame._activeWidgets;
 		if (widgets)
 		{
-			// Update the template widgets always before the window opens.
+			// Update the active widgets when the frame opens
 			this._refresh(widgets);
 		}
-		super._bind(template);
+		this._source = frame;
 	}
 
 
@@ -36,18 +39,18 @@ export class WidgetBinder extends GenericBinder<WidgetBase>
 
 		const callback = (value: V): void =>
 		{
-			const template = this._template;
-			// Only update if window is open.
-			if (!template || !template._window)
+			const source = this._source;
+			// Only update if source frame is active.
+			if (!source)
 				return;
 
-			const editor = template.getWidget<T>(targetName);
-			if (!editor)
+			const widget = source.getWidget<T>(targetName);
+			if (!widget)
 			{
 				Log.debug(`Binder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
 				return;
 			}
-			editor.set(property, this._convert(value, converter));
+			this._apply(widget, property, value, converter);
 		};
 		return new Binding<T, K, V>(targetName, property, store, converter, callback);
 	}

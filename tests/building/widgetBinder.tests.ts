@@ -1,9 +1,11 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
-import { BuildContainer } from "@src/building/buildContainer";
 import { WidgetBinder } from "@src/building/binders/widgetBinder";
+import { FrameBuilder } from "@src/building/frames/frameBuilder";
+import { createWidgetMap } from "@src/building/widgets/widgetMap";
 import { ElementVisibility } from "@src/elements/elementParams";
+import { mutable } from "@src/utilities/mutable";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
@@ -47,7 +49,7 @@ test("read() adds store to binder", t =>
 });
 
 
-test("read() sets store in window template", t =>
+test("read() sets store in window frame", t =>
 {
 	global.ui = Mock.ui();
 	const label: LabelWidget =
@@ -55,15 +57,16 @@ test("read() sets store in window template", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
+	const output = new FrameBuilder({ content: [] }, [], [], []);
 	output.add(label);
 
 	const storeNumber = new DefaultStore(25);
 	output.binder.add(label, "x", storeNumber);
-	output.binder._bind(output.context);
 
-	output.context._build();
-	output.context.open();
+	const frame = mutable(output.context);
+	frame._binder = output.binder; // prevents the binder to be optimized away internally
+	frame.open(createWidgetMap(output._widgets));
+
 	t.is(label.x, 25);
 
 	storeNumber.set(77);
@@ -82,15 +85,16 @@ test("read() sets store through converter", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
-	const output = new BuildContainer({ widgets: [ label ] } as WindowDesc);
+	const output = new FrameBuilder({ content: [] }, [], [], []);
 	output.add(label);
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
-	output.binder._bind(output.context);
 
-	output.context._build();
-	output.context.open();
+	const frame = mutable(output.context);
+	frame._binder = output.binder; // prevents the binder to be optimized away internally
+	frame.open(createWidgetMap(output._widgets));
+
 	t.true(label.isVisible);
 
 	storeNumber.set("hidden");

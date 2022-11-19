@@ -1,15 +1,19 @@
 import { Bindable } from "@src/bindings/bindable";
-import { FlexibleLayoutControl, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { WindowBinder } from "@src/building/binders/windowBinder";
+import { FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Paddable } from "@src/positional/paddable";
 import { Padding } from "@src/positional/padding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Colour } from "@src/utilities/colour";
-import { invoke } from "@src/utilities/event";
+import { Event } from "@src/utilities/event";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
-import { BuildContainer } from "./buildContainer";
+import { FrameBuilder } from "./frames/frameBuilder";
+import { FrameContext } from "./frames/frameContext";
+import { TabCreator } from "./tabs/tabCreator";
+import { TabLayoutable } from "./tabs/tabLayoutable";
+import { Template } from "./template";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -124,18 +128,24 @@ export interface TabbedWindowParams extends BaseWindowParams
 
 	/**
 	 * Specify which tab the window should open on. Starts at 0.
+	 * @default 0
 	 */
 	startingTab?: number;
 
 	/**
 	 * Specify the tabs that this window has.
-	 * @todo
 	 */
-	tabs: FlexibleLayoutParams;
+	tabs: TabCreator[];
+
+	/**
+	 * Event that gets triggered when a new tab is selected.
+	 */
+	onTabChange?: () => void;
 }
 
 
 const defaultPadding: Padding = 5;
+const defaultTabIcon = 16;
 
 
 /**
@@ -143,8 +153,9 @@ const defaultPadding: Padding = 5;
  */
 export function window(params: WindowParams | TabbedWindowParams): WindowTemplate
 {
+	Log.debug("window() started");
 	const startTime = Log.time();
-	const window: WindowDesc =
+	const windowDesc: WindowDesc =
 	{
 		classification: `fui-${identifier()}`,
 		title: "",
@@ -157,66 +168,81 @@ export function window(params: WindowParams | TabbedWindowParams): WindowTemplat
 		maxHeight: params.maxHeight
 	};
 
-	const output = new BuildContainer(window);
-	output._windowBinder.add(window, "title", params.title);
+	const windowBinder = new WindowBinder();
+	windowBinder.add(windowDesc, "title", params.title);
+
+	const open: Event<FrameContext> = [];
+	const update: Event<FrameContext> = [];
+	const close: Event<FrameContext> = [];
+	const output = new Template(windowDesc, (windowBinder._hasBindings()) ? windowBinder : null);
 
 	if ("content" in params)
 	{
-		createWindowLayout(output, window, params);
+		const builder = new FrameBuilder(params, open, update, close);
+		output._rootFrame = builder.context;
+		windowDesc.widgets = builder._widgets;
 	}
-	/*else if ("tabs" in params)
+	if ("tabs" in params)
 	{
+		const tabCreators = params.tabs;
+		const tabCount = tabCreators.length;
+		const tabList = Array<TabLayoutable>(tabCount);
+		const tabDescs = Array<WindowTabDesc>(tabCount);
 
-	}*/
+		for (let idx = 0; idx < tabCount; idx++)
+		{
+			const tabParams: WindowTabDesc = { image: defaultTabIcon };
+			tabList[idx] = tabCreators[idx](tabParams);
+			tabDescs[idx] = tabParams;
+		}
 
-	const { open, update, close } = output;
-
-	if (params.onOpen)
-	{
-		open.push(params.onOpen);
+		output._tabLayoutables = tabList;
+		windowDesc.tabs = tabDescs;
+		output._tabChange = params.onTabChange;
+		windowDesc.onTabChange = (): void => output._tabChanged();
 	}
-	if (params.onUpdate)
+	setWindowLayoutResizing(output, update, windowDesc);
+	output._position = params.position;
+
+	const suppliedPadding = params.padding;
+	output._padding = parsePadding(isUndefined(suppliedPadding) ? defaultPadding : suppliedPadding);
+
+	const { onOpen, onUpdate, onClose } = params;
+	if (onOpen)
 	{
-		update.push(params.onUpdate);
+		open.push(onOpen);
 	}
-	if (params.onClose)
+	if (onUpdate)
 	{
-		close.push(params.onClose);
+		update.push(onUpdate);
+	}
+	if (onClose)
+	{
+		close.push(onClose);
 	}
 
-	const template = output.context;
-	template._position = params.position;
-
-	update.push(() => template._onRedraw());
-	close.push(() => template._onClose());
-	template._build();
-
-	if (open.length > 0)
+	windowDesc.onUpdate = (): void =>
 	{
-		template._onOpen = (): void => invoke(open, template);
-	}
-	window.onUpdate = (): void => invoke(update, template);
-	window.onClose = (): void => invoke(close, template);
+		output._checkRedraw();
+		output._forEachActiveFrame(f => f.update());
+	};
+	windowDesc.onClose = (): void =>
+	{
+		Log.debug(`Template.onClose() triggered`);
+		output._window = null; // to prevent infinite close loop
+		output.close();
+	};
 
 	Log.debug(`window() creation time: ${Log.time() - startTime} ms`);
-	return template;
+	return output;
 }
 
 
 /**
- * Create a regular window layout.
+ * Enables resizing the window by the user.
  */
-function createWindowLayout(output: BuildContainer, window: WindowDesc, params: WindowParams): void
+function setWindowLayoutResizing(template: Template, update: Event, window: WindowDesc): void
 {
-	const template = output.context;
-	template._body = new FlexibleLayoutControl(template, output, params, LayoutDirection.Vertical);
-
-	// Check if padding was specified..
-	const suppliedPadding = params.padding;
-	template._padding = parsePadding((!isUndefined(suppliedPadding)) ? suppliedPadding : defaultPadding);
-
-	window.widgets = output._widgets;
-
 	if (window.minWidth || window.minHeight || window.maxWidth || window.maxHeight)
 	{
 		const { width, height } = window;
@@ -225,28 +251,18 @@ function createWindowLayout(output: BuildContainer, window: WindowDesc, params: 
 		window.minHeight ||= height;
 		window.maxHeight ||= height;
 
-		setWindowLayoutResizing(output);
+		update.push((): void =>
+		{
+			const instance = ui.getWindow(template._description.classification);
+			const { width, height } = instance;
+
+			if (width === template._width && height === template._height)
+				return;
+
+			Log.debug(`User has resized the window from ${template._width}x${template._height} to ${width}x${height}.`);
+			template._width = width;
+			template._height = height;
+			template._layout();
+		});
 	}
-}
-
-
-/**
- * Enables resizing the window by the user.
- */
-function setWindowLayoutResizing(output: BuildContainer): void
-{
-	const template = output.context;
-	output.update.push((): void =>
-	{
-		const instance = ui.getWindow(template._description.classification);
-		const { width, height } = instance;
-
-		if (width === template._width && height === template._height)
-			return;
-
-		Log.debug(`User has resized the window from ${template._width}x${template._height} to ${width}x${height}.`);
-		template._width = width;
-		template._height = height;
-		template.redraw();
-	});
 }

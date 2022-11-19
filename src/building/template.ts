@@ -1,120 +1,122 @@
 import { WindowBinder } from "@src/building/binders/windowBinder";
-import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { parseFlexiblePosition } from "@src/elements/layouts/flexible/parseFlexiblePosition";
 import * as Log from "@src/utilities/logger";
-import { FlexiblePosition } from "..";
 import { defaultScale } from "../elements/constants";
 import { setSizeWithPadding } from "../elements/layouts/paddingHelpers";
 import { ParsedPadding } from "../positional/parsing/parsedPadding";
 import { Rectangle } from "../positional/rectangle";
-import { ParentControl } from "./parentControl";
-import { WidgetEditor } from "./widgets/widgetEditor";
-import { createWidgetMap, WidgetMap } from "./widgets/widgetMap";
+import { FrameControl } from "./frames/frameControl";
+import { TabLayoutable } from "./tabs/tabLayoutable";
+import { createWidgetMap } from "./widgets/widgetMap";
 import { BaseWindowParams } from "./window";
-import { WindowContext } from "./windowContext";
 import { WindowTemplate } from "./windowTemplate";
 
 
 type WindowPosition = BaseWindowParams["position"];
 
 
-const topBarSize: number = 15;
-
-
 /**
  * Internal template that keeps track of the window.
  */
-export class Template implements WindowTemplate, WindowContext, ParentControl<FlexiblePosition>
+export class Template implements WindowTemplate
 {
-	parse = parseFlexiblePosition;
-	recalculate = this.redraw;
-
 	_window: Window | null = null;
-	_body: FlexibleLayoutControl | null = null;
-
 	_width: number;
 	_height: number;
 	_padding: ParsedPadding | null = null;
+	_topBarSize: number = 15;
 	_position?: WindowPosition;
 
-	_templateWidgets: WidgetMap | null = null;
-	_openWidgets: WidgetMap | null = null;
-	_redrawNextTick: boolean = true;
+	_rootFrame: FrameControl | null = null;
+	_tabLayoutables: TabLayoutable[] = [];
+	_selectedTab: number = 0;
+	_redrawNextTick: boolean = false;
 
-
-	/**
-	 * Callback that gets called when the window is opened.
-	 */
-	_onOpen?: () => void;
+	_tabChange?: () => void;
 
 
 	constructor(
 		readonly _description: WindowDesc,
-		private _binder: WindowBinder | null)
+		readonly _windowBinder: WindowBinder | null)
 	{
 		this._width = _description.width;
 		this._height = _description.height;
 	}
 
 	/**
-	 * Builds the final template.
+	 * Recalculate the whole layout.
 	 */
-	_build(): void
+	_layout(): void
 	{
-		Log.debug("Template: build() started");
-		const widgets = this._description.widgets;
-		if (widgets)
+		const topbar = this._topBarSize, padding = this._padding;
+		const area: Rectangle = { x: 0, y: topbar, width: this._width - 1, height: this._height - (topbar + 1) };
+		if (padding)
 		{
-			const map = createWidgetMap(widgets);
-			this._templateWidgets = map;
-			performLayout(this, map);
+			setSizeWithPadding(area, defaultScale, defaultScale, padding);
 		}
-		const binder = this._binder;
-		if (binder && !binder._hasBindings())
-		{
-			// Clean up binder if it is not used.
-			this._binder = null;
-		}
+
+		this._forEachActiveFrame(f => f.layout(area));
 	}
 
 	/**
 	 * Checks if the template has been marked dirty, and redraws if that's the case.
 	 */
-	_onRedraw(): void
+	_checkRedraw(): void
 	{
-		const widgets = this._openWidgets;
-		if (!widgets || !this._redrawNextTick)
+		if (!this._window || !this._redrawNextTick)
 			return;
 
 		const startTime = Log.time();
 		Log.debug(`Template.onRedraw() window size: (${this._window?.width} x ${this._window?.height})...`);
 
-		performLayout(this, widgets);
+		this._layout();
 		this._redrawNextTick = false;
 
 		Log.debug(`Template.onRedraw() finished in ${Log.time() - startTime} ms`);
 	}
 
-	/**
-	 * Unbinds all bindings from the currently open window.
-	 */
-	_onClose(): void
+	_tabChanged(): void
 	{
-		const binder = this._binder;
-		if (binder)
-		{
-			binder._unbind();
-		}
-		this._window = null;
-		this._openWidgets = null;
-	}
-
-	redraw(): void
-	{
-		if (!this._openWidgets)
+		const window = this._window;
+		if (!window)
 			return;
 
-		this._redrawNextTick = true;
+		this._forActiveTab(f => f.close());
+
+		const newWidgets = createWidgetMap(window.widgets);
+		Log.debug(`Template.tabChanged() from ${this._selectedTab} to ${window.tabIndex}`);
+		this._selectedTab = window.tabIndex;
+
+		this._forActiveTab(f => f.open(newWidgets));
+		this._layout();
+
+		const onTabChange = this._tabChange;
+		if (onTabChange)
+		{
+			onTabChange();
+		}
+	}
+
+	_forEachActiveFrame(callback: (frame: TabLayoutable) => void): void
+	{
+		const root = this._rootFrame;
+		if (root)
+		{
+			callback(root);
+		}
+		this._forActiveTab(callback);
+	}
+
+	_forActiveTab(callback: (frame: TabLayoutable) => void): void
+	{
+		const tabs = this._tabLayoutables;
+		if (tabs)
+		{
+			const selectedTab = tabs[this._selectedTab];
+			if (selectedTab)
+			{
+				callback(selectedTab);
+			}
+		}
 	}
 
 	open(): void
@@ -129,29 +131,33 @@ export class Template implements WindowTemplate, WindowContext, ParentControl<Fl
 		const description = this._description;
 		setWindowPosition(this, description, this._position);
 
-		const binder = this._binder;
-		if (binder && binder._hasBindings())
+		const binder = this._windowBinder;
+		if (binder)
 		{
 			binder._bind(this);
 		}
 
 		const window = ui.openWindow(description);
-		this._window = window;
-		this._openWidgets = createWidgetMap(window.widgets);
+		const activeWidgets = createWidgetMap(window.widgets);
 
-		if (this._onOpen)
-		{
-			this._onOpen();
-		}
+		this._window = window;
+		this._forEachActiveFrame(f => f.open(activeWidgets));
+		this._layout();
 	}
 
 	close(): void
 	{
+		this._forEachActiveFrame(f => f.close());
 		if (this._window)
 		{
 			this._window.close();
 		}
-		this._onClose();
+		const binder = this._windowBinder;
+		if (binder)
+		{
+			binder._unbind();
+		}
+		this._window = null;
 	}
 
 	focus(): void
@@ -161,53 +167,6 @@ export class Template implements WindowTemplate, WindowContext, ParentControl<Fl
 			this._window.bringToFront();
 		}
 	}
-
-	getWidget<T extends Widget>(name: string): WidgetEditor<T> | null
-	{
-		const widgets = this._templateWidgets;
-		if (widgets)
-		{
-			const template = <T>widgets[name];
-			if (template)
-			{
-				const window = this._window;
-				let active: T | undefined;
-				if (window)
-				{
-					// Create map of open widgets lazily if it has not been created yet.
-					let openWidgets = this._openWidgets;
-					if (!openWidgets)
-					{
-						this._openWidgets = openWidgets = createWidgetMap(window.widgets);
-					}
-					active = <T>openWidgets[name];
-				}
-				return new WidgetEditor(template, active);
-			}
-		}
-		return null;
-	}
-}
-
-
-/**
- * Recalculate the whole layout.
- */
-function performLayout(template: Template, widgets: WidgetMap): void
-{
-	const body = template._body;
-	if (!body || body.skip)
-		return;
-
-	// Skip the top bar (15px)
-	const area: Rectangle = { x: 0, y: topBarSize, width: template._width - 1, height: template._height - (topBarSize + 1) };
-	if (template._padding)
-	{
-		setSizeWithPadding(area, defaultScale, defaultScale, template._padding);
-	}
-
-	body._recalculateSizeFromChildren();
-	body.layout(widgets, area);
 }
 
 
