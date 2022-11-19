@@ -1,5 +1,6 @@
 // Window related components
-export { window, WindowParams, TabbedWindowParams } from "./building/window";
+export { window, WindowParams } from "./building/window";
+export { tabwindow, TabWindowParams } from "./building/tabs/tabWindow";
 export { WindowTemplate } from "./building/windowTemplate";
 export { tab, TabParams } from "./building/tabs/tab";
 

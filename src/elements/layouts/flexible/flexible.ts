@@ -112,7 +112,7 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 		{
 			spacing = parseScale(params.spacing);
 		}
-		this._spacing = (spacing ||= defaultSpacing);
+		this._spacing = (spacing || defaultSpacing);
 
 		const childCreators = (isArray(params)) ? params : params.content;
 		const count = childCreators.length;

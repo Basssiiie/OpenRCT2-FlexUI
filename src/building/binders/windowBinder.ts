@@ -1,37 +1,37 @@
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
-import { Template } from "@src/building/template";
+import { BaseWindowControl } from "../baseWindowControl";
 import { GenericBinder } from "./genericBinder";
 
 
 /**
  * Binder for OpenRCT2 windows.
  */
-export class WindowBinder extends GenericBinder<Template, Window | WindowDesc>
+export class WindowBinder extends GenericBinder<BaseWindowControl, Window | WindowDesc>
 {
 	/**
-	 * Bind a window template to this binder.
+	 * Bind a window control to this binder.
 	 */
-	override _bind(template: Template): void
+	override _bind(control: BaseWindowControl): void
 	{
-		const window = template._description;
+		const window = control._description;
 		if (window)
 		{
 			this._refresh(window);
 		}
-		this._source = template;
+		this._source = control;
 	}
 
 	protected override _createBinding<T extends Window | WindowDesc, K extends keyof T, V>(_target: T, property: K, store: Store<V>, converter: ((value: V) => T[K]) | undefined): Binding<T, K, V>
 	{
 		const callback = (value: V): void =>
 		{
-			const template = this._source;
+			const control = this._source;
 			// Only update if window is open.
-			if (!template || !template._window)
+			if (!control || !control._window)
 				return;
 
-			this._apply(template._window, <keyof Window>property, value, <never>converter);
+			this._apply(control._window, <keyof Window>property, value, <never>converter);
 		};
 		return new Binding<T, K, V>("", property, store, converter, callback);
 	}
