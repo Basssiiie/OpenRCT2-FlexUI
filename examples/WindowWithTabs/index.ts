@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { compute, dropdown, horizontal, label, spinner, store, tab, toggle, window } from "openrct2-flexui";
+import { compute, dropdown, horizontal, label, spinner, store, tab, tabwindow, toggle } from "openrct2-flexui";
 
 
 const value = store(0);
@@ -36,15 +36,16 @@ const explosionIcon: ImageAnimation = {
 };
 
 
-const windowWithTabs = window({
+const windowWithTabs = tabwindow({
 	title: "Window with Tabs (fui example)",
-	width: 200, minWidth: 75, maxWidth: 10_000,
-	height: 150, minHeight: 75, maxHeight: 10_000,
+	width: 225, maxWidth: 10_000,
+	height: 175, maxHeight: 10_000,
 	padding: 50,
-	content: [ // shown on every tab
+	static: [ // shown on every tab
 		label({
-			width: 100, padding: { top: -20 },
-			text: compute(source, s => `Last updated from: ${s}`)
+			width: 120, padding: { bottom: -30 },
+			text: compute(source, s => `Last updated from:\n${s}`),
+			alignment: "centred"
 		})
 	],
 	tabs: [
@@ -55,6 +56,7 @@ const windowWithTabs = window({
 					value: value,
 					minimum: 0,
 					maximum: 4,
+					wrapMode: "wrap",
 					onChange: val => updateValue(val, "spinner, tab 1")
 				})
 			]
