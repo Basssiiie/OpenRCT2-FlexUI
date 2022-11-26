@@ -96,7 +96,7 @@ class DropdownButtonComponent extends DropdownControl
 
 		// Setup button part, reusing params object
 		const buttonParams = <ButtonParams>params;
-		buttonParams.text = buttonText,
+		buttonParams.text = buttonText;
 		buttonParams.onClick = (): void =>
 		{
 			const action = actions[this._selectedButton];

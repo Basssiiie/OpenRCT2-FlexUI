@@ -13,6 +13,23 @@ export interface TabParams extends FlexibleLayoutParams
 	 */
 	image: number | ImageAnimation;
 
+	/**
+	 * Event that gets triggered when the tab is opened.
+	 */
+	onOpen?: () => void;
+
+	/**
+	 * Event that gets triggered for every tick the tab is open.
+	 */
+	onUpdate?: () => void;
+
+	/**
+	 * Event that gets triggered when the tab gets closed by either the
+	 * user or a plugin.
+	 */
+	onClose?: () => void;
+
+
 	//width?: number;
 	//height?: number;
 }
@@ -25,7 +42,7 @@ export function tab(params: TabParams): TabCreator
 {
 	return (output: WindowTabDesc) =>
 	{
-		const builder = new FrameBuilder(params, [], [], []);
+		const builder = new FrameBuilder(params, params.content, [], [], []);
 
 		output.image = params.image;
 		output.widgets = builder._widgets;

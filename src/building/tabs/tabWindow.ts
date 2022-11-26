@@ -2,6 +2,7 @@ import { FlexibleLayoutContainer, FlexibleLayoutParams } from "@src/elements/lay
 import { Colour } from "@src/utilities/colour";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
+import { noop } from "@src/utilities/noop";
 import { BaseWindowControl, BaseWindowParams } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameContext } from "../frames/frameContext";
@@ -77,22 +78,19 @@ class TabWindowControl extends BaseWindowControl
 	private _tabs: TabLayoutable[];
 	private _selectedTab: number;
 	private _tabChange?: () => void;
-
-	_layoutRoot?: () => void;
+	private _layoutRoot?: () => void;
 
 	constructor(params: TabWindowParams)
 	{
-		const open: Event<FrameContext> = [];
 		const update: Event<FrameContext> = [];
-		const close: Event<FrameContext> = [];
-		super(params, open, update, close);
+		super(params, update);
 
 		const tabs = params.tabs;
 		const staticWidgets = params.static;
 		let rootLayoutable: TabLayoutable;
 		if (staticWidgets)
 		{
-			const builder = new FrameBuilder(staticWidgets, open, update, close);
+			const builder = new FrameBuilder(params, staticWidgets, [], update, []);
 			this._description.widgets = builder._widgets;
 			this._layoutRoot = (): void =>
 			{
@@ -103,11 +101,16 @@ class TabWindowControl extends BaseWindowControl
 		}
 		else
 		{
+			const onUpdate = params.onUpdate;
+			if (onUpdate)
+			{
+				update.push(onUpdate);
+			}
 			rootLayoutable = <TabLayoutable>{
-				open: (): void => invoke(open),
-				update: (): void => invoke(update),
-				close: (): void => invoke(close),
-				layout() { /* nothing */ }
+				update: (update.length > 0) ? ((): void => invoke(update)) : noop,
+				open: (params.onOpen || noop),
+				close: (params.onClose || noop),
+				layout: noop
 			};
 		}
 		this._root = rootLayoutable;

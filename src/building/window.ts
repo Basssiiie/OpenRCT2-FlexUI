@@ -52,9 +52,9 @@ class WindowControl extends BaseWindowControl
 		const open: Event<FrameContext> = [];
 		const update: Event<FrameContext> = [];
 		const close: Event<FrameContext> = [];
-		super(params, open, update, close);
+		super(params, update);
 
-		const builder = new FrameBuilder(params, open, update, close);
+		const builder = new FrameBuilder(params, params, open, update, close);
 		this._description.widgets = builder._widgets;
 		this._frame = builder.context;
 	}

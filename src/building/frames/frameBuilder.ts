@@ -1,12 +1,12 @@
+import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Event } from "@src/utilities/event";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { BuildOutput } from "../buildOutput";
 import { FrameContext } from "./frameContext";
-import { FrameEvent } from "./frameEvent";
-import { FrameParams } from "./frameParams";
 import { FrameControl } from "./frameControl";
-import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { FrameEvent } from "./frameEvent";
+import { FrameContentParams, FrameEventParams } from "./frameParams";
 
 
 /**
@@ -14,24 +14,38 @@ import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection"
  */
 export class FrameBuilder implements BuildOutput
 {
-	readonly binder: WidgetBinder = new WidgetBinder();
+	readonly binder: WidgetBinder;
 	readonly _widgets: WidgetBase[] = [];
 
 	context: FrameControl;
 
 	constructor(
-		params: FrameParams,
+		params: FrameEventParams,
+		content: FrameContentParams,
 		readonly open: Event<FrameContext>,
 		readonly update: Event<FrameContext>,
 		readonly close: Event<FrameContext>
 	){
 		const context = new FrameControl(open, update, close);
+		const binder = this.binder ||= new WidgetBinder();
+		const { onOpen, onUpdate, onClose } = params;
+
 		this.context = context;
-
-		context._body = new FlexibleLayoutControl(context, this, params, LayoutDirection.Vertical);
-
-		const binder = this.binder;
+		context._body = new FlexibleLayoutControl(context, this, content, LayoutDirection.Vertical);
 		context._binder = (binder._hasBindings()) ? binder : null;
+
+		if (onOpen)
+		{
+			open.push(onOpen);
+		}
+		if (onUpdate)
+		{
+			update.push(onUpdate);
+		}
+		if (onClose)
+		{
+			close.push(onClose);
+		}
 	}
 
 	add(widget: WidgetBase): void

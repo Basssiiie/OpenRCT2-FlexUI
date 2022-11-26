@@ -12,6 +12,7 @@ import { FlexiblePosition } from "../flexible/flexiblePosition";
 import { Positions } from "../positions";
 import { absoluteLayout } from "./absoluteLayout";
 import { AbsolutePosition } from "./absolutePosition";
+import { noop } from "@src/utilities/noop";
 
 
 /**
@@ -47,6 +48,8 @@ export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer
 
 class AbsoluteLayoutControl extends VisualElement implements ParentControl<AbsolutePosition>
 {
+	recalculate = noop; // Nothing to recalculate
+
 	_children: Layoutable<AbsolutePosition>[];
 
 	constructor(parent: ParentControl, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions)
@@ -72,11 +75,6 @@ class AbsoluteLayoutControl extends VisualElement implements ParentControl<Absol
 			width: parseScale(position.width),
 			height: parseScale(position.height)
 		};
-	}
-
-	recalculate(): void
-	{
-		// Nothing else to recalculate
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void

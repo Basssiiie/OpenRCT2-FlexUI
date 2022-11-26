@@ -118,11 +118,9 @@ export abstract class BaseWindowControl implements WindowTemplate
 
 	constructor(
 		params: ExtendedWindowParams,
-		open: Event<FrameContext>,
-		update: Event<FrameContext>,
-		close: Event<FrameContext>
+		update: Event<FrameContext>
 	){
-		const { width, height, minWidth, maxWidth, minHeight, maxHeight, padding, onOpen, onUpdate, onClose } = params;
+		const { width, height, minWidth, maxWidth, minHeight, maxHeight, padding } = params;
 		const windowDesc: WindowDesc =
 		{
 			classification: `fui-${identifier()}`,
@@ -155,18 +153,6 @@ export abstract class BaseWindowControl implements WindowTemplate
 		if (minWidth || minHeight || maxWidth || maxHeight)
 		{
 			setWindowLayoutResizing(this, windowDesc, update, width, height);
-		}
-		if (onOpen)
-		{
-			open.push(onOpen);
-		}
-		if (onUpdate)
-		{
-			update.push(onUpdate);
-		}
-		if (onClose)
-		{
-			close.push(onClose);
 		}
 
 		const windowBinder = new WindowBinder();
