@@ -150,11 +150,8 @@ class TabWindowControl extends BaseWindowControl
 		Log.debug(`Template.tabChanged() from ${this._selectedTab} to ${window.tabIndex}`);
 		this._selectedTab = window.tabIndex;
 
-		this._forActiveTab(tab =>
-		{
-			tab.open(newWidgets);
-			this._layoutTab(tab);
-		});
+		this._forActiveTab(tab => tab.open(newWidgets));
+		this._layout();
 
 		const onTabChange = this._tabChange;
 		if (onTabChange)
@@ -172,12 +169,6 @@ class TabWindowControl extends BaseWindowControl
 		}
 	}
 
-	private _layoutTab(tab: TabLayoutable): void
-	{
-		const area = this._getWindowWidgetRectangle(defaultTopBarSizeWithTabs);
-		tab.layout(area);
-	}
-
 	protected _invoke(callback: (frame: TabLayoutable) => void): void
 	{
 		callback(this._root);
@@ -191,6 +182,10 @@ class TabWindowControl extends BaseWindowControl
 		{
 			rootFunction();
 		}
-		this._forActiveTab(tab => this._layoutTab(tab));
+		this._forActiveTab(tab =>
+		{
+			const area = this._getWindowWidgetRectangle(defaultTopBarSizeWithTabs);
+			tab.layout(area);
+		});
 	}
 }
