@@ -58,7 +58,7 @@ test("Text is bindable", t =>
 	text.set("Still there");
 	template.open();
 
-	const label2 = mock.createdWindows[1].widgets[0] as LabelWidget;
+	const label2 = mock.createdWindows[0].widgets[0] as LabelWidget;
 	t.is(label2.text, "Still there");
 });
 
@@ -88,6 +88,6 @@ test("Alignment is bindable", t =>
 	alignment.set("centred");
 	template.open();
 
-	const label2 = mock.createdWindows[1].widgets[0] as LabelWidget;
+	const label2 = mock.createdWindows[0].widgets[0] as LabelWidget;
 	t.is(label2.textAlign, "centred");
 });

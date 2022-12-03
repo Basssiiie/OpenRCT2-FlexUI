@@ -31,10 +31,10 @@ const parentMock: ParentControl<FlexiblePosition> =
 
 test("Simple layouts with widgets", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 200, height: 150 };
 	const creator = flexible({
-		spacing: 0,
+		spacing: 0, direction: LayoutDirection.Vertical,
 		content: [
 			label({ text: "hello world", height: "1w" }),
 			horizontal({
@@ -46,7 +46,7 @@ test("Simple layouts with widgets", t =>
 			}),
 			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
 	control._recalculateSizeFromChildren();
@@ -89,10 +89,10 @@ test("Simple layouts with widgets", t =>
 
 test("Pixel sizes ignore leftover space", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
-		spacing: 0,
+		spacing: 0, direction: LayoutDirection.Vertical,
 		content: [
 			label({
 				text: "a", width: "40px", height: "25px"
@@ -104,7 +104,7 @@ test("Pixel sizes ignore leftover space", t =>
 				text: "c", width: "70px", height: "20px"
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -133,7 +133,7 @@ test("Pixel sizes ignore leftover space", t =>
 
 test("Percentage sizes", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -148,7 +148,7 @@ test("Percentage sizes", t =>
 				text: "c", width: "75%", height: "15%"
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -177,7 +177,7 @@ test("Percentage sizes", t =>
 
 test("Weighted sizes", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -192,7 +192,7 @@ test("Weighted sizes", t =>
 				text: "c", width: "3w", height: "10w"
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -221,7 +221,7 @@ test("Weighted sizes", t =>
 
 test("Relative percentage fills leftover space", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
 	const creator = flexible({
 		spacing: 0,
@@ -233,7 +233,7 @@ test("Relative percentage fills leftover space", t =>
 				text: "b", height: "65px"
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -252,7 +252,7 @@ test("Relative percentage fills leftover space", t =>
 
 test("Relative weight fills leftover space", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		spacing: 0,
@@ -264,7 +264,7 @@ test("Relative weight fills leftover space", t =>
 				text: "b", height: "17px"
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -283,14 +283,14 @@ test("Relative weight fills leftover space", t =>
 
 test("Padding: single number value", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
 		content: [
 			button({ text: "a", padding: 5 })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -307,14 +307,14 @@ test("Padding: single number value", t =>
 
 test("Padding: single pixel value", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
 		content: [
 			button({ text: "a", padding: "5px" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -331,14 +331,14 @@ test("Padding: single pixel value", t =>
 
 test("Padding: single percentage value", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
 		content: [
 			button({ text: "a", height: "60%", padding: "20%" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -355,14 +355,14 @@ test("Padding: single percentage value", t =>
 
 test("Padding: single weighted value", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: 0,
 		content: [
 			button({ text: "a", width: "2w", height: "1w", padding: "0.4w" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -379,7 +379,7 @@ test("Padding: single weighted value", t =>
 
 test("Padding: tuple with 2 values", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 48 };
 	const creator = flexible({
 		spacing: 0,
@@ -391,7 +391,7 @@ test("Padding: tuple with 2 values", t =>
 				text: "b", width: "80%", height: "6w", padding: ["2w", "10%"]
 			})
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -416,14 +416,14 @@ test("Padding: tuple with 2 values", t =>
 
 test("Padding: weighted value with absolute size", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
 		spacing: 0,
 		content: [
 			button({ text: "a", width: "10px", padding: "1w" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -440,7 +440,7 @@ test("Padding: weighted value with absolute size", t =>
 
 test("Padding: multiple weighted values mixed with absolute sizes", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: "0.5w",
@@ -448,7 +448,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 			button({ text: "a", width: "1w", height: "1w" }),
 			button({ text: "b", width: "10px", height: "1w", padding: [ "8px", "1w" ] })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -473,7 +473,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 
 test("Padding: included in cursor tracking", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 60, height: 100 };
 	const creator = flexible({
 		spacing: 3,
@@ -481,7 +481,7 @@ test("Padding: included in cursor tracking", t =>
 			button({ text: "a", height: 30, padding: 12 }),
 			button({ text: "b" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -506,16 +506,16 @@ test("Padding: included in cursor tracking", t =>
 
 test("Padding: used as spacing for single element", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 5, y: 5, width: 100, height: 30 };
 	const creator = flexible({
-		spacing: 3, padding: 0,
+		spacing: 3, padding: 0, direction: LayoutDirection.Horizontal,
 		content: [
 			button({ text: "a", width: 16 }),
 			button({ text: "b", width: 17 }),
 			button({ text: "c", width: 18, padding: { left: "1w" } })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -547,11 +547,11 @@ test("Padding: used as spacing for single element", t =>
 
 test("Works without children", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		content: []
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -565,15 +565,15 @@ test("Works without children", t =>
 
 test("Spacing: 10 pixels between two elements", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 40 };
 	const creator = flexible({
-		spacing: 10,
+		spacing: 10, direction: LayoutDirection.Horizontal,
 		content: [
 			button({ text: "a" }),
 			button({ text: "b" })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -596,14 +596,14 @@ test("Spacing: 10 pixels between two elements", t =>
 
 test("Spacing: default space between two elements", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 7, y: 20, width: 78, height: 35 };
 	const creator = flexible({
 		content: [
 			label({ text: "a" }),
 			label({ text: "b" })
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -626,15 +626,15 @@ test("Spacing: default space between two elements", t =>
 
 test("Spacing: percentile space between two elements", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 5, y: 10, width: 50, height: 15 };
 	const creator = flexible({
-		spacing: "20%",
+		spacing: "20%", direction: LayoutDirection.Horizontal,
 		content: [
 			label({ text: "a", width: "40%" }),
 			label({ text: "b", width: "40%" })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -657,15 +657,15 @@ test("Spacing: percentile space between two elements", t =>
 
 test("Spacing: weighted space between two elements", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 5, y: 0, width: 30, height: 15 };
 	const creator = flexible({
-		spacing: "1w",
+		spacing: "1w", direction: LayoutDirection.Horizontal,
 		content: [
 			label({ text: "a", width: "1w" }),
 			label({ text: "b", width: "1w" })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -688,14 +688,14 @@ test("Spacing: weighted space between two elements", t =>
 
 test("Absolute children make parent absolutely sized", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const creator = flexible({
-		spacing: 0,
+		spacing: 0, direction: LayoutDirection.Horizontal,
 		content: [
 			label({ text: "a", width: 20, height: "12px" }),
 			label({ text: "b", width: 15, height: "5px" })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = creator(parentMock, output);
 
@@ -707,14 +707,14 @@ test("Absolute children make parent absolutely sized", t =>
 
 test("Absolutely sized parent includes spacing", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const creator = flexible({
-		spacing: 8,
+		spacing: 8, direction: LayoutDirection.Horizontal,
 		content: [
 			label({ text: "a", width: 20, height: "12px" }),
 			label({ text: "b", width: 15, height: "5px" })
 		]
-	}, LayoutDirection.Horizontal);
+	});
 
 	const control = creator(parentMock, output);
 
@@ -726,19 +726,27 @@ test("Absolutely sized parent includes spacing", t =>
 
 test("Absolute children make all parents absolutely sized", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
-	const creator = flexible([
-		flexible([
-			label({ text: "a", width: 20, height: "12px" }),
-			label({ text: "b", width: 15, height: "5px" })
-		], LayoutDirection.Vertical),
-		label({ text: "c", width: "20px", height: "10px" }),
-		flexible([
-			label({ text: "c", width: "33px", height: 11 }),
-			label({ text: "d", width: 8, height: "51px" })
-		], LayoutDirection.Horizontal)
-	], LayoutDirection.Horizontal);
-
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
+	const creator = flexible({
+		direction: LayoutDirection.Horizontal,
+		content: [
+			flexible({
+				direction: LayoutDirection.Vertical,
+				content: [
+					label({ text: "a", width: 20, height: "12px" }),
+					label({ text: "b", width: 15, height: "5px" })
+				]
+			}),
+			label({ text: "c", width: "20px", height: "10px" }),
+			flexible({
+				direction: LayoutDirection.Horizontal,
+				content: [
+					label({ text: "c", width: "33px", height: 11 }),
+					label({ text: "d", width: 8, height: "51px" })
+				]
+			})
+		]
+	});
 	const control = creator(parentMock, output);
 
 	const pos = control.position();
@@ -749,19 +757,27 @@ test("Absolute children make all parents absolutely sized", t =>
 
 test("Single non-absolute child width makes parents width unknown", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
-	const creator = flexible([
-		flexible([
-			label({ text: "a", width: 20, height: "12px" }),
-			label({ text: "b", width: "1w", height: "5px" }) // <- non-absolute
-		], LayoutDirection.Vertical),
-		label({ text: "c", width: "10px", height: "20px" }),
-		flexible([
-			label({ text: "c", width: "33px", height: 11 }),
-			label({ text: "d", width: 8, height: "51px" })
-		], LayoutDirection.Horizontal)
-	], LayoutDirection.Horizontal);
-
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
+	const creator = flexible({
+		direction: LayoutDirection.Horizontal,
+		content: [
+			flexible({
+				direction: LayoutDirection.Vertical,
+				content: [
+					label({ text: "a", width: 20, height: "12px" }),
+					label({ text: "b", width: "1w", height: "5px" }) // <- non-absolute
+				]
+			}),
+			label({ text: "c", width: "10px", height: "20px" }),
+			flexible({
+				direction: LayoutDirection.Horizontal,
+				content: [
+					label({ text: "c", width: "33px", height: 11 }),
+					label({ text: "d", width: 8, height: "51px" })
+				]
+			})
+		]
+	});
 	const control = creator(parentMock, output);
 
 	const pos = control.position();
@@ -772,19 +788,27 @@ test("Single non-absolute child width makes parents width unknown", t =>
 
 test("Single non-absolute child height makes parents height unknown", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
-	const creator = flexible([
-		flexible([
-			label({ text: "a", width: 20, height: "12px" }),
-			label({ text: "b", width: 15, height: "5px" })
-		], LayoutDirection.Vertical),
-		label({ text: "c", width: "10px", height: "20px" }),
-		flexible([
-			label({ text: "d", width: "33px", height: 11 }),
-			label({ text: "e", width: 8, height: "60%" }) // <- non-absolute
-		], LayoutDirection.Horizontal)
-	], LayoutDirection.Horizontal);
-
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
+	const creator = flexible({
+		direction: LayoutDirection.Horizontal,
+		content: [
+			flexible({
+				direction: LayoutDirection.Vertical,
+				content: [
+					label({ text: "a", width: 20, height: "12px" }),
+					label({ text: "b", width: 15, height: "5px" })
+				]
+			}),
+			label({ text: "c", width: "10px", height: "20px" }),
+			flexible({
+				direction: LayoutDirection.Horizontal,
+				content: [
+					label({ text: "d", width: "33px", height: 11 }),
+					label({ text: "e", width: 8, height: "60%" }) // <- non-absolute
+				]
+			})
+		]
+	});
 	const control = creator(parentMock, output);
 
 	const pos = control.position();
@@ -795,7 +819,7 @@ test("Single non-absolute child height makes parents height unknown", t =>
 
 test("Nested layouts with boxed labels using percentage padding", t =>
 {
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 32, y: 15, width: 240, height: 180 };
 	const creator = vertical({
 		spacing: "0px",
@@ -895,7 +919,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 test("Child with visibility 'none' is not updated", t =>
 {
 	global.ui = Mock.ui();
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 28, y: 20, width: 43, height: 60 };
 	const creator = flexible({
 		spacing: 10,
@@ -904,7 +928,7 @@ test("Child with visibility 'none' is not updated", t =>
 			label({ text: "nada", visibility: "none" }),
 			label({ text: "def", height: "1w" }),
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -940,7 +964,7 @@ test("Child with visibility 'none' is not updated", t =>
 test("None update if all children have visibility set to 'none'", t =>
 {
 	global.ui = Mock.ui();
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
 		content: [
@@ -948,7 +972,7 @@ test("None update if all children have visibility set to 'none'", t =>
 			label({ text: "def", visibility: "none" }),
 			label({ text: "ghi", visibility: "none" }),
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);
@@ -984,7 +1008,7 @@ test("None update if all children have visibility set to 'none'", t =>
 test("Child visibility is updated by store", t =>
 {
 	global.ui = Mock.ui();
-	const output: FrameBuilder = new FrameBuilder({}, [], [], [], []);
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 80 };
 	const visibility = store<ElementVisibility>("visible");
 	const creator = flexible({
@@ -994,7 +1018,7 @@ test("Child visibility is updated by store", t =>
 			label({ text: "wow", height: "1w", visibility }),
 			label({ text: "def", height: "1w" }),
 		]
-	}, LayoutDirection.Vertical);
+	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
 	const widgetMap = createWidgetMap(output._widgets);

@@ -94,9 +94,6 @@ export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weigh
 {
 	switch (scale[1])
 	{
-		default: // ScaleType.Pixel
-			return scale[0];
-
 		case ScaleType.Weight:
 			return (weightedTotal)
 				? ((scale[0] / weightedTotal) * leftoverSpace)
@@ -104,5 +101,8 @@ export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weigh
 
 		case ScaleType.Percentage:
 			return ((scale[0] * 0.01) * leftoverSpace);
+
+		default: // ScaleType.Pixel
+			return scale[0];
 	}
 }

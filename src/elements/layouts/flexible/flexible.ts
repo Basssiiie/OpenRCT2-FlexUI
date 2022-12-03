@@ -46,6 +46,19 @@ export interface FlexibleLayoutParams
 
 
 /**
+ * The parameters for configuring a flexible layout with an optionally specified direction.
+ */
+export interface FlexibleDirectionalLayoutParams extends FlexibleLayoutParams
+{
+	/**
+	 * Specify the direction in which the content should be layed out.
+	 * @default LayoutDirection.Vertical
+	 */
+	direction?: LayoutDirection;
+}
+
+
+/**
  * Add a horizontal row with one or more child widgets.
  */
 export function horizontal(params: FlexibleLayoutContainer & FlexiblePosition): WidgetCreator<FlexiblePosition>;
@@ -54,7 +67,8 @@ export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): Wid
 export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<Positions>
 {
-	return flexible(<never>params, LayoutDirection.Horizontal);
+	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Horizontal;
+	return flexible(<never>params);
 }
 
 
@@ -67,20 +81,19 @@ export function vertical(params: FlexibleLayoutParams & FlexiblePosition): Widge
 export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<Positions>
 {
-	return flexible(<never>params, LayoutDirection.Vertical);
+	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Vertical;
+	return flexible(<never>params);
 }
 
 
 /**
  * Add a flexible row with one or more child widgets in the specified direction.
  */
-export function flexible(params: FlexibleLayoutContainer & FlexiblePosition, direction: LayoutDirection): WidgetCreator<FlexiblePosition>;
-export function flexible(params: FlexibleLayoutContainer & AbsolutePosition, direction: LayoutDirection): WidgetCreator<AbsolutePosition>;
-export function flexible(params: FlexibleLayoutParams & FlexiblePosition, direction: LayoutDirection): WidgetCreator<FlexiblePosition>;
-export function flexible(params: FlexibleLayoutParams & AbsolutePosition, direction: LayoutDirection): WidgetCreator<AbsolutePosition>;
-export function flexible(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: LayoutDirection): WidgetCreator<Positions>
+export function flexible(params: FlexibleDirectionalLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
+export function flexible(params: FlexibleDirectionalLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
+export function flexible(params: FlexibleDirectionalLayoutParams & Positions): WidgetCreator<Positions>
 {
-	return (parent, output): FlexibleLayoutControl => new FlexibleLayoutControl(parent, output, params, direction);
+	return (parent, output): FlexibleLayoutControl => new FlexibleLayoutControl(parent, output, params);
 }
 
 
@@ -102,10 +115,15 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 	_spacing: ParsedScale;
 	_flags: InheritFlags & FlexFlags;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions, direction: LayoutDirection)
+	constructor(parent: ParentControl, output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Positions)
 	{
 		super(parent, params);
-		this._direction = direction;
+		let direction: LayoutDirection | undefined;
+		if ("direction" in params)
+		{
+			direction = params.direction;
+		}
+		this._direction = (direction || LayoutDirection.Vertical);
 
 		let spacing: ParsedScale | undefined;
 		if ("spacing" in params)

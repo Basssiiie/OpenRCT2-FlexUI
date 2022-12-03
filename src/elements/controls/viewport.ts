@@ -10,6 +10,8 @@ import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
+import { on } from "@src/bindings/stores/on";
+import * as Log from "@src/utilities/logger";
 
 
 const FarAway: CoordsXY = { x: -9000, y: -9000 };
@@ -85,16 +87,14 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a viewport widget.
  */
-class ViewportControl extends Control<ViewportWidget> implements ViewportWidget, ViewportParams
+class ViewportControl extends Control<ViewportWidget> implements ViewportWidget
 {
-	target?: CoordsXY | CoordsXYZ | number | null;
-	rotation?: 0 | 1 | 2 | 3;
-	zoom?: number;
-	visibilityFlags?: ViewportFlags;
+	viewport = <Viewport>{
+		left: FarAway.x,
+		top: FarAway.y,
+	};
 
-	left = FarAway.x;
-	top = FarAway.y;
-	viewport = <Viewport><unknown>this;
+	_target?: CoordsXY | CoordsXYZ | number | null;
 
 
 	/**
@@ -116,11 +116,21 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget,
 		}
 
 		const binder = output.binder;
-		binder.add(this, "target", target);
-		binder.add(this, "rotation", params.rotation);
-		binder.add(this, "zoom", params.zoom);
-		binder.add(this, "visibilityFlags", params.visibilityFlags);
+		binder.add(this, "rotation", params.rotation, undefined, getNestedViewport);
+		binder.add(this, "zoom", params.zoom, undefined, getNestedViewport);
+		binder.add(this, "visibilityFlags", params.visibilityFlags, undefined, getNestedViewport);
+		on(target, t => this._target = t);
 	}
+}
+
+
+/**
+ * Helper for the binder to find the nested viewport.
+ */
+function getNestedViewport(widget: ViewportWidget): Viewport
+{
+	Log.assert(!!widget.viewport, `Viewport widget '${widget.name}' does not have a viewport.`);
+	return <Viewport>widget.viewport;
 }
 
 
@@ -133,7 +143,7 @@ function updateViewport(control: ViewportControl, context: FrameContext): void
 	if (!viewport || !viewport.viewport)
 		return;
 
-	goToTarget(viewport.viewport, control.target);
+	goToTarget(viewport.viewport, control._target);
 }
 
 

@@ -1,6 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { defaultScale } from "@src/elements/constants";
-import { setSizeWithPadding } from "@src/elements/layouts/paddingHelpers";
+import { hasPadding, setSizeWithPadding } from "@src/elements/layouts/paddingHelpers";
 import { Paddable } from "@src/positional/paddable";
 import { Padding } from "@src/positional/padding";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
@@ -112,7 +112,7 @@ export abstract class BaseWindowControl implements WindowTemplate
 	_window: Window | null = null;
 	_width: number;
 	_height: number;
-	private _padding?: ParsedPadding;
+	private _padding: ParsedPadding;
 	private _position?: WindowPosition;
 	private _redrawNextTick: boolean = false;
 
@@ -185,7 +185,7 @@ export abstract class BaseWindowControl implements WindowTemplate
 	{
 		const padding = this._padding;
 		const area: Rectangle = { x: 0, y: topBarSize, width: this._width - 1, height: this._height - (topBarSize + 1) };
-		if (padding)
+		if (hasPadding(padding))
 		{
 			setSizeWithPadding(area, defaultScale, defaultScale, padding);
 		}

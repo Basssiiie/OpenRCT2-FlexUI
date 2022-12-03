@@ -1,4 +1,5 @@
-import { FlexibleLayoutContainer, FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
+import { Paddable } from "@src/positional/paddable";
 import { Colour } from "@src/utilities/colour";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
@@ -41,7 +42,7 @@ export interface TabWindowParams extends BaseWindowParams
 	/**
 	 * Specify any static widgets that show up regardless of which tab is opened.
 	 */
-	static?: FlexibleLayoutParams | FlexibleLayoutContainer;
+	static?: (FlexibleDirectionalLayoutParams & Paddable) | FlexibleLayoutContainer;
 
 	/**
 	 * Event that gets triggered when a new tab is selected.
@@ -78,7 +79,7 @@ class TabWindowControl extends BaseWindowControl
 	private _tabs: TabLayoutable[];
 	private _selectedTab: number;
 	private _tabChange?: () => void;
-	private _layoutRoot?: () => void;
+	private _rootLayout?: () => void;
 
 	constructor(params: TabWindowParams)
 	{
@@ -90,9 +91,9 @@ class TabWindowControl extends BaseWindowControl
 		let rootLayoutable: TabLayoutable;
 		if (staticWidgets)
 		{
-			const builder = new FrameBuilder(params, staticWidgets, [], update, []);
+			const builder = new FrameBuilder(params, staticWidgets, (<Paddable>staticWidgets).padding, [], update, []);
 			this._description.widgets = builder._widgets;
-			this._layoutRoot = (): void =>
+			this._rootLayout = (): void =>
 			{
 				const area = this._getWindowWidgetRectangle();
 				this._root.layout(area);
@@ -185,7 +186,7 @@ class TabWindowControl extends BaseWindowControl
 
 	_layout(): void
 	{
-		const rootFunction = this._layoutRoot;
+		const rootFunction = this._rootLayout;
 		if (rootFunction)
 		{
 			rootFunction();

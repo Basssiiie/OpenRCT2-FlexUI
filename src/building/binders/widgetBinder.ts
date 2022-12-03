@@ -32,7 +32,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected override _createBinding<T extends WidgetBase, K extends keyof T, V>(target: T, property: K, store: Store<V>, converter: ((value: V) => T[K]) | undefined): Binding<T, K, V>
+	protected override _createBinding<T extends WidgetBase, N, K extends keyof N, V>(target: T, property: K, store: Store<V>, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): Binding<T, N, K, V>
 	{
 		// Ensure the target widget always has a name.
 		const targetName = (target.name ||= identifier());
@@ -50,9 +50,9 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 				Log.debug(`Binder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
 				return;
 			}
-			this._apply(widget, property, value, converter);
+			this._apply(widget, property, value, converter, nested);
 		};
-		return new Binding<T, K, V>(targetName, property, store, converter, callback);
+		return new Binding<T, N, K, V>(targetName, property, store, converter, nested, callback);
 	}
 
 
@@ -66,7 +66,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 		{
 			for (const binding of bindings)
 			{
-				this._apply(widgets[binding.id], binding.key, binding.store.get(), binding.converter);
+				this._apply(widgets[binding._id], binding._key, binding._store.get(), binding._converter, binding._nested);
 			}
 		}
 	}

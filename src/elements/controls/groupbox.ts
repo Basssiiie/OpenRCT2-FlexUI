@@ -77,8 +77,8 @@ export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions):
 	}
 
 	const boxParams = <BoxParams & FlexiblePosition><never>params;
-	const flexParams = { content, spacing, padding: gap };
-	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams, direction));
+	const flexParams = { content, direction, spacing, padding: gap };
+	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams));
 
 	return (parent, output) => new BoxControl(parent, output, boxParams);
 }

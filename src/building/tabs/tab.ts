@@ -1,4 +1,5 @@
-import { FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { Paddable } from "@src/positional/paddable";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { TabCreator } from "./tabCreator";
 
@@ -6,7 +7,7 @@ import { TabCreator } from "./tabCreator";
 /**
  * Parameters for configuring a tab inside a window.
  */
-export interface TabParams extends FlexibleLayoutParams
+export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
 {
 	/**
 	 * Specifies an image sprite to be used as the icon of the tab.
@@ -42,7 +43,7 @@ export function tab(params: TabParams): TabCreator
 {
 	return (output: WindowTabDesc) =>
 	{
-		const builder = new FrameBuilder(params, params.content, [], [], []);
+		const builder = new FrameBuilder(params, params, params.padding, [], [], []);
 
 		output.image = params.image;
 		output.widgets = builder._widgets;

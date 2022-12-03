@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
+import { read } from "@src/bindings/stores/read";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
@@ -116,7 +117,8 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 		if (disabledMessage)
 		{
 			// If disabled, it should show a special message, if not show the (binded) items.
-			binder.add(this, "items", params.disabled, (isDisabled) =>
+			const disabled = params.disabled;
+			binder.add(this, "items", disabled, (isDisabled) =>
 			{
 				Log.debug(`Dropdown '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
 				if (isDisabled)
@@ -124,7 +126,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 
 				return (itemsIsStore) ? items.get() : items;
 			});
-			isDisabledConverter = (itemArray: string[]): this["items"] => (this.isDisabled) ? [ disabledMessage ] : itemArray;
+			isDisabledConverter = (itemArray: string[]): this["items"] => (read(disabled)) ? [ disabledMessage ] : itemArray;
 		}
 		const disableMode = params.autoDisable;
 		if (disableMode)

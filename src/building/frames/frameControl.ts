@@ -1,6 +1,9 @@
+import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "@src/elements/layouts/flexible/parseFlexiblePosition";
+import { hasPadding, setSizeWithPadding } from "@src/elements/layouts/paddingHelpers";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { Rectangle } from "@src/positional/rectangle";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
@@ -25,6 +28,7 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 	_area?: Rectangle;
 
 	constructor(
+		readonly _padding: ParsedPadding,
 		readonly _open: Event<FrameContext>,
 		readonly _update: Event<FrameContext>,
 		readonly _close: Event<FrameContext>
@@ -39,6 +43,11 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 		if (!widgets)
 		{
 			return;
+		}
+		const padding = this._padding;
+		if (hasPadding(padding))
+		{
+			setSizeWithPadding(area,  defaultScale, defaultScale, padding);
 		}
 
 		this._redrawNextTick = false;

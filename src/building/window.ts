@@ -1,4 +1,4 @@
-import { FlexibleLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Colour } from "@src/utilities/colour";
 import { Event } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
@@ -12,7 +12,7 @@ import { WindowTemplate } from "./windowTemplate";
 /**
  * The parameters for a regular window.
  */
-export interface WindowParams extends BaseWindowParams, FlexibleLayoutParams
+export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayoutParams
 {
 	/**
 	 * The colours of the window.
@@ -54,7 +54,7 @@ class WindowControl extends BaseWindowControl
 		const close: Event<FrameContext> = [];
 		super(params, update);
 
-		const builder = new FrameBuilder(params, params, open, update, close);
+		const builder = new FrameBuilder(params, params, undefined, open, update, close);
 		this._description.widgets = builder._widgets;
 		this._frame = builder.context;
 	}

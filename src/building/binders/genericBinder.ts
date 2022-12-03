@@ -11,24 +11,26 @@ import { Store } from "../../bindings/stores/store";
  */
 export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 {
-	protected readonly _bindings: Binding<TTarget, keyof TTarget, unknown>[] = [];
+	protected readonly _bindings: Binding<TTarget, never, string, unknown>[] = [];
 	protected _source: TSource | null = null;
 
 
-	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void
+	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void;
+	add<T extends TTarget, N, K extends keyof N, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => N[K], nested?: (target: T) => N): void;
+	add<T extends TTarget, N extends never, K extends keyof (T | N), V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => N[K], nested?: (target: T) => N): void
 	{
 		if (isStore(value))
 		{
 			// bind
-			const binding = this._createBinding(target, key, value, converter);
+			const binding = this._createBinding(target, key, value, converter, nested);
 			this._bindings.push(<never>binding);
 
-			this._apply(target, key, value.get(), converter);
+			this._apply(target, key, value.get(), converter, nested);
 		}
 		else if (!isUndefined(value))
 		{
 			// just update value
-			this._apply(target, key, value, converter);
+			this._apply(target, key, value, converter, nested);
 		}
 	}
 
@@ -38,7 +40,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected abstract _createBinding<T extends TTarget, K extends keyof T, V>(target: T, property: K, store: Store<V>, converter: ((value: V) => T[K]) | undefined): Binding<T, K, V>;
+	protected abstract _createBinding<T extends TTarget, N extends never, K extends keyof N, V>(target: T, property: K, store: Store<V>, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): Binding<T, N, K, V>;
 
 
 	/**
@@ -53,9 +55,12 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	/**
 	 * Applies the value to the target.
 	 */
-	protected _apply<T, K extends keyof T, V>(target: T, key: K, value: V, converter: ((value: V) => T[K]) | undefined): void
+	protected _apply<T, K extends keyof T, V>(target: T, key: K, value: V, converter: ((value: V) => T[K]) | undefined, nested: ((target: T) => T) | undefined): void;
+	protected _apply<T, N, K extends keyof N, V>(target: T, key: K, value: V, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): void;
+	protected _apply<T, N, K extends keyof (T | N), V>(target: T, key: K, value: V, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): void
 	{
-		target[key] = this._convert(value, converter);
+		const obj = (nested) ? nested(target) : target;
+		obj[key] = this._convert(value, converter);
 	}
 
 

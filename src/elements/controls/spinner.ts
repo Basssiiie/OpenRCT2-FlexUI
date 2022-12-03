@@ -1,5 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { on } from "@src/bindings/stores/on";
+import { read } from "@src/bindings/stores/read";
 import { Store } from "@src/bindings/stores/store";
 import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
@@ -104,9 +105,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 	onIncrement: () => void;
 	onDecrement: () => void;
 
-	step: number = 1;
-	min: number = -(2 ** 31); // min. 32-bit signed integer
-	max: number = (2 ** 31); // max. 32-bit signed integer
+	_step: number = 1;
+	_minimum: number = -(2 ** 31); // min. 32-bit signed integer
+	_maximum: number = (2 ** 31); // max. 32-bit signed integer
 
 	_value: Store<number>;
 	_wrapMode: SpinnerWrapMode;
@@ -128,23 +129,22 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		const { disabledMessage, minimum, maximum } = params;
 		if (disabledMessage)
 		{
-			// If disabled, it should show a special message, if not show the (binded) items.
-			binder.add(this, "text", params.disabled, (isDisabled) =>
+			// If disabled, it should show a special message, if not show the (binded) text.
+			const disabled = params.disabled;
+			binder.add(this, "text", disabled, (isDisabled) =>
 			{
 				Log.debug(`Spinner '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
 				return (isDisabled) ? disabledMessage : format(this._value.get());
 			});
 			const originalFormat = format;
-			format = (val: number): string => (this.isDisabled) ? disabledMessage : originalFormat(val);
+			format = (val: number): string => (read(disabled)) ? disabledMessage : originalFormat(val);
 		}
 
 		binder.add(this, "text", this._value, format);
-		binder.add(this, "step", params.step);
-		binder.add(this, "min", minimum);
-		binder.add(this, "max", maximum);
-
+		on(params.step, s => this._step = s);
 		on(minimum, min =>
 		{
+			this._minimum = min;
 			if (this._value.get() < min)
 			{
 				this._value.set(min);
@@ -152,6 +152,7 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		});
 		on(maximum, max =>
 		{
+			this._maximum = max;
 			if (this._value.get() >= max)
 			{
 				this._value.set(max - 1);
@@ -164,9 +165,9 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
 		this.onIncrement = (): void => updateSpinnerValue(this, 1);
 		this.onDecrement = (): void => updateSpinnerValue(this, -1);
 
-		if (this.min > this.max)
+		if (this._minimum > this._maximum)
 		{
-			throw Error(`Spinner: minimum ${this.min} is larger than maximum ${this.max}.`);
+			throw Error(`Spinner: minimum ${this._minimum} is larger than maximum ${this._maximum}.`);
 		}
 	}
 }
@@ -177,22 +178,17 @@ export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWid
  */
 function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 {
-	const { min, max } = spinner;
+	const { _minimum: min, _maximum: max } = spinner;
 	if (min >= max)
 		return;
 
-	const step = (spinner.step * direction);
+	const step = (spinner._step * direction);
 	const oldValue = spinner._value.get();
 	const newValue = (oldValue + step);
 
 	let result: number;
 	switch (spinner._wrapMode)
 	{
-		default:
-		{
-			result = clamp(newValue, min, max);
-			break;
-		}
 		case "wrap":
 		{
 			result = wrap(newValue, min, max);
@@ -204,6 +200,11 @@ function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
 			result = (newValue < min && oldValue === min) || (newValue >= max && oldValue === (max - 1))
 				? wrap(newValue, min, max)
 				: clamp(newValue, min, max);
+			break;
+		}
+		default:
+		{
+			result = clamp(newValue, min, max);
 			break;
 		}
 	}
