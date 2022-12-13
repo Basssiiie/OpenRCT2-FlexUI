@@ -145,18 +145,6 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			}
 		}
 
-		/* if (isStore(selected))
-		{
-			// Silence onChange on every update to 'selected', to avoid unsollicited updates from the binder.
-			//const frame = output.context;
-			selected = decorate(selected, (value, set) =>
-			{
-				this._silenceOnChange = true;
-				set(value);
-				this._silenceOnChange = false;
-			});
-		} */
-
 		binder.add(this, "items", items, isDisabledConverter);
 		binder.add(this, "selectedIndex", selected, undefined, (t, k, v) =>
 		{

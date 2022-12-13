@@ -43,7 +43,6 @@ const windowWithTabs = tabwindow({
 	padding: 50,
 	static: [ // shown on every tab
 		label({
-			width: 120, padding: { bottom: -30 },
 			text: compute(source, s => `Last updated from:\n${s}`),
 			alignment: "centred"
 		})
