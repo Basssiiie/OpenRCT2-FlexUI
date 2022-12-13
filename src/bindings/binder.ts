@@ -17,6 +17,7 @@ export interface Binder<TTarget>
 	 * @param setter A custom update function can be specified, for example if the value needs to be applied to a nested object.
 	 */
 	add<T extends TTarget, K extends string, V, C = V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => C, setter?: (target: T, key: K, value: C) => void): void;
+	add<T extends TTarget, K extends string, V>(target: T, key: K, value: Bindable<V> | undefined, converter: undefined, setter?: (target: T, key: K, value: V) => void): void;
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void;
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined): void;
 }

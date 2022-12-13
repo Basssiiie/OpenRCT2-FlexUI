@@ -8,7 +8,7 @@ import { Control } from "./control";
 /**
  * The parameters for configuring a custom widget.
  */
-export type WidgetParams = Omit<Widget, "x" | "y" | "width" | "height" | "window">;
+export type WidgetParams = Omit<WidgetDesc, "x" | "y" | "width" | "height" | "window">;
 
 
 /**
@@ -25,6 +25,6 @@ export function widget(params: WidgetParams & Positions): WidgetCreator<Position
 /**
  * A controller class for a custom widget.
  */
-class WidgetControl extends Control<WidgetBase> implements WidgetParams
+class WidgetControl extends Control<WidgetDesc> implements WidgetParams
 {
 }

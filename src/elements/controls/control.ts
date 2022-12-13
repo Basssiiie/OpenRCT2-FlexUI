@@ -14,7 +14,7 @@ import { VisualElement } from "./visualElement";
 /**
  * Base control that takes care of the base widget properties.
  */
-export abstract class Control<T extends WidgetBase> extends VisualElement implements WidgetBase
+export abstract class Control<T extends WidgetBaseDesc> extends VisualElement implements WidgetBaseDesc
 {
 	name: string = identifier();
 	type: T["type"];

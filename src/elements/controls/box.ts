@@ -72,7 +72,7 @@ const trimTopWithoutTitle: number = 4;
 /**
  * A controller class for a groupbox widget.
  */
-export class BoxControl extends Control<GroupBoxWidget> implements GroupBoxWidget, ParentControl<FlexiblePosition>
+export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, ParentControl<FlexiblePosition>
 {
 	text?: string;
 

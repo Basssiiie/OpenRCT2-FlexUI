@@ -12,7 +12,7 @@ import Mock from "openrct2-mocks";
 
 test("read() sets values", t =>
 {
-	const label: LabelWidget =
+	const label: LabelDesc =
 	{
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
@@ -34,7 +34,7 @@ test("read() sets values", t =>
 
 test("read() adds store to binder", t =>
 {
-	const label: LabelWidget =
+	const label: LabelDesc =
 	{
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
@@ -52,7 +52,7 @@ test("read() adds store to binder", t =>
 test("read() sets store in window frame", t =>
 {
 	global.ui = Mock.ui();
-	const label: LabelWidget =
+	const label: LabelDesc =
 	{
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
@@ -65,7 +65,7 @@ test("read() sets store in window frame", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(output._widgets));
+	frame.open(createWidgetMap(<Widget[]>output._widgets));
 
 	t.is(label.x, 25);
 
@@ -80,7 +80,7 @@ test("read() sets store in window frame", t =>
 test("read() sets store through converter", t =>
 {
 	global.ui = Mock.ui();
-	const label: LabelWidget =
+	const label: LabelDesc =
 	{
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
@@ -93,7 +93,7 @@ test("read() sets store through converter", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(output._widgets));
+	frame.open(createWidgetMap(<Widget[]>output._widgets));
 
 	t.true(label.isVisible);
 

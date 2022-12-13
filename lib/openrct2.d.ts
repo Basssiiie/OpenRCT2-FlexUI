@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2014-2021 OpenRCT2 developers
+ * Copyright (c) 2014-2022 OpenRCT2 developers
  *
  * For a complete list of all authors, please refer to contributors.md
  * Interested in contributing? Visit https://github.com/OpenRCT2/OpenRCT2
@@ -229,6 +229,12 @@ declare global {
          * @param type The track segment type.
          */
         getTrackSegment(type: number): TrackSegment | null;
+
+        /**
+         * Gets the image number for the given icon.
+         * @param iconName The name of the icon.
+         */
+        getIcon(iconName: IconName): number;
 
         /**
          * Gets a random integer within the specified range using the game's pseudo-
@@ -1245,12 +1251,12 @@ declare global {
          */
         readonly elements: TrackSegmentElement[];
 
-		/**
+        /**
          * Gets a length of the subpositions list for this track segment.
          */
         getSubpositionLength(subpositionType: number, direction: Direction): number;
 
-		/**
+        /**
          * Gets all of the subpositions for this track segment. These subpositions are used for the
          * pathing of vehicles when moving along the track.
          */
@@ -1281,9 +1287,10 @@ declare global {
      * A single subposition on a track piece. These subpositions are used for the pathing of vehicles
      * when moving along the track.
      */
-    interface TrackSubposition extends Readonly<CoordsXYZD> {
-        readonly angle: TrackSlope;
-        readonly banking: TrackBanking;
+    interface TrackSubposition extends Readonly<CoordsXYZ> {
+        readonly yaw: number;
+        readonly pitch: TrackSlope;
+        readonly roll: TrackBanking;
     }
 
     interface TrackIterator {
@@ -1489,7 +1496,7 @@ declare global {
 
         /**
          * The type of subposition coordinates that this vehicle is using to find its
-		 * position on the track.
+         * position on the track.
          */
         readonly subposition: number;
 
@@ -1914,7 +1921,7 @@ declare global {
      * The type of park message, including icon and behaviour.
      */
     type ParkMessageType =
-        "attraction" | "peep_on_attraction" | "peep" | "money" | "blank" | "research" | "guests" | "award" | "chart";
+        "attraction" | "peep_on_attraction" | "peep" | "money" | "blank" | "research" | "guests" | "award" | "chart" | "campaign";
 
     interface ParkMessage {
         /**
@@ -2406,8 +2413,8 @@ declare global {
      */
     interface ScenarioFile {
         id: number;
-        category: "beginner" | "challenging" | "expert" | "real" | "other" | "dlc" | "build_your_own";
-        sourceGame: "rct1" | "rct1_aa" | "rct1_ll" | "rct2" | "rct2_ww" | "rct2_tt" | "real" | "other";
+        category: "beginner" | "challenging" | "expert" | "real" | "other" | "dlc" | "build_your_own" | "competitions";
+        sourceGame: "rct1" | "rct1_aa" | "rct1_ll" | "rct2" | "rct2_ww" | "rct2_tt" | "real" | "extras" | "other";
         path: string;
         internalName: string;
         name: string;
@@ -2537,8 +2544,171 @@ declare global {
         ButtonWidget | CheckboxWidget | ColourPickerWidget | CustomWidget | DropdownWidget | GroupBoxWidget |
         LabelWidget | ListViewWidget | SpinnerWidget | TextBoxWidget | ViewportWidget;
 
+    type IconName = "arrow_down" | "arrow_up" | "chat" | "cheats" | "copy" | "empty" | "eyedropper" |
+        "fast_forward" | "game_speed_indicator" | "game_speed_indicator_double" | "glassy_recolourable" |
+        "hide_full" | "hide_partial" | "hide_scenery" | "hide_supports" | "hide_vegetation" | "hide_vehicles" |
+        "large_scenery" | "legacy_paths" | "link_chain" | "logo" | "logo_text" | "map_east" |
+        "map_east_pressed" | "map_gen_land" | "map_gen_noise" | "map_gen_trees" | "map_north" |
+        "map_north_pressed" | "map_south" | "map_south_pressed" | "map_west" | "map_west_pressed" |
+        "mountain_tool_even" | "mountain_tool_odd" | "multiplayer" | "multiplayer_desync" | "multiplayer_sync" |
+        "multiplayer_toolbar" | "multiplayer_toolbar_pressed" | "mute" | "mute_pressed" | "news_messages" |
+        "normal_selection_6x6" | "paste" | "path_railings" | "path_surfaces" | "paths" | "placeholder" |
+        "rct1_close_off" | "rct1_close_off_pressed" | "rct1_close_on" | "rct1_close_on_pressed"| "rct1_open_off" |
+        "rct1_open_off_pressed" | "rct1_open_on" | "rct1_open_on_pressed" | "rct1_simulate_off" |
+        "rct1_simulate_off_pressed" | "rct1_simulate_on" | "rct1_simulate_on_pressed" | "rct1_test_off" |
+        "rct1_test_off_pressed" | "rct1_test_on" | "rct1_test_on_pressed" | "reload" | "ride_stations" |
+        "scenery_scatter_high" | "scenery_scatter_low" | "scenery_scatter_medium" | "search" |
+        "selection_edge_ne" | "selection_edge_nw" | "selection_edge_se" | "selection_edge_sw" |
+        "server_password" | "sideways_tab" | "sideways_tab_active" | "simulate" | "small_scenery" | "sort" |
+        "terrain_edges" | "title_play" | "title_restart" | "title_skip" | "title_stop" | "unmute" |
+        "unmute_pressed" | "view" | "zoom_in" | "zoom_in_background" | "zoom_out" | "zoom_out_background";
+
+
     interface WidgetBase {
-        readonly window?: Window;
+        readonly window: Window;
+        readonly type: WidgetType;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        name: string;
+        tooltip: string;
+        isDisabled: boolean;
+        isVisible: boolean;
+    }
+
+    interface ButtonWidget extends WidgetBase {
+        type: "button";
+        /**
+         * Whether the button has a 3D border.
+         * By default, text buttons have borders and image buttons do not but it can be overridden.
+         */
+        border: boolean;
+        image: number | IconName;
+        isPressed: boolean;
+        text: string;
+    }
+
+    interface CheckboxWidget extends WidgetBase {
+        type: "checkbox";
+        text: string;
+        isChecked: boolean;
+    }
+
+    interface ColourPickerWidget extends WidgetBase {
+        type: "colourpicker";
+        colour: number;
+    }
+
+    interface CustomWidget extends WidgetBase {
+        type: "custom";
+    }
+
+    interface DropdownWidget extends WidgetBase {
+        type: "dropdown";
+        items: string[];
+        selectedIndex: number;
+        text: string;
+    }
+
+    interface GroupBoxWidget extends WidgetBase {
+        type: "groupbox";
+        text: string;
+    }
+
+    type TextAlignment = "left" | "centred";
+
+    interface LabelWidget extends WidgetBase {
+        type: "label";
+        text: string;
+        textAlign: TextAlignment;
+    }
+
+
+    type SortOrder = "none" | "ascending" | "descending";
+
+    type ScrollbarType = "none" | "horizontal" | "vertical" | "both";
+
+    interface ListViewColumn {
+        canSort: boolean;
+        sortOrder: SortOrder;
+        header: string;
+        headerTooltip: string;
+        width: number;
+        ratioWidth: number;
+        minWidth: number;
+        maxWidth: number;
+    }
+
+    interface RowColumn {
+        row: number;
+        column: number;
+    }
+
+    interface ListViewWidget extends WidgetBase {
+        type: "listview";
+        scrollbars: ScrollbarType;
+        isStriped: boolean;
+        showColumnHeaders: boolean;
+        columns: ListViewColumn[];
+        items: string[];
+        selectedCell: RowColumn;
+        readonly highlightedCell: RowColumn;
+        canSelect: boolean;
+    }
+
+    interface SpinnerWidget extends WidgetBase {
+        type: "spinner";
+        text: string;
+    }
+
+    interface TextBoxWidget extends WidgetBase {
+        type: "textbox";
+        text: string;
+        maxLength: number;
+    }
+
+    interface ViewportWidget extends WidgetBase {
+        type: "viewport";
+        readonly viewport: Viewport;
+    }
+
+    interface Window {
+        readonly classification: number;
+        readonly number: number;
+        x: number;
+        y: number;
+        /**
+         * The window is resizable (by the user) if and only if minWidth !== maxWidth or minHeight !== maxHeight.
+         * In that case, the window displays a small widget in the lower right corner that the user can use to resize the window by clicking and dragging.
+         *
+         * When writing to width (or height), if the window is resizable, the new value will be clamped to fit the corresponding min/max values.
+         * Otherwise, if the window is not resizable, both the width (or height) and the corresponding min/max values are set to the new value.
+         *
+         * For the default min/max values, see {@link WindowDesc}.
+         */
+        width: number;
+        height: number;
+        minWidth: number;
+        maxWidth: number;
+        minHeight: number;
+        maxHeight: number;
+        readonly isSticky: boolean;
+        colours: number[];
+        title: string;
+        readonly widgets: Widget[];
+        tabIndex: number;
+
+        close(): void;
+        bringToFront(): void;
+        findWidget<T extends Widget>(name: string): T;
+    }
+
+    type WidgetDesc =
+        ButtonDesc | CheckboxDesc | ColourPickerDesc | CustomDesc | DropdownDesc | GroupBoxDesc |
+        LabelDesc | ListViewDesc | SpinnerDesc | TextBoxDesc | ViewportDesc;
+
+    interface WidgetBaseDesc {
         type: WidgetType;
         x: number;
         y: number;
@@ -2550,7 +2720,7 @@ declare global {
         isVisible?: boolean;
     }
 
-    interface ButtonWidget extends WidgetBase {
+    interface ButtonDesc extends WidgetBaseDesc {
         type: "button";
         /**
          * Whether the button has a 3D border.
@@ -2563,57 +2733,40 @@ declare global {
         onClick?: () => void;
     }
 
-    interface CheckboxWidget extends WidgetBase {
+    interface CheckboxDesc extends WidgetBaseDesc {
         type: "checkbox";
         text?: string;
         isChecked?: boolean;
         onChange?: (isChecked: boolean) => void;
     }
 
-    interface ColourPickerWidget extends WidgetBase {
+    interface ColourPickerDesc extends WidgetBaseDesc {
         type: "colourpicker";
         colour?: number;
         onChange?: (colour: number) => void;
     }
 
-    interface CustomWidget extends WidgetBase {
+    interface CustomDesc extends WidgetBaseDesc {
         type: "custom";
         onDraw?: (this: CustomWidget, g: GraphicsContext) => void;
     }
 
-    interface DropdownWidget extends WidgetBase {
+    interface DropdownDesc extends WidgetBaseDesc {
         type: "dropdown";
         items?: string[];
         selectedIndex?: number;
         onChange?: (index: number) => void;
     }
 
-    interface GroupBoxWidget extends WidgetBase {
+    interface GroupBoxDesc extends WidgetBaseDesc {
         type: "groupbox";
         text?: string;
     }
 
-    interface LabelWidget extends WidgetBase {
+    interface LabelDesc extends WidgetBaseDesc {
         type: "label";
         text?: string;
         textAlign?: TextAlignment;
-    }
-
-    type TextAlignment = "left" | "centred";
-
-    type SortOrder = "none" | "ascending" | "descending";
-
-    type ScrollbarType = "none" | "horizontal" | "vertical" | "both";
-
-    interface ListViewColumn {
-        canSort?: boolean;
-        sortOrder?: SortOrder;
-        header?: string;
-        headerTooltip?: string;
-        width?: number;
-        ratioWidth?: number;
-        minWidth?: number;
-        maxWidth?: number;
     }
 
     interface ListViewItemSeperator {
@@ -2628,62 +2781,36 @@ declare global {
         column: number;
     }
 
-    interface ListViewWidget extends WidgetBase {
+    interface ListViewDesc extends WidgetBaseDesc {
         type: "listview";
         scrollbars?: ScrollbarType;
         isStriped?: boolean;
         showColumnHeaders?: boolean;
-        columns?: ListViewColumn[];
+        columns?: Partial<ListViewColumn>[];
         items?: string[] | ListViewItem[];
         selectedCell?: RowColumn;
-        readonly highlightedCell?: RowColumn;
         canSelect?: boolean;
-
         onHighlight?: (item: number, column: number) => void;
         onClick?: (item: number, column: number) => void;
     }
 
-    interface SpinnerWidget extends WidgetBase {
+    interface SpinnerDesc extends WidgetBaseDesc {
         type: "spinner";
         text?: string;
-
         onDecrement?: () => void;
         onIncrement?: () => void;
         onClick?: () => void;
     }
 
-    interface TextBoxWidget extends WidgetBase {
+    interface TextBoxDesc extends WidgetBaseDesc {
         type: "textbox";
         text?: string;
         maxLength?: number;
         onChange?: (text: string) => void;
     }
 
-    interface ViewportWidget extends WidgetBase {
+    interface ViewportDesc extends WidgetBaseDesc {
         type: "viewport";
-        viewport?: Viewport;
-    }
-
-    interface Window {
-        classification: number;
-        number: number;
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        minWidth: number;
-        maxWidth: number;
-        minHeight: number;
-        maxHeight: number;
-        isSticky: boolean;
-        colours: number[];
-        title: string;
-        widgets: Widget[];
-        tabIndex: number;
-
-        close(): void;
-        bringToFront(): void;
-        findWidget<T extends Widget>(name: string): T;
     }
 
     interface WindowDesc {
@@ -2694,11 +2821,19 @@ declare global {
         height: number;
         title: string;
         id?: number;
+        /**
+         * See {@link Window} for information about the behaviour of min/max width/height after window creation.
+         *
+         * Behaviour during window creation:
+         * If at least one of the parameters min/max width/height is present, the window is considered to be resizable.
+         * In that case, the min values default to zero (if unspecified) and the max values default to 0xFFFF (if unspecified).
+         * Otherwise, the min/max width values default to width and the min/max height values default to height.
+         */
         minWidth?: number;
         minHeight?: number;
         maxWidth?: number;
         maxHeight?: number;
-        widgets?: Widget[];
+        widgets?: WidgetDesc[];
         colours?: number[];
         tabs?: WindowTabDesc[];
         tabIndex?: number;
@@ -2716,8 +2851,8 @@ declare global {
     }
 
     interface WindowTabDesc {
-        image: number | ImageAnimation;
-        widgets?: Widget[];
+        image: number | ImageAnimation | IconName;
+        widgets?: WidgetDesc[];
     }
 
     interface Viewport {

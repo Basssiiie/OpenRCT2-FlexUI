@@ -65,7 +65,7 @@ test("Change event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
 	call(widget.onChange, Colour.IcyBlue);
 	call(widget.onChange, Colour.Black);
 	call(widget.onChange, Colour.LightPink);

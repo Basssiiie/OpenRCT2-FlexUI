@@ -55,7 +55,7 @@ export function colourPicker(params: ColourPickerParams & Positions): WidgetCrea
 /**
  * A controller class for a colour picker widget.
  */
-class ColourPickerControl extends Control<ColourPickerWidget> implements ColourPickerWidget, ColourPickerParams
+class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPickerDesc, ColourPickerParams
 {
 	colour?: number;
 	onChange?: (colour: number) => void;

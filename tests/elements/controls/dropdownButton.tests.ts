@@ -24,12 +24,12 @@ test("Standard properties are set", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const dropdown = created.widgets[0] as DropdownWidget;
+	const dropdown = created.widgets[0] as DropdownDesc;
 	t.is(dropdown.type, "dropdown");
 	t.deepEqual(dropdown.items, [ "a", "b" ]);
 	t.is(dropdown.tooltip, "hello!");
 
-	const button = created.widgets[1] as ButtonWidget;
+	const button = created.widgets[1] as ButtonDesc;
 	t.is(button.type, "button");
 	t.is(button.text, "a");
 	t.is(button.tooltip, "hello!");
@@ -52,8 +52,8 @@ test("Dropdown updates button", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const dropdown = created.widgets[0] as DropdownWidget;
-	const button = created.widgets[1] as ButtonWidget;
+	const dropdown = created.widgets[0] as DropdownDesc;
+	const button = created.widgets[1] as ButtonDesc;
 	t.is(button.text, "a");
 
 	call(dropdown.onChange, 2);
@@ -85,8 +85,8 @@ test("Button onClick's are called", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const dropdown = created.widgets[0] as DropdownWidget;
-	const button = created.widgets[1] as ButtonWidget;
+	const dropdown = created.widgets[0] as DropdownDesc;
+	const button = created.widgets[1] as ButtonDesc;
 	call(button.onClick);
 	t.deepEqual(hits, [ "a" ]);
 
@@ -118,8 +118,8 @@ test("Dropdown allows empty list", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const dropdown = created.widgets[0] as DropdownWidget;
-	const button = created.widgets[1] as ButtonWidget;
+	const dropdown = created.widgets[0] as DropdownDesc;
+	const button = created.widgets[1] as ButtonDesc;
 	t.is(button.text, "");
 	call(button.onClick);
 

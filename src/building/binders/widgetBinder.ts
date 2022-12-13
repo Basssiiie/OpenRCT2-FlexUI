@@ -10,7 +10,7 @@ import { GenericBinder } from "./genericBinder";
 /**
  * Helper that can bind a store from a viewmodel to a widget inside a window.
  */
-export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
+export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 {
 	/**
 	 * Bind a source frame to this binder and specify which set of widgets to refresh.
@@ -32,7 +32,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected override _createBinding<T extends WidgetBase, V, C>(target: T, property: string, store: Store<V>, converter: ((value: V) => C) | undefined, setter: ((target: T, key: string, value: V | C) => void) | undefined): Binding<T, V, C>
+	protected override _createBinding<T extends WidgetBaseDesc, V, C>(target: T, property: string, store: Store<V>, converter: ((value: V) => C) | undefined, setter: ((target: T, key: string, value: V | C) => void) | undefined): Binding<T, V, C>
 	{
 		// Ensure the target widget always has a name.
 		const targetName = (target.name ||= identifier());
@@ -47,14 +47,14 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 				return;
 			}
 
-			const widget = source.getWidget<T>(targetName);
+			const widget = source.getWidget(targetName);
 			if (!widget)
 			{
 				Log.debug(`WidgetBinder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
 				return;
 			}
-			Log.debug(`WidgetBinder: update ${widget.type}.${String(property)} (name: ${widget.name}) to ${value} (converter: ${converter} setter: ${setter})`);
-			this._apply(widget, property, value, converter, setter);
+
+			this._apply(<never>widget, property, value, converter, setter);
 		};
 		return new Binding<T, V, C>(targetName, property, store, converter, setter, callback);
 	}

@@ -36,7 +36,7 @@ export function toggle(params: ToggleParams & Positions): WidgetCreator<Position
 /**
  * A controller class for a toggle button widget.
  */
-class ToggleControl extends ButtonControl implements ButtonWidget, ToggleParams
+class ToggleControl extends ButtonControl implements ButtonDesc, ToggleParams
 {
 	onChange?: (isPressed: boolean) => void;
 

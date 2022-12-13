@@ -87,7 +87,7 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a viewport widget.
  */
-class ViewportControl extends Control<ViewportWidget> implements ViewportWidget
+class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 {
 	viewport = <Viewport>{
 		left: FarAway.x,
@@ -127,10 +127,11 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget
 /**
  * Helper for the binder to find the nested viewport.
  */
-function updateNestedViewport<K extends keyof Viewport>(widget: ViewportWidget, key: K, value: Viewport[K]): void
+function updateNestedViewport<K extends keyof Viewport>(target: ViewportDesc, key: K, value: Viewport[K]): void
 {
+	const widget = <ViewportWidget>target;
 	Log.assert(!!widget.viewport, `Viewport widget '${widget.name}' does not have a viewport.`);
-	(<Viewport>widget.viewport)[key] = value;
+	widget.viewport[key] = value;
 }
 
 

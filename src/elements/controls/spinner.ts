@@ -99,7 +99,7 @@ export function spinner(params: SpinnerParams & Positions): WidgetCreator<Positi
 /**
  * A controller class for a spinner widget.
  */
-export class SpinnerControl extends Control<SpinnerWidget> implements SpinnerWidget
+export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 {
 	text?: string;
 	onIncrement: () => void;

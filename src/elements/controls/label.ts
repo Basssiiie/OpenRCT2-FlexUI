@@ -52,7 +52,7 @@ export function label(params: LabelParams & Positions): WidgetCreator<Positions>
 /**
  * A controller class for a label widget.
  */
-class LabelControl extends Control<LabelWidget> implements LabelWidget
+class LabelControl extends Control<LabelDesc> implements LabelDesc
 {
 	text: string = "";
 	textAlign?: TextAlignment;

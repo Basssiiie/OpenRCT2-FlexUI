@@ -109,7 +109,7 @@ test("Click event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
 	t.is(count, 0);
 
 	call(widget.onClick);

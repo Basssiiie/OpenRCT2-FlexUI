@@ -16,7 +16,7 @@ import { FrameContentParams, FrameEventParams } from "./frameParams";
 export class FrameBuilder implements BuildOutput
 {
 	readonly binder: WidgetBinder;
-	readonly _widgets: WidgetBase[] = [];
+	readonly _widgets: WidgetDesc[] = [];
 
 	context: FrameControl;
 
@@ -52,7 +52,7 @@ export class FrameBuilder implements BuildOutput
 		}
 	}
 
-	add(widget: WidgetBase): void
+	add(widget: WidgetDesc): void
 	{
 		this._widgets.push(widget);
 	}

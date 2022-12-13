@@ -64,7 +64,7 @@ test("Is pressed updates on toggle", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
 	t.falsy(widget.isPressed);
 
 	call(widget.onClick);
@@ -92,7 +92,7 @@ test("Is pressed store updates on toggle", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
 	t.false(widget.isPressed);
 
 	call(widget.onClick);
@@ -127,7 +127,7 @@ test("Change event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
 	t.deepEqual(hits, []);
 
 	call(widget.onClick);

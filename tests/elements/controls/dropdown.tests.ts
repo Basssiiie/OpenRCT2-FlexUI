@@ -93,7 +93,7 @@ test("Select event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
 	call(widget.onChange, 1);
 	call(widget.onChange, 2);
 	call(widget.onChange, 0);
@@ -393,7 +393,7 @@ test("Assigning bound selected index should silence on change", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
 	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
 	t.is(widget.selectedIndex, 1);
 

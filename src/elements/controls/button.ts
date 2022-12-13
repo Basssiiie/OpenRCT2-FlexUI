@@ -60,7 +60,7 @@ export function button(params: ButtonParams & Positions): WidgetCreator<Position
 /**
  * A controller class for a button widget.
  */
-export class ButtonControl extends Control<ButtonWidget> implements ButtonWidget, ButtonParams
+export class ButtonControl extends Control<ButtonDesc> implements ButtonDesc, ButtonParams
 {
 	text?: string;
 	image?: number;

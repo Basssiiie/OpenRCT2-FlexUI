@@ -48,7 +48,7 @@ test("Simple layouts with widgets", t =>
 		]
 	});
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -107,7 +107,7 @@ test("Pixel sizes ignore leftover space", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -151,7 +151,7 @@ test("Percentage sizes", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -195,7 +195,7 @@ test("Weighted sizes", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -236,7 +236,7 @@ test("Relative percentage fills leftover space", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -267,7 +267,7 @@ test("Relative weight fills leftover space", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -293,7 +293,7 @@ test("Padding: single number value", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -317,7 +317,7 @@ test("Padding: single pixel value", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -341,7 +341,7 @@ test("Padding: single percentage value", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -365,7 +365,7 @@ test("Padding: single weighted value", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -394,7 +394,7 @@ test("Padding: tuple with 2 values", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -426,7 +426,7 @@ test("Padding: weighted value with absolute size", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -451,7 +451,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -484,7 +484,7 @@ test("Padding: included in cursor tracking", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -518,7 +518,7 @@ test("Padding: used as spacing for single element", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -554,7 +554,7 @@ test("Works without children", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -576,7 +576,7 @@ test("Spacing: 10 pixels between two elements", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -606,7 +606,7 @@ test("Spacing: default space between two elements", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -637,7 +637,7 @@ test("Spacing: percentile space between two elements", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -668,7 +668,7 @@ test("Spacing: weighted space between two elements", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -854,7 +854,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -931,7 +931,7 @@ test("Child with visibility 'none' is not updated", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -975,7 +975,7 @@ test("None update if all children have visibility set to 'none'", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
@@ -1021,7 +1021,7 @@ test("Child visibility is updated by store", t =>
 	});
 
 	const control = <FlexibleLayoutControl>creator(parentMock, output);
-	const widgetMap = createWidgetMap(output._widgets);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 

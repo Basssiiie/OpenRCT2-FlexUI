@@ -60,10 +60,10 @@ export function listview(params: ListViewParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
+class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
 {
 	showColumnHeaders: boolean;
-	columns: ListViewColumn[];
+	columns: Partial<ListViewColumn>[];
 	items?: string[] | ListViewItem[];
 	scrollbars?: ScrollbarType;
 	canSelect?: boolean;
@@ -86,7 +86,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 
 		// Figure out if default columns or custom columns were configured..
 		const columns = params.columns;
-		this.columns = <ListViewColumn[]>columns;
+		this.columns = <Partial<ListViewColumn>[]>columns;
 
 		if (!columns)
 		{
@@ -119,7 +119,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 		// If there is none, pass it to OpenRCT2 and forget about it.
 		for (let i = 0; i < count; i++)
 		{
-			const column = <ListViewColumn>columns[i], width = columWidths[i];
+			const column = <Partial<ListViewColumn>>columns[i], width = columWidths[i];
 
 			if (isAbsolute(width))
 			{
@@ -146,7 +146,7 @@ class ListViewControl extends Control<ListViewWidget> implements ListViewWidget
 			return;
 		}
 
-		const widget = <ListViewWidget>widgets[this.name];
+		const widget = <ListViewDesc>widgets[this.name];
 		const columnWidths = this._columnWidths;
 		if (columnWidths && widget.width !== area.width)
 		{

@@ -66,7 +66,7 @@ test("Value can be incremented/decremented", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "41");
 
 	call(widget.onIncrement);
@@ -91,7 +91,7 @@ test("Incremented value gets clamped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "15");
 
 	call(widget.onIncrement);
@@ -116,7 +116,7 @@ test("Decremented value gets clamped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "15");
 
 	call(widget.onDecrement);
@@ -141,7 +141,7 @@ test("Incremented value gets wrapped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "6");
 
 	call(widget.onIncrement);
@@ -166,7 +166,7 @@ test("Decremented value gets wrapped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "4");
 
 	call(widget.onDecrement);
@@ -191,7 +191,7 @@ test("Incremented value gets clamped then wrapped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "6");
 
 	call(widget.onIncrement);
@@ -216,7 +216,7 @@ test("Decremented value gets clamped then wrapped", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.text, "4");
 
 	call(widget.onDecrement);
@@ -242,7 +242,7 @@ test("Change event gets called", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onIncrement);
 	call(widget.onIncrement);
 	call(widget.onIncrement);
@@ -288,7 +288,7 @@ test("Minimum equal to maximum does nothing", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onIncrement);
 	call(widget.onDecrement);
 	t.pass();
@@ -309,7 +309,7 @@ test("Step is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onIncrement);
 	t.is(widget.text, "1");
 
@@ -341,7 +341,7 @@ test("Minimum is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onDecrement);
 	t.is(widget.text, "9");
 
@@ -367,7 +367,7 @@ test("Maximum is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onIncrement);
 	t.is(widget.text, "1");
 	call(widget.onIncrement);
@@ -399,7 +399,7 @@ test("Disabled message shows on disabled", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onIncrement);
 	t.is(widget.text, "1");
 
@@ -433,7 +433,7 @@ test("Default minimum is clamped at smallest 32-bit signed integer", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 
 	widget.onDecrement?.();
@@ -455,7 +455,7 @@ test("Default maximum is clamped at largest 32-bit signed integer", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 
 	widget.onIncrement?.();
@@ -478,7 +478,7 @@ test("Update maximum clamps value", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 	t.is(widget.text, "65");
 
@@ -505,7 +505,7 @@ test("Update minimum clamps value", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as SpinnerWidget;
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 	t.is(widget.text, "65");
 

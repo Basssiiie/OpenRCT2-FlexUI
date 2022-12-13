@@ -72,7 +72,7 @@ export function dropdown(params: DropdownParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a dropdown widget.
  */
-export class DropdownControl extends Control<DropdownWidget> implements DropdownWidget
+export class DropdownControl extends Control<DropdownDesc> implements DropdownDesc
 {
 	items: string[] = [];
 	selectedIndex: number = 0;
