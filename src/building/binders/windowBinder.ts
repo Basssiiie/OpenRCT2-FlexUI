@@ -22,7 +22,7 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 		this._source = control;
 	}
 
-	protected override _createBinding<T extends Window | WindowDesc, N, K extends keyof N, V>(_target: T, property: K, store: Store<V>, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): Binding<T, N, K, V>
+	protected override _createBinding<T extends Window | WindowDesc, V, C>(_target: T, property: string, store: Store<V>, converter: ((value: V) => C) | undefined, setter: ((target: T, key: string, value: V | C) => void) | undefined): Binding<T, V, C>
 	{
 		const callback = (value: V): void =>
 		{
@@ -31,9 +31,9 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 			if (!control || !control._window)
 				return;
 
-			this._apply(<T>control._window, property, value, <never>converter, nested);
+			this._apply(<T>control._window, property, value, converter, setter);
 		};
-		return new Binding<T, N, K, V>("", property, store, converter, nested, callback);
+		return new Binding<T, V, C>("", property, store, converter, setter, callback);
 	}
 
 
@@ -47,7 +47,7 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 		{
 			for (const binding of bindings)
 			{
-				this._apply(window, binding._key, binding._store.get(), binding._converter, binding._nested);
+				this._apply(window, binding._key, binding._store.get(), binding._converter, binding._setter);
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+/// <reference path="../../lib/openrct2.d.ts" />
 import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { isStore } from "@src/bindings/stores/isStore";

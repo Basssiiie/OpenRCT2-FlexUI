@@ -14,9 +14,9 @@ export interface Binder<TTarget>
 	 * @param key The key on the main object, or nested object, to mutate when a binding updates.
 	 * @param value A store that can be monitored for changes, or a constant that will be applied immediately.
 	 * @param converter If the value is of a different type and needs to be converted, it can be optionaly supplied here.
-	 * @param nested If the property to mutate is not on the root object, a function to retrieve a nested object can be specified optionally.
+	 * @param setter A custom update function can be specified, for example if the value needs to be applied to a nested object.
 	 */
-	add<T extends TTarget, N, K extends keyof N, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => N[K], nested?: (target: T) => N): void;
+	add<T extends TTarget, K extends string, V, C = V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => C, setter?: (target: T, key: K, value: C) => void): void;
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void;
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined): void;
 }

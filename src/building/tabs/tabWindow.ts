@@ -47,7 +47,7 @@ export interface TabWindowParams extends BaseWindowParams
 	/**
 	 * Event that gets triggered when a new tab is selected.
 	 */
-	onTabChange?: () => void;
+	onTabChange?: (tabIndex: number) => void;
 }
 
 
@@ -78,7 +78,7 @@ class TabWindowControl extends BaseWindowControl
 	private _root: TabLayoutable;
 	private _tabs: TabLayoutable[];
 	private _selectedTab: number;
-	private _tabChange?: () => void;
+	private _tabChange?: (tabIndex: number) => void;
 	private _rootLayout?: () => void;
 
 	constructor(params: TabWindowParams)
@@ -137,6 +137,11 @@ class TabWindowControl extends BaseWindowControl
 		this._tabChange = params.onTabChange;
 	}
 
+	override close(): void
+	{
+		super.close();
+		this._selectedTab = this._description.tabIndex || 0;
+	}
 
 	private _tabChanged(): void
 	{
@@ -147,8 +152,9 @@ class TabWindowControl extends BaseWindowControl
 		this._forActiveTab(tab => tab.close());
 
 		const newWidgets = createWidgetMap(window.widgets);
-		Log.debug(`Template.tabChanged() from ${this._selectedTab} to ${window.tabIndex}`);
-		this._selectedTab = window.tabIndex;
+		const newTabIdx = window.tabIndex;
+		Log.debug(`Template.tabChanged() from ${this._selectedTab} to ${newTabIdx}`);
+		this._selectedTab = newTabIdx;
 
 		this._forActiveTab(tab => tab.open(newWidgets));
 		this._layout();
@@ -156,7 +162,7 @@ class TabWindowControl extends BaseWindowControl
 		const onTabChange = this._tabChange;
 		if (onTabChange)
 		{
-			onTabChange();
+			onTabChange(newTabIdx);
 		}
 	}
 

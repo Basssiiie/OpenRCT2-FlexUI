@@ -116,9 +116,9 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget
 		}
 
 		const binder = output.binder;
-		binder.add(this, "rotation", params.rotation, undefined, getNestedViewport);
-		binder.add(this, "zoom", params.zoom, undefined, getNestedViewport);
-		binder.add(this, "visibilityFlags", params.visibilityFlags, undefined, getNestedViewport);
+		binder.add(this, "rotation", params.rotation, undefined, updateNestedViewport);
+		binder.add(this, "zoom", params.zoom, undefined, updateNestedViewport);
+		binder.add(this, "visibilityFlags", params.visibilityFlags, undefined, updateNestedViewport);
 		on(target, t => this._target = t);
 	}
 }
@@ -127,10 +127,10 @@ class ViewportControl extends Control<ViewportWidget> implements ViewportWidget
 /**
  * Helper for the binder to find the nested viewport.
  */
-function getNestedViewport(widget: ViewportWidget): Viewport
+function updateNestedViewport<K extends keyof Viewport>(widget: ViewportWidget, key: K, value: Viewport[K]): void
 {
 	Log.assert(!!widget.viewport, `Viewport widget '${widget.name}' does not have a viewport.`);
-	return <Viewport>widget.viewport;
+	(<Viewport>widget.viewport)[key] = value;
 }
 
 

@@ -32,7 +32,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected override _createBinding<T extends WidgetBase, N, K extends keyof N, V>(target: T, property: K, store: Store<V>, converter: ((value: V) => N[K]) | undefined, nested: ((target: T) => N) | undefined): Binding<T, N, K, V>
+	protected override _createBinding<T extends WidgetBase, V, C>(target: T, property: string, store: Store<V>, converter: ((value: V) => C) | undefined, setter: ((target: T, key: string, value: V | C) => void) | undefined): Binding<T, V, C>
 	{
 		// Ensure the target widget always has a name.
 		const targetName = (target.name ||= identifier());
@@ -41,18 +41,22 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 		{
 			const source = this._source;
 			// Only update if source frame is active.
-			if (!source)
+			if (!source || !source.isOpen())
+			{
+				Log.debug(`WidgetBinder: widget '${targetName}' not active, thus not updated '${String(property)}' with value '${value}'.`);
 				return;
+			}
 
 			const widget = source.getWidget<T>(targetName);
 			if (!widget)
 			{
-				Log.debug(`Binder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
+				Log.debug(`WidgetBinder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
 				return;
 			}
-			this._apply(widget, property, value, converter, nested);
+			Log.debug(`WidgetBinder: update ${widget.type}.${String(property)} (name: ${widget.name}) to ${value} (converter: ${converter} setter: ${setter})`);
+			this._apply(widget, property, value, converter, setter);
 		};
-		return new Binding<T, N, K, V>(targetName, property, store, converter, nested, callback);
+		return new Binding<T, V, C>(targetName, property, store, converter, setter, callback);
 	}
 
 
@@ -66,7 +70,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBase>
 		{
 			for (const binding of bindings)
 			{
-				this._apply(widgets[binding._id], binding._key, binding._store.get(), binding._converter, binding._nested);
+				this._apply(widgets[binding._id], binding._key, binding._store.get(), binding._converter, binding._setter);
 			}
 		}
 	}

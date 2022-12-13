@@ -80,6 +80,11 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 		return widget || null;
 	}
 
+	isOpen(): boolean
+	{
+		return !!this._activeWidgets;
+	}
+
 	open(widgets: WidgetMap): void
 	{
 		this._activeWidgets = widgets;

@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
 import { window } from "@src/building/window";
 import { dropdown } from "@src/elements/controls/dropdown";
+import { proxy } from "@src/utilities/proxy";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -368,4 +371,36 @@ test("Reset selected index if item not present in new list", t =>
 	t.deepEqual(widget.items, ["e", "f", "c", "b", "a"]);
 	t.is(widget.selectedIndex, 0);
 	t.is(selected.get(), 0);
+});
+
+
+test("Assigning bound selected index should silence on change", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const hits: number[] = [];
+	const selected = store(1);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({
+				items: [ "a", "b", "c", "d" ],
+				selectedIndex: selected,
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	t.is(widget.selectedIndex, 1);
+
+	selected.set(2);
+	t.is(widget.selectedIndex, 2);
+	t.deepEqual(hits, []);
+
+	widget.onChange?.(3);
+	t.deepEqual(hits, [3]);
 });

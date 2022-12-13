@@ -1,5 +1,6 @@
 import { Event, invoke } from "@src/utilities/event";
 import { Store } from "./store";
+import * as Log from "@src/utilities/logger";
 
 
 /**
@@ -7,13 +8,10 @@ import { Store } from "./store";
  */
 export class DefaultStore<T> implements Store<T>
 {
-	protected _value: T;
-
 	private _listeners?: Event<T>;
 
-	constructor(value: T)
+	constructor(protected _value: T)
 	{
-		this._value = value;
 	}
 
 	get(): T
@@ -25,8 +23,9 @@ export class DefaultStore<T> implements Store<T>
 	{
 		if (this._value !== value)
 		{
+			Log.debug(`(Update store from ${this._value} to ${value}, update ${this._listeners?.length} listeners)`);
 			this._value = value;
-			this._updateListeners();
+			this._updateListeners(value);
 		}
 	}
 
@@ -52,11 +51,11 @@ export class DefaultStore<T> implements Store<T>
 		};
 	}
 
-	protected _updateListeners(): void
+	protected _updateListeners(value: T): void
 	{
 		if (this._listeners)
 		{
-			invoke(this._listeners, this._value);
+			invoke(this._listeners, value);
 		}
 	}
 }

@@ -79,6 +79,7 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 	onChange?: (index: number) => void;
 
 	_previousItems?: string[];
+	_silenceOnChange?: boolean;
 
 
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownParams)
@@ -144,17 +145,41 @@ export class DropdownControl extends Control<DropdownWidget> implements Dropdown
 			}
 		}
 
+		/* if (isStore(selected))
+		{
+			// Silence onChange on every update to 'selected', to avoid unsollicited updates from the binder.
+			//const frame = output.context;
+			selected = decorate(selected, (value, set) =>
+			{
+				this._silenceOnChange = true;
+				set(value);
+				this._silenceOnChange = false;
+			});
+		} */
+
 		binder.add(this, "items", items, isDisabledConverter);
-		binder.add(this, "selectedIndex", selected);
+		binder.add(this, "selectedIndex", selected, undefined, (t, k, v) =>
+		{
+			this._silenceOnChange = true;
+			t[k] = v;
+			this._silenceOnChange = false;
+		});
 
 		const userOnChange = params.onChange;
 		if (userOnChange)
 		{
-			// Ensure index is never negative (= uninitialised state)
 			this.onChange = (idx: number): void =>
 			{
-				Log.debug(`Dropdown '${this.name}' selectedIndex changed by user: ${this.selectedIndex} -> ${idx} (${this.items[this.selectedIndex]} -> ${this.items[idx]})`);
-				return userOnChange((idx < 0) ? 0 : idx);
+				if (this._silenceOnChange)
+				{
+					Log.debug(`Dropdown '${this.name}' onChange has been silenced. Attempted new value was ${idx}; (${this.items[idx]})`);
+				}
+				else
+				{
+					Log.debug(`Dropdown '${this.name}' selectedIndex changed by user: ${this.selectedIndex} -> ${idx} (${this.items[this.selectedIndex]} -> ${this.items[idx]})`);
+					// Ensure index is never negative (= uninitialised state)
+					userOnChange((idx < 0) ? 0 : idx);
+				}
 			};
 		}
 	}

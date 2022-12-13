@@ -1,3 +1,4 @@
+/// <reference path="../../lib/openrct2.d.ts" />
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import { storify } from "@src/bindings/stores/storify";

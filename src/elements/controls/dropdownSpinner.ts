@@ -54,7 +54,6 @@ class DropdownSpinnerControl extends DropdownControl
 {
 	_spinner: SpinnerControl;
 	_selectedIndex: Store<number>;
-	_isUpdatingSelectedIndex: boolean;
 	_userOnChange?: (index: number) => void;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownSpinnerParams)
@@ -79,13 +78,11 @@ class DropdownSpinnerControl extends DropdownControl
 				// Changing selectedIndex triggers an onChange; setting this boolean
 				// makes the control ignore that onChange event.
 				Log.debug(`Dropdown spinner '${this.name}' spin value has changed: ${this._selectedIndex.get()} -> ${value}.`);
-				this._isUpdatingSelectedIndex = true;
 				this._selectedIndex.set(value);
 				if (this._userOnChange)
 				{
 					this._userOnChange(value);
 				}
-				this._isUpdatingSelectedIndex = false;
 			}
 		};
 
@@ -93,9 +90,6 @@ class DropdownSpinnerControl extends DropdownControl
 		const userOnChange = params.onChange;
 		params.onChange = (idx): void =>
 		{
-			if (this._isUpdatingSelectedIndex)
-				return;
-
 			Log.debug(`Dropdown spinner '${this.name}' selectedIndex has changed: ${this._selectedIndex.get()} -> ${idx}.`);
 			this._selectedIndex.set(idx);
 			if (this._userOnChange)
@@ -123,7 +117,6 @@ class DropdownSpinnerControl extends DropdownControl
 
 		this._spinner = spinner;
 		this._selectedIndex = selectedStore;
-		this._isUpdatingSelectedIndex = false;
 		this._userOnChange = userOnChange;
 	}
 

@@ -9,16 +9,18 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 {
 	insert(index: number, ...values: T[]): number
 	{
-		this._value.splice(index, 0, ...values);
-		this._updateListeners();
-		return this._value.length;
+		const array = this._value;
+		array.splice(index, 0, ...values);
+		this._updateListeners(array);
+		return array.length;
 	}
 
 	update(index: number, value: T): T
 	{
-		const oldValue = this._value[index];
-		this._value[index] = value;
-		this._updateListeners();
+		const array = this._value;
+		const oldValue = array[index];
+		array[index] = value;
+		this._updateListeners(array);
 		return oldValue;
 	}
 
@@ -31,9 +33,10 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 		const store = this;
 		return function(...args: unknown[]): never
 		{
-			const arrayMethod = <(...arg: unknown[]) => unknown>store._value[<keyof Array<T>>method];
-			const value = arrayMethod.apply(store._value, args);
-			store._updateListeners();
+			const array = store._value;
+			const arrayMethod = <(...arg: unknown[]) => unknown>array[<keyof Array<T>>method];
+			const value = arrayMethod.apply(array, args);
+			store._updateListeners(array);
 			return <never>value;
 		};
 	}

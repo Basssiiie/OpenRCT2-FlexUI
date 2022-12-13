@@ -1,3 +1,4 @@
+/// <reference path="../../lib/openrct2.d.ts" />
 import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
 import test from "ava";
 

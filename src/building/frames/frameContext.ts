@@ -4,6 +4,11 @@
 export interface FrameContext
 {
 	/**
+	 * Gets whether the frame context is active or inactive, e.g. whether the tab or window is open or closed.
+	 */
+	isOpen(): boolean;
+
+	/**
 	 * Gets a widget editor from the window or tab by name. Returns 'null' if the widget is not present.
 	 */
 	getWidget<T extends Widget>(name: string): T | null;
