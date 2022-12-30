@@ -12,7 +12,7 @@ export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
 	/**
 	 * Specifies an image sprite to be used as the icon of the tab.
 	 */
-	image: number | ImageAnimation;
+	image: number | ImageAnimation | IconName;
 
 	/**
 	 * Event that gets triggered when the tab is opened.

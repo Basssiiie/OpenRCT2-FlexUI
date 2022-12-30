@@ -24,7 +24,7 @@ export interface ButtonParams extends ElementParams
 	 * The id of a sprite to use as image.
 	 * @default undefined
 	 */
-	image?: Bindable<number>;
+	image?: Bindable<number | IconName>;
 
 	/**
 	 * Whether the button has a rectangle border or not.
@@ -63,7 +63,7 @@ export function button(params: ButtonParams & Positions): WidgetCreator<Position
 export class ButtonControl extends Control<ButtonDesc> implements ButtonDesc, ButtonParams
 {
 	text?: string;
-	image?: number;
+	image?: number | IconName;
 	border?: boolean;
 	isPressed?: boolean;
 	onClick?: () => void;
