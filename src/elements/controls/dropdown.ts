@@ -145,13 +145,14 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 			}
 		}
 
-		binder.add(this, "items", items, isDisabledConverter);
-		binder.add(this, "selectedIndex", selected, undefined, (t, k, v) =>
+		const setPropertyAndSilenceOnChange = <T, K extends keyof T>(t: T, k: K, v: T[K]): void =>
 		{
 			this._silenceOnChange = true;
 			t[k] = v;
 			this._silenceOnChange = false;
-		});
+		};
+		binder.add(this, "items", items, isDisabledConverter, setPropertyAndSilenceOnChange);
+		binder.add(this, "selectedIndex", selected, undefined, setPropertyAndSilenceOnChange);
 
 		const userOnChange = params.onChange;
 		if (userOnChange)

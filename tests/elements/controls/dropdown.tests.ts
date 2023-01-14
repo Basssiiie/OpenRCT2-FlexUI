@@ -404,3 +404,34 @@ test("Assigning bound selected index should silence on change", t =>
 	widget.onChange?.(3);
 	t.deepEqual(hits, [3]);
 });
+
+
+test("Assigning bound items should silence on change", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const hits: number[] = [];
+	const items = store([ "a", "b", "c" ]);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({
+				items,
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	proxy(widget, "items", () => widget.onChange?.(0)); // immitate the ingame bubbled callback
+	t.deepEqual(widget.items, [ "a", "b", "c" ]);
+
+	items.set([ "d", "e" ]);
+	t.deepEqual(widget.items, [ "d", "e" ]);
+	t.deepEqual(hits, []);
+
+	widget.onChange?.(1);
+	t.deepEqual(hits, [1]);
+});
