@@ -7,6 +7,7 @@ import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { findIndex } from "@src/utilities/array";
 import * as Log from "@src/utilities/logger";
+import { addSilencerToOnChange, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -145,31 +146,14 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 			}
 		}
 
-		const setPropertyAndSilenceOnChange = <T, K extends keyof T>(t: T, k: K, v: T[K]): void =>
+		const setter = <T, K extends keyof T>(t: T, k: K, v: T[K]): void =>
 		{
-			this._silenceOnChange = true;
-			t[k] = v;
-			this._silenceOnChange = false;
+			setPropertyAndSilenceOnChange(this, t, k, v);
 		};
-		binder.add(this, "items", items, isDisabledConverter, setPropertyAndSilenceOnChange);
-		binder.add(this, "selectedIndex", selected, undefined, setPropertyAndSilenceOnChange);
+		binder.add(this, "items", items, isDisabledConverter, setter);
+		binder.add(this, "selectedIndex", selected, undefined, setter);
 
-		const userOnChange = params.onChange;
-		if (userOnChange)
-		{
-			this.onChange = (idx: number): void =>
-			{
-				if (this._silenceOnChange)
-				{
-					Log.debug(`Dropdown '${this.name}' onChange has been silenced. Attempted new value was ${idx}; (${this.items[idx]})`);
-				}
-				else
-				{
-					Log.debug(`Dropdown '${this.name}' selectedIndex changed by user: ${this.selectedIndex} -> ${idx} (${this.items[this.selectedIndex]} -> ${this.items[idx]})`);
-					// Ensure index is never negative (= uninitialised state)
-					userOnChange((idx < 0) ? 0 : idx);
-				}
-			};
-		}
+		// Ensure index is never negative (= uninitialised state)
+		addSilencerToOnChange(this, params.onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
 	}
 }

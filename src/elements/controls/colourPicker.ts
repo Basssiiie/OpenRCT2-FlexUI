@@ -3,6 +3,7 @@ import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { Colour } from "@src/utilities/colour";
+import { addSilencerToOnChange, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
 import { isUndefined } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -60,13 +61,19 @@ class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPic
 	colour?: number;
 	onChange?: (colour: number) => void;
 
+	_silenceOnChange?: boolean;
+
 
 	constructor(parent: ParentControl, output: BuildOutput, params: ColourPickerParams)
 	{
 		super("colourpicker", parent, output, params);
 
 		const binder = output.binder;
-		binder.add(this, "colour", params.colour);
-		this.onChange = params.onChange;
+		binder.add(this, "colour", params.colour, undefined, (t, k, v) =>
+		{
+			setPropertyAndSilenceOnChange(this, t, k, v);
+		});
+
+		addSilencerToOnChange(this, params.onChange);
 	}
 }

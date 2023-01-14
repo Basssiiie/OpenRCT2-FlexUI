@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
 import { window } from "@src/building/window";
 import { colourPicker } from "@src/elements/controls/colourPicker";
 import { Colour } from "@src/utilities/colour";
+import { proxy } from "@src/utilities/proxy";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -72,4 +74,35 @@ test("Change event gets called", t =>
 	call(widget.onChange, Colour.Teal);
 
 	t.deepEqual(hits, [ Colour.IcyBlue, Colour.Black, Colour.LightPink, Colour.Teal ]);
+});
+
+
+test("Assigning bound colour should silence on change", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const hits: number[] = [];
+	const colour = store(20);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			colourPicker({
+				colour: colour,
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
+	proxy(widget, "colour", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	t.is(widget.colour, 20);
+
+	colour.set(5);
+	t.is(widget.colour, 5);
+	t.deepEqual(hits, []);
+
+	widget.onChange?.(17);
+	t.deepEqual(hits, [17]);
 });
