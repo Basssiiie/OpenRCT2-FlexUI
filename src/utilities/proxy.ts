@@ -3,7 +3,7 @@ import { identifier } from "./identifier";
 
 
 /**
- * Add a handler
+ * Add a handler to trigger callbacks for when the setter is called.
  */
 export function proxy<T, K extends keyof T>(obj: T, key: K, onSet: (value: T[K]) => void): void
 {

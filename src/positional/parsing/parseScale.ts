@@ -56,7 +56,7 @@ export function parseScale(value: Scale | undefined): ParsedScale | undefined
 		}
 	}
 
-	throw Error(`Value '${value}' is not a valid scale.`);
+	throw Error("Value '" + value + "' is not a valid scale.");
 }
 
 

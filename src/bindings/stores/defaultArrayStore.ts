@@ -10,7 +10,8 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 	insert(index: number, ...values: T[]): number
 	{
 		const array = this._value;
-		array.splice(index, 0, ...values);
+		// eslint-disable-next-line prefer-spread, @typescript-eslint/no-explicit-any
+		array.splice.apply(array, (<any>[index, 0]).concat(values));
 		this._updateListeners(array);
 		return array.length;
 	}

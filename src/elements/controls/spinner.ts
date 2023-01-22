@@ -133,7 +133,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 			const disabled = params.disabled;
 			binder.add(this, "text", disabled, (isDisabled) =>
 			{
-				Log.debug(`Spinner '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
+				Log.debug("Spinner", this.name, "isDisabled has changed, set disabled message:", isDisabled);
 				return (isDisabled) ? disabledMessage : format(this._value.get());
 			});
 			const originalFormat = format;
@@ -167,7 +167,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 
 		if (this._minimum > this._maximum)
 		{
-			throw Error(`Spinner: minimum ${this._minimum} is larger than maximum ${this._maximum}.`);
+			throw Error("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
 		}
 	}
 }

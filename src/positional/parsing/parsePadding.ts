@@ -38,7 +38,7 @@ export function parsePadding(padding: Padding | undefined, fallbackPadding: Pars
 			);
 		}
 		else
-			throw Error(`Padding array of unknown length: ${length}. Only lengths of 2 or 4 are supported.`);
+			throw Error("Padding array of unknown length: " + length + ". Only lengths of 2 or 4 are supported.");
 	}
 	else if (isObject(padding))
 	{

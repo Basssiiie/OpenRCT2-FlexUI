@@ -62,7 +62,7 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 	{
 		if (!this._activeWidgets)
 		{
-			Log.debug(`FrameControl.redraw() not required, frame is not active.`);
+			Log.debug("FrameControl.redraw() not required, frame is not active.");
 			return;
 		}
 

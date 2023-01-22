@@ -77,7 +77,7 @@ class DropdownSpinnerControl extends DropdownControl
 			{
 				// Changing selectedIndex triggers an onChange; setting this boolean
 				// makes the control ignore that onChange event.
-				Log.debug(`Dropdown spinner '${this.name}' spin value has changed: ${this._selectedIndex.get()} -> ${value}.`);
+				Log.debug("Dropdown spinner", this.name, "spin value has changed:", this._selectedIndex.get(), "->", value);
 				this._selectedIndex.set(value);
 				if (this._userOnChange)
 				{
@@ -90,7 +90,7 @@ class DropdownSpinnerControl extends DropdownControl
 		const userOnChange = params.onChange;
 		params.onChange = (idx): void =>
 		{
-			Log.debug(`Dropdown spinner '${this.name}' selectedIndex has changed: ${this._selectedIndex.get()} -> ${idx}.`);
+			Log.debug("Dropdown spinner", this.name, "selectedIndex has changed:", this._selectedIndex.get(), "->", idx);
 			this._selectedIndex.set(idx);
 			if (this._userOnChange)
 			{

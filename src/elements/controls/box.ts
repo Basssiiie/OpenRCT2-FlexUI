@@ -129,7 +129,7 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 
 	_recalculateSizeFromChildren(): void
 	{
-		Log.debug(`Box(${this.name}): recalculateSizeFromChild() -> ${!!(this._flags & BoxFlags.RecalculateFromChildren)}`);
+		Log.debug("Box(", this.name, "): recalculateSizeFromChild() ->", !!(this._flags & BoxFlags.RecalculateFromChildren));
 		if (this._flags & BoxFlags.RecalculateFromChildren)
 		{
 			// Clear recalculate flag
@@ -137,7 +137,7 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 
 			if (recalculateInheritedSpaceFromChild(this._position, this._flags, this._child.position()))
 			{
-				Log.debug(`Box(${this.name}): recalculated size to [${this._position.width}x${this._position.height}]`);
+				Log.debug("Box(", this.name, "): recalculated size to [", this._position.width, "x", this._position.height, "]");
 			}
 		}
 	}
@@ -150,7 +150,7 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug(`Box(${this.name}) layout() for area: [${area.x}, ${area.y}, ${area.width}, ${area.height}]`);
+		Log.debug("Box(", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
 		// Align visual box with layout box, will move label slightly out of bounds.
 		const trim = (this._flags & BoxFlags.AddTitlePadding) ? 0 : trimTopWithoutTitle;
 		area.y -= trim;
@@ -160,7 +160,7 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 		area.height -= trim;
 
 		const { width, height, padding } = this._child.position();
-		Log.debug(`Box(${this.name}) layout() child size: [${width}]x[${height}]`);
+		Log.debug("Box(", this.name, ") layout() child size: [", width, "x", height, "]");
 		setSizeWithPadding(area, width, height, padding);
 		const child = this._child;
 		child.layout(widgets, area);

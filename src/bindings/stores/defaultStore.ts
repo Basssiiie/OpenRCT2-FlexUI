@@ -23,7 +23,7 @@ export class DefaultStore<T> implements Store<T>
 	{
 		if (this._value !== value)
 		{
-			Log.debug(`(Update store from ${this._value} to ${value}, update ${this._listeners?.length} listeners)`);
+			Log.debug("(Update store from", this._value, "to", value, ", update", this._listeners?.length, "listeners)");
 			this._value = value;
 			this._updateListeners(value);
 		}

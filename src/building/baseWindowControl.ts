@@ -123,7 +123,7 @@ export abstract class BaseWindowControl implements WindowTemplate
 		const { width, height, minWidth, maxWidth, minHeight, maxHeight, padding } = params;
 		const windowDesc: WindowDesc =
 		{
-			classification: `fui-${identifier()}`,
+			classification: ("fui-" + identifier()),
 			title: "",
 			colours: params.colours,
 			width: width,
@@ -139,7 +139,7 @@ export abstract class BaseWindowControl implements WindowTemplate
 			},
 			onClose: (): void =>
 			{
-				Log.debug(`Template.onClose() triggered`);
+				Log.debug("Template.onClose() triggered");
 				this._window = null; // to prevent infinite close loop
 				this.close();
 			}
@@ -169,12 +169,12 @@ export abstract class BaseWindowControl implements WindowTemplate
 			return;
 
 		const startTime = Log.time();
-		Log.debug(`Template.onRedraw() window size: (${this._window?.width} x ${this._window?.height})...`);
+		Log.debug("Template.onRedraw() window size: (", this._window?.width, "x", this._window?.height, ")...");
 
 		this._layout();
 		this._redrawNextTick = false;
 
-		Log.debug(`Template.onRedraw() finished in ${Log.time() - startTime} ms`);
+		Log.debug("Template.onRedraw() finished in", (Log.time() - startTime), "ms");
 	}
 
 	/**
@@ -265,7 +265,7 @@ function setWindowLayoutResizing(control: BaseWindowControl, window: WindowDesc,
 		if (width === control._width && height === control._height)
 			return;
 
-		Log.debug(`User has resized the window from ${control._width}x${control._height} to ${width}x${height}.`);
+		Log.debug("User has resized the window from", control._width, "x", control._height, "to", width, "x", height);
 		control._width = width;
 		control._height = height;
 		control._layout();

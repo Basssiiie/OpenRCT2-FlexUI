@@ -130,7 +130,7 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 function updateNestedViewport<K extends keyof Viewport>(target: ViewportDesc, key: K, value: Viewport[K]): void
 {
 	const widget = <ViewportWidget>target;
-	Log.assert(!!widget.viewport, `Viewport widget '${widget.name}' does not have a viewport.`);
+	Log.assert(!!widget.viewport, "Viewport widget", widget.name, "does not have a viewport.");
 	widget.viewport[key] = value;
 }
 

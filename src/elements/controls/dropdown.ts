@@ -105,7 +105,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 						lastSelected = this._previousItems[lastSelectIdx],
 						newSelectIdx = findIndex(newItems, s => s === lastSelected);
 
-					Log.debug(`Dropdown '${this.name}' items have changed, update selectedIndex: ${lastSelectIdx} -> ${newSelectIdx} (${lastSelected} -> ${newSelectIdx !== null ? newItems[newSelectIdx] : null})`);
+					Log.debug("Dropdown", this.name, "items have changed, update selectedIndex:", lastSelectIdx, "->", newSelectIdx, "(", lastSelected, "->", newSelectIdx !== null ? newItems[newSelectIdx] : null, ")");
 					selectStore.set(newSelectIdx || 0);
 				}
 				this._previousItems = newItems;
@@ -122,7 +122,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 			const disabled = params.disabled;
 			binder.add(this, "items", disabled, (isDisabled) =>
 			{
-				Log.debug(`Dropdown '${this.name}' isDisabled has changed, set disabled message: ${isDisabled}`);
+				Log.debug("Dropdown", this.name, "isDisabled has changed, set disabled message:", isDisabled);
 				if (isDisabled)
 					return [ disabledMessage ];
 

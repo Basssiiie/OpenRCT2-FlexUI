@@ -65,7 +65,7 @@ export function tabwindow(params: TabWindowParams): WindowTemplate
 
 	const template = new TabWindowControl(params);
 
-	Log.debug(`tabwindow() creation time: ${Log.time() - startTime} ms`);
+	Log.debug("tabwindow() creation time:", (Log.time() - startTime), "ms");
 	return template;
 }
 
@@ -153,7 +153,7 @@ class TabWindowControl extends BaseWindowControl
 
 		const newWidgets = createWidgetMap(window.widgets);
 		const newTabIdx = window.tabIndex;
-		Log.debug(`Template.tabChanged() from ${this._selectedTab} to ${newTabIdx}`);
+		Log.debug("Template.tabChanged() from", this._selectedTab, "to", newTabIdx);
 		this._selectedTab = newTabIdx;
 
 		this._forActiveTab(tab => tab.open(newWidgets));

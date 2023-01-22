@@ -48,7 +48,7 @@ export abstract class Control<T extends WidgetBaseDesc> extends VisualElement im
 
 			if (oldValue || newValue)
 			{
-				Log.debug(`Control(${this.type}:${this.name}): skip changed from '${oldValue}' to '${newValue}'`);
+				Log.debug("Control(", this.type, ":", this.name, "): skip changed from", oldValue, "to", newValue);
 				parent.recalculate();
 				context.redraw();
 			}
@@ -60,7 +60,7 @@ export abstract class Control<T extends WidgetBaseDesc> extends VisualElement im
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug(`Control(${this.type}:${this.name}) layout() for area: [${area.x}, ${area.y}, ${area.width}, ${area.height}]`);
+		Log.debug("Control(", this.type, ":", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
 		fillLayout(widgets, this.name, area);
 	}
 }

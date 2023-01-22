@@ -35,7 +35,7 @@ export function window(params: WindowParams): WindowTemplate
 
 	const template = new WindowControl(params);
 
-	Log.debug(`window() creation time: ${Log.time() - startTime} ms`);
+	Log.debug("window() creation time:", (Log.time() - startTime), "ms");
 	return template;
 }
 

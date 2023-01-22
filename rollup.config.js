@@ -1,28 +1,60 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import { terser } from "rollup-plugin-terser";
+import { ScriptTarget } from "typescript";
 
 
-// Environment variables
 const build = process.env.BUILD || "development";
 const isDev = (build === "development");
 
 
 /**
- * @type {import("rollup").Plugin[]}
+ * @param {{es5:boolean,minify:boolean}} options
+ * @returns {import("rollup").Plugin[]}
  */
-const plugins =
-[
-	replace({
+function getPlugins(options)
+{
+	const replacer = replace({
 		include: "./src/utilities/environment.ts",
 		preventAssignment: true,
 		values: {
 			__BUILD_CONFIGURATION__: JSON.stringify(build)
 		}
-	}),
-	typescript({ tsconfig: "./tsconfig.json" }),
-];
+	});
+	const compiler = typescript({
+		tsconfig: "./tsconfig.json",
+		target: (options.es5) ? ScriptTarget.ES5 : ScriptTarget.ES2020
+	});
+	if (!options.minify)
+	{
+		return [ replacer, compiler ];
+	}
+	const minifier = terser({
+		ecma: (options.es5) ? 5 : 2020,
+		compress: {
+			passes: 5,
+			unsafe: true
+		},
+		format: {
+			comments: false,
+			quote_style: 1,
+			wrap_iife: false,
+			preamble: "// Get the latest version: https://github.com/Basssiiie/OpenRCT2-FlexUI",
+
+			beautify: isDev,
+		},
+		mangle: {
+			properties: {
+				regex: /^_/
+			}
+		},
+		// Useful only for stacktraces:
+		keep_fnames: isDev,
+	});
+	return [ replacer, compiler, minifier ];
+}
 
 
 /**
@@ -30,7 +62,7 @@ const plugins =
  */
 const config = [
 	{
-		// Regular build
+		// Regular ESNext build
 		input: "./src/index.ts",
 		output: [
 			{
@@ -42,10 +74,10 @@ const config = [
 				format: "cjs",
 			}
 		],
-		plugins: plugins,
+		plugins: getPlugins({ es5: false, minify: false }),
 	},
 	{
-		// Minified build
+		// Minified ESNext build
 		input: "./src/index.ts",
 		output: [
 			{
@@ -57,30 +89,18 @@ const config = [
 				format: "cjs",
 			}
 		],
-		plugins: [
-			...plugins,
-			terser({
-				compress: {
-					passes: 5
-				},
-				format: {
-					comments: false,
-					quote_style: 1,
-					wrap_iife: true,
-					preamble: "// Get the latest version: https://github.com/Basssiiie/OpenRCT2-FlexUI",
-
-					beautify: isDev,
-				},
-				mangle: {
-					properties: {
-						regex: /^_/
-					}
-				},
-
-				// Useful only for stacktraces:
-				keep_fnames: isDev,
-			})
-		]
+		plugins: getPlugins({ es5: false, minify: true })
+	},
+	{
+		// Minified ES5 build
+		input: "./src/index.ts",
+		output: [
+			{
+				file: "./dist/index.es5.min.js",
+				format: "cjs",
+			}
+		],
+		plugins: getPlugins({ es5: true, minify: true })
 	},
 	{
 		// Declaration file packaging

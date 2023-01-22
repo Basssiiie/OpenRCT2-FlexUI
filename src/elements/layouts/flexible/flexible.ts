@@ -158,7 +158,7 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 
 	_recalculateSizeFromChildren(): void
 	{
-		Log.debug(`Flexible: recalculateSizeFromChildren() -> ${!!(this._flags & FlexFlags.RecalculateFromChildren)}`);
+		Log.debug("Flexible: recalculateSizeFromChildren() ->", !!(this._flags & FlexFlags.RecalculateFromChildren));
 		if (this._flags & FlexFlags.RecalculateFromChildren)
 		{
 			// Clear recalculate flag
@@ -169,7 +169,7 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 
 			if (recalculateInheritedSpaceFromChildren(this._position, this._flags, positions, this._spacing, this._direction))
 			{
-				Log.debug(`Flexible: recalculated size to [${this._position.width}x${this._position.height}]`);
+				Log.debug("Flexible: recalculated size to [", this._position.width, "x", this._position.height, "]");
 			}
 
 			this._renderableChildren = renderableChildren;
@@ -185,7 +185,7 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug(`Flexible; layout() for area: [${area.x}, ${area.y}, ${area.width}, ${area.height}]`);
+		Log.debug("Flexible; layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
 		Log.assert(!!this._renderableChildren, "_recalculateSizeFromChildren() was not called: children are missing");
 
 		flexibleLayout(this._renderableChildrenPositions, area, this._direction, this._spacing, (idx, subarea) =>

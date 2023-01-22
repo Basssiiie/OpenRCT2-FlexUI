@@ -26,7 +26,7 @@ export function addSilencerToOnChange(control: SilenceOnChangeControl, callback:
 	{
 		if (control._silenceOnChange)
 		{
-			Log.debug(`Callback to control '${control.name}' onChange is silenced, with value: ${value}`);
+			Log.debug("Callback to control", control.name, "onChange is silenced, with value:", value);
 		}
 		else if (apply)
 		{

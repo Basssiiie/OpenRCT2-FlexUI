@@ -43,14 +43,14 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 			// Only update if source frame is active.
 			if (!source || !source.isOpen())
 			{
-				Log.debug(`WidgetBinder: widget '${targetName}' not active, thus not updated '${String(property)}' with value '${value}'.`);
+				Log.debug("WidgetBinder: widget", targetName, "not active, thus not updated", String(property), "with value", value);
 				return;
 			}
 
 			const widget = source.getWidget(targetName);
 			if (!widget)
 			{
-				Log.debug(`WidgetBinder: widget '${targetName}' not found on window for updating property '${String(property)}' with value '${value}'.`);
+				Log.debug("WidgetBinder: widget", targetName, "not found on window for updating property", String(property), "with value", value);
 				return;
 			}
 
