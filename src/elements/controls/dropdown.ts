@@ -70,6 +70,10 @@ export function dropdown(params: DropdownParams & Positions): WidgetCreator<Posi
 }
 
 
+const itemsString = "items";
+const selectedIndexString = "selectedIndex";
+
+
 /**
  * A controller class for a dropdown widget.
  */
@@ -81,7 +85,6 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 
 	_previousItems?: string[];
 	_silenceOnChange?: boolean;
-
 
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownParams)
 	{
@@ -105,7 +108,15 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 						lastSelected = this._previousItems[lastSelectIdx],
 						newSelectIdx = findIndex(newItems, s => s === lastSelected);
 
-					Log.debug("Dropdown", this.name, "items have changed, update selectedIndex:", lastSelectIdx, "->", newSelectIdx, "(", lastSelected, "->", newSelectIdx !== null ? newItems[newSelectIdx] : null, ")");
+					if (newSelectIdx === null)
+					{
+						Log.debug("Dropdown", this.name, "items have changed but old item not found, reset selectedIndex", lastSelectIdx, "-> 0 (old item:", lastSelected, ")");
+					}
+					else
+					{
+						Log.debug("Dropdown", this.name, "items have changed, update selectedIndex:", lastSelectIdx, "->", newSelectIdx, "(", lastSelected, "->", newItems[newSelectIdx], ")");
+					}
+					Log.debug("Dropdown", this.name, "items:", this._previousItems, "->", newItems);
 					selectStore.set(newSelectIdx || 0);
 				}
 				this._previousItems = newItems;
@@ -120,16 +131,29 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		{
 			// If disabled, it should show a special message, if not show the (binded) items.
 			const disabled = params.disabled;
-			binder.add(this, "items", disabled, (isDisabled) =>
-			{
-				Log.debug("Dropdown", this.name, "isDisabled has changed, set disabled message:", isDisabled);
-				if (isDisabled)
-					return [ disabledMessage ];
-
-				return (itemsIsStore) ? items.get() : items;
-			});
+			const selectStore = selected = storify(selected || 0);
+			binder.add(this, itemsString, disabled,
+				(isDisabled) =>
+				{
+					Log.debug("Dropdown", this.name, "isDisabled has changed, set disabled message:", isDisabled);
+					if (isDisabled)
+					{
+						return [ disabledMessage ];
+					}
+					return (itemsIsStore) ? items.get() : items;
+				},
+				(target, key, value) =>
+				{
+					setPropertyAndSilenceOnChange(this, target, key, value);
+					if (!read(disabled))
+					{
+						setPropertyAndSilenceOnChange(this, target, selectedIndexString, selectStore.get());
+					}
+				}
+			);
 			isDisabledConverter = (itemArray: string[]): this["items"] => (read(disabled)) ? [ disabledMessage ] : itemArray;
 		}
+
 		const disableMode = params.autoDisable;
 		if (disableMode)
 		{
@@ -150,8 +174,8 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		{
 			setPropertyAndSilenceOnChange(this, t, k, v);
 		};
-		binder.add(this, "items", items, isDisabledConverter, setter);
-		binder.add(this, "selectedIndex", selected, undefined, setter);
+		binder.add(this, itemsString, items, isDisabledConverter, setter);
+		binder.add(this, selectedIndexString, selected, undefined, setter);
 
 		// Ensure index is never negative (= uninitialised state)
 		addSilencerToOnChange(this, params.onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));

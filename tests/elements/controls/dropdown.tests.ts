@@ -435,3 +435,36 @@ test("Assigning bound items should silence on change", t =>
 	widget.onChange?.(1);
 	t.deepEqual(hits, [1]);
 });
+
+
+test("Items and selected index gets restored when disabled dropdown with message gets enabled", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const disabled = store(false);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({
+				items: [ "a", "b", "c", "d" ],
+				selectedIndex: 2,
+				disabled,
+				disabledMessage: "Sorry!"
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	proxy(widget, "items", () => widget.selectedIndex = 0); // immitate the ingame selected reset
+	t.is(widget.selectedIndex, 2);
+
+	disabled.set(true);
+	t.is(widget.selectedIndex, 0);
+	t.deepEqual(widget.items, [ "Sorry!" ]);
+
+	disabled.set(false);
+	t.is(widget.selectedIndex, 2);
+	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
+});
