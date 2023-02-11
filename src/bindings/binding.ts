@@ -1,4 +1,5 @@
 import { Store } from "./stores/store";
+import { subscribe } from "./stores/subscribe";
 
 
 
@@ -18,6 +19,6 @@ export class Binding<TTarget, TValue, TConverted>
 		readonly _setter: ((target: TTarget, key: string, value: TValue | TConverted) => void) | undefined,
 		_callback: (value: TValue) => void
 	){
-		this._unsubscribe = _store.subscribe(_callback);
+		this._unsubscribe = subscribe(_store, _callback);
 	}
 }

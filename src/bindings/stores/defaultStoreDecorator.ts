@@ -1,5 +1,6 @@
 import { DefaultStore } from "./defaultStore";
 import { Store } from "./store";
+import { subscribe } from "./subscribe";
 
 
 /**
@@ -12,7 +13,7 @@ export class DefaultStoreDecorator<T> extends DefaultStore<T>
 		private _updater: (value: T, set: (value: T) => void) => void
 	){
 		super(_store.get());
-		_store.subscribe(v => this._updater(v, p => super.set(p)));
+		subscribe(_store, v => this._updater(v, p => super.set(p)));
 	}
 
 	override set(value: T): void

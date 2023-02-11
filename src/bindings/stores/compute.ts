@@ -1,5 +1,6 @@
 import { DefaultStore } from "./defaultStore";
 import { Store } from "./store";
+import { subscribe } from "./subscribe";
 
 
 /**
@@ -22,7 +23,7 @@ export function compute<U>(...args: [...Store<unknown>[], ((...values: unknown[]
 
 	for (let i = 0; i < storeCount; i++)
 	{
-		stores[i].subscribe(() =>
+		subscribe(stores[i], () =>
 		{
 			const newComputedValue = getComputedValue(stores, callback);
 			return dependant.set(newComputedValue);

@@ -2,6 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
 import { storify } from "@src/bindings/stores/storify";
+import { subscribe } from "@src/bindings/stores/subscribe";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
@@ -98,7 +99,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		{
 			this._previousItems = items.get();
 			const selectStore = selected = storify(selected || 0);
-			items.subscribe(newItems =>
+			subscribe(items, newItems =>
 			{
 				// Update selected index to same item as in old list, if it is still present.
 				if (this._previousItems)

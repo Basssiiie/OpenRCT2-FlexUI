@@ -1,6 +1,7 @@
 import { isUndefined } from "@src/utilities/type";
 import { Bindable } from "../bindable";
 import { isStore } from "./isStore";
+import { subscribe } from "./subscribe";
 
 
 /**
@@ -12,7 +13,7 @@ export function on<T>(bindable: Bindable<T> | undefined, callback: (value: T) =>
 {
 	if (isStore(bindable))
 	{
-		bindable.subscribe(callback);
+		subscribe(bindable, callback);
 		callback(bindable.get());
 	}
 	else if (!isUndefined(bindable))

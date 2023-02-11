@@ -15,6 +15,7 @@ import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 import * as Log from "@src/utilities/logger";
 import { ParentControl } from "@src/building/parentControl";
+import { subscribe } from "@src/bindings/stores/subscribe";
 
 
 /**
@@ -104,7 +105,7 @@ class DropdownSpinnerControl extends DropdownControl
 		if (isStore(items))
 		{
 			const maximum = store(0);
-			items.subscribe(v => maximum.set((v) ? v.length : 0));
+			subscribe(items, v => maximum.set((v) ? v.length : 0));
 			spinParams.maximum = maximum;
 		}
 		else if (items)

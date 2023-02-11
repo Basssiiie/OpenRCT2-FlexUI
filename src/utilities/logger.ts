@@ -21,7 +21,7 @@ const isDuktapeAvailable = (typeof Duktape !== "undefined");
  */
 function print(level: LogLevel, messages: unknown[]): void
 {
-	console.log(`<FUI/${level}> ${messages.join(" ")}`);
+	console.log(`<FUI/${level}> ${messages.map(String).join(" ")}`);
 }
 
 
