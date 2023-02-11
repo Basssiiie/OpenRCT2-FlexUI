@@ -95,6 +95,7 @@ registerPlugin({
 	authors: ["Basssiiie"],
 	type: "local",
 	licence: "MIT",
+	targetApiVersion: 70,
 	main: () =>
 	{
 		ui.registerMenuItem("(fui) All Widgets", () => allWidgets.open());

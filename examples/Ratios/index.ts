@@ -80,6 +80,7 @@ registerPlugin({
 	authors: ["Basssiiie"],
 	type: "local",
 	licence: "MIT",
+	targetApiVersion: 70,
 	main: () =>
 	{
 		ui.registerMenuItem("(fui) Ratios", () => ratios.open());
