@@ -1,14 +1,13 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
+import { Store } from "@src/bindings/stores/store";
 import { storify } from "@src/bindings/stores/storify";
-import { subscribe } from "@src/bindings/stores/subscribe";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { findIndex } from "@src/utilities/array";
 import * as Log from "@src/utilities/logger";
-import { addSilencerToOnChange, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
+import { addSilencerToOnChange } from "@src/utilities/silencer";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -71,9 +70,6 @@ export function dropdown(params: DropdownParams & Positions): WidgetCreator<Posi
 }
 
 
-const itemsString = "items";
-const selectedIndexString = "selectedIndex";
-
 
 /**
  * A controller class for a dropdown widget.
@@ -91,94 +87,87 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 	{
 		super("dropdown", parent, output, params);
 
-		const items = params.items;
-		const itemsIsStore = isStore(items);
-		let selected = params.selectedIndex;
+		const { items, disabled, disabledMessage } = params;
+		const disableCount = getDisabledCount(params.autoDisable);
+		let selectedIndex = params.selectedIndex;
 
-		if (itemsIsStore)
+		const setter = (widget: DropdownDesc): void =>
 		{
-			this._previousItems = items.get();
-			const selectStore = selected = storify(selected || 0);
-			subscribe(items, newItems =>
-			{
-				// Update selected index to same item as in old list, if it is still present.
-				if (this._previousItems)
-				{
-					const
-						lastSelectIdx = selectStore.get(),
-						lastSelected = this._previousItems[lastSelectIdx],
-						newSelectIdx = findIndex(newItems, s => s === lastSelected);
-
-					if (newSelectIdx === null)
-					{
-						Log.debug("Dropdown", this.name, "items have changed but old item not found, reset selectedIndex", lastSelectIdx, "-> 0 (old item:", lastSelected, ")");
-					}
-					else
-					{
-						Log.debug("Dropdown", this.name, "items have changed, update selectedIndex:", lastSelectIdx, "->", newSelectIdx, "(", lastSelected, "->", newItems[newSelectIdx], ")");
-					}
-					Log.debug("Dropdown", this.name, "items:", this._previousItems, "->", newItems);
-					selectStore.set(newSelectIdx || 0);
-				}
-				this._previousItems = newItems;
-			});
-		}
+			this._updateDropdown(widget, read(items), read(selectedIndex), read(disabled), disableCount, disabledMessage);
+		};
 
 		const binder = output.binder;
-		const disabledMessage = params.disabledMessage;
-		let isDisabledConverter;
-
-		if (disabledMessage)
+		let itemsSetter: ((widget: DropdownDesc, _: "items", value: string[]) => void) = setter;
+		if (isStore(items))
 		{
-			// If disabled, it should show a special message, if not show the (binded) items.
-			const disabled = params.disabled;
-			const selectStore = selected = storify(selected || 0);
-			binder.add(this, itemsString, disabled,
-				(isDisabled) =>
-				{
-					Log.debug("Dropdown", this.name, "isDisabled has changed, set disabled message:", isDisabled);
-					if (isDisabled)
-					{
-						return [ disabledMessage ];
-					}
-					return (itemsIsStore) ? items.get() : items;
-				},
-				(target, key, value) =>
-				{
-					setPropertyAndSilenceOnChange(this, target, key, value);
-					if (!read(disabled))
-					{
-						setPropertyAndSilenceOnChange(this, target, selectedIndexString, selectStore.get());
-					}
-				}
-			);
-			isDisabledConverter = (itemArray: string[]): this["items"] => (read(disabled)) ? [ disabledMessage ] : itemArray;
+			// Allow update of selected index if items has changed/reordered, to keep the same item selected.
+			selectedIndex = storify(selectedIndex || 0);
+			itemsSetter = (widget: DropdownDesc, _: "items", value: string[]): void =>
+			{
+				setter(widget);
+				getNewSelectedIndexOfSameSelectedItem(this._previousItems, value, <Store<number>>selectedIndex);
+				this._previousItems = value;
+			};
 		}
 
-		const disableMode = params.autoDisable;
-		if (disableMode)
-		{
-			let disableCount: number;
-			switch (disableMode)
-			{
-				case "empty": disableCount = 0; break;
-				case "single": disableCount = 1; break;
-				default: disableCount = -1; break;
-			}
-			if (disableCount >= 0)
-			{
-				binder.add(this, "isDisabled", items, (value) => (!value || value.length <= disableCount));
-			}
-		}
-
-		const setter = <T, K extends keyof T>(t: T, k: K, v: T[K]): void =>
-		{
-			setPropertyAndSilenceOnChange(this, t, k, v);
-		};
-		binder.add(this, itemsString, items, isDisabledConverter, setter);
-		binder.add(this, selectedIndexString, selected, undefined, setter);
+		binder.add(this, "items", items, undefined, itemsSetter);
+		binder.add(this, "selectedIndex", selectedIndex, undefined, setter);
+		binder.add(this, "isDisabled", disabled, undefined, setter);
 
 		// Ensure index is never negative (= uninitialised state)
 		addSilencerToOnChange(this, params.onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
 	}
+
+	private _updateDropdown(widget: DropdownDesc, items: string[] | undefined, selectedIndex: number | undefined, disabled: boolean | undefined, disableCount: number, disabledMessage: string | undefined): void
+	{
+		this._silenceOnChange = true;
+		const setDisabled = (disabled || !items || items.length <= disableCount);
+		if (setDisabled && disabledMessage)
+		{
+			widget.items = [ disabledMessage ];
+		}
+		else
+		{
+			widget.items = items;
+			widget.selectedIndex = selectedIndex || 0;
+		}
+		widget.isDisabled = setDisabled;
+		this._silenceOnChange = false;
+	}
+}
+
+
+
+function getNewSelectedIndexOfSameSelectedItem(oldItems: string[] | undefined, newItems: string[], selectedIndex: Store<number>): void
+{
+	if (!oldItems)
+	{
+		return;
+	}
+
+	const oldSelectedIndex = selectedIndex.get();
+	const lastSelected = oldItems[oldSelectedIndex];
+	const newSelectIndex = newItems.indexOf(lastSelected);
+
+	if (newSelectIndex < 0)
+	{
+		Log.debug("Dropdown items have changed but old item not found, reset selectedIndex", oldSelectedIndex, "-> 0 (old item:", lastSelected, ")");
+	}
+	else
+	{
+		Log.debug("Dropdown items have changed, update selectedIndex:", oldSelectedIndex, "->", newSelectIndex, "(", lastSelected, "->", newItems[newSelectIndex], ")");
+	}
+	Log.debug("Dropdown items:", oldItems, "->", newItems);
+	selectedIndex.set((newSelectIndex < 0) ? 0 : newSelectIndex);
+}
+
+
+function getDisabledCount(disableMode: DropdownDisableMode | undefined): number
+{
+	switch (disableMode)
+	{
+		case "empty": return 0;
+		case "single": return 1;
+	}
+	return -1;
 }
