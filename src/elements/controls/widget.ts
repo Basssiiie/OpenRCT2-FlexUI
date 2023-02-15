@@ -8,7 +8,7 @@ import { Control } from "./control";
 /**
  * The parameters for configuring a custom widget.
  */
-export type WidgetParams = Omit<WidgetDesc, "x" | "y" | "width" | "height" | "window">;
+export type WidgetParams = Omit<WidgetDesc, "x" | "y" | "width" | "height">;
 
 
 /**

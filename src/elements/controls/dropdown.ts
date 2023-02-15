@@ -97,12 +97,12 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		};
 
 		const binder = output.binder;
-		let itemsSetter: ((widget: DropdownDesc, _: "items", value: string[]) => void) = setter;
+		let itemsSetter: ((widget: DropdownDesc, value: string[]) => void) = setter;
 		if (isStore(items))
 		{
 			// Allow update of selected index if items has changed/reordered, to keep the same item selected.
 			selectedIndex = storify(selectedIndex || 0);
-			itemsSetter = (widget: DropdownDesc, _: "items", value: string[]): void =>
+			itemsSetter = (widget: DropdownDesc, value: string[]): void =>
 			{
 				setter(widget);
 				getNewSelectedIndexOfSameSelectedItem(this._previousItems, value, <Store<number>>selectedIndex);
@@ -110,9 +110,9 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 			};
 		}
 
-		binder.add(this, "items", items, undefined, itemsSetter);
-		binder.add(this, "selectedIndex", selectedIndex, undefined, setter);
-		binder.add(this, "isDisabled", disabled, undefined, setter);
+		binder.on(this, items, itemsSetter);
+		binder.on(this, selectedIndex, setter);
+		binder.on(this, disabled, setter);
 
 		// Ensure index is never negative (= uninitialised state)
 		addSilencerToOnChange(this, params.onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));

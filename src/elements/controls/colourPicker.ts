@@ -69,9 +69,9 @@ class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPic
 		super("colourpicker", parent, output, params);
 
 		const binder = output.binder;
-		binder.add(this, "colour", params.colour, undefined, (t, k, v) =>
+		binder.on(this, params.colour, (target, value) =>
 		{
-			setPropertyAndSilenceOnChange(this, t, k, v);
+			setPropertyAndSilenceOnChange(this, target, "colour", value);
 		});
 
 		addSilencerToOnChange(this, params.onChange);

@@ -18,9 +18,8 @@ test("Standard properties are set", t =>
 		content: [
 			viewport({
 				target: { x: 22, y: 88, z: 123 },
-				rotation: 3,
 				zoom: -2,
-				visibilityFlags: ViewportFlags.Gridlines | ViewportFlags.InvisiblePeeps,
+				visibilityFlags: ViewportFlags.Gridlines | ViewportFlags.InvisibleGuests,
 				tooltip: "view this"
 			})
 		]
@@ -31,11 +30,10 @@ test("Standard properties are set", t =>
 	t.is(widget.type, "viewport");
 	t.is(widget.tooltip, "view this");
 	const vp = widget.viewport;
-	t.is(vp?.rotation, 3);
-	t.is(vp?.zoom, -2);
-	t.is(vp?.visibilityFlags, ViewportFlags.Gridlines | ViewportFlags.InvisiblePeeps);
-	t.is(vp?.left, 22 - 50);
-	t.is(vp?.bottom, 88 - 50);
+	t.is(vp.zoom, -2);
+	t.is(vp.visibilityFlags, ViewportFlags.Gridlines | ViewportFlags.InvisibleGuests);
+	t.is(vp.left, 22 - 50);
+	t.is(vp.bottom, 88 - 50);
 });
 
 
@@ -58,12 +56,46 @@ test("Viewport updates on store update", t =>
 
 	const widget = created.widgets[0] as ViewportWidget;
 	const vp = widget.viewport;
-	t.is(vp?.left, 10 - 50);
-	t.is(vp?.bottom, 20 - 50);
+	t.is(vp.left, 10 - 50);
+	t.is(vp.bottom, 20 - 50);
 
 	target.set({ x: -900, y: 550 });
 	call(created.onUpdate);
 
-	t.is(vp?.left, -900 - 50);
-	t.is(vp?.bottom, 550 - 50);
+	t.is(vp.left, -900 - 50);
+	t.is(vp.bottom, 550 - 50);
+});
+
+
+test("Viewport goes into disabled appearance", t =>
+{
+	const mock = Mock.ui();
+	global.ui = mock;
+
+	const disabled = store(false);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			viewport({
+				disabled,
+				visibilityFlags: 1,
+				target: { x: 50, y: 10 }
+			})
+		]
+	});
+	template.open();
+
+	const created = (global.ui as UiMock).createdWindows[0];
+	const widget = created.widgets[0] as ViewportWidget;
+	const vp = widget.viewport;
+	t.is(vp.visibilityFlags, 1);
+	t.is(widget.isDisabled, false);
+
+	disabled.set(true);
+	t.true(vp.visibilityFlags > 1);
+	t.is(widget.isDisabled, true);
+
+	disabled.set(false);
+	t.is(vp.visibilityFlags, 1);
+	t.is(widget.isDisabled, false);
 });

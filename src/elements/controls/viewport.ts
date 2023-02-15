@@ -1,17 +1,17 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
+import { read } from "@src/bindings/stores/read";
 import { BuildOutput } from "@src/building/buildOutput";
+import { FrameContext } from "@src/building/frames/frameContext";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { FrameContext } from "@src/building/frames/frameContext";
+import * as Log from "@src/utilities/logger";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
 import { Control } from "./control";
-import { on } from "@src/bindings/stores/on";
-import * as Log from "@src/utilities/logger";
 
 
 const FarAway: CoordsXY = { x: -9000, y: -9000 };
@@ -22,26 +22,38 @@ const FarAway: CoordsXY = { x: -9000, y: -9000 };
  */
 export const enum ViewportFlags
 {
-	UndergroundInside = (1 << 0),
-	SeeThroughRides = (1 << 1),
-	SeeThroughScenery = (1 << 2),
-	InvisibleSupports = (1 << 3),
-	LandHeights = (1 << 4),
-	TrackHeights = (1 << 5),
-	PathHeights = (1 << 6),
 	Gridlines = (1 << 7),
-	LandOwnership = (1 << 8),
-	ConstructionRights = (1 << 9),
-	SoundOn = (1 << 10),
-	InvisiblePeeps = (1 << 11),
+	UndergroundInside = (1 << 0),
 	HideBase = (1 << 12),
 	HideVertical = (1 << 13),
-	InvisibleSprites = (1 << 14),
-	//Flag15 = (1 << 15), // not used anywhere in the game's source code
-	SeeThroughPaths = (1 << 16),
+
+	SoundOn = (1 << 10),
+	LandOwnership = (1 << 8),
+	ConstructionRights = (1 << 9),
+	InvisibleEntities = (1 << 14),
 	ClipView = (1 << 17),
 	HighlightPathIssues = (1 << 18),
 	TransparentBackground = (1 << 19),
+
+	LandHeights = (1 << 4),
+	TrackHeights = (1 << 5),
+	PathHeights = (1 << 6),
+
+	SeeThroughRides = (1 << 1),
+	SeeThroughVehicles = (1 << 20),
+	SeeThroughVegetation = (1 << 21),
+	SeeThroughScenery = (1 << 2),
+	SeeThroughPaths = (1 << 16),
+	SeeThroughSupports = (1 << 3),
+
+	InvisibleGuests = (1 << 11),
+	InvisibleStaff = (1 << 23),
+	InvisibleRides = SeeThroughRides | (1 << 24),
+    InvisibleVehicles = SeeThroughVehicles | (1 << 25),
+    InvisibleVegetation = SeeThroughVegetation | (1 << 26),
+    InvisibleScenery = SeeThroughScenery | (1 << 27),
+    InvisiblePaths = SeeThroughPaths | (1 << 28),
+    InvisibleSupports = SeeThroughSupports | (1 << 29),
 }
 
 
@@ -54,11 +66,6 @@ export interface ViewportParams extends ElementParams
 	 * The target coordinates or entity id to view within the viewport.
 	 */
 	target?: Bindable<CoordsXY | CoordsXYZ | number | null>;
-
-	/**
-	 * The rotation to set the viewport to, from 0 to 3.
-	 */
-	rotation?: Bindable<0 | 1 | 2 | 3>;
 
 	/**
 	 * The zoom-level to set it to. Available zoom levels are 0 to 3 on all drawing engines.
@@ -84,16 +91,18 @@ export function viewport(params: ViewportParams & Positions): WidgetCreator<Posi
 }
 
 
+const disabledFlags = ViewportFlags.HideBase | ViewportFlags.HideVertical
+	| ViewportFlags.InvisibleGuests | ViewportFlags.InvisibleStaff
+	| ViewportFlags.InvisibleRides | ViewportFlags.InvisibleVehicles
+	| ViewportFlags.InvisibleVegetation | ViewportFlags.InvisibleScenery
+	| ViewportFlags.InvisiblePaths | ViewportFlags.SeeThroughSupports;
+
+
 /**
  * A controller class for a viewport widget.
  */
 class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 {
-	viewport = <Viewport>{
-		left: FarAway.x,
-		top: FarAway.y,
-	};
-
 	_target?: CoordsXY | CoordsXYZ | number | null;
 
 
@@ -104,76 +113,110 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 	{
 		super("viewport", parent, output, params);
 
-		const target = params.target;
+		const binder = output.binder;
+		const { target, visibilityFlags, disabled, zoom } = params;
+
+		const viewportSetter = (widget: ViewportWidget): void =>
+		{
+			this._updateViewport(widget.viewport, target, visibilityFlags, disabled);
+		};
+
+		binder.on(<ViewportWidget><unknown>this, visibilityFlags, viewportSetter);
+		binder.on(<ViewportWidget><unknown>this, disabled, viewportSetter);
+		binder.on(<ViewportWidget><unknown>this, target, viewportSetter);
+		binder.on(<ViewportWidget><unknown>this, zoom, (widget: ViewportWidget, value: number) =>
+		{
+			const viewport = widget.viewport;
+			if (viewport)
+			{
+				viewport.zoom = value;
+			}
+		});
+
+		output.on("open", (context) =>
+		{
+			const viewport = this._getViewportFromContext(context);
+			if (viewport && zoom)
+			{
+				viewport.zoom = read(zoom);
+			}
+			this._updateViewport(viewport, target, visibilityFlags, disabled);
+		});
+
 		if (isStore(target) || isNumber(target))
 		{
-			output.on("update", (context) => updateViewport(this, context));
-		}
-		else if (!isNullOrUndefined(target))
-		{
-			// Flat coordinates do not need to be updated every frame.
-			output.on("open", (context) => updateViewport(this, context));
-		}
-
-		const binder = output.binder;
-		binder.add(this, "rotation", params.rotation, undefined, updateNestedViewport);
-		binder.add(this, "zoom", params.zoom, undefined, updateNestedViewport);
-		binder.add(this, "visibilityFlags", params.visibilityFlags, undefined, updateNestedViewport);
-		on(target, t => this._target = t);
-	}
-}
-
-
-/**
- * Helper for the binder to find the nested viewport.
- */
-function updateNestedViewport<K extends keyof Viewport>(target: ViewportDesc, key: K, value: Viewport[K]): void
-{
-	const widget = <ViewportWidget>target;
-	Log.assert(!!widget.viewport, "Viewport widget", widget.name, "does not have a viewport.");
-	widget.viewport[key] = value;
-}
-
-
-/**
- * Finds the widget for the specified viewport control to update it.
- */
-function updateViewport(control: ViewportControl, context: FrameContext): void
-{
-	const viewport = context.getWidget<ViewportWidget>(control.name);
-	if (!viewport || !viewport.viewport)
-		return;
-
-	goToTarget(viewport.viewport, control._target);
-}
-
-
-/**
- * Updates the viewport to target the target.
- */
-function goToTarget(viewport: Viewport, target: CoordsXY | CoordsXYZ | number | null | undefined): void
-{
-	if (!isNullOrUndefined(target))
-	{
-		if (isNumber(target))
-		{
-			const entity = map.getEntity(target);
-			if (entity)
+			output.on("update", (context) =>
 			{
-				viewport.moveTo({
-					x: entity.x,
-					y: entity.y,
-					z: entity.z
-				});
-				return;
-			}
+				const viewport = this._getViewportFromContext(context);
+				this._updateViewport(viewport, target, visibilityFlags, disabled);
+			});
 		}
-		else if (isObject(target))
+	}
+
+	private _updateViewport(viewport: Viewport | null, target: Bindable<number | CoordsXY | CoordsXYZ | null> | undefined, visibilityFlags: Bindable<ViewportFlags> | undefined, disabled: Bindable<boolean> | undefined): void
+	{
+		if (!viewport)
 		{
-			viewport.moveTo(target);
+			Log.debug("Viewport", this.name, "not available");
 			return;
 		}
+		const location = this._getTargetLocation(read(target));
+		const flagsValue = read(visibilityFlags);
+		const disabledValue = read(disabled);
+
+		Log.debug(`target: ${location}, flags: ${flagsValue}, disabled ${disabledValue}`);
+		this._setViewportLocation(viewport, location, flagsValue, disabledValue);
 	}
 
-	viewport.moveTo(FarAway);
+	/**
+	 * Get the coordinate location of the target.
+	 */
+	private _getTargetLocation(target: CoordsXY | CoordsXYZ | number | null | undefined): CoordsXY | null
+	{
+		let moveToLocation: CoordsXY | null = null;
+		if (!isNullOrUndefined(target))
+		{
+			if (isNumber(target))
+			{
+				const entity = map.getEntity(target);
+				if (entity)
+				{
+					moveToLocation = <CoordsXYZ>{
+						x: entity.x,
+						y: entity.y,
+						z: entity.z
+					};
+				}
+			}
+			else if (isObject(target))
+			{
+				moveToLocation = target;
+			}
+		}
+		return moveToLocation;
+	}
+
+	private _setViewportLocation(viewport: Viewport, target: CoordsXY | null, flags: ViewportFlags | undefined, disabled: boolean | undefined): void
+	{
+		if (disabled || !target)
+		{
+			flags = disabledFlags;
+			target = FarAway;
+		}
+		viewport.moveTo(target);
+		viewport.visibilityFlags = flags || 0;
+	}
+
+	/**
+	 * Gets the viewport from the active window frame.
+	 */
+	private _getViewportFromContext(context: FrameContext): Viewport | null
+	{
+		const widget = context.getWidget<ViewportWidget>(this.name);
+		if (widget)
+		{
+			return widget.viewport;
+		}
+		return null;
+	}
 }

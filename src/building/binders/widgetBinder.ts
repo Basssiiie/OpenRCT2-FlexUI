@@ -32,31 +32,30 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected override _createBinding<T extends WidgetBaseDesc, V, C>(target: T, property: string, store: Store<V>, converter: ((value: V) => C) | undefined, setter: ((target: T, key: string, value: V | C) => void) | undefined): Binding<T, V, C>
+	protected override _createBinding<T extends WidgetBaseDesc, V>(target: T, store: Store<V>, callback: (target: T, value: V) => void): Binding<T, V>
 	{
 		// Ensure the target widget always has a name.
 		const targetName = (target.name ||= identifier());
 
-		const callback = (value: V): void =>
+		return new Binding<T, V>(targetName, store, callback, (value: V): void =>
 		{
 			const source = this._source;
 			// Only update if source frame is active.
 			if (!source || !source.isOpen())
 			{
-				Log.debug("WidgetBinder: widget", targetName, "not active, thus not updated", String(property), "with value", value);
+				Log.debug("WidgetBinder: widget", targetName, "not active, thus not updated with value", value);
 				return;
 			}
 
 			const widget = source.getWidget(targetName);
 			if (!widget)
 			{
-				Log.debug("WidgetBinder: widget", targetName, "not found on window for updating property", String(property), "with value", value);
+				Log.debug("WidgetBinder: widget", targetName, "not found on window for updating property with value", value);
 				return;
 			}
 
-			this._apply(<never>widget, property, value, converter, setter);
-		};
-		return new Binding<T, V, C>(targetName, property, store, converter, setter, callback);
+			callback(<never>widget, value);
+		});
 	}
 
 
@@ -70,7 +69,7 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 		{
 			for (const binding of bindings)
 			{
-				this._apply(widgets[binding._id], binding._key, binding._store.get(), binding._converter, binding._setter);
+				binding._callback(widgets[binding._id], binding._store.get());
 			}
 		}
 	}
