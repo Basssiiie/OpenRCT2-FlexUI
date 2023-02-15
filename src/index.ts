@@ -28,6 +28,7 @@ export { listview, ListViewParams, ListViewColumnParams } from "./elements/contr
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
 export { toggle, ToggleParams } from "./elements/controls/toggle";
 export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/viewport";
+export { widget, WidgetParams } from "./elements/controls/widget";
 
 // Widget parameter types
 export { ElementParams, ElementVisibility } from "./elements/elementParams";
