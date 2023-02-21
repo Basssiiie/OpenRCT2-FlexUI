@@ -13,22 +13,23 @@
 		"declarative",
 		"binding"
 	],
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
+	"main": "./dist/index.min.js",
+	"module": "./dist/esm/src/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
-	  "require": "./dist/index.js",
-	  "import": "./dist/index.mjs"
+	  "require": "./dist/index.min.js",
+	  "import": "./dist/esm/src/index.js"
 	},
 	"files": [
-		"./dist/index*"
+		"./dist/esm/**/*",
+		"./dist/index.*"
 	],
 	"scripts": {
 		"start": "npm run watch",
 		"watch": "nodemon --watch ./src --ext js,ts",
 		"build": "npm run clean && npm run lint && rollup --config rollup.config.js --environment BUILD:production",
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
-		"build:examples": "npm run build --prefix examples/AllWidgets && npm run build --prefix examples/BirdStalker && npm run build --prefix examples/Ratios",
+		"build:examples": "npm run build --prefix examples/AllWidgets && npm run build --prefix examples/BirdStalker && npm run build --prefix examples/Ratios && npm run build --prefix examples/WindowWithTabs",
 		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\"",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",

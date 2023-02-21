@@ -11,7 +11,7 @@
 		"noImplicitThis": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"outDir": "./@tsc",
+		"preserveConstEnums": true,
 		"paths": {
 			"@src/*": [ "src/*" ]
 		},
@@ -21,8 +21,7 @@
 	},
 	"include": [
 		"./lib/**/*.ts",
-		"./src/**/*.ts",
-		"./tests/**/*.ts"
+		"./src/**/*.ts"
 	],
 	"noEmit": true,
 	"ts-node": {

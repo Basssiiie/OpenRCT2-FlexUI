@@ -8,8 +8,8 @@ import typescript from "@rollup/plugin-typescript";
 const config = {
 	input: "./index.ts",
 	output: {
-		file: "../dist/FUI-BirdStalker.js",
-		format: "iife",
+		file: process.env.OUTPUT || Error("No output path specified"),
+		format: "iife"
 	},
 	plugins: [
 		resolve(),

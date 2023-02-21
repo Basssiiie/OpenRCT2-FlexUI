@@ -14,6 +14,7 @@ const config = {
 	plugins: [
 		resolve(),
 		typescript()
-	]
+	],
+	treeshake: "smallest"
 };
 export default config;
