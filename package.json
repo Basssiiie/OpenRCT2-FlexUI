@@ -33,7 +33,7 @@
 		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\"",
 		"lint": "eslint ./src --ext .js --ext .ts",
 		"test": "nyc ava",
-		"test:setup": "npm install --prefix ./tests/package/project --prefer-offline --no-audit --no-save",
+		"test:setup": "npm install --prefix ./tests/package/project --prefer-offline --no-audit --no-save && npm run build",
 		"version:prerelease": "npm version prerelease --preid=prerelease",
 		"publish:local": "npm run build && npm install --global",
 		"publish:prerelease": "npm run build && release-it --prerelease=prerelease"
