@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 16
           cache: npm
-      - run: npm ci --prefer-offline --no-audit
+      - run: npm ci --prefer-offline --no-audit --no-save
       - run: npm run lint
 
   test:
@@ -29,5 +29,6 @@ jobs:
         with:
           node-version: 16
           cache: npm
-      - run: npm ci --prefer-offline --no-audit
+      - run: npm ci --prefer-offline --no-audit --no-save
+      - run: npm run test:setup
       - run: npm run test

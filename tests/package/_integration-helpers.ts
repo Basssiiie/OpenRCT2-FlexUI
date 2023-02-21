@@ -19,7 +19,6 @@ export const projectPath = "./tests/package/project";
  */
 export async function rollup(config: string): Promise<string>
 {
-	await install();
 	await exec(`rollup --config ./configs/${config}.config.js --environment OUTPUT:./dist/${config}.js`, { cwd: projectPath });
 	return await getFile(config);
 }
@@ -31,7 +30,6 @@ export async function rollup(config: string): Promise<string>
  */
 export async function babel(config: string): Promise<string>
 {
-	await install();
 	await exec(`npx babel index.ts --config-file ./configs/${config}.config.js --out-file ./dist/${config}.js`, { cwd: projectPath });
 	return await getFile(config);
 }
@@ -53,13 +51,4 @@ export async function getFile(script: string): Promise<string>
 	const code = await fs.readFile(`${projectPath}/dist/${script}.js`, { encoding: 'utf8' });
 	cache[script] = code;
 	return code;
-}
-
-
-/**
- * Runs a npm install on the project.
- */
-async function install(): Promise<void>
-{
-	await exec(`npm install --no-save --prefer-offline --no-audit`, { cwd: projectPath });
 }

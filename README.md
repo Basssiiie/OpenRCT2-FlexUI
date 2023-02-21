@@ -51,4 +51,4 @@ To publish a local version of FlexUI for use in your own plugins;
 
 ### Unit tests
 
-The unit tests are written using AVA.js and can be run outside the game. Simply run `npm test` in the main folder to run all tests.
+The unit tests are written using AVA.js and can be run outside the game. First run `npm run test:setup`  in the main folder to ensure the test dependencies are installed. Then simply run `npm test` to run all tests.
