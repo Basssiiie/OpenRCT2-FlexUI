@@ -1,6 +1,7 @@
 {
 	"name": "ratios",
 	"version": "1.0.0",
+	"type": "module",
 	"scripts": {
 		"build": "rollup --config rollup.config.js"
 	},
@@ -10,8 +11,8 @@
 		"openrct2-flexui": "file:../.."
 	},
 	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^13.0.6",
-		"@rollup/plugin-typescript": "^8.3.0",
-		"rollup": "^2.59.0"
+		"@rollup/plugin-node-resolve": "^15.0.1",
+		"@rollup/plugin-typescript": "^11.0.0",
+		"rollup": "^3.17.2"
 	}
 }

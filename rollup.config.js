@@ -1,7 +1,7 @@
 import replace from "@rollup/plugin-replace";
+import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
-import { terser } from "rollup-plugin-terser";
 
 
 const build = process.env.BUILD || "development";
@@ -37,6 +37,10 @@ const config = [
 			}),
 			typescript({
 				tsconfig: "./tsconfig.json",
+				include: [
+					"./lib/**/*.ts",
+					"./src/**/*.ts"
+				]
 			}),
 			terser({
 				compress: {

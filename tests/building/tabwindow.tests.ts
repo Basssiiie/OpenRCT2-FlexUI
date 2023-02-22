@@ -5,7 +5,7 @@ import { tab } from "@src/building/tabs/tab";
 import { tabwindow } from "@src/building/tabs/tabWindow";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
-import { LayoutDirection } from "@src/index";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";

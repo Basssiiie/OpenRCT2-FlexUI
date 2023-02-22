@@ -3,6 +3,7 @@
 		"baseUrl": ".",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"module": "ES2020",
 		"moduleResolution": "node",
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
@@ -21,12 +22,8 @@
 	},
 	"include": [
 		"./lib/**/*.ts",
-		"./src/**/*.ts"
+		"./src/**/*.ts",
+		"./tests/**/*.ts"
 	],
-	"noEmit": true,
-	"ts-node": {
-		"require": [
-			"tsconfig-paths/register"
-		]
-	}
+	"noEmit": true
 }
