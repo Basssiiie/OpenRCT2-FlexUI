@@ -55,11 +55,6 @@ const config = [
 
 					beautify: isDev,
 				},
-				mangle: {
-					properties: {
-						regex: /^_/
-					}
-				},
 				// Useful only for stacktraces:
 				keep_fnames: isDev,
 			})
