@@ -36,7 +36,7 @@ test("Simple layout with widgets", t =>
 	t.is(widget1.type, "label");
 	t.is(widget1.text, "Look at me!");
 	t.is(widget1.x, 21);
-	t.is(widget1.y, 34 + 15);
+	t.is(widget1.y, 34 + 2 + 15);
 	t.is(widget1.width, 43);
 	t.is(widget1.height, 19);
 
@@ -84,7 +84,7 @@ test("Flat layout with widgets", t =>
 	t.is(widget1.type, "label");
 	t.is(widget1.text, "Look at me!");
 	t.is(widget1.x, 22);
-	t.is(widget1.y, 35 + 15);
+	t.is(widget1.y, 35 + 2 + 15);
 	t.is(widget1.width, 44);
 	t.is(widget1.height, 20);
 });

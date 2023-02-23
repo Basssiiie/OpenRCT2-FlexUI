@@ -2,6 +2,8 @@ import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { Rectangle } from "@src/positional/rectangle";
 import { TextColour } from "@src/utilities/colour";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -64,5 +66,12 @@ class LabelControl extends Control<LabelDesc> implements LabelDesc
 		const binder = output.binder;
 		binder.add(this, "text", params.text);
 		binder.add(this, "textAlign", params.alignment);
+	}
+
+	override layout(widgets: WidgetMap, area: Rectangle): void
+	{
+		// Align label with checkboxes, spinners, dropdowns etc.
+		area.y += 2;
+		super.layout(widgets, area);
 	}
 }

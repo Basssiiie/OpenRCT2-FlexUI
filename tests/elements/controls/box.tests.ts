@@ -230,7 +230,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 20 + 6);
-	t.is(widget2.y, 20 + 6 + 15);
+	t.is(widget2.y, 20 + 2 + 6 + 15);
 	t.is(widget2.width, 300 - ((2 * 26) + 1));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
@@ -263,7 +263,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.true(widget1.isVisible);
 
 	t.is(widget2.x, 20 + 6);
-	t.is(widget2.y, 20 + 6 + 15);
+	t.is(widget2.y, 20 + 2 + 6 + 15);
 	t.is(widget2.width, 300 - ((2 * 26) + 1));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
@@ -328,7 +328,7 @@ test("Box does not take space if it starts hidden", t =>
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 20 + 6);
-	t.is(widget2.y, 20 + 6 + 15);
+	t.is(widget2.y, 20 + 2 + 6 + 15);
 	t.is(widget2.width, 300 - ((2 * 26) + 1));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);

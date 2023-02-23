@@ -56,7 +56,7 @@ test("Simple layouts with widgets", t =>
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 0);
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.width, 200);
 	t.is(label1.height, 50);
 
@@ -81,7 +81,7 @@ test("Simple layouts with widgets", t =>
 	t.is(label2.text, "big area");
 	t.is(label2.textAlign, "centred");
 	t.is(label2.x, 0);
-	t.is(label2.y, 100);
+	t.is(label2.y, 100 + 2);
 	t.is(label2.width, 200);
 	t.is(label2.height, 50);
 });
@@ -113,19 +113,19 @@ test("Pixel sizes ignore leftover space", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.width, 40);
 	t.is(label1.height, 25);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 25);
+	t.is(label2.y, 25 + 2);
 	t.is(label2.width, 30);
 	t.is(label2.height, 10);
 
 	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
-	t.is(label3.y, 35);
+	t.is(label3.y, 35 + 2);
 	t.is(label3.width, 70);
 	t.is(label3.height, 20);
 });
@@ -157,19 +157,19 @@ test("Percentage sizes", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.width, 30);
 	t.is(label1.height, 12);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 12);
+	t.is(label2.y, 12 + 2);
 	t.is(label2.width, 6);
 	t.is(label2.height, 27);
 
 	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
-	t.is(label3.y, 39);
+	t.is(label3.y, 39 + 2);
 	t.is(label3.width, 45);
 	t.is(label3.height, 9);
 });
@@ -201,19 +201,19 @@ test("Weighted sizes", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.width, 60);
 	t.is(label1.height, 18);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 18);
+	t.is(label2.y, 18 + 2);
 	t.is(label2.width, 60);
 	t.is(label2.height, 7);
 
 	const label3 = output._widgets[2] as LabelWidget;
 	t.is(label3.x, 0);
-	t.is(label3.y, 25);
+	t.is(label3.y, 25 + 2);
 	t.is(label3.width, 60);
 	t.is(label3.height, 35);
 });
@@ -241,11 +241,11 @@ test("Relative percentage fills leftover space", t =>
 	control.layout(widgetMap, rect);
 
 	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.height, 15);
 
 	const label2 = output._widgets[1] as LabelWidget;
-	t.is(label2.y, 15);
+	t.is(label2.y, 15 + 2);
 	t.is(label2.height, 65);
 });
 
@@ -272,11 +272,11 @@ test("Relative weight fills leftover space", t =>
 	control.layout(widgetMap, rect);
 
 	const label1 = output._widgets[0] as LabelWidget;
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.height, 43);
 
 	const label2 = output._widgets[1] as LabelWidget;
-	t.is(label2.y, 43);
+	t.is(label2.y, 43 + 2);
 	t.is(label2.height, 17);
 });
 
@@ -401,14 +401,14 @@ test("Padding: tuple with 2 values", t =>
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.text, "a");
 	t.is(label1.x, 7);
-	t.is(label1.y, 3);
+	t.is(label1.y, 3 + 2);
 	t.is(label1.width, 46);
 	t.is(label1.height, 12);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.text, "b");
 	t.is(label2.x, 6);
-	t.is(label2.y, 12 + 6 + 6);
+	t.is(label2.y, 12 + 2 + 6 + 6);
 	t.is(label2.width, 48);
 	t.is(label2.height, 18);
 });
@@ -612,13 +612,13 @@ test("Spacing: default space between two elements", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 7);
-	t.is(label1.y, 20);
+	t.is(label1.y, 20 + 2);
 	t.is(label1.width, 78);
 	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 7);
-	t.is(label2.y, 38);
+	t.is(label2.y, 38 + 2);
 	t.is(label2.width, 78);
 	t.is(label2.height, 14);
 });
@@ -643,13 +643,13 @@ test("Spacing: percentile space between two elements", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
-	t.is(label1.y, 10);
+	t.is(label1.y, 10 + 2);
 	t.is(label1.width, 20);
 	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 35);
-	t.is(label2.y, 10);
+	t.is(label2.y, 10 + 2);
 	t.is(label2.width, 20);
 	t.is(label2.height, 14);
 });
@@ -674,13 +674,13 @@ test("Spacing: weighted space between two elements", t =>
 
 	const label1 = output._widgets[0] as LabelWidget;
 	t.is(label1.x, 5);
-	t.is(label1.y, 0);
+	t.is(label1.y, 0 + 2);
 	t.is(label1.width, 10);
 	t.is(label1.height, 14);
 
 	const label2 = output._widgets[1] as LabelWidget;
 	t.is(label2.x, 25);
-	t.is(label2.y, 0);
+	t.is(label2.y, 0 + 2);
 	t.is(label2.width, 10);
 	t.is(label2.height, 14);
 });
@@ -868,7 +868,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	const label1 = output._widgets[1] as LabelWidget;
 	t.is(label1.text, "l-a");
 	t.is(label1.x, 0 + 32);
-	t.is(label1.y, 45 + 15 - 7);
+	t.is(label1.y, 45 + 2 + 15 - 7);
 	t.is(label1.width, 120);
 	t.is(label1.height, 14);
 
@@ -882,7 +882,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	const label2 = output._widgets[3] as LabelWidget;
 	t.is(label2.text, "l-b");
 	t.is(label2.x, 120 + 32);
-	t.is(label2.y, 45 + 15 - 7);
+	t.is(label2.y, 45 + 2 + 15 - 7);
 	t.is(label2.width, 120);
 	t.is(label2.height, 14);
 
@@ -896,7 +896,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	const label3 = output._widgets[5] as LabelWidget;
 	t.is(label3.text, "l-c");
 	t.is(label3.x, 0 + 32);
-	t.is(label3.y, 90 + 23 + 15 - 7);
+	t.is(label3.y, 90 + 2 + 23 + 15 - 7);
 	t.is(label3.width, 240);
 	t.is(label3.height, 14);
 
@@ -910,7 +910,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 	const label4 = output._widgets[7] as LabelWidget;
 	t.is(label4.text, "l-d");
 	t.is(label4.x, 0 + 32);
-	t.is(label4.y, 135 + 23 + 15 - 7);
+	t.is(label4.y, 135 + 2 + 23 + 15 - 7);
 	t.is(label4.width, 240);
 	t.is(label4.height, 14);
 });
@@ -941,7 +941,7 @@ test("Child with visibility 'none' is not updated", t =>
 	const widget1 = output._widgets[0] as LabelWidget;
 	t.is(widget1.text, "abc");
 	t.is(widget1.x, 28);
-	t.is(widget1.y, 20);
+	t.is(widget1.y, 20 + 2);
 	t.is(widget1.width, 43);
 	t.is(widget1.height, 25);
 
@@ -955,7 +955,7 @@ test("Child with visibility 'none' is not updated", t =>
 	const widget3 = output._widgets[2] as LabelWidget;
 	t.is(widget3.text, "def");
 	t.is(widget3.x, 28);
-	t.is(widget3.y, 20 + 25 + 10);
+	t.is(widget3.y, 20 + 2 + 25 + 10);
 	t.is(widget3.width, 43);
 	t.is(widget3.height, 25);
 });
@@ -1031,9 +1031,9 @@ test("Child visibility is updated by store", t =>
 	const widget1 = output._widgets[0] as LabelWidget;
 	const widget2 = output._widgets[1] as LabelWidget;
 	const widget3 = output._widgets[2] as LabelWidget;
-	t.is(widget1.y, 3);
-	t.is(widget2.y, 3 + 10 + 20);
-	t.is(widget3.y, 3 + 10 + 20 + 10 + 20);
+	t.is(widget1.y, 3 + 2);
+	t.is(widget2.y, 3 + 2 + 10 + 20);
+	t.is(widget3.y, 3 + 2 + 10 + 20 + 10 + 20);
 	t.is(widget1.height, 20);
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);
@@ -1042,8 +1042,8 @@ test("Child visibility is updated by store", t =>
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
-	t.is(widget1.y, 3);
-	t.is(widget3.y, 3 + 10 + 35);
+	t.is(widget1.y, 3 + 2);
+	t.is(widget3.y, 3 + 2 + 10 + 35);
 	t.is(widget1.height, 35);
 	t.is(widget3.height, 35);
 
@@ -1051,9 +1051,9 @@ test("Child visibility is updated by store", t =>
 	control._recalculateSizeFromChildren();
 	control.layout(widgetMap, rect);
 
-	t.is(widget1.y, 3);
-	t.is(widget2.y, 3 + 10 + 20);
-	t.is(widget3.y, 3 + 10 + 20 + 10 + 20);
+	t.is(widget1.y, 3 + 2);
+	t.is(widget2.y, 3 + 2 + 10 + 20);
+	t.is(widget3.y, 3 + 2 + 10 + 20 + 10 + 20);
 	t.is(widget1.height, 20);
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);

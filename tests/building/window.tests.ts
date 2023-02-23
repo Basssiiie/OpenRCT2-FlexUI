@@ -45,7 +45,7 @@ test("Simple window with widgets", t =>
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 0);
-	t.is(label1.y, 15);
+	t.is(label1.y, 15 + 2);
 	t.is(label1.width, 200 - 1);
 	t.is(label1.height, 50);
 
@@ -70,7 +70,7 @@ test("Simple window with widgets", t =>
 	t.is(label2.text, "big area");
 	t.is(label2.textAlign, "centred");
 	t.is(label2.x, 0);
-	t.is(label2.y, 100 + 15 - 1);
+	t.is(label2.y, 100 + 2 + 15 - 1);
 	t.is(label2.width, 200 - 1);
 	t.is(label2.height, 50);
 });
@@ -108,7 +108,7 @@ test("Window adjusts to resize", t =>
 
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
-	t.is(label1.y, 15);
+	t.is(label1.y, 15 + 2);
 	t.is(label1.width, 400 - 1);
 	t.is(label1.height, 100);
 
@@ -126,7 +126,7 @@ test("Window adjusts to resize", t =>
 
 	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 200 + 15 - 1);
+	t.is(label2.y, 200 + 2 + 15 - 1);
 	t.is(label2.width, 400 - 1);
 	t.is(label2.height, 100);
 });
@@ -162,7 +162,7 @@ test("Window does not resize if size hasn't changed", t =>
 
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.x, 0);
-	t.is(label1.y, 15);
+	t.is(label1.y, 15 + 2);
 	t.is(label1.width, 200 - 1);
 	t.is(label1.height, 50);
 
@@ -180,7 +180,7 @@ test("Window does not resize if size hasn't changed", t =>
 
 	const label2 = created.widgets[3] as LabelWidget;
 	t.is(label2.x, 0);
-	t.is(label2.y, 100 + 15 - 1);
+	t.is(label2.y, 100 + 2 + 15 - 1);
 	t.is(label2.width, 200 - 1);
 	t.is(label2.height, 50);
 });

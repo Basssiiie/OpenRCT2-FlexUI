@@ -54,7 +54,7 @@ test("Window with tabs and widgets", t =>
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 10);
-	t.is(label1.y, 10 + 15);
+	t.is(label1.y, 10 + 2 + 15);
 	t.is(label1.width, 200 - (20 + 1));
 	t.is(label1.height, 14);
 
@@ -62,7 +62,7 @@ test("Window with tabs and widgets", t =>
 	t.is(label2.type, "label");
 	t.is(label2.text, "tab 2");
 	t.is(label2.x, 10);
-	t.is(label2.y, 10 + 44);
+	t.is(label2.y, 10 + 2 + 44);
 	t.is(label2.width, 200 - (20 + 1));
 	t.is(label2.height, 14);
 });
@@ -206,7 +206,7 @@ test("Window layouts with tabs", t =>
 	const secondTab = <LabelWidget[]>created.widgets;
 	t.is(secondTab[0].text, "label 2");
 	t.is(secondTab[0].x, 30 + 2);
-	t.is(secondTab[0].y, 30 + 2 + 44); // 44px topbar
+	t.is(secondTab[0].y, 30 + 2 + 2 + 44); // 44px topbar
 	t.is(secondTab[0].width, (200 - (1 + 60 + 4)));
 	t.is(secondTab[0].height, 14);
 	t.is(secondTab[1].text, "button 2");
@@ -221,7 +221,7 @@ test("Window layouts with tabs", t =>
 	const firstTab = <LabelWidget[]>created.widgets;
 	t.is(firstTab[0].text, "label 1");
 	t.is(firstTab[0].x, 30 + 5);
-	t.is(firstTab[0].y, 30 + 5 + 44); // 44px topbar
+	t.is(firstTab[0].y, 30 + 2 + 5 + 44); // 44px topbar
 	t.is(firstTab[0].width, 40);
 	t.is(firstTab[0].height, 14);
 	t.is(firstTab[1].text, "button 1");
@@ -236,7 +236,7 @@ test("Window layouts with tabs", t =>
 	const secondTabAgain = <LabelWidget[]>created.widgets;
 	t.is(secondTabAgain[0].text, "label 2");
 	t.is(secondTabAgain[0].x, 30 + 2);
-	t.is(secondTabAgain[0].y, 30 + 2 + 44); // 44px topbar
+	t.is(secondTabAgain[0].y, 30 + 2 + 2 + 44); // 44px topbar
 	t.is(secondTabAgain[0].width, (200 - (1 + 60 + 4)));
 	t.is(secondTabAgain[0].height, 14);
 	t.is(secondTabAgain[1].text, "button 2");
@@ -270,7 +270,7 @@ test("Window layouts with tabs and static", t =>
 	{
 		t.is(widgets[0].text, "static label");
 		t.is(widgets[0].x, 30 + 12);
-		t.is(widgets[0].y, 30 + 12 + 15); // 15px topbar
+		t.is(widgets[0].y, 30 + 2 + 12 + 15); // 15px topbar
 		t.is(widgets[0].width, 35);
 		t.is(widgets[0].height, 14);
 		t.is(widgets[1].text, "static button");
@@ -284,7 +284,7 @@ test("Window layouts with tabs and static", t =>
 	assertStaticWidgets(secondTab);
 	t.is(secondTab[2].text, "label 2");
 	t.is(secondTab[2].x, 30 + 2);
-	t.is(secondTab[2].y, 30 + 2 + 44); // 44px topbar
+	t.is(secondTab[2].y, 30 + 2 + 2 + 44); // 44px topbar
 	t.is(secondTab[2].width, (200 - (1 + 60 + 4)));
 	t.is(secondTab[2].height, 14);
 	t.is(secondTab[3].text, "button 2");
@@ -300,7 +300,7 @@ test("Window layouts with tabs and static", t =>
 	assertStaticWidgets(firstTab);
 	t.is(firstTab[2].text, "label 1");
 	t.is(firstTab[2].x, 30 + 5);
-	t.is(firstTab[2].y, 30 + 5 + 44); // 44px topbar
+	t.is(firstTab[2].y, 30 + 2 + 5 + 44); // 44px topbar
 	t.is(firstTab[2].width, 40);
 	t.is(firstTab[2].height, 14);
 	t.is(firstTab[3].text, "button 1");
@@ -316,7 +316,7 @@ test("Window layouts with tabs and static", t =>
 	assertStaticWidgets(secondTabAgain);
 	t.is(secondTabAgain[2].text, "label 2");
 	t.is(secondTabAgain[2].x, 30 + 2);
-	t.is(secondTabAgain[2].y, 30 + 2 + 44); // 44px topbar
+	t.is(secondTabAgain[2].y, 30 + 2 + 2 + 44); // 44px topbar
 	t.is(secondTabAgain[2].width, (200 - (1 + 60 + 4)));
 	t.is(secondTabAgain[2].height, 14);
 	t.is(secondTabAgain[3].text, "button 2");

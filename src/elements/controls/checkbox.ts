@@ -2,6 +2,8 @@ import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -66,5 +68,11 @@ export class CheckboxControl extends Control<CheckboxDesc> implements CheckboxDe
 		binder.add(this, "text", params.text);
 		binder.add(this, "isChecked", params.isChecked);
 		this.onChange = params.onChange;
+	}
+
+	override layout(widgets: WidgetMap, area: Rectangle): void
+	{
+		area.y += 1;
+		super.layout(widgets, area);
 	}
 }

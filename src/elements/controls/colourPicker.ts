@@ -2,6 +2,8 @@ import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { Rectangle } from "@src/positional/rectangle";
 import { Colour } from "@src/utilities/colour";
 import { addSilencerToOnChange, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
 import { isUndefined } from "@src/utilities/type";
@@ -75,5 +77,11 @@ class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPic
 		});
 
 		addSilencerToOnChange(this, params.onChange);
+	}
+
+	override layout(widgets: WidgetMap, area: Rectangle): void
+	{
+		area.y += 1;
+		super.layout(widgets, area);
 	}
 }
