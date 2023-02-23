@@ -17,8 +17,8 @@
 			"@src/*": [ "src/*" ]
 		},
 		"strict": true,
-		"target": "es5",
-		"lib": [ "es5" ],
+		"target": "ES5",
+		"lib": [ "ES5" ],
 	},
 	"include": [
 		"./lib/**/*.ts",

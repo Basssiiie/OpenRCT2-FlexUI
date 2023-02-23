@@ -65,12 +65,22 @@ const config = [
 		input: "./src/index.ts",
 		output: {
 			file: "./dist/index.d.ts",
+			format: "esm"
 		},
 		plugins: [
-			typescript({
-				tsconfig: "./tsconfig.dts.json"
-			}),
-			dts()
+			dts({
+				tsconfig: "./tsconfig.json",
+				compilerOptions: {
+					declaration: true,
+					declarationDir: "./@types",
+					emitDeclarationOnly: true,
+					target: "ESNext"
+				},
+				exclude: [
+					"./src/**/*.d.ts",
+					"./tests/**/*"
+				]
+			})
 		]
 	}
 ];
