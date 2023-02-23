@@ -35,9 +35,20 @@ interface Duktape
  */
 interface DukStackEntry
 {
-	function: Function;
+	function: DukFunction;
 	lineNumber: number;
 	pc: number;
+}
+
+
+/**
+ * A reference to a standard ES5 function in Duktape.
+ * @see {@link https://duktape.org/guide.html#ecmascript-function-properties}
+ */
+interface DukFunction extends Function
+{
+	name: string;
+	fileName: string;
 }
 
 

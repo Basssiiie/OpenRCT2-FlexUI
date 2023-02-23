@@ -67,7 +67,9 @@ const config = [
 			file: "./dist/index.d.ts",
 		},
 		plugins: [
-			typescript({ tsconfig: "./tsconfig.dts.json" }),
+			typescript({
+				tsconfig: "./tsconfig.dts.json"
+			}),
 			dts()
 		]
 	}
