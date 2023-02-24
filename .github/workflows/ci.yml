@@ -33,6 +33,7 @@ jobs:
       #- run: npm run link openrct2-flexui
       #- run: cp -R /dist /tests/package/project/node_modules/openrct2-flexui
       - run: npm run build
+      - run: npm run install:examples
       - run: npm run build:examples
       - run: npm run test:setup
         # symlinks don't seem to work in github's actions, so manually copy the build
