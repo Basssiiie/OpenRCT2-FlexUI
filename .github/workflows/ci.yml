@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - main
+    - ci-test
   pull_request:
     branches:
     - main
@@ -12,8 +13,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
       - run: npm ci --prefer-offline --no-audit --no-save
@@ -23,10 +24,15 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
       - run: npm ci --prefer-offline --no-audit --no-save
+      #- run: npm run publish:local
+      #- run: npm run link openrct2-flexui
+      #- run: cp -R /dist /tests/package/project/node_modules/openrct2-flexui
       - run: npm run test:setup
+      - run: npm run build
+        # symlinks don't seem to work in github's actions, so manually copy the build
       - run: npm run test
