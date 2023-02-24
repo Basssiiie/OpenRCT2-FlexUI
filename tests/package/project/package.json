@@ -5,7 +5,7 @@
 	"author": "Basssiiie",
 	"license": "MIT",
 	"dependencies": {
-		"openrct2-flexui": "file:../../../dist"
+		"openrct2-flexui": "file:../../.."
 	},
 	"devDependencies": {
 		"@babel/core": "^7.20.12",
