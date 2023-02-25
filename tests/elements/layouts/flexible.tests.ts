@@ -281,6 +281,37 @@ test("Relative weight fills leftover space", t =>
 });
 
 
+test("Relative weight takes leftover after relative percentage", t =>
+{
+	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
+	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 80 };
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			label({
+				text: "a", height: "25%"
+			}),
+			label({
+				text: "b", height: "1w"
+			})
+		]
+	});
+
+	const control = <FlexibleLayoutControl>creator(parentMock, output);
+	const widgetMap = createWidgetMap(<Widget[]>output._widgets);
+	control._recalculateSizeFromChildren();
+	control.layout(widgetMap, rect);
+
+	const label1 = output._widgets[0] as LabelWidget;
+	t.is(label1.y, 0 + 2);
+	t.is(label1.height, 20);
+
+	const label2 = output._widgets[1] as LabelWidget;
+	t.is(label2.y, 20 + 2);
+	t.is(label2.height, 60);
+});
+
+
 test("Padding: single number value", t =>
 {
 	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
@@ -348,7 +379,7 @@ test("Padding: single percentage value", t =>
 	const widget = output._widgets[0];
 	t.is(widget.x, 12);
 	t.is(widget.y, 8);
-	t.is(widget.width, 60);
+	t.is(widget.width, 60 - (2 * 12));
 	t.is(widget.height, 24);
 });
 
@@ -918,7 +949,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 
 test("Child with visibility 'none' is not updated", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 28, y: 20, width: 43, height: 60 };
 	const creator = flexible({
@@ -963,7 +994,7 @@ test("Child with visibility 'none' is not updated", t =>
 
 test("None update if all children have visibility set to 'none'", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
 	const creator = flexible({
@@ -1007,7 +1038,7 @@ test("None update if all children have visibility set to 'none'", t =>
 
 test("Child visibility is updated by store", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const output: FrameBuilder = new FrameBuilder({}, [], undefined, [], [], []);
 	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 80 };
 	const visibility = store<ElementVisibility>("visible");

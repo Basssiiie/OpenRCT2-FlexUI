@@ -2,7 +2,7 @@ import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePositio
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
-import { isAbsolute, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingToDirection, sizeKeys, startKeys } from "../paddingHelpers";
@@ -23,9 +23,10 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 	// First pass: calculate available and used space.
 	const
 		stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection),
-		leftoverSpace = (parentArea[sizeKeys[layoutDirection]] - stack._absoluteSpace),
-		weightedTotal = stack._weightedTotal,
-		spaceInPixels = convertToPixels(spacing, leftoverSpace, weightedTotal);
+		leftoverSpace = (parentArea[sizeKeys[layoutDirection]] - stack._requestedPixels),
+		weightedTotal = stack._requestedWeightTotal,
+		percentileTotal = stack._requestedPercentile,
+		spaceInPixels = convertToPixels(spacing, leftoverSpace, weightedTotal, percentileTotal);
 
 	// Second pass: compute locations and update widgets.
 	let cursor = 0;
@@ -34,7 +35,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		const
 			parsed = stack._elements[i],
 			mainAxis = (cursor + parentArea[axisKeys[layoutDirection]]),
-			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, weightedTotal),
+			mainSize = convertToPixels(parsed._mainSize, leftoverSpace, weightedTotal, percentileTotal),
 			padding = parsed._padding;
 
 		const childArea = {} as Rectangle;
@@ -43,7 +44,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		childArea[axisKeys[otherDirection]] = parentArea[axisKeys[otherDirection]];
 		childArea[sizeKeys[otherDirection]] = parentArea[sizeKeys[otherDirection]];
 
-		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal);
+		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal, percentileTotal);
 		setSizeWithPaddingToDirection(childArea, otherDirection, parsed._otherSize, padding);
 
 		apply(i, childArea);
@@ -56,8 +57,9 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 interface ParsedStack
 {
 	_elements: ParsedStackElement[];
-	_absoluteSpace: number;
-	_weightedTotal: number;
+	_requestedPixels: number;
+	_requestedPercentile: number;
+	_requestedWeightTotal: number;
 }
 
 // The parsed scales for a specific element.
@@ -77,8 +79,9 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 	const elementCount = elements.length;
 	const stack: ParsedStack = {
 		_elements: Array<ParsedStackElement>(elementCount),
-		_absoluteSpace: 0,
-		_weightedTotal: 0
+		_requestedPixels: 0,
+		_requestedPercentile: 0,
+		_requestedWeightTotal: 0
 	};
 
 	// Parse spacing in between elements
@@ -116,12 +119,17 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
  */
 function addScaleToStack(scale: ParsedScale, stack: ParsedStack, multiplier: number = 1): void
 {
+	const value = (scale[0] * multiplier);
 	if (isWeighted(scale))
 	{
-		stack._weightedTotal += (scale[0] * multiplier);
+		stack._requestedWeightTotal += value;
 	}
 	else if (isAbsolute(scale))
 	{
-		stack._absoluteSpace += (scale[0] * multiplier);
+		stack._requestedPixels += value;
+	}
+	else if (isPercentile(scale))
+	{
+		stack._requestedPercentile += value;
 	}
 }

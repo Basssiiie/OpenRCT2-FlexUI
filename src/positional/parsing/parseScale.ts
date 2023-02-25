@@ -90,14 +90,13 @@ export function isParsedScaleEqual(left: ParsedScale, right: ParsedScale): boole
 /**
  * Calculates the pixel scale using the leftover space and weighted total if necessary.
  */
-export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number): number
+export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number, percentileTotal: number = 0): number
 {
 	switch (scale[1])
 	{
 		case ScaleType.Weight:
-			return (weightedTotal)
-				? ((scale[0] / weightedTotal) * leftoverSpace)
-				: leftoverSpace;
+			return ((weightedTotal) ? (scale[0] / weightedTotal) : 1)
+				* leftoverSpace * (100 - percentileTotal) * 0.01;
 
 		case ScaleType.Percentage:
 			return ((scale[0] * 0.01) * leftoverSpace);
