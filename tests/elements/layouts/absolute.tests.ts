@@ -11,7 +11,7 @@ import Mock from "openrct2-mocks";
 test("Simple layout with widgets", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -53,7 +53,7 @@ test("Simple layout with widgets", t =>
 test("Flat layout with widgets", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,

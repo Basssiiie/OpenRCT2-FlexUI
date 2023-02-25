@@ -14,7 +14,7 @@ import Mock from "openrct2-mocks";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 50, height: 40 + 15, padding: "4px",
@@ -49,7 +49,7 @@ test("Standard properties are set", t =>
 test("Title changes size and position", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 50, height: 80 + 15, padding: "4px",
@@ -86,7 +86,7 @@ test("Title changes size and position", t =>
 test("Applies padding", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 60 + 15, padding: 10,
@@ -122,7 +122,7 @@ test("Applies padding", t =>
 test("Box takes size of absolute child", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 500, height: 400 + 15, padding: 10,
@@ -158,7 +158,7 @@ test("Box takes size of absolute child", t =>
 test("Box can center child", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 500, height: 400 + 15, padding: 40,
@@ -194,7 +194,7 @@ test("Box can center child", t =>
 test("Box reacts correctly to nested child size changes", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const model = { active: store(true) };
 	const template = window({
@@ -279,7 +279,7 @@ test("Box reacts correctly to nested child size changes", t =>
 test("Box does not take space if it starts hidden", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const model = { active: store(false) };
 	const template = window({

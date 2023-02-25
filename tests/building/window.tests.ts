@@ -13,7 +13,7 @@ import { call } from "../helpers";
 
 test("Simple window with widgets", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window",
@@ -34,7 +34,7 @@ test("Simple window with widgets", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.truthy(created);
 	t.is(created.title, "test window");
 	t.is(created.width, 200);
@@ -78,7 +78,7 @@ test("Simple window with widgets", t =>
 
 test("Window adjusts to resize", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window",
@@ -101,7 +101,7 @@ test("Window adjusts to resize", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	created.width = 400;
 	created.height = 300 + 15;
 	call(created.onUpdate);
@@ -134,7 +134,7 @@ test("Window adjusts to resize", t =>
 
 test("Window does not resize if size hasn't changed", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window",
@@ -157,7 +157,7 @@ test("Window does not resize if size hasn't changed", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	call(created.onUpdate);
 
 	const label1 = created.widgets[0] as LabelWidget;
@@ -188,7 +188,7 @@ test("Window does not resize if size hasn't changed", t =>
 
 test("Window updates to bindings", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const viewmodel = {
 		labelText: store("test"),
@@ -212,7 +212,7 @@ test("Window updates to bindings", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 
 	const label1 = created.widgets[0] as LabelWidget;
 	t.is(label1.text, "test");
@@ -235,7 +235,7 @@ test("Window updates to bindings", t =>
 
 test("Window title is bindable", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const viewmodel = {
 		title: store("test")
@@ -249,7 +249,7 @@ test("Window title is bindable", t =>
 	});
 	template.open();
 
-	const created1 = (global.ui as UiMock).createdWindows[0];
+	const created1 = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created1.title, "test");
 
 	viewmodel.title.set("blub");
@@ -260,7 +260,7 @@ test("Window title is bindable", t =>
 	t.is(created1.title, "blub"); // dont update on close
 
 	template.open();
-	const created2 = (global.ui as UiMock).createdWindows[0];
+	const created2 = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created1.title, "blub");
 	t.is(created2.title, "bobby");
 });
@@ -268,7 +268,7 @@ test("Window title is bindable", t =>
 
 test("Window applies padding", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -279,7 +279,7 @@ test("Window applies padding", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 15);
@@ -291,7 +291,7 @@ test("Window applies padding", t =>
 
 test("Window applies padding to resizes", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window",
@@ -305,7 +305,7 @@ test("Window applies padding to resizes", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	created.width = 250;
 	created.height = 300;
 	call(created.onUpdate);
@@ -320,7 +320,7 @@ test("Window applies padding to resizes", t =>
 
 test("Window events are triggered", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const hits: [string, FrameContext][] = [];
 
 	const template = window({
@@ -335,7 +335,7 @@ test("Window events are triggered", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(hits.length, 1);
 	t.is(hits[0][0], "open");
 	t.truthy(hits[0][1]);
@@ -354,7 +354,7 @@ test("Window events are triggered", t =>
 
 test("Window focuses on double open", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -364,7 +364,7 @@ test("Window focuses on double open", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.true(created[0].isOpen);
@@ -378,7 +378,7 @@ test("Window focuses on double open", t =>
 
 test("Window can be reopened after closing", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -388,7 +388,7 @@ test("Window can be reopened after closing", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 
@@ -403,7 +403,7 @@ test("Window can be reopened after closing", t =>
 
 test("Window opens at unspecified default position", t =>
 {
-	global.ui = Mock.ui({ width: 1920, height: 1080 });
+	globalThis.ui = Mock.ui({ width: 1920, height: 1080 });
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -411,7 +411,7 @@ test("Window opens at unspecified default position", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.is<number|undefined, number|undefined>(created[0].x, undefined);
@@ -421,7 +421,7 @@ test("Window opens at unspecified default position", t =>
 
 test("Window opens at specified default position", t =>
 {
-	global.ui = Mock.ui({ width: 1920, height: 1080 });
+	globalThis.ui = Mock.ui({ width: 1920, height: 1080 });
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -430,7 +430,7 @@ test("Window opens at specified default position", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.is<number|undefined, number|undefined>(created[0].x, undefined);
@@ -440,7 +440,7 @@ test("Window opens at specified default position", t =>
 
 test("Window opens at center position", t =>
 {
-	global.ui = Mock.ui({ width: 1920, height: 1080 });
+	globalThis.ui = Mock.ui({ width: 1920, height: 1080 });
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -449,7 +449,7 @@ test("Window opens at center position", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.is(created[0].x, (1920 / 2) - (150 / 2));
@@ -459,7 +459,7 @@ test("Window opens at center position", t =>
 
 test("Window opens at specified position", t =>
 {
-	global.ui = Mock.ui({ width: 1920, height: 1080 });
+	globalThis.ui = Mock.ui({ width: 1920, height: 1080 });
 
 	const template = window({
 		title: "test window", width: 150, height: 100,
@@ -468,7 +468,7 @@ test("Window opens at specified position", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows;
+	const created = (globalThis.ui as UiMock).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.is(created[0].x, 100);

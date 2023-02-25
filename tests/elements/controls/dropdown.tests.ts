@@ -14,7 +14,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -35,7 +35,7 @@ test("Standard properties are set", t =>
 test("Items are bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c" ]);
 	const template = window({
@@ -57,7 +57,7 @@ test("Items are bindable", t =>
 test("Selected index is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const selected = store(2);
 	const template = window({
@@ -82,7 +82,7 @@ test("Selected index is bindable", t =>
 test("Select event gets called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 	const hits: number[] = [];
 
 	const template = window({
@@ -106,7 +106,7 @@ test("Select event gets called", t =>
 test("Disable message shows when disabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const disabled = store(false);
 	const template = window({
@@ -131,7 +131,7 @@ test("Disable message shows when disabled", t =>
 test("Disable message shows when always disabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -149,7 +149,7 @@ test("Disable message shows when always disabled", t =>
 test("Disable message doesn't show when always enabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -167,7 +167,7 @@ test("Disable message doesn't show when always enabled", t =>
 test("Disable message shows with items and disabled stores", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const items = store<string[]>([]);
 	const disabled = store(false);
@@ -209,7 +209,7 @@ test("Disable message shows with items and disabled stores", t =>
 test("Auto disable on single item disables when just one item", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -227,7 +227,7 @@ test("Auto disable on single item disables when just one item", t =>
 test("Auto disable on single item enabled when more than one item", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -245,7 +245,7 @@ test("Auto disable on single item enabled when more than one item", t =>
 test("Auto disable on empty disables when empty", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -263,7 +263,7 @@ test("Auto disable on empty disables when empty", t =>
 test("Auto disable on empty enabled when at least one item", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -281,7 +281,7 @@ test("Auto disable on empty enabled when at least one item", t =>
 test("Auto disable on never is never disabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -299,7 +299,7 @@ test("Auto disable on never is never disabled", t =>
 test("Update selected index if item at different index in new list", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
 	const selected = store(3);
@@ -325,7 +325,7 @@ test("Update selected index if item at different index in new list", t =>
 test("Do not change selected index if item at same index in new list", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
 	const selected = store(2);
@@ -351,7 +351,7 @@ test("Do not change selected index if item at same index in new list", t =>
 test("Reset selected index if item not present in new list", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
 	const selected = store(3);
@@ -377,7 +377,7 @@ test("Reset selected index if item not present in new list", t =>
 test("Assigning bound selected index should silence on change", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const hits: number[] = [];
 	const selected = store(1);
@@ -409,7 +409,7 @@ test("Assigning bound selected index should silence on change", t =>
 test("Assigning bound items should silence on change", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const hits: number[] = [];
 	const items = store([ "a", "b", "c" ]);
@@ -440,7 +440,7 @@ test("Assigning bound items should silence on change", t =>
 test("Items and selected index gets restored when disabled dropdown with message gets enabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const disabled = store(false);
 	const template = window({

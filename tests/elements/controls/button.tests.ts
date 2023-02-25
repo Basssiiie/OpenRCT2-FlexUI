@@ -11,7 +11,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -32,7 +32,7 @@ test("Standard properties are set", t =>
 test("Text is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const text = store("bonjour");
 	const template = window({
@@ -54,7 +54,7 @@ test("Text is bindable", t =>
 test("Image is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const image = store(334);
 	const template = window({
@@ -76,7 +76,7 @@ test("Image is bindable", t =>
 test("Is pressed is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const pressed = store(false);
 	const template = window({
@@ -98,7 +98,7 @@ test("Is pressed is bindable", t =>
 test("Click event gets called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 	let count = 0;
 
 	const template = window({

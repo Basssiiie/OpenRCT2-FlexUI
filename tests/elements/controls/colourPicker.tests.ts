@@ -14,7 +14,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -34,7 +34,7 @@ test("Standard properties are set", t =>
 test("Colour is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const colour = store(Colour.Aquamarine);
 	const template = window({
@@ -56,7 +56,7 @@ test("Colour is bindable", t =>
 test("Change event gets called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 	const hits: Colour[] = [];
 
 	const template = window({
@@ -80,7 +80,7 @@ test("Change event gets called", t =>
 test("Assigning bound colour should silence on change", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const hits: number[] = [];
 	const colour = store(20);

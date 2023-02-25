@@ -11,7 +11,7 @@ import Mock from "openrct2-mocks";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 50, height: 40 + 15, padding: "4px",
@@ -63,7 +63,7 @@ test("Standard properties are set", t =>
 test("Groupbox applies padding and default gap", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 80 + 15, padding: 10,
@@ -115,7 +115,7 @@ test("Groupbox applies padding and default gap", t =>
 test("Groupbox takes size of absolute child", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 500, height: 400 + 15, padding: 10,
@@ -166,7 +166,7 @@ test("Groupbox takes size of absolute child", t =>
 test("Groupbox uses default fallback padding for gap", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 500, height: 400 + 15, padding: 10,
@@ -217,7 +217,7 @@ test("Groupbox uses default fallback padding for gap", t =>
 test("Groupbox has correct size with padding in flex layout", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 150, height: 200, padding: 5, spacing: 2,

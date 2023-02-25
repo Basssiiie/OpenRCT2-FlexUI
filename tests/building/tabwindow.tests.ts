@@ -12,7 +12,7 @@ import Mock, { UiMock } from "openrct2-mocks";
 
 test("Window with tabs and widgets", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = tabwindow({
 		title: "test tab window",
@@ -41,7 +41,7 @@ test("Window with tabs and widgets", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.truthy(created);
 	t.is(created.title, "test tab window");
 	t.is(created.width, 200);
@@ -70,7 +70,7 @@ test("Window with tabs and widgets", t =>
 
 test("Window and tab events execute", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const hits: string[] = [];
 	const template = tabwindow({
@@ -103,7 +103,7 @@ test("Window and tab events execute", t =>
 
 	t.deepEqual(hits, ["window open", "tab 2 open"]);
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	created.onUpdate?.();
 	t.deepEqual(hits, ["window open", "tab 2 open", "window update", "tab 2 update"]);
 
@@ -128,7 +128,7 @@ test("Window and tab events execute", t =>
 
 test("Window and tab events with static content execute", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const hits: string[] = [];
 	const template = tabwindow({
@@ -162,7 +162,7 @@ test("Window and tab events with static content execute", t =>
 
 	t.deepEqual(hits, ["window open", "tab 3 open"]);
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	created.onUpdate?.();
 	t.deepEqual(hits, ["window open", "tab 3 open", "window update", "tab 3 update"]);
 
@@ -187,7 +187,7 @@ test("Window and tab events with static content execute", t =>
 
 test("Window layouts with tabs", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = tabwindow({
 		width: 200, height: 150, padding: 30, startingTab: 1,
@@ -202,7 +202,7 @@ test("Window layouts with tabs", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	const secondTab = <LabelWidget[]>created.widgets;
 	t.is(secondTab[0].text, "label 2");
 	t.is(secondTab[0].x, 30 + 2);
@@ -249,7 +249,7 @@ test("Window layouts with tabs", t =>
 
 test("Window layouts with tabs and static", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const template = tabwindow({
 		width: 200, height: 150, padding: 30, startingTab: 1,
@@ -265,7 +265,7 @@ test("Window layouts with tabs and static", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	function assertStaticWidgets(widgets: LabelWidget[]): void
 	{
 		t.is(widgets[0].text, "static label");
@@ -329,7 +329,7 @@ test("Window layouts with tabs and static", t =>
 
 test("Window and tab rebind to stores on each tab change", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 
 	const tooltipStore = store("hello");
 	const template = tabwindow({
@@ -349,7 +349,7 @@ test("Window and tab rebind to stores on each tab change", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	const firstTab = <LabelWidget[]>created.widgets;
 	t.is(firstTab[0].text, "static");
 	t.is(firstTab[0].tooltip, "hello");

@@ -10,7 +10,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -39,7 +39,7 @@ test("Standard properties are set", t =>
 test("Dropdown updates button", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -67,7 +67,7 @@ test("Dropdown updates button", t =>
 test("Button onClick's are called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const hits: string[] = [];
 	const template = window({
@@ -107,7 +107,7 @@ test("Button onClick's are called", t =>
 test("Dropdown allows empty list", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,

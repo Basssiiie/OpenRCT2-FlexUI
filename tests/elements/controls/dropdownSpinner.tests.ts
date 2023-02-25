@@ -10,7 +10,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -37,7 +37,7 @@ test("Standard properties are set", t =>
 test("Dropdown updates spinner", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -63,7 +63,7 @@ test("Dropdown updates spinner", t =>
 test("Spinner updates dropdown", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,
@@ -95,7 +95,7 @@ test("Spinner updates dropdown", t =>
 test("Spinner allows empty item list", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100, padding: 0,

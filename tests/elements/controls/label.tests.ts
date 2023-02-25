@@ -10,7 +10,7 @@ import Mock from "openrct2-mocks";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -36,7 +36,7 @@ test("Standard properties are set", t =>
 test("Text is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const text = store("Hello");
 	const template = window({
@@ -66,7 +66,7 @@ test("Text is bindable", t =>
 test("Alignment is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const alignment = store<TextAlignment>("centred");
 	const template = window({

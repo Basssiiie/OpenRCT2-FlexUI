@@ -11,7 +11,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -32,7 +32,7 @@ test("Standard properties are set", t =>
 test("Is pressed is still bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const pressed = store(true);
 	const template = window({
@@ -54,7 +54,7 @@ test("Is pressed is still bindable", t =>
 test("Is pressed updates on toggle", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -81,7 +81,7 @@ test("Is pressed updates on toggle", t =>
 test("Is pressed store updates on toggle", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const pressed = store(false);
 	const template = window({
@@ -116,7 +116,7 @@ test("Is pressed store updates on toggle", t =>
 test("Change event gets called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 	const hits: boolean[] = [];
 
 	const template = window({

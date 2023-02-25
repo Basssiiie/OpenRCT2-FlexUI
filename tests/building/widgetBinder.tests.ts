@@ -51,7 +51,7 @@ test("read() adds store to binder", t =>
 
 test("read() sets store in window frame", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const label: LabelDesc =
 	{
 		type: "label",
@@ -79,7 +79,7 @@ test("read() sets store in window frame", t =>
 
 test("read() sets store through converter", t =>
 {
-	global.ui = Mock.ui();
+	globalThis.ui = Mock.ui();
 	const label: LabelDesc =
 	{
 		type: "label",

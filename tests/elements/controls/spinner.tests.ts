@@ -11,7 +11,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -32,7 +32,7 @@ test("Standard properties are set", t =>
 test("Value is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const value = store(33);
 	const template = window({
@@ -55,7 +55,7 @@ test("Value is bindable", t =>
 test("Value can be incremented/decremented", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -80,7 +80,7 @@ test("Value can be incremented/decremented", t =>
 test("Incremented value gets clamped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -105,7 +105,7 @@ test("Incremented value gets clamped", t =>
 test("Decremented value gets clamped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -130,7 +130,7 @@ test("Decremented value gets clamped", t =>
 test("Incremented value gets wrapped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -155,7 +155,7 @@ test("Incremented value gets wrapped", t =>
 test("Decremented value gets wrapped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -180,7 +180,7 @@ test("Decremented value gets wrapped", t =>
 test("Incremented value gets clamped then wrapped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -205,7 +205,7 @@ test("Incremented value gets clamped then wrapped", t =>
 test("Decremented value gets clamped then wrapped", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -230,7 +230,7 @@ test("Decremented value gets clamped then wrapped", t =>
 test("Change event gets called", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 	const hits: [number, number][] = [];
 
 	const template = window({
@@ -258,7 +258,7 @@ test("Change event gets called", t =>
 test("Throw error on minimum larger than maximum", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const error = t.throws(() =>
 	{
@@ -278,7 +278,7 @@ test("Throw error on minimum larger than maximum", t =>
 test("Minimum equal to maximum does nothing", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -298,7 +298,7 @@ test("Minimum equal to maximum does nothing", t =>
 test("Step is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const step = store(1);
 	const template = window({
@@ -330,7 +330,7 @@ test("Step is bindable", t =>
 test("Minimum is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const minimum = store(0);
 	const template = window({
@@ -356,7 +356,7 @@ test("Minimum is bindable", t =>
 test("Maximum is bindable", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const maximum = store(2);
 	const template = window({
@@ -388,7 +388,7 @@ test("Maximum is bindable", t =>
 test("Disabled message shows on disabled", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const disabled = store(false);
 	const template = window({
@@ -422,7 +422,7 @@ test("Disabled message shows on disabled", t =>
 test("Default minimum is clamped at smallest 32-bit signed integer", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -444,7 +444,7 @@ test("Default minimum is clamped at smallest 32-bit signed integer", t =>
 test("Default maximum is clamped at largest 32-bit signed integer", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -466,7 +466,7 @@ test("Default maximum is clamped at largest 32-bit signed integer", t =>
 test("Update maximum clamps value", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const maximum = store(100);
 	const template = window({
@@ -493,7 +493,7 @@ test("Update maximum clamps value", t =>
 test("Update minimum clamps value", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const minimum = store(10);
 	const template = window({
