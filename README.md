@@ -3,13 +3,14 @@
 A flexible no-nonsense user interface library for creating windows for OpenRCT2 plugins.
 
  - Simple declarative approach to designing your windows;
- - Bind models to your interface components using MVVM-like bindings;
+ - Bind models to your interface components using reactive MVVM-like bindings;
     - Your UI will automatically update when the values in your models change.
  - Automatically resize parts of your UI when users resize your window;
  - Percentile or weighted sizing of widgets;
     - Put your widgets in columns or rows, sized to 10% or 2/3 of the size of the parent, or something like that.
  - Nested widgets, widgets in widgets, or widget-inception;
  - New widgets like toggle buttons, dropdown-spinners and dropdown-buttons;
+ - Supports both tabbed and regular window.
  - Easily extendable by implementing your own `WidgetCreator`-implementations;
  - Tree-shakable and minifiable;
     - If you use a tree-shaker then code from the library that you don't use will not be shipped with your plugin.
