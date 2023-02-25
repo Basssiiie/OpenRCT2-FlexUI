@@ -1,7 +1,5 @@
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
-import { Store } from "@src/bindings/stores/store";
-import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { WidgetMap } from "@src/building/widgets/widgetMap";
@@ -16,6 +14,7 @@ import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 import * as Log from "@src/utilities/logger";
 import { ParentControl } from "@src/building/parentControl";
 import { subscribe } from "@src/bindings/stores/subscribe";
+import { wrap } from "@src/bindings/stores/wrap";
 
 
 /**
@@ -54,16 +53,14 @@ const spinnerControlsWidth = 25;
 class DropdownSpinnerControl extends DropdownControl
 {
 	_spinner: SpinnerControl;
-	_selectedIndex: Store<number>;
 	_userOnChange?: (index: number) => void;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownSpinnerParams)
 	{
 		// Ensure selectedIndex is a store, so we can update it easily when
 		// the spinner is used.
-		const selected = params.selectedIndex;
-		const selectedStore = storify(selected || 0);
-		params.selectedIndex = selectedStore;
+		const selectedIndex = wrap(params.selectedIndex || 0);
+		params.selectedIndex = selectedIndex;
 
 		// Setup internal spinner control
 		const spinParams: SpinnerParams =
@@ -73,13 +70,13 @@ class DropdownSpinnerControl extends DropdownControl
 			visibility: params.visibility,
 			wrapMode: params.wrapMode || "wrap",
 			minimum: 0,
-			value: selectedStore,
+			value: selectedIndex,
 			onChange: (value: number) =>
 			{
 				// Changing selectedIndex triggers an onChange; setting this boolean
 				// makes the control ignore that onChange event.
-				Log.debug("Dropdown spinner", this.name, "spin value has changed:", this._selectedIndex.get(), "->", value);
-				this._selectedIndex.set(value);
+				Log.debug("Dropdown spinner", this.name, "spin value has changed:", selectedIndex.get(), "->", value);
+				selectedIndex.set(value);
 				if (this._userOnChange)
 				{
 					this._userOnChange(value);
@@ -91,8 +88,8 @@ class DropdownSpinnerControl extends DropdownControl
 		const userOnChange = params.onChange;
 		params.onChange = (idx): void =>
 		{
-			Log.debug("Dropdown spinner", this.name, "selectedIndex has changed:", this._selectedIndex.get(), "->", idx);
-			this._selectedIndex.set(idx);
+			Log.debug("Dropdown spinner", this.name, "selectedIndex has changed:", selectedIndex.get(), "->", idx);
+			selectedIndex.set(idx);
 			if (this._userOnChange)
 			{
 				this._userOnChange(idx);
@@ -105,19 +102,23 @@ class DropdownSpinnerControl extends DropdownControl
 		if (isStore(items))
 		{
 			const maximum = store(0);
-			subscribe(items, v => maximum.set((v) ? v.length : 0));
+			subscribe(items, val =>
+			{
+				const length = val.length;
+				maximum.set((val && length > 0) ? (length - 1) : 0);
+			});
 			spinParams.maximum = maximum;
 		}
 		else if (items)
 		{
-			spinParams.maximum = items.length;
+			const length = items.length;
+			spinParams.maximum = (length > 0) ? (length - 1) : 0;
 		}
 
 		const spinner = new SpinnerControl(parent, output, spinParams);
 		super(parent, output, params);
 
 		this._spinner = spinner;
-		this._selectedIndex = selectedStore;
 		this._userOnChange = userOnChange;
 	}
 

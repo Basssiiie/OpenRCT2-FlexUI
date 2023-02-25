@@ -2,12 +2,12 @@ import { Bindable } from "@src/bindings/bindable";
 import { on } from "@src/bindings/stores/on";
 import { read } from "@src/bindings/stores/read";
 import { Store } from "@src/bindings/stores/store";
-import { storify } from "@src/bindings/stores/storify";
+import { wrap } from "@src/bindings/stores/wrap";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import * as Log from "@src/utilities/logger";
-import { clamp, wrap } from "@src/utilities/math";
+import * as MathUtils from "@src/utilities/math";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -34,14 +34,14 @@ export interface SpinnerParams extends ElementParams
 	value?: Bindable<number>;
 
 	/**
-	 * The minimum possible value that the spinner can reach. (Inclusive)
+	 * The minimum possible value that the spinner can reach. This number is inclusive.
 	 * @default -(2^31) (min. 32-bit signed integer)
 	 */
 	minimum?: Bindable<number>;
 
 
 	/**
-	 * The maximum possible value that the spinner can reach. (Exclusive)
+	 * The maximum possible value that the spinner can reach. This number is inclusive.
 	 * @default (2^31) (max. 32-bit signed integer)
 	 */
 	maximum?: Bindable<number>;
@@ -107,7 +107,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 
 	_step: number = 1;
 	_minimum: number = -(2 ** 31); // min. 32-bit signed integer
-	_maximum: number = (2 ** 31); // max. 32-bit signed integer
+	_maximum: number = (2 ** 31) - 1; // max. 32-bit signed integer
 
 	_value: Store<number>;
 	_wrapMode: SpinnerWrapMode;
@@ -120,7 +120,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 
 		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.
-		this._value = storify(params.value || 0);
+		const value = wrap(params.value || 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		let format = (params.format || ((value: number): string => value.toString()));
@@ -134,84 +134,94 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 			binder.add(this, "text", disabled, (isDisabled) =>
 			{
 				Log.debug("Spinner", this.name, "isDisabled has changed, set disabled message:", isDisabled);
-				return (isDisabled) ? disabledMessage : format(this._value.get());
+				return (isDisabled) ? disabledMessage : format(value.get());
 			});
 			const originalFormat = format;
 			format = (val: number): string => (read(disabled)) ? disabledMessage : originalFormat(val);
 		}
 
-		binder.add(this, "text", this._value, format);
+		this._value = value;
+		binder.add(this, "text", value, format);
+
 		on(params.step, s => this._step = s);
 		on(minimum, min =>
 		{
+			const current = value.get();
 			this._minimum = min;
-			if (this._value.get() < min)
+			if (current < min)
 			{
-				this._value.set(min);
+				this._updateValueAndTriggerChange(min, min - current);
 			}
 		});
 		on(maximum, max =>
 		{
+			const current = value.get();
 			this._maximum = max;
-			if (this._value.get() >= max)
+			if (current > max)
 			{
-				this._value.set(max - 1);
+				this._updateValueAndTriggerChange(max, max - current);
 			}
 		});
 
 		this._wrapMode = (params.wrapMode || "clamp");
 		this._onChange = params.onChange;
 
-		this.onIncrement = (): void => updateSpinnerValue(this, 1);
-		this.onDecrement = (): void => updateSpinnerValue(this, -1);
+		this.onIncrement = (): void => this._onUserInput(1);
+		this.onDecrement = (): void => this._onUserInput(-1);
 
 		if (this._minimum > this._maximum)
 		{
 			throw Error("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
 		}
 	}
-}
 
-
-/**
- * Callback for when the value of the spinner is incremented or decremented.
- */
-function updateSpinnerValue(spinner: SpinnerControl, direction: number): void
-{
-	const { _minimum: min, _maximum: max } = spinner;
-	if (min >= max)
-		return;
-
-	const step = (spinner._step * direction);
-	const oldValue = spinner._value.get();
-	const newValue = (oldValue + step);
-
-	let result: number;
-	switch (spinner._wrapMode)
+	/**
+	 * Callback for when the value of the spinner is incremented or decremented.
+	 */
+	private _onUserInput(direction: number): void
 	{
-		case "wrap":
+		const min = this._minimum, max = this._maximum;
+		if (min >= max)
+			return;
+
+		const step = (this._step * direction);
+		const oldValue = this._value.get();
+		const newValue = (oldValue + step);
+
+		let result: number;
+		switch (this._wrapMode)
 		{
-			result = wrap(newValue, min, max);
-			break;
+			case "wrap":
+			{
+				result = MathUtils.wrap(newValue, min, max);
+				break;
+			}
+			case "clampThenWrap":
+			{
+				// Wrap if old value is at the limit, otherwise clamp.
+				result = (newValue < min && oldValue === min) || (newValue > max && oldValue === max)
+					? MathUtils.wrap(newValue, min, max)
+					: MathUtils.clamp(newValue, min, max);
+				break;
+			}
+			default:
+			{
+				result = MathUtils.clamp(newValue, min, max);
+				break;
+			}
 		}
-		case "clampThenWrap":
-		{
-			// Wrap if old value is at the limit, otherwise clamp.
-			result = (newValue < min && oldValue === min) || (newValue >= max && oldValue === (max - 1))
-				? wrap(newValue, min, max)
-				: clamp(newValue, min, max);
-			break;
-		}
-		default:
-		{
-			result = clamp(newValue, min, max);
-			break;
-		}
+		this._updateValueAndTriggerChange(result, step);
 	}
-	spinner._value.set(result);
 
-	if (spinner._onChange)
+	/**
+	 * Updates the internal spinner value and triggers an external update.
+	 */
+	private _updateValueAndTriggerChange(value: number, step: number): void
 	{
-		spinner._onChange(result, step);
+		this._value.set(value);
+		if (this._onChange)
+		{
+			this._onChange(value, step);
+		}
 	}
 }

@@ -95,10 +95,10 @@ test("Incremented value gets clamped", t =>
 	t.is(widget.text, "15");
 
 	call(widget.onIncrement);
-	t.is(widget.text, "19");
+	t.is(widget.text, "20");
 
 	call(widget.onIncrement);
-	t.is(widget.text, "19");
+	t.is(widget.text, "20");
 });
 
 
@@ -170,10 +170,10 @@ test("Decremented value gets wrapped", t =>
 	t.is(widget.text, "4");
 
 	call(widget.onDecrement);
-	t.is(widget.text, "9");
+	t.is(widget.text, "10");
 
 	call(widget.onDecrement);
-	t.is(widget.text, "1");
+	t.is(widget.text, "2");
 });
 
 
@@ -195,10 +195,13 @@ test("Incremented value gets clamped then wrapped", t =>
 	t.is(widget.text, "6");
 
 	call(widget.onIncrement);
-	t.is(widget.text, "9");
+	t.is(widget.text, "10");
 
 	call(widget.onIncrement);
 	t.is(widget.text, "0");
+
+	call(widget.onIncrement);
+	t.is(widget.text, "8");
 });
 
 
@@ -223,7 +226,7 @@ test("Decremented value gets clamped then wrapped", t =>
 	t.is(widget.text, "0");
 
 	call(widget.onDecrement);
-	t.is(widget.text, "9");
+	t.is(widget.text, "10");
 });
 
 
@@ -236,7 +239,7 @@ test("Change event gets called", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ step: 3, minimum: 0, maximum: 8, wrapMode: "wrap", onChange: (v, a) => hits.push([v, a]) })
+			spinner({ step: 3, minimum: 0, maximum: 7, wrapMode: "wrap", onChange: (v, a) => hits.push([v, a]) })
 		]
 	});
 
@@ -269,9 +272,10 @@ test("Throw error on minimum larger than maximum", t =>
 			]
 		});
 	});
-	t.true(error?.message.includes("5678"));
-	t.true(error?.message.includes("1234"));
-	t.true(error?.message.includes("is larger than maximum"));
+	t.truthy(error);
+	t.not(error?.message.indexOf("5678"), -1);
+	t.not(error?.message.indexOf("1234"), -1);
+	t.not(error?.message.indexOf("is larger than maximum"), -1);
 });
 
 
@@ -343,13 +347,15 @@ test("Minimum is bindable", t =>
 
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	call(widget.onDecrement);
-	t.is(widget.text, "9");
+	t.is(widget.text, "10");
 
 	minimum.set(8);
 	call(widget.onDecrement);
+	t.is(widget.text, "9");
+	call(widget.onDecrement);
 	t.is(widget.text, "8");
 	call(widget.onDecrement);
-	t.is(widget.text, "9");
+	t.is(widget.text, "10");
 });
 
 
@@ -371,6 +377,8 @@ test("Maximum is bindable", t =>
 	call(widget.onIncrement);
 	t.is(widget.text, "1");
 	call(widget.onIncrement);
+	t.is(widget.text, "2");
+	call(widget.onIncrement);
 	t.is(widget.text, "0");
 
 	maximum.set(4);
@@ -380,6 +388,8 @@ test("Maximum is bindable", t =>
 	t.is(widget.text, "2");
 	call(widget.onIncrement);
 	t.is(widget.text, "3");
+	call(widget.onIncrement);
+	t.is(widget.text, "4");
 	call(widget.onIncrement);
 	t.is(widget.text, "0");
 });
@@ -469,10 +479,15 @@ test("Update maximum clamps value", t =>
 	globalThis.ui = mock;
 
 	const maximum = store(100);
+	const hits: number[] = [];
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 65, maximum })
+			spinner({
+				value: 65,
+				maximum,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 
@@ -484,9 +499,11 @@ test("Update maximum clamps value", t =>
 
 	maximum.set(80);
 	t.is(widget.text, "65");
+	t.deepEqual(hits, []); // no change necessary
 
 	maximum.set(50);
-	t.is(widget.text, "49");
+	t.is(widget.text, "50");
+	t.deepEqual(hits, [ 50 ]);
 });
 
 
@@ -496,10 +513,15 @@ test("Update minimum clamps value", t =>
 	globalThis.ui = mock;
 
 	const minimum = store(10);
+	const hits: number[] = [];
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			spinner({ value: 65, minimum })
+			spinner({
+				value: 65,
+				minimum,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 
@@ -511,7 +533,9 @@ test("Update minimum clamps value", t =>
 
 	minimum.set(40);
 	t.is(widget.text, "65");
+	t.deepEqual(hits, []); // no change necessary
 
 	minimum.set(80);
 	t.is(widget.text, "80");
+	t.deepEqual(hits, [ 80 ]);
 });

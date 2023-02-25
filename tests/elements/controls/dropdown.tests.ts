@@ -296,29 +296,46 @@ test("Auto disable on never is never disabled", t =>
 });
 
 
-test("Update selected index if item at different index in new list", t =>
+test("Invoke on change if item is at different index in new list", t =>
 {
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
+	const hits: number[] = [];
 	const selected = store(3);
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items, selectedIndex: selected })
+			dropdown({
+				items,
+				selectedIndex: selected,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
 
 	items.set(["c", "d", "e", "f"]);
 	t.deepEqual(widget.items, ["c", "d", "e", "f"]);
 	t.is(widget.selectedIndex, 1);
-	t.is(selected.get(), 1);
+	t.deepEqual(hits, [ 1 ]);
+
+	items.set(["a", "a", "a", "a", "a", "d", "a"]);
+	t.deepEqual(widget.items, ["a", "a", "a", "a", "a", "d", "a"]);
+	t.is(widget.selectedIndex, 5);
+	t.deepEqual(hits, [ 1, 5 ]);
+
+	items.set(["a", "a", "d"]);
+	t.deepEqual(widget.items, ["a", "a", "d"]);
+	t.is(widget.selectedIndex, 2);
+	t.deepEqual(hits, [ 1, 5, 2 ]);
 });
 
 
@@ -328,23 +345,30 @@ test("Do not change selected index if item at same index in new list", t =>
 	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
+	const hits: number[] = [];
 	const selected = store(2);
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items, selectedIndex: selected })
+			dropdown({
+				items,
+				selectedIndex: selected,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 2);
 
 	items.set(["e", "d", "c", "f"]);
 	t.deepEqual(widget.items, ["e", "d", "c", "f"]);
 	t.is(widget.selectedIndex, 2);
-	t.is(selected.get(), 2);
+	t.deepEqual(hits, []);
 });
 
 
@@ -354,23 +378,30 @@ test("Reset selected index if item not present in new list", t =>
 	globalThis.ui = mock;
 
 	const items = store([ "a", "b", "c", "d" ]);
+	const hits: number[] = [];
 	const selected = store(3);
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			dropdown({ items, selectedIndex: selected })
+			dropdown({
+				items,
+				selectedIndex: selected,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
 
 	items.set(["e", "f", "c", "b", "a"]);
 	t.deepEqual(widget.items, ["e", "f", "c", "b", "a"]);
 	t.is(widget.selectedIndex, 0);
-	t.is(selected.get(), 0);
+	t.deepEqual(hits, [ 0 ]);
 });
 
 

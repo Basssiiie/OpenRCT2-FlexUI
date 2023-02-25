@@ -1,4 +1,4 @@
-import { DefaultStore } from "./defaultStore";
+import { store } from "./createStore";
 import { Store } from "./store";
 import { subscribe } from "./subscribe";
 
@@ -19,7 +19,7 @@ export function compute<U>(...args: [...Store<unknown>[], ((...values: unknown[]
 	const storeCount = stores.length;
 
 	const callback = <(...values: unknown[]) => U>args[storeCount];
-	const dependant = new DefaultStore(getComputedValue(stores, callback));
+	const dependant = store(getComputedValue(stores, callback));
 
 	for (let i = 0; i < storeCount; i++)
 	{

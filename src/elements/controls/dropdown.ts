@@ -1,8 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
-import { Store } from "@src/bindings/stores/store";
-import { storify } from "@src/bindings/stores/storify";
 import { BuildOutput } from "@src/building/buildOutput";
 import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
@@ -70,7 +68,6 @@ export function dropdown(params: DropdownParams & Positions): WidgetCreator<Posi
 }
 
 
-
 /**
  * A controller class for a dropdown widget.
  */
@@ -80,6 +77,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 	selectedIndex: number = 0;
 	onChange?: (index: number) => void;
 
+	_selectedIndex?: number;
 	_previousItems?: string[];
 	_silenceOnChange?: boolean;
 
@@ -87,13 +85,13 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 	{
 		super("dropdown", parent, output, params);
 
-		const { items, disabled, disabledMessage } = params;
+		const { items, disabled, disabledMessage, onChange } = params;
 		const disableCount = getDisabledCount(params.autoDisable);
-		let selectedIndex = params.selectedIndex;
+		const selectedIndex = params.selectedIndex;
 
 		const setter = (widget: DropdownDesc): void =>
 		{
-			this._updateDropdown(widget, read(items), read(selectedIndex), read(disabled), disableCount, disabledMessage);
+			this._updateDropdown(widget, read(items), read(disabled), disableCount, disabledMessage);
 		};
 
 		const binder = output.binder;
@@ -101,24 +99,30 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		if (isStore(items))
 		{
 			// Allow update of selected index if items has changed/reordered, to keep the same item selected.
-			selectedIndex = storify(selectedIndex || 0);
 			itemsSetter = (widget: DropdownDesc, value: string[]): void =>
 			{
 				setter(widget);
-				getNewSelectedIndexOfSameSelectedItem(this._previousItems, value, <Store<number>>selectedIndex);
+				this._setNewSelectedIndexOfSameSelectedItem(widget, value);
 				this._previousItems = value;
 			};
 		}
 
 		binder.on(this, items, itemsSetter);
-		binder.on(this, selectedIndex, setter);
+		binder.on(this, selectedIndex, (widget, idx) =>
+		{
+			this._selectedIndex = idx;
+			setter(widget);
+		});
 		binder.on(this, disabled, setter);
 
 		// Ensure index is never negative (= uninitialised state)
-		addSilencerToOnChange(this, params.onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
+		addSilencerToOnChange(this, onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
 	}
 
-	private _updateDropdown(widget: DropdownDesc, items: string[] | undefined, selectedIndex: number | undefined, disabled: boolean | undefined, disableCount: number, disabledMessage: string | undefined): void
+	/**
+	 * Updates the dropdown properties whenever one of the connected stores has changed.
+	 */
+	private _updateDropdown(widget: DropdownDesc, items: string[] | undefined, disabled: boolean | undefined, disableCount: number, disabledMessage: string | undefined): void
 	{
 		this._silenceOnChange = true;
 		const setDisabled = (disabled || !items || items.length <= disableCount);
@@ -129,39 +133,49 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		else
 		{
 			widget.items = items;
-			widget.selectedIndex = selectedIndex || 0;
+			widget.selectedIndex = this._selectedIndex || 0;
 		}
 		widget.isDisabled = setDisabled;
 		this._silenceOnChange = false;
 	}
+
+	/**
+	 * If the dropdown items have changed, try to find the originally selected item index.
+	 */
+	private _setNewSelectedIndexOfSameSelectedItem(widget: DropdownDesc, newItems: string[]): void
+	{
+		const oldItems = this._previousItems;
+		if (!oldItems)
+		{
+			return;
+		}
+
+		const oldSelectedIndex = (widget.selectedIndex || 0);
+		const lastSelected = oldItems[oldSelectedIndex];
+		let newSelectIndex = newItems.indexOf(lastSelected);
+
+		if (newSelectIndex < 0)
+		{
+			newSelectIndex = 0;
+			Log.debug("Dropdown items have changed but old item not found, reset selectedIndex", oldSelectedIndex, "-> 0 (old item:", lastSelected, ")");
+		}
+		else
+		{
+			Log.debug("Dropdown items have changed, update selectedIndex:", oldSelectedIndex, "->", newSelectIndex, "(", lastSelected, "->", newItems[newSelectIndex], ")");
+		}
+		if (this._selectedIndex !== newSelectIndex)
+		{
+			Log.debug("Dropdown items:", oldItems, "->", newItems);
+			this._selectedIndex = newSelectIndex;
+			widget.selectedIndex = newSelectIndex;
+		}
+	}
 }
 
 
-
-function getNewSelectedIndexOfSameSelectedItem(oldItems: string[] | undefined, newItems: string[], selectedIndex: Store<number>): void
-{
-	if (!oldItems)
-	{
-		return;
-	}
-
-	const oldSelectedIndex = selectedIndex.get();
-	const lastSelected = oldItems[oldSelectedIndex];
-	const newSelectIndex = newItems.indexOf(lastSelected);
-
-	if (newSelectIndex < 0)
-	{
-		Log.debug("Dropdown items have changed but old item not found, reset selectedIndex", oldSelectedIndex, "-> 0 (old item:", lastSelected, ")");
-	}
-	else
-	{
-		Log.debug("Dropdown items have changed, update selectedIndex:", oldSelectedIndex, "->", newSelectIndex, "(", lastSelected, "->", newItems[newSelectIndex], ")");
-	}
-	Log.debug("Dropdown items:", oldItems, "->", newItems);
-	selectedIndex.set((newSelectIndex < 0) ? 0 : newSelectIndex);
-}
-
-
+/**
+ * Determines how many items the dropdown should have to be enabled or disabled.
+ */
 function getDisabledCount(disableMode: DropdownDisableMode | undefined): number
 {
 	switch (disableMode)

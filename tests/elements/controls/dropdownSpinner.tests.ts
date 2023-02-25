@@ -108,11 +108,11 @@ test("Spinner allows empty item list", t =>
 	const created = mock.createdWindows[0];
 	const spinner = created.widgets[0] as SpinnerDesc;
 	const dropdown = created.widgets[1] as DropdownDesc;
-	t.is(dropdown.selectedIndex, -1);
+	t.is(dropdown.selectedIndex, 0);
 
 	call(spinner.onIncrement);
-	t.is(dropdown.selectedIndex, -1);
+	t.is(dropdown.selectedIndex, 0);
 
 	call(spinner.onDecrement);
-	t.is(dropdown.selectedIndex, -1);
+	t.is(dropdown.selectedIndex, 0);
 });
