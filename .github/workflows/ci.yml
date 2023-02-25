@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - main
+    - ci-test
   pull_request:
     branches:
     - main
@@ -12,8 +13,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
       - run: npm ci --prefer-offline --no-audit --no-save
@@ -23,10 +24,13 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
       - run: npm ci --prefer-offline --no-audit --no-save
-      - run: npm run test:setup
+      - run: npm run build
+      - run: npm run install:examples
+      - run: npm run build:examples
+      - run: npm run install:test-setup
       - run: npm run test
