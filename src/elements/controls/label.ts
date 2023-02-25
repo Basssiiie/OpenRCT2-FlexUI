@@ -4,7 +4,7 @@ import { ParentControl } from "@src/building/parentControl";
 import { WidgetCreator } from "@src/building/widgets/widgetCreator";
 import { WidgetMap } from "@src/building/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
-import { TextColour } from "@src/utilities/colour";
+import { TextColour } from "@src/utilities/textColour";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";

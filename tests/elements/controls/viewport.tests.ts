@@ -2,7 +2,8 @@
 
 import { store } from "@src/bindings/stores/createStore";
 import { window } from "@src/building/window";
-import { viewport, ViewportFlags } from "@src/elements/controls/viewport";
+import { ViewportFlags } from "@src/elements/controls/enums/viewportFlags";
+import { viewport } from "@src/elements/controls/viewport";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -11,7 +12,7 @@ import { call } from "tests/helpers";
 test("Standard properties are set", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const template = window({
 		width: 100, height: 100,
@@ -40,7 +41,7 @@ test("Standard properties are set", t =>
 test("Viewport updates on store update", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const target = store<CoordsXY>({ x: 10, y: 20 });
 	const template = window({
@@ -51,7 +52,7 @@ test("Viewport updates on store update", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	call(created.onUpdate);
 
 	const widget = created.widgets[0] as ViewportWidget;
@@ -70,7 +71,7 @@ test("Viewport updates on store update", t =>
 test("Viewport goes into disabled appearance", t =>
 {
 	const mock = Mock.ui();
-	global.ui = mock;
+	globalThis.ui = mock;
 
 	const disabled = store(false);
 	const template = window({
@@ -85,7 +86,7 @@ test("Viewport goes into disabled appearance", t =>
 	});
 	template.open();
 
-	const created = (global.ui as UiMock).createdWindows[0];
+	const created = (globalThis.ui as UiMock).createdWindows[0];
 	const widget = created.widgets[0] as ViewportWidget;
 	const vp = widget.viewport;
 	t.is(vp.visibilityFlags, 1);

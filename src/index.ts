@@ -27,12 +27,15 @@ export { label, LabelParams } from "./elements/controls/label";
 export { listview, ListViewParams, ListViewColumnParams } from "./elements/controls/listview";
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
 export { toggle, ToggleParams } from "./elements/controls/toggle";
-export { viewport, ViewportParams, ViewportFlags } from "./elements/controls/viewport";
+export { viewport, ViewportParams } from "./elements/controls/viewport";
 export { widget, WidgetParams } from "./elements/controls/widget";
+
+export { ViewportFlags } from "./elements/controls/enums/viewportFlags";
 
 // Widget parameter types
 export { ElementParams, ElementVisibility } from "./elements/elementParams";
-export { Colour, TextColour } from "./utilities/colour";
+export { Colour } from "./utilities/colour";
+export { TextColour } from "./utilities/textColour";
 
 // Layout information
 export { AbsolutePosition } from "./elements/layouts/absolute/absolutePosition";
