@@ -1,8 +1,8 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { tab } from "@src/building/tabs/tab";
-import { tabwindow } from "@src/building/tabs/tabWindow";
+import { tab } from "@src/windows/tabs/tab";
+import { tabwindow } from "@src/windows/tabs/tabWindow";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";

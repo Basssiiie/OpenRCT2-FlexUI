@@ -1,8 +1,8 @@
 import { Bindable } from "@src/bindings/bindable";
-import { BuildOutput } from "@src/building/buildOutput";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";

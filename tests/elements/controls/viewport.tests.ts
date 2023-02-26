@@ -1,7 +1,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { ViewportFlags } from "@src/elements/controls/enums/viewportFlags";
 import { viewport } from "@src/elements/controls/viewport";
 import test from "ava";

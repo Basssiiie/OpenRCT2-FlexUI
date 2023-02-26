@@ -1,9 +1,9 @@
 import { Bindable } from "@src/bindings/bindable";
-import { BuildOutput } from "@src/building/buildOutput";
-import { Layoutable } from "@src/building/layoutable";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { Layoutable } from "@src/windows/layoutable";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Padding } from "@src/positional/padding";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { parsePadding } from "@src/positional/parsing/parsePadding";

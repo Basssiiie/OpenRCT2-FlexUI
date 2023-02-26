@@ -1,9 +1,9 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
-import { WidgetBinder } from "@src/building/binders/widgetBinder";
-import { FrameBuilder } from "@src/building/frames/frameBuilder";
-import { createWidgetMap } from "@src/building/widgets/widgetMap";
+import { WidgetBinder } from "@src/windows/binders/widgetBinder";
+import { FrameBuilder } from "@src/windows/frames/frameBuilder";
+import { createWidgetMap } from "@src/windows/widgets/widgetMap";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { mutable } from "@src/utilities/mutable";
 import test from "ava";

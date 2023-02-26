@@ -2,7 +2,7 @@
 
 import { compute } from "@src/bindings/stores/compute";
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";

@@ -1,9 +1,9 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { FrameBuilder } from "@src/building/frames/frameBuilder";
-import { ParentControl } from "@src/building/parentControl";
-import { createWidgetMap } from "@src/building/widgets/widgetMap";
+import { FrameBuilder } from "@src/windows/frames/frameBuilder";
+import { ParentControl } from "@src/windows/parentControl";
+import { createWidgetMap } from "@src/windows/widgets/widgetMap";
 import { defaultScale } from "@src/elements/constants";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";

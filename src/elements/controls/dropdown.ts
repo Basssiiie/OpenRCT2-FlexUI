@@ -1,9 +1,9 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
-import { BuildOutput } from "@src/building/buildOutput";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import * as Log from "@src/utilities/logger";
 import { addSilencerToOnChange } from "@src/utilities/silencer";
 import { ensureDefaultLineHeight } from "../constants";

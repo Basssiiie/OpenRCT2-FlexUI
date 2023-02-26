@@ -1,6 +1,6 @@
-import { Layoutable } from "@src/building/layoutable";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { Layoutable } from "@src/windows/layoutable";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { Rectangle } from "@src/positional/rectangle";
 import { Positions } from "../layouts/positions";

@@ -1,8 +1,8 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
-import { FrameContext } from "@src/building/frames/frameContext";
+import { window } from "@src/windows/window";
+import { FrameContext } from "@src/windows/frames/frameContext";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";

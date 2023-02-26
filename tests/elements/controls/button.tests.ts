@@ -1,7 +1,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { button } from "@src/elements/controls/button";
 import test from "ava";
 import Mock from "openrct2-mocks";

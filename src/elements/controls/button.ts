@@ -1,7 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
-import { BuildOutput } from "@src/building/buildOutput";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";

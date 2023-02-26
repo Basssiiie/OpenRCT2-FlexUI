@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { absolute } from "@src/elements/layouts/absolute/absolute";

@@ -1,8 +1,8 @@
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
-import { BuildOutput } from "@src/building/buildOutput";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
-import { WidgetMap } from "@src/building/widgets/widgetMap";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -12,7 +12,7 @@ import { Positions } from "../layouts/positions";
 import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
 import * as Log from "@src/utilities/logger";
-import { ParentControl } from "@src/building/parentControl";
+import { ParentControl } from "@src/windows/parentControl";
 import { subscribe } from "@src/bindings/stores/subscribe";
 import { wrap } from "@src/bindings/stores/wrap";
 

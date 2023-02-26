@@ -3,7 +3,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { dropdown } from "@src/elements/controls/dropdown";
 import { proxy } from "@src/utilities/proxy";
 import test from "ava";

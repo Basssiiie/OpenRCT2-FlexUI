@@ -2,7 +2,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { colourPicker } from "@src/elements/controls/colourPicker";
 import { Colour } from "@src/utilities/colour";
 import { proxy } from "@src/utilities/proxy";

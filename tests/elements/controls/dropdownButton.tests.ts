@@ -1,6 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
-import { window } from "@src/building/window";
+import { window } from "@src/windows/window";
 import { dropdownButton } from "@src/elements/controls/dropdownButton";
 import test from "ava";
 import Mock from "openrct2-mocks";

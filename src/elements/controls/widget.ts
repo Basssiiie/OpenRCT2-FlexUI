@@ -1,4 +1,4 @@
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";

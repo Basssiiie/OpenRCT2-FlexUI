@@ -1,10 +1,10 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
-import { BuildOutput } from "@src/building/buildOutput";
-import { FrameContext } from "@src/building/frames/frameContext";
-import { ParentControl } from "@src/building/parentControl";
-import { WidgetCreator } from "@src/building/widgets/widgetCreator";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { FrameContext } from "@src/windows/frames/frameContext";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import * as Log from "@src/utilities/logger";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";
