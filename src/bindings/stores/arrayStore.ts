@@ -1,10 +1,10 @@
-import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 
 
 /**
  * A store for arrays that can be modified without replacing the entire array.
  */
-export interface ArrayStore<T> extends Store<T[]> {
+export interface ArrayStore<T> extends WritableStore<T[]> {
 	/**
 	 * Inserts one or more elements into the array at the specified index, and returns its new length.
 	 * Notifies all listeners with the updated array.

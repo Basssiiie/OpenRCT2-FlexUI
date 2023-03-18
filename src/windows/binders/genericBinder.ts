@@ -1,9 +1,9 @@
 import { Bindable } from "@src/bindings/bindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
+import { Store } from "@src/bindings/stores/store";
 import { isUndefined } from "@src/utilities/type";
 import { isStore } from "../../bindings/stores/isStore";
-import { Store } from "../../bindings/stores/store";
 
 
 /**

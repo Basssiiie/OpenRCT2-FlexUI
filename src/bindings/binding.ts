@@ -2,14 +2,12 @@ import { Store } from "./stores/store";
 import { subscribe } from "./stores/subscribe";
 
 
-
 /**
  * Internally saved binding information.
  */
 export class Binding<TTarget, TValue>
 {
 	readonly _unsubscribe: () => void;
-
 
 	constructor(
 		readonly _id: string,

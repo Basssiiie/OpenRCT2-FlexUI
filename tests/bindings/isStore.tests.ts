@@ -2,7 +2,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
-import { isStore } from "@src/bindings/stores/isStore";
+import { isStore, isWritableStore } from "@src/bindings/stores/isStore";
 import test from "ava";
 
 
@@ -80,14 +80,14 @@ test("Store contract without get() is false", t =>
 });
 
 
-test("Store contract without set() is false", t =>
+test("Store contract without set() is true", t =>
 {
 	const store =
 	{
 		get: () => t.fail("Calling get is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed"),
 	};
-	t.false(isStore(store));
+	t.true(isStore(store));
 });
 
 
@@ -99,4 +99,37 @@ test("Store contract without subscribe() is false", t =>
 		set: () => t.fail("Calling set is not allowed"),
 	};
 	t.false(isStore(store));
+});
+
+
+test("Writable store contract without get() is false", t =>
+{
+	const store =
+	{
+		set: () => t.fail("Calling set is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed"),
+	};
+	t.false(isWritableStore(store));
+});
+
+
+test("Writable store contract without set() is false", t =>
+{
+	const store =
+	{
+		get: () => t.fail("Calling get is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed"),
+	};
+	t.false(isWritableStore(store));
+});
+
+
+test("Writable contract without subscribe() is false", t =>
+{
+	const store =
+	{
+		get: () => t.fail("Calling get is not allowed"),
+		set: () => t.fail("Calling set is not allowed"),
+	};
+	t.false(isWritableStore(store));
 });

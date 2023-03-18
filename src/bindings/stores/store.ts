@@ -13,13 +13,6 @@ export interface Store<T>
 	get(): T;
 
 	/**
-	 * Updates the current value to a new one. If the new value is different from the
-	 * old one, it will notifies all subscribers of this change.
-	 * @param value The new value.
-	 */
-	set(value: T): void;
-
-	/**
 	 * Subscribes to this store. The subscription will be called when the value
 	 * within this store has changed.
 	 * @param callback The action to perfom when the value within this store

@@ -1,8 +1,8 @@
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { FrameControl } from "../frames/frameControl";
 import { GenericBinder } from "./genericBinder";
 

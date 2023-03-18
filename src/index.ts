@@ -6,9 +6,10 @@ export { tab, TabParams } from "./windows/tabs/tab";
 
 // Store related utilities
 export { Store } from "./bindings/stores/store";
+export { WritableStore } from "./bindings/stores/writableStore";
 export { ArrayStore } from "./bindings/stores/arrayStore";
 export { store, arrayStore } from "./bindings/stores/createStore";
-export { isStore } from "./bindings/stores/isStore";
+export { isStore, isWritableStore } from "./bindings/stores/isStore";
 export { read } from "./bindings/stores/read";
 export { compute } from "./bindings/stores/compute";
 

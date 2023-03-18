@@ -487,7 +487,7 @@ test("Items and selected index gets restored when disabled dropdown with message
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
 	proxy(widget, "items", () => widget.selectedIndex = 0); // immitate the ingame selected reset
 	t.is(widget.selectedIndex, 2);
 
@@ -498,4 +498,50 @@ test("Items and selected index gets restored when disabled dropdown with message
 	disabled.set(false);
 	t.is(widget.selectedIndex, 2);
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
+});
+
+
+test("Dropdown items changed but new selected index should stay the same", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const hits: number[] = [];
+	const items = store([ "current" ]);
+	const selectedIndex = store(0);
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({
+				items, selectedIndex,
+				onChange: v =>
+				{
+					selectedIndex.set(v);
+					hits.push(v);
+				}
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	proxy(widget, "items", () => widget.onChange!(0)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", i => widget.onChange!(i!)); // immitate the ingame bubbled callback
+
+	t.is(widget.selectedIndex, 0);
+	t.is(selectedIndex.get(), 0);
+	t.deepEqual(widget.items, [ "current" ]);
+	t.deepEqual(hits, []);
+
+	items.set([ "new", "current" ]);
+	t.is(widget.selectedIndex, 1);
+	t.is(selectedIndex.get(), 1);
+	t.deepEqual(widget.items, [ "new", "current" ]);
+	t.deepEqual(hits, [ 1 ]);
+
+	selectedIndex.set(0);
+	t.is(widget.selectedIndex, 0);
+	t.is(selectedIndex.get(), 0);
+	t.deepEqual(widget.items, [ "new", "current" ]);
+	t.deepEqual(hits, [ 1 ]);
 });

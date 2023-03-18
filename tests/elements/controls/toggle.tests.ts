@@ -78,16 +78,20 @@ test("Is pressed updates on toggle", t =>
 });
 
 
-test("Is pressed store updates on toggle", t =>
+test("Is pressed store does not update store", t =>
 {
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
+	const hits: boolean[] = [];
 	const pressed = store(false);
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			toggle({ isPressed: pressed })
+			toggle({
+				isPressed: pressed,
+				onChange: v => hits.push(v)
+			})
 		]
 	});
 	template.open();
@@ -97,19 +101,23 @@ test("Is pressed store updates on toggle", t =>
 
 	call(widget.onClick);
 	t.true(widget.isPressed);
-	t.true(pressed.get());
+	t.false(pressed.get());
+	t.deepEqual(hits, [ true ]);
 
 	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.false(pressed.get());
+	t.deepEqual(hits, [ true, false ]);
 
-	pressed.set(true); // also react to store changes
+	pressed.set(true); // does react to store changes
 	t.true(widget.isPressed);
 	t.true(pressed.get());
+	t.deepEqual(hits, [ true, false ]);
 
 	call(widget.onClick);
 	t.false(widget.isPressed);
-	t.false(pressed.get());
+	t.true(pressed.get());
+	t.deepEqual(hits, [ true, false, false ]);
 });
 
 

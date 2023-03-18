@@ -1,5 +1,5 @@
 import { DefaultStore } from "./defaultStore";
-import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 import { subscribe } from "./subscribe";
 
 
@@ -9,7 +9,7 @@ import { subscribe } from "./subscribe";
 export class DefaultStoreDecorator<T> extends DefaultStore<T>
 {
 	constructor(
-		private _store: Store<T>,
+		private _store: WritableStore<T>,
 		private _updater: (value: T, set: (value: T) => void) => void
 	){
 		super(_store.get());

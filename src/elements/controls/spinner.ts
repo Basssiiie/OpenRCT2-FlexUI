@@ -1,7 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
 import { on } from "@src/bindings/stores/on";
 import { read } from "@src/bindings/stores/read";
-import { Store } from "@src/bindings/stores/store";
+import { WritableStore } from "@src/bindings/stores/writableStore";
 import { wrap } from "@src/bindings/stores/wrap";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
@@ -109,7 +109,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 	_minimum: number = -(2 ** 31); // min. 32-bit signed integer
 	_maximum: number = (2 ** 31) - 1; // max. 32-bit signed integer
 
-	_value: Store<number>;
+	_value: WritableStore<number>;
 	_wrapMode: SpinnerWrapMode;
 	_onChange?: (value: number, adjustment: number) => void;
 

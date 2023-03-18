@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 
 import * as Environment from "./environment";
+import { isArray, isObject } from "./type";
 
 
 /**
@@ -21,7 +22,11 @@ const isDuktapeAvailable = (typeof Duktape !== "undefined");
  */
 function print(level: LogLevel, messages: unknown[]): void
 {
-	console.log(`<FUI/${level}> ${messages.map(String).join(" ")}`);
+	const message = messages
+		.map(v => (isArray(v) ? `[${v}]` : isObject(v) ? String(v) : v))
+		.join(" ");
+
+	console.log(`<FUI/${level}> ${message}`);
 }
 
 

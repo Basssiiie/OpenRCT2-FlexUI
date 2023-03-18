@@ -1,6 +1,5 @@
-import { store } from "@src/bindings/stores/createStore";
-import { isStore } from "@src/bindings/stores/isStore";
-import { Store } from "@src/bindings/stores/store";
+import { WritableStore } from "@src/bindings/stores/writableStore";
+import { wrap } from "@src/bindings/stores/wrap";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
@@ -40,15 +39,14 @@ class ToggleControl extends ButtonControl implements ButtonDesc, ToggleParams
 {
 	onChange?: (isPressed: boolean) => void;
 
-	_toggled: Store<boolean>;
+	_toggled: WritableStore<boolean>;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: ToggleParams & ButtonParams)
 	{
 		// Ensure isPressed is a store, so we can update
 		// the live widget more easily.
 		const pressed = params.isPressed;
-		const toggled = (isStore(pressed))
-			? pressed : store(!!pressed);
+		const toggled = wrap(pressed || false);
 
 		params.isPressed = toggled;
 		params.onClick = (): void => updateToggle(this);

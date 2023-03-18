@@ -1,12 +1,12 @@
 import { Event, invoke } from "@src/utilities/event";
-import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 import * as Log from "@src/utilities/logger";
 
 
 /**
  * The default implementation of a store.
  */
-export class DefaultStore<T> implements Store<T>
+export class DefaultStore<T> implements WritableStore<T>
 {
 	private _listeners?: Event<T>;
 
@@ -23,7 +23,7 @@ export class DefaultStore<T> implements Store<T>
 	{
 		if (this._value !== value)
 		{
-			Log.debug("(Update store from", this._value, "to", value, ", update", this._listeners?.length, "listeners)");
+			Log.debug("(Update store from", this._value, "to", value, "-> update", this._listeners?.length, "listeners)");
 			this._value = value;
 			this._updateListeners(value);
 		}

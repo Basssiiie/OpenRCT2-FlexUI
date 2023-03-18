@@ -1,5 +1,5 @@
 import { DefaultStoreDecorator } from "./defaultStoreDecorator";
-import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 
 
 /**
@@ -9,7 +9,7 @@ import { Store } from "./store";
  * setter is called, subscribers of the decorator will then be informed with the new
  * value.
  */
-export function decorate<T>(store: Store<T>, updater: (value: T, set: (value: T) => void) => void): Store<T>
+export function decorate<T>(store: WritableStore<T>, updater: (value: T, set: (value: T) => void) => void): WritableStore<T>
 {
 	return new DefaultStoreDecorator(store, updater);
 }

@@ -1,7 +1,7 @@
 import { ArrayStore } from "./arrayStore";
 import { DefaultArrayStore } from "./defaultArrayStore";
 import { DefaultStore } from "./defaultStore";
-import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 
 
 /**
@@ -10,9 +10,9 @@ import { Store } from "./store";
  * Tip: Stores work best if you only use them for binding a model to your user
  * interface, and nowhere else.
  */
-export function store<U>(): Store<U | undefined>;
-export function store<T>(initialValue: T): Store<T>;
-export function store<T>(initialValue?: T): Store<T | undefined>
+export function store<U>(): WritableStore<U | undefined>;
+export function store<T>(initialValue: T): WritableStore<T>;
+export function store<T>(initialValue?: T): WritableStore<T | undefined>
 {
 	return new DefaultStore<T | undefined>(initialValue);
 }
