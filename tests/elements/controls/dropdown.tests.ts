@@ -317,7 +317,7 @@ test("Invoke on change if item is at different index in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
@@ -360,7 +360,7 @@ test("Do not change selected index if item at same index in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 2);
@@ -393,7 +393,7 @@ test("Reset selected index if item not present in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
@@ -425,7 +425,7 @@ test("Assigning bound selected index should silence on change", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
 	t.is(widget.selectedIndex, 1);
 
 	selected.set(2);
@@ -456,7 +456,7 @@ test("Assigning bound items should silence on change", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "items", () => widget.onChange?.(0)); // immitate the ingame bubbled callback
+	proxy(widget, "items", () => widget.onChange!(0)); // immitate the ingame bubbled callback
 	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 
 	items.set([ "d", "e" ]);

@@ -125,7 +125,6 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 		const flagsValue = read(visibilityFlags);
 		const disabledValue = read(disabled);
 
-		Log.debug(`target: ${location}, flags: ${flagsValue}, disabled ${disabledValue}`);
 		this._setViewportLocation(viewport, location, flagsValue, disabledValue);
 	}
 
@@ -157,6 +156,9 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 		return moveToLocation;
 	}
 
+	/**
+	 * Set the viewport to the specified location if enabled, or to black if disabled.
+	 */
 	private _setViewportLocation(viewport: Viewport, target: CoordsXY | null, flags: ViewportFlags | undefined, disabled: boolean | undefined): void
 	{
 		if (disabled || !target)

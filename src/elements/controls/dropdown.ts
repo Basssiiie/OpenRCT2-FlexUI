@@ -167,7 +167,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 		{
 			Log.debug("Dropdown items:", oldItems, "->", newItems);
 			this._selectedIndex = newSelectIndex;
-			widget.selectedIndex = newSelectIndex;
+			widget.selectedIndex = newSelectIndex; // this should trigger on change as well
 		}
 	}
 }

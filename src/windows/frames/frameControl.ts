@@ -14,6 +14,9 @@ import { WidgetMap } from "../widgets/widgetMap";
 import { FrameContext } from "./frameContext";
 
 
+/**
+ * An independant window component that can hold one or more widgets and manage their lifecycle.
+ */
 export class FrameControl implements FrameContext, ParentControl<FlexiblePosition>, TabLayoutable
 {
 	parse = parseFlexiblePosition;
