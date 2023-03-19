@@ -448,7 +448,7 @@ test("Default minimum is clamped at smallest 32-bit signed integer", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 
-	widget.onDecrement?.();
+	call(widget.onDecrement);
 	t.is(widget.text, "-2147483648");
 });
 
@@ -470,7 +470,7 @@ test("Default maximum is clamped at largest 32-bit signed integer", t =>
 	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
 	t.is(widget.type, "spinner");
 
-	widget.onIncrement?.();
+	call(widget.onIncrement);
 	t.is(widget.text, "2147483647");
 });
 
@@ -572,12 +572,12 @@ test("Two-way bindings update spinner", t =>
 	t.is(value.get(), -3);
 	t.deepEqual(hits, []);
 
-	widget.onIncrement!();
+	call(widget.onIncrement);
 	t.is(widget.text, "-2");
 	t.is(value.get(), -2);
 	t.deepEqual(hits, [ -2 ]);
 
-	widget.onDecrement!();
+	call(widget.onDecrement);
 	t.is(widget.text, "-3");
 	t.is(value.get(), -3);
 	t.deepEqual(hits, [ -2, -3 ]);

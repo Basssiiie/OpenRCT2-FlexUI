@@ -97,14 +97,14 @@ test("Assigning bound colour should silence on change", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
-	proxy(widget, "colour", v => widget.onChange?.(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "colour", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 	t.is(widget.colour, 20);
 
 	colour.set(5);
 	t.is(widget.colour, 5);
 	t.deepEqual(hits, []);
 
-	widget.onChange?.(17);
+	call(widget.onChange, 17);
 	t.deepEqual(hits, [17]);
 });
 
@@ -138,12 +138,12 @@ test("Two-way bindings update colour picker", t =>
 	t.is(colour.get(), Colour.Black);
 	t.deepEqual(hits, []);
 
-	widget.onChange!(Colour.Teal);
+	call(widget.onChange, Colour.Teal);
 	t.is(widget.colour, Colour.Teal);
 	t.is(colour.get(), Colour.Teal);
 	t.deepEqual(hits, [ Colour.Teal ]);
 
-	widget.onChange!(Colour.DarkPink);
+	call(widget.onChange, Colour.DarkPink);
 	t.is(widget.colour, Colour.DarkPink);
 	t.is(colour.get(), Colour.DarkPink);
 	t.deepEqual(hits, [ Colour.Teal, Colour.DarkPink ]);

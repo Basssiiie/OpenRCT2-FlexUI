@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -123,12 +122,12 @@ test("Two-way bindings update checkbox", t =>
 	t.true(isChecked.get());
 	t.deepEqual(hits, []);
 
-	widget.onChange!(false);
+	call(widget.onChange, false);
 	t.false(widget.isChecked);
 	t.false(isChecked.get());
 	t.deepEqual(hits, [ false ]);
 
-	widget.onChange!(true);
+	call(widget.onChange, true);
 	t.true(widget.isChecked);
 	t.true(isChecked.get());
 	t.deepEqual(hits, [ false, true ]);

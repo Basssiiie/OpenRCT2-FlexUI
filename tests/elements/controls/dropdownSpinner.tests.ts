@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -153,12 +152,12 @@ test("Two-way bindings update dropdown spinner", t =>
 	t.is(selectedIndex.get(), 3);
 	t.deepEqual(hits, []);
 
-	dropdown.onChange!(1);
+	call(dropdown.onChange, 1);
 	t.is(dropdown.selectedIndex, 1);
 	t.is(selectedIndex.get(), 1);
 	t.deepEqual(hits, [ 1 ]);
 
-	spinner.onIncrement!();
+	call(spinner.onIncrement);
 	t.is(dropdown.selectedIndex, 2);
 	t.is(selectedIndex.get(), 2);
 	t.deepEqual(hits, [ 1, 2 ]);

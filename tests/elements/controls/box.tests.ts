@@ -2,13 +2,14 @@
 
 import { compute } from "@src/bindings/stores/compute";
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 
 test("Standard properties are set", t =>
@@ -243,7 +244,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget3.height, 25);
 
 	model.active.set(false);
-	mock.createdWindows[0].onUpdate?.(); // redraw
+	call(mock.createdWindows[0].onUpdate); // redraw
 
 	t.false(widget1.isVisible);
 	t.false(widget2.isVisible);
@@ -254,7 +255,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget3.height, 25);
 
 	model.active.set(true);
-	mock.createdWindows[0].onUpdate?.(); // redraw
+	call(mock.createdWindows[0].onUpdate); // redraw
 
 	t.is(widget1.x, 20);
 	t.is(widget1.y, 20 + 15 - 4); // - 4px default top pad
@@ -316,7 +317,7 @@ test("Box does not take space if it starts hidden", t =>
 	t.is(widget3.height, 25);
 
 	model.active.set(true);
-	mock.createdWindows[0].onUpdate?.(); // redraw
+	call(mock.createdWindows[0].onUpdate); // redraw
 
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 20);

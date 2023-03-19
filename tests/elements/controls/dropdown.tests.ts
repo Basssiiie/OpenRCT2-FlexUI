@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -318,7 +318,7 @@ test("Invoke on change if item is at different index in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
@@ -361,7 +361,7 @@ test("Do not change selected index if item at same index in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 2);
@@ -394,7 +394,7 @@ test("Reset selected index if item not present in new list", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
 	t.is(widget.selectedIndex, 3);
@@ -426,14 +426,14 @@ test("Assigning bound selected index should silence on change", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "selectedIndex", v => widget.onChange!(v!)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 	t.is(widget.selectedIndex, 1);
 
 	selected.set(2);
 	t.is(widget.selectedIndex, 2);
 	t.deepEqual(hits, []);
 
-	widget.onChange?.(3);
+	call(widget.onChange, 3);
 	t.deepEqual(hits, [3]);
 });
 
@@ -457,14 +457,14 @@ test("Assigning bound items should silence on change", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "items", () => widget.onChange!(0)); // immitate the ingame bubbled callback
+	proxy(widget, "items", () => call(widget.onChange, 0)); // immitate the ingame bubbled callback
 	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 
 	items.set([ "d", "e" ]);
 	t.deepEqual(widget.items, [ "d", "e" ]);
 	t.deepEqual(hits, []);
 
-	widget.onChange?.(1);
+	call(widget.onChange, 1);
 	t.deepEqual(hits, [1]);
 });
 
@@ -526,8 +526,8 @@ test("Dropdown items changed but new selected index should stay the same", t =>
 	template.open();
 
 	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
-	proxy(widget, "items", () => widget.onChange!(0)); // immitate the ingame bubbled callback
-	proxy(widget, "selectedIndex", i => widget.onChange!(i!)); // immitate the ingame bubbled callback
+	proxy(widget, "items", () => call(widget.onChange, 0)); // immitate the ingame bubbled callback
+	proxy(widget, "selectedIndex", i => call(widget.onChange, i!)); // immitate the ingame bubbled callback
 
 	t.is(widget.selectedIndex, 0);
 	t.is(selectedIndex.get(), 0);
@@ -578,12 +578,12 @@ test("Two-way bindings update dropdown", t =>
 	t.is(selectedIndex.get(), 3);
 	t.deepEqual(hits, []);
 
-	widget.onChange!(0);
+	call(widget.onChange, 0);
 	t.is(widget.selectedIndex, 0);
 	t.is(selectedIndex.get(), 0);
 	t.deepEqual(hits, [ 0 ]);
 
-	widget.onChange!(2);
+	call(widget.onChange, 2);
 	t.is(widget.selectedIndex, 2);
 	t.is(selectedIndex.get(), 2);
 	t.deepEqual(hits, [ 0, 2 ]);

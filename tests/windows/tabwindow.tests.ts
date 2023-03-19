@@ -1,14 +1,15 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { tab } from "@src/windows/tabs/tab";
-import { tabwindow } from "@src/windows/tabs/tabWindow";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
+import { tab } from "@src/windows/tabs/tab";
+import { tabwindow } from "@src/windows/tabs/tabWindow";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
+import { call } from "tests/helpers";
 
 test("Window with tabs and widgets", t =>
 {
@@ -104,24 +105,24 @@ test("Window and tab events execute", t =>
 	t.deepEqual(hits, ["window open", "tab 2 open"]);
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
-	created.onUpdate?.();
+	call(created.onUpdate);
 	t.deepEqual(hits, ["window open", "tab 2 open", "window update", "tab 2 update"]);
 
 	created.tabIndex = 2;
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.deepEqual(hits, ["window open", "tab 2 open", "window update", "tab 2 update", "tab 2 close", "tab 3 open"]);
 
 	hits.length = 0;
-	created.onUpdate?.();
+	call(created.onUpdate);
 	t.deepEqual(hits, ["window update", "tab 3 update"]);
 
 	hits.length = 0;
 	created.tabIndex = 0;
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.deepEqual(hits, ["tab 3 close", "tab 1 open"]);
 
 	hits.length = 0;
-	created.onClose?.();
+	call(created.onClose);
 	t.deepEqual(hits, ["window close", "tab 1 close"]);
 });
 
@@ -163,24 +164,24 @@ test("Window and tab events with static content execute", t =>
 	t.deepEqual(hits, ["window open", "tab 3 open"]);
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
-	created.onUpdate?.();
+	call(created.onUpdate);
 	t.deepEqual(hits, ["window open", "tab 3 open", "window update", "tab 3 update"]);
 
 	created.tabIndex = 0;
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.deepEqual(hits, ["window open", "tab 3 open", "window update", "tab 3 update", "tab 3 close", "tab 1 open"]);
 
 	hits.length = 0;
-	created.onUpdate?.();
+	call(created.onUpdate);
 	t.deepEqual(hits, ["window update", "tab 1 update"]);
 
 	hits.length = 0;
 	created.tabIndex = 1;
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.deepEqual(hits, ["tab 1 close", "tab 2 open"]);
 
 	hits.length = 0;
-	created.onClose?.();
+	call(created.onClose);
 	t.deepEqual(hits, ["window close", "tab 2 close"]);
 });
 
@@ -216,7 +217,7 @@ test("Window layouts with tabs", t =>
 	t.is(secondTab[1].height, (150 - (1 + 60 + 4 + 22 + 14 + 44)));
 
 	created.tabIndex = 0;
-	created.onTabChange?.();
+	call(created.onTabChange);
 
 	const firstTab = <LabelWidget[]>created.widgets;
 	t.is(firstTab[0].text, "label 1");
@@ -231,7 +232,7 @@ test("Window layouts with tabs", t =>
 	t.is(firstTab[1].height, (150 - (1 + 60 + 10 + 44)));
 
 	created.tabIndex = 1;
-	created.onTabChange?.();
+	call(created.onTabChange);
 
 	const secondTabAgain = <LabelWidget[]>created.widgets;
 	t.is(secondTabAgain[0].text, "label 2");
@@ -294,7 +295,7 @@ test("Window layouts with tabs and static", t =>
 	t.is(secondTab[3].height, (150 - (1 + 60 + 4 + 22 + 14 + 44)));
 
 	created.tabIndex = 0;
-	created.onTabChange?.();
+	call(created.onTabChange);
 
 	const firstTab = <LabelWidget[]>created.widgets;
 	assertStaticWidgets(firstTab);
@@ -310,7 +311,7 @@ test("Window layouts with tabs and static", t =>
 	t.is(firstTab[3].height, (150 - (1 + 60 + 10 + 44)));
 
 	created.tabIndex = 1;
-	created.onTabChange?.();
+	call(created.onTabChange);
 
 	const secondTabAgain = <LabelWidget[]>created.widgets;
 	assertStaticWidgets(secondTabAgain);
@@ -361,7 +362,7 @@ test("Window and tab rebind to stores on each tab change", t =>
 	t.is(thirdTab[1].text, "3");
 	t.is(thirdTab[1].tooltip, "hello"); // from creation
 
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.is(thirdTab[0].text, "static");
 	t.is(thirdTab[0].tooltip, "hello");
 	t.is(thirdTab[1].text, "3");
@@ -385,7 +386,7 @@ test("Window and tab rebind to stores on each tab change", t =>
 	t.is(secondTab[1].tooltip, "hello"); // from creation
 
 	tooltipStore.set("excite");
-	created.onTabChange?.();
+	call(created.onTabChange);
 	t.is(firstTab[0].text, "static");
 	t.is(firstTab[0].tooltip, "excite");
 	t.is(firstTab[1].text, "1");
