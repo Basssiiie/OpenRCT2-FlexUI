@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { box, button, compute, dropdownSpinner, horizontal, label, store, viewport, window } from "openrct2-flexui";
+import { box, button, compute, dropdownSpinner, horizontal, label, store, twoway, viewport, window } from "openrct2-flexui";
 
 
 const model =
@@ -68,10 +68,9 @@ const birdStalker = window({
 			}),
 			dropdownSpinner({
 				items: compute(model.allDucks, v => v.map(d => `Duck #${d.id}`)),
-				selectedIndex: model.selectedDuckIndex,
+				selectedIndex: twoway(model.selectedDuckIndex),
 				disabled: compute(model.allDucks, v => v.length === 0),
-				disabledMessage: "Duck not found",
-				onChange: (index: number) => model.selectedDuckIndex.set(index)
+				disabledMessage: "Duck not found"
 			}),
 			button({
 				text: "Random duck",

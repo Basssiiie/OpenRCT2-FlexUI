@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { compute, dropdown, horizontal, label, spinner, store, tab, tabwindow, toggle } from "openrct2-flexui";
+import { compute, dropdown, horizontal, label, spinner, store, tab, tabwindow, toggle, twoway } from "openrct2-flexui";
 
 
 const value = store(0);
@@ -9,9 +9,8 @@ value.subscribe(v => console.log(`Value now set to: ${v}`));
 source.subscribe(v => console.log(`Source now set to: ${v}`));
 
 
-function updateValue(updatedValue: number, sourceName: string): void
+function updateSource(updatedValue: number, sourceName: string): void
 {
-	value.set(updatedValue);
 	source.set(sourceName);
 	console.log(`Update to ${updatedValue} via ${sourceName}`);
 }
@@ -52,11 +51,11 @@ const windowWithTabs = tabwindow({
 			image: spiralSlideIcon,
 			content: [
 				spinner({
-					value: value,
+					value: twoway(value),
 					minimum: 0,
 					maximum: 4,
 					wrapMode: "wrap",
-					onChange: val => updateValue(val, "spinner, tab 1")
+					onChange: val => updateSource(val, "spinner, tab 1")
 				})
 			]
 		}),
@@ -65,8 +64,8 @@ const windowWithTabs = tabwindow({
 			content: [
 				dropdown({
 					items: [ "Zero", "One", "Two", "Three" ],
-					selectedIndex: value,
-					onChange: val => updateValue(val, "dropdown, tab 2")
+					selectedIndex: twoway(value),
+					onChange: val => updateSource(val, "dropdown, tab 2")
 				})
 			]
 		}),
@@ -78,25 +77,25 @@ const windowWithTabs = tabwindow({
 						text: "0",
 						width: "25%",
 						isPressed: compute(value, val => (val === 0)),
-						onChange: () => updateValue(0, "button 1, tab 3")
+						onChange: () => { value.set(0); updateSource(0, "button 1, tab 3"); }
 					}),
 					toggle({
 						text: "1",
 						width: "25%",
 						isPressed: compute(value, val => (val === 1)),
-						onChange: () => updateValue(1, "button 2, tab 3")
+						onChange: () => { value.set(1); updateSource(1, "button 2, tab 3"); }
 					}),
 					toggle({
 						text: "2",
 						width: "25%",
 						isPressed: compute(value, val => (val === 2)),
-						onChange: () => updateValue(2, "button 3, tab 3")
+						onChange: () => { value.set(2); updateSource(2, "button 3, tab 3"); }
 					}),
 					toggle({
 						text: "3",
 						width: "25%",
 						isPressed: compute(value, val => (val === 3)),
-						onChange: () => updateValue(3, "button 4, tab 3")
+						onChange: () => { value.set(3); updateSource(3, "button 4, tab 3"); }
 					})
 				])
 			]
