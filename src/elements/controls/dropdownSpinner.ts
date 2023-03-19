@@ -1,9 +1,14 @@
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
+import { subscribe } from "@src/bindings/stores/subscribe";
+import { wrap } from "@src/bindings/stores/wrap";
+import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
+import { twoway } from "@src/bindings/twoway/twoway";
+import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { fillLayout } from "../layouts/fillLayout";
@@ -11,10 +16,6 @@ import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Positions } from "../layouts/positions";
 import { DropdownControl, DropdownParams } from "./dropdown";
 import { SpinnerControl, SpinnerParams, SpinnerWrapMode } from "./spinner";
-import * as Log from "@src/utilities/logger";
-import { ParentControl } from "@src/windows/parentControl";
-import { subscribe } from "@src/bindings/stores/subscribe";
-import { wrap } from "@src/bindings/stores/wrap";
 
 
 /**
@@ -53,14 +54,12 @@ const spinnerControlsWidth = 25;
 class DropdownSpinnerControl extends DropdownControl
 {
 	_spinner: SpinnerControl;
-	_userOnChange?: (index: number) => void;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownSpinnerParams)
 	{
-		// Ensure selectedIndex is a store, so we can update it easily when
-		// the spinner is used.
-		const selectedIndex = wrap(params.selectedIndex || 0);
-		params.selectedIndex = selectedIndex;
+		// Ensure selectedIndex is a two-way store to keep the spinner and dropdown in sync.
+		const original = params.selectedIndex;
+		const selectedIndex = (isTwoWay(original)) ? original : twoway(wrap(original || 0));
 
 		// Setup internal spinner control
 		const spinParams: SpinnerParams =
@@ -71,29 +70,7 @@ class DropdownSpinnerControl extends DropdownControl
 			wrapMode: params.wrapMode || "wrap",
 			minimum: 0,
 			value: selectedIndex,
-			onChange: (value: number) =>
-			{
-				// Changing selectedIndex triggers an onChange; setting this boolean
-				// makes the control ignore that onChange event.
-				Log.debug("Dropdown spinner", this.name, "spin value has changed:", selectedIndex.get(), "->", value);
-				selectedIndex.set(value);
-				if (this._userOnChange)
-				{
-					this._userOnChange(value);
-				}
-			}
-		};
-
-		// Setup dropdown callback
-		const userOnChange = params.onChange;
-		params.onChange = (idx): void =>
-		{
-			Log.debug("Dropdown spinner", this.name, "selectedIndex has changed:", selectedIndex.get(), "->", idx);
-			selectedIndex.set(idx);
-			if (this._userOnChange)
-			{
-				this._userOnChange(idx);
-			}
+			onChange: params.onChange
 		};
 
 		// If items is a store, ensure the spinner maximum is always updated
@@ -115,11 +92,13 @@ class DropdownSpinnerControl extends DropdownControl
 			spinParams.maximum = (length > 0) ? (length - 1) : 0;
 		}
 
+		// Pass ensured two-way binding to underlying dropdown control.
+		params.selectedIndex = selectedIndex;
+
 		const spinner = new SpinnerControl(parent, output, spinParams);
 		super(parent, output, params);
 
 		this._spinner = spinner;
-		this._userOnChange = userOnChange;
 	}
 
 

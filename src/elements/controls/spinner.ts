@@ -1,13 +1,15 @@
 import { Bindable } from "@src/bindings/bindable";
 import { on } from "@src/bindings/stores/on";
 import { read } from "@src/bindings/stores/read";
-import { WritableStore } from "@src/bindings/stores/writableStore";
 import { wrap } from "@src/bindings/stores/wrap";
+import { WritableStore } from "@src/bindings/stores/writableStore";
+import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import * as Log from "@src/utilities/logger";
+import * as MathUtils from "@src/utilities/math";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
-import * as Log from "@src/utilities/logger";
-import * as MathUtils from "@src/utilities/math";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -31,7 +33,7 @@ export interface SpinnerParams extends ElementParams
 	 * The value within the spinner.
 	 * @default 0
 	 */
-	value?: Bindable<number>;
+	value?: TwoWayBindable<number>;
 
 	/**
 	 * The minimum possible value that the spinner can reach. This number is inclusive.
@@ -120,7 +122,8 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 
 		// Make value a store regardless of user choice,
 		// to make updating the text more convenient.
-		const value = wrap(params.value || 0);
+		const original = params.value;
+		const value = (isTwoWay(original)) ? original.twoway : wrap(original || 0);
 
 		// Do a standard .toString() if the format function is not provided.
 		let format = (params.format || ((value: number): string => value.toString()));

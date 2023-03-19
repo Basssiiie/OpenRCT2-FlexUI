@@ -1,12 +1,12 @@
-import { Bindable } from "@src/bindings/bindable";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import { Rectangle } from "@src/positional/rectangle";
+import { Colour } from "@src/utilities/colour";
+import { decorateWithSilencer, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
+import { isUndefined } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { Rectangle } from "@src/positional/rectangle";
-import { Colour } from "@src/utilities/colour";
-import { addSilencerToOnChange, setPropertyAndSilenceOnChange } from "@src/utilities/silencer";
-import { isUndefined } from "@src/utilities/type";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -26,7 +26,7 @@ export interface ColourPickerParams extends ElementParams
 	 * The selected colour in the dropdown.
 	 * @default Colour.Black
 	 */
-	colour?: Bindable<Colour>;
+	colour?: TwoWayBindable<Colour>;
 
 	/**
 	 * Triggers when the colour picker is pressed.
@@ -70,13 +70,13 @@ class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPic
 	{
 		super("colourpicker", parent, output, params);
 
+		const colour = params.colour;
 		const binder = output.binder;
-		binder.on(this, params.colour, (target, value) =>
+		binder.on(this, colour, (target, value) =>
 		{
 			setPropertyAndSilenceOnChange(this, target, "colour", value);
 		});
-
-		addSilencerToOnChange(this, params.onChange);
+		binder.callback(this, "onChange", colour, decorateWithSilencer(this, params.onChange));
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void

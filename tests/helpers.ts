@@ -3,5 +3,6 @@
  */
 export function call<T extends unknown[]>(method: ((...args: T) => void) | undefined, ...args: T): void
 {
-	method?.call(undefined, ...args);
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	method!.call(undefined, ...args);
 }

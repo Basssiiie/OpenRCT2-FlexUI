@@ -1,9 +1,10 @@
-import { Bindable } from "@src/bindings/bindable";
+import { AnyBindable } from "@src/bindings/anyBindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
 import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import { unwrap } from "@src/bindings/twoway/unwrap";
 import { isUndefined } from "@src/utilities/type";
 import { isStore } from "../../bindings/stores/isStore";
 
@@ -17,7 +18,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	protected _source: TSource | null = null;
 
 
-	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: Bindable<V> | undefined, converter?: (value: V) => T[K]): void
+	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: AnyBindable<V> | undefined, converter?: (value: V) => T[K]): void
 	{
 		this.on(target, value, (actualTarget, actualValue) =>
 		{
@@ -27,12 +28,11 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		});
 	}
 
-	twoway<T extends TTarget, I extends keyof T, V extends T[I]>(target: T, inKey: I, outKey: keyof T, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void
+	callback<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void
 	{
-		this.add(target, inKey, value);
 		if (isTwoWay(value))
 		{
-			target[outKey] = <T[keyof T]>((arg: V): void =>
+			target[key] = <T[K]>((arg: V): void =>
 			{
 				value.twoway.set(arg);
 				if (callback)
@@ -43,24 +43,31 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		}
 		else if (callback)
 		{
-			target[outKey] = <T[keyof T]>callback;
+			target[key] = <T[K]>callback;
 		}
 	}
 
-	on<T extends TTarget, V>(target: T, value: Bindable<V> | undefined, callback: (target: T, value: V) => void): void
+	twoway<T extends TTarget, K extends keyof T, V extends T[K]>(target: T, inKey: K, outKey: keyof T, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void
 	{
-		if (isStore(value))
+		this.add(target, inKey, value);
+		this.callback(target, outKey, value, callback);
+	}
+
+	on<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V) => void): void
+	{
+		const underlying = unwrap(value);
+		if (isStore(underlying))
 		{
 			// bind
-			const binding = this._createBinding(target, value, callback);
+			const binding = this._createBinding(target, underlying, callback);
 			this._bindings.push(<never>binding);
 
-			callback(target, value.get());
+			callback(target, underlying.get());
 		}
-		else if (!isUndefined(value))
+		else if (!isUndefined(underlying))
 		{
 			// just update value
-			callback(target, value);
+			callback(target, underlying);
 		}
 	}
 

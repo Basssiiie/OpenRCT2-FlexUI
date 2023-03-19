@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
+import { twoway } from "@src/bindings/twoway/twoway";
 import { spinner } from "@src/elements/controls/spinner";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -538,4 +540,50 @@ test("Update minimum clamps value", t =>
 	minimum.set(80);
 	t.is(widget.text, "80");
 	t.deepEqual(hits, [ 80 ]);
+});
+
+
+test("Two-way bindings update spinner", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const value = store(0);
+	const hits: number[] = [];
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			spinner({
+				value: twoway(value),
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as SpinnerDesc;
+	t.is(widget.text, "0");
+	t.is(value.get(), 0);
+	t.deepEqual(hits, []);
+
+	value.set(-3);
+	t.is(widget.text, "-3");
+	t.is(value.get(), -3);
+	t.deepEqual(hits, []);
+
+	widget.onIncrement!();
+	t.is(widget.text, "-2");
+	t.is(value.get(), -2);
+	t.deepEqual(hits, [ -2 ]);
+
+	widget.onDecrement!();
+	t.is(widget.text, "-3");
+	t.is(value.get(), -3);
+	t.deepEqual(hits, [ -2, -3 ]);
+
+	value.set(4519);
+	t.is(widget.text, "4519");
+	t.is(value.get(), 4519);
+	t.deepEqual(hits, [ -2, -3 ]);
 });

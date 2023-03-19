@@ -7,7 +7,6 @@ import * as Log from "@src/utilities/logger";
 interface SilenceOnChangeControl
 {
 	name: string;
-	onChange?: (value: number) => void;
 	_silenceOnChange?: boolean;
 }
 
@@ -15,14 +14,14 @@ interface SilenceOnChangeControl
 /**
  * Set the `onChange` callback to a custom callback that can be silenced when FlexUI is updating certain widget valued.
  */
-export function addSilencerToOnChange(control: SilenceOnChangeControl, callback: ((value: number) => void) | undefined, apply?: (value: number, callback: (value: number) => void) => void): void
+export function decorateWithSilencer(control: SilenceOnChangeControl, callback: ((value: number) => void) | undefined, apply?: (value: number, callback: (value: number) => void) => void): ((value: number) => void) | undefined
 {
 	if (!callback)
 	{
-		return;
+		return callback;
 	}
 
-	control.onChange = (value: number): void =>
+	return (value: number): void =>
 	{
 		if (control._silenceOnChange)
 		{

@@ -1,11 +1,12 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import * as Log from "@src/utilities/logger";
+import { decorateWithSilencer } from "@src/utilities/silencer";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
-import * as Log from "@src/utilities/logger";
-import { addSilencerToOnChange } from "@src/utilities/silencer";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -31,10 +32,10 @@ export interface DropdownParams extends ElementParams
 	items: Bindable<string[]>;
 
 	/**
-	 * sets the default selected item, indexed into the items array.
+	 * Sets the default selected item, indexed into the items array.
 	 * @default 0
 	 */
-	selectedIndex?: Bindable<number>;
+	selectedIndex?: TwoWayBindable<number>;
 
 	/**
 	 * Sets the message that will show when the dropdown is not available.
@@ -114,9 +115,9 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 			setter(widget);
 		});
 		binder.on(this, disabled, setter);
-
 		// Ensure index is never negative (= uninitialised state)
-		addSilencerToOnChange(this, onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
+		const silencer = decorateWithSilencer(this, onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
+		binder.callback(this, "onChange", selectedIndex, silencer);
 	}
 
 	/**

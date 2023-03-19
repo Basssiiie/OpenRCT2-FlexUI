@@ -3,9 +3,10 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
+import { twoway } from "@src/bindings/twoway/twoway";
 import { dropdown } from "@src/elements/controls/dropdown";
 import { proxy } from "@src/utilities/proxy";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -544,4 +545,51 @@ test("Dropdown items changed but new selected index should stay the same", t =>
 	t.is(selectedIndex.get(), 0);
 	t.deepEqual(widget.items, [ "new", "current" ]);
 	t.deepEqual(hits, [ 1 ]);
+});
+
+
+test("Two-way bindings update dropdown", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const selectedIndex = store(1);
+	const hits: number[] = [];
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			dropdown({
+				items: [ "a", "b", "c", "d" ],
+				selectedIndex: twoway(selectedIndex),
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	t.is(widget.selectedIndex, 1);
+	t.is(selectedIndex.get(), 1);
+	t.deepEqual(hits, []);
+
+	selectedIndex.set(3);
+	t.is(widget.selectedIndex, 3);
+	t.is(selectedIndex.get(), 3);
+	t.deepEqual(hits, []);
+
+	widget.onChange!(0);
+	t.is(widget.selectedIndex, 0);
+	t.is(selectedIndex.get(), 0);
+	t.deepEqual(hits, [ 0 ]);
+
+	widget.onChange!(2);
+	t.is(widget.selectedIndex, 2);
+	t.is(selectedIndex.get(), 2);
+	t.deepEqual(hits, [ 0, 2 ]);
+
+	selectedIndex.set(0);
+	t.is(widget.selectedIndex, 0);
+	t.is(selectedIndex.get(), 0);
+	t.deepEqual(hits, [ 0, 2 ]);
 });
