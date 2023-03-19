@@ -1,9 +1,10 @@
 import { Bindable } from "@src/bindings/bindable";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { Rectangle } from "@src/positional/rectangle";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -27,7 +28,7 @@ export interface CheckboxParams extends ElementParams
 	 * Whether the checkbox starts off ticked or not.
 	 * @default false
 	 */
-	isChecked?: Bindable<boolean>;
+	isChecked?: TwoWayBindable<boolean>;
 
 	/**
 	 * Triggers when the checkbox is toggled.
@@ -66,8 +67,7 @@ export class CheckboxControl extends Control<CheckboxDesc> implements CheckboxDe
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);
-		binder.add(this, "isChecked", params.isChecked);
-		this.onChange = params.onChange;
+		binder.twoway(this, "isChecked", "onChange", params.isChecked, params.onChange);
 	}
 
 	override layout(widgets: WidgetMap, area: Rectangle): void

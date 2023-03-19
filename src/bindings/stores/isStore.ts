@@ -17,7 +17,7 @@ export function isStore(target: unknown): target is Store<unknown>
 }
 
 /**
- * Returns true if the target is a store or follows the store contract. Returns false if not.
+ * Returns true if the target is a writable store or follows the writable store contract. Returns false if not.
  */
 export function isWritableStore(target: unknown): target is WritableStore<unknown>
 {

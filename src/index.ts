@@ -12,6 +12,9 @@ export { store, arrayStore } from "./bindings/stores/createStore";
 export { isStore, isWritableStore } from "./bindings/stores/isStore";
 export { read } from "./bindings/stores/read";
 export { compute } from "./bindings/stores/compute";
+export { twoway } from "./bindings/twoway/twoway";
+export { isTwoWay } from "./bindings/twoway/isTwoWay";
+export { TwoWayBinding } from "./bindings/twoway/twowayBinding";
 
 // Widget controls
 export { absolute, AbsoluteLayoutParams, AbsoluteLayoutContainer } from "./elements/layouts/absolute/absolute";
@@ -56,6 +59,7 @@ export { FrameContext } from "./windows/frames/frameContext";
 export { FrameEvent } from "./windows/frames/frameEvent";
 export { ParentControl } from "./windows/parentControl";
 export { Bindable } from "./bindings/bindable";
+export { TwoWayBindable } from "./bindings/twoway/twowayBindable";
 export { Binder } from "./bindings/binder";
 export { Layoutable } from "./windows/layoutable";
 export { TabLayoutable } from "./windows/tabs/tabLayoutable";

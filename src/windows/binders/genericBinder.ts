@@ -2,6 +2,8 @@ import { Bindable } from "@src/bindings/bindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
+import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { isUndefined } from "@src/utilities/type";
 import { isStore } from "../../bindings/stores/isStore";
 
@@ -25,6 +27,25 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		});
 	}
 
+	twoway<T extends TTarget, I extends keyof T, V extends T[I]>(target: T, inKey: I, outKey: keyof T, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void
+	{
+		this.add(target, inKey, value);
+		if (isTwoWay(value))
+		{
+			target[outKey] = <T[keyof T]>((arg: V): void =>
+			{
+				value.twoway.set(arg);
+				if (callback)
+				{
+					callback(arg);
+				}
+			});
+		}
+		else if (callback)
+		{
+			target[outKey] = <T[keyof T]>callback;
+		}
+	}
 
 	on<T extends TTarget, V>(target: T, value: Bindable<V> | undefined, callback: (target: T, value: V) => void): void
 	{
@@ -43,14 +64,12 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		}
 	}
 
-
 	/**
 	 * Add a binding callback between a store and a target's property. An optional converter can be
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
 	protected abstract _createBinding<T extends TTarget, V>(target: T, store: Store<V>, callback: (target: T, value: V) => void): Binding<T, V>;
-
 
 	/**
 	 * Bind a source instance to this binder.
