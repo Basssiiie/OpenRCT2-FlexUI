@@ -23,27 +23,30 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		this.on(target, value, (actualTarget, actualValue) =>
 		{
 			const result = (converter) ? converter(actualValue) : actualValue;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(<any>actualTarget)[key] = result;
+			actualTarget[key] = <T[K]>result;
 		});
 	}
 
-	callback<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void
+	callback<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined, converter?: (value: unknown) => V): void
 	{
 		if (isTwoWay(value))
 		{
 			target[key] = <T[K]>((arg: V): void =>
 			{
-				value.twoway.set(arg);
+				const result = (converter) ? converter(arg) : arg;
+				value.twoway.set(result);
 				if (callback)
 				{
-					callback(arg);
+					callback(result);
 				}
 			});
 		}
 		else if (callback)
 		{
-			target[key] = <T[K]>callback;
+			target[key] = <T[K]>((converter)
+				? ((v: V): void => callback(converter(v)))
+				: callback
+			);
 		}
 	}
 

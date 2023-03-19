@@ -1,5 +1,5 @@
-import { WritableStore } from "@src/bindings/stores/writableStore";
-import { wrap } from "@src/bindings/stores/wrap";
+import { getOrConvertToTwoWayBinding } from "@src/bindings/twoway/convertToTwoWay";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
@@ -12,8 +12,14 @@ import { ButtonControl, ButtonParams } from "./button";
 /**
  * The parameters for configuring the toggle button.
  */
-export interface ToggleParams extends Omit<ButtonParams, "onClick">
+export interface ToggleParams extends Omit<ButtonParams, "isPressed" | "onClick">
 {
+	/**
+	 * Whether the button is pressed down or not.
+	 * @default false
+	 */
+	isPressed?: TwoWayBindable<boolean>;
+
 	/**
 	 * Triggers when the toggle button is pressed down or released.
 	 */
@@ -37,38 +43,15 @@ export function toggle(params: ToggleParams & Positions): WidgetCreator<Position
  */
 class ToggleControl extends ButtonControl implements ButtonDesc, ToggleParams
 {
-	onChange?: (isPressed: boolean) => void;
-
-	_toggled: WritableStore<boolean>;
-
-	constructor(parent: ParentControl, output: BuildOutput, params: ToggleParams & ButtonParams)
+	constructor(parent: ParentControl, output: BuildOutput, params: ToggleParams & Omit<ButtonParams, "isPressed">)
 	{
-		// Ensure isPressed is a store, so we can update
-		// the live widget more easily.
-		const pressed = params.isPressed;
-		const toggled = wrap(pressed || false);
+		// Ensure isPressed is a two-way store, so we can update the live widget more easily.
+		const toggled = getOrConvertToTwoWayBinding(params.isPressed, false);
+		const store = toggled.twoway;
 
 		params.isPressed = toggled;
-		params.onClick = (): void => updateToggle(this);
 
-		super(parent, output, params);
-		this._toggled = toggled;
-		this.onChange = params.onChange;
-	}
-}
-
-
-/**
- * Callback that toggles the button when it gets pressed.
- */
-function updateToggle(toggle: ToggleControl): void
-{
-	const store = toggle._toggled;
-	const newValue = !store.get();
-
-	store.set(newValue);
-	if (toggle.onChange)
-	{
-		toggle.onChange(newValue);
+		super(parent, output, <ButtonParams>params);
+		output.binder.callback(this, "onClick", toggled, params.onChange, () => !store.get());
 	}
 }

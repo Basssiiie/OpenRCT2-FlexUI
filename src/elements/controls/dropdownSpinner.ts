@@ -1,9 +1,7 @@
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import { subscribe } from "@src/bindings/stores/subscribe";
-import { wrap } from "@src/bindings/stores/wrap";
-import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
-import { twoway } from "@src/bindings/twoway/twoway";
+import { getOrConvertToTwoWayBinding } from "@src/bindings/twoway/convertToTwoWay";
 import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
@@ -58,8 +56,7 @@ class DropdownSpinnerControl extends DropdownControl
 	constructor(parent: ParentControl, output: BuildOutput, params: DropdownSpinnerParams)
 	{
 		// Ensure selectedIndex is a two-way store to keep the spinner and dropdown in sync.
-		const original = params.selectedIndex;
-		const selectedIndex = (isTwoWay(original)) ? original : twoway(wrap(original || 0));
+		const selectedIndex = getOrConvertToTwoWayBinding(params.selectedIndex, 0);
 
 		// Setup internal spinner control
 		const spinParams: SpinnerParams =

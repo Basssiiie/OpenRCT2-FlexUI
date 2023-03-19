@@ -1,8 +1,9 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
+import { twoway } from "@src/bindings/twoway/twoway";
 import { toggle } from "@src/elements/controls/toggle";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -145,4 +146,50 @@ test("Change event gets called", t =>
 	call(widget.onClick);
 	call(widget.onClick);
 	t.deepEqual(hits, [ true, false, true, false ]);
+});
+
+
+test("Two-way bindings update toggle", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const isPressed = store(true);
+	const hits: boolean[] = [];
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			toggle({
+				isPressed: twoway(isPressed),
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	t.true(widget.isPressed);
+	t.true(isPressed.get());
+	t.deepEqual(hits, []);
+
+	isPressed.set(false);
+	t.false(widget.isPressed);
+	t.false(isPressed.get());
+	t.deepEqual(hits, []);
+
+	call(widget.onClick);
+	t.true(widget.isPressed);
+	t.true(isPressed.get());
+	t.deepEqual(hits, [ true ]);
+
+	call(widget.onClick);
+	t.false(widget.isPressed);
+	t.false(isPressed.get());
+	t.deepEqual(hits, [ true, false ]);
+
+	isPressed.set(true);
+	t.true(widget.isPressed);
+	t.true(isPressed.get());
+	t.deepEqual(hits, [ true, false ]);
 });
