@@ -29,10 +29,10 @@ const config = [
 		],
 		plugins: [
 			replace({
-				include: "./src/utilities/environment.ts",
 				preventAssignment: true,
 				values: {
-					__BUILD_CONFIGURATION__: JSON.stringify(build)
+					__BUILD_CONFIGURATION__: JSON.stringify(build),
+					...(isDev ? {} : { "Log.debug": "//" })
 				}
 			}),
 			typescript({

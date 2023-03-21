@@ -11,12 +11,6 @@ declare const __BUILD_CONFIGURATION__: BuildConfiguration;
 
 
 /**
- * Returns the current version of the plugin.
- */
-export const pluginVersion = "1.1";
-
-
-/**
  * Returns the build configuration of the plugin.
  */
 export const buildConfiguration: BuildConfiguration = __BUILD_CONFIGURATION__;
