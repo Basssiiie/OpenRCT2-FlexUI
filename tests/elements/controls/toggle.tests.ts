@@ -119,6 +119,11 @@ test("Is pressed store does not update store", t =>
 	t.false(widget.isPressed);
 	t.true(pressed.get());
 	t.deepEqual(hits, [ true, false, false ]);
+
+	pressed.set(false); // does react to store changes
+	t.false(widget.isPressed);
+	t.false(pressed.get());
+	t.deepEqual(hits, [ true, false, false ]);
 });
 
 
