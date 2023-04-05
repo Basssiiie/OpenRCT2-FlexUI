@@ -54,7 +54,7 @@ export function checkbox(params: CheckboxParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a checkbox widget.
  */
-export class CheckboxControl extends Control<CheckboxDesc> implements CheckboxDesc, CheckboxParams
+class CheckboxControl extends Control<CheckboxDesc> implements CheckboxDesc, CheckboxParams
 {
 	text?: string;
 	isChecked?: boolean;

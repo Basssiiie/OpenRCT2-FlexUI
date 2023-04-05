@@ -3,7 +3,7 @@
 import
 {
 	box, button, checkbox, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
-	groupbox, label, LayoutDirection, spinner, toggle, viewport, window
+	groupbox, label, LayoutDirection, spinner, textbox, toggle, viewport, window
 }
 from "openrct2-flexui";
 
@@ -71,6 +71,10 @@ const allWidgets = window({
 				{ text: "Second", onClick: (): void => console.log("Dropdown button's second option has been pressed") },
 				{ text: "Third", onClick: (): void => console.log("Dropdown button's third option has been pressed") }
 			]
+		}),
+		textbox({
+			text: "Enter text",
+			onChange: (text: string) => console.log(`Textbox has new text '${text}'`)
 		}),
 		button({
 			text: "Press this button",

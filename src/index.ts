@@ -30,6 +30,7 @@ export { groupbox, GroupBoxParams } from "./elements/controls/groupbox";
 export { label, LabelParams } from "./elements/controls/label";
 export { listview, ListViewParams, ListViewColumnParams } from "./elements/controls/listview";
 export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
+export { textbox, TextBoxParams } from "./elements/controls/textbox";
 export { toggle, ToggleParams } from "./elements/controls/toggle";
 export { viewport, ViewportParams } from "./elements/controls/viewport";
 export { widget, WidgetParams } from "./elements/controls/widget";
