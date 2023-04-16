@@ -20,6 +20,16 @@ Designed with a focus on ease of use, performance, light-weighted and flexibilit
 
 For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-FlexUI/tree/main/examples).
 
+## Usages
+
+Various plugins have already adopted FlexUI as their UI-library:
+
+- **[RideVehicleEditor](https://openrct2plugins.org/plugin/MDEwOlJlcG9zaXRvcnkzMTI2MjQ1MjY=/OpenRCT2-RideVehicleEditor)**, by Basssiiie
+- **[Ride Painter](https://openrct2plugins.org/plugin/R_kgDOGuBtxQ/OpenRCT-Ride-Painter)**, by ItsSmitty
+- **[Wet Paint Plugin](https://openrct2plugins.org/plugin/R_kgDOIOX2DQ/Wet-Paint-Plugin)**, by ItsSmitty
+- **[Soft Guest Cap Inspector](https://openrct2plugins.org/plugin/R_kgDOJUjXiA/openrct2-soft-guest-cap-inspector)**, by Beam41
+- **[Maze Generator](https://openrct2plugins.org/plugin/R_kgDOJVzaYg/openrct2-maze-generator)**, by Beam41
+
 ---
 
 ## Installing a pre-release
