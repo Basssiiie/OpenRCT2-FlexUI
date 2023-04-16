@@ -77,12 +77,12 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 	text?: string;
 
 	_child: Layoutable<FlexiblePosition>;
-	_flags: InheritFlags & BoxFlags;
+	_flags: number;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: (BoxParams | BoxContainer) & Positions)
 	{
 		const type = "groupbox";
-		let flags = <InheritFlags & BoxFlags>getInheritanceFlags(params);
+		let flags = getInheritanceFlags(params);
 		let childCreator: WidgetCreator<FlexiblePosition>;
 
 		if ("content" in params)

@@ -113,7 +113,7 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 
 	_direction: LayoutDirection;
 	_spacing: ParsedScale;
-	_flags: InheritFlags & FlexFlags;
+	_flags: number;
 
 	constructor(parent: ParentControl, output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Positions)
 	{
