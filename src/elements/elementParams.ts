@@ -15,7 +15,7 @@ export type ElementVisibility = "visible" | "hidden" | "none";
 export interface ElementParams
 {
 	/**
-	 * An optional tooltip to show by this element, by hovering over it.
+	 * An optional tooltip to show by this element, when hovering over it.
 	 * @default undefined
 	 */
 	tooltip?: Bindable<string>;

@@ -24,10 +24,30 @@ import { Control } from "./control";
  */
 export interface ListViewColumnParams
 {
+	/**
+	 * The text to display at the top of the column.
+	 * @default undefined
+	 */
 	header?: string;
+
+	/**
+	 * An optional tooltip to show by this column, when hovering over it.
+	 * @default undefined
+	 */
 	tooltip?: string;
+
+	/**
+	 * Specifies whether the used can sort this column by clicking on it. The sorting
+	 * will be done alphabetically.
+	 * @default false
+	 */
 	canSort?: boolean;
-	sortOrder?: SortOrder;
+
+	/**
+	 * The width of this column on the horizontal axis, relative to the listview.
+	 * @see {@link Scale} for examples of allowed values.
+	 * @default "1w".
+	 */
 	width?: Scale;
 }
 
@@ -37,12 +57,48 @@ export interface ListViewColumnParams
  */
 export interface ListViewParams extends ElementParams
 {
+	/**
+	 * If specified, will add header information above each column and optionally adds sorting.
+	 * @default undefined
+	 */
 	columns?: ListViewColumn[] | ListViewColumnParams[];
-	items?: Bindable<string[] | ListViewItem[]>;
 
+	/**
+	 * Specifies the items within the listview, either as a single dimension array for
+	 * a single row or a multi-dimensional array for multiple columns per row. Can also
+	 * include seperator objects to divide the list into multiple sections.
+	 */
+	items: Bindable<string[] | ListViewItem[]>;
+
+	/**
+	 * Whether to allow scrolling horizontally, vertically, both, or neither.
+	 * @default "vertical"
+	 */
 	scrollbars?: ScrollbarType;
+
+	/**
+	 * Specifies whether the item that was last clicked will stay selected in the listview.
+	 * @default false
+	 */
 	canSelect?: boolean;
+
+	/**
+	 * Whether the rows are displayed in alternating darkness to make each row easier to see.
+	 * @default false
+	 */
 	isStriped?: boolean;
+
+	/**
+	 * Triggers whenever the user hovers the mouse pointer over a row.
+	 * @default undefined
+	 */
+	onHighlight?: (item: number, column: number) => void;
+
+	/**
+	 * Triggers when one of the rows is clicked.
+	 * @default undefined
+	 */
+	onClick?: (item: number, column: number) => void;
 }
 
 
@@ -68,6 +124,8 @@ class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
 	scrollbars?: ScrollbarType;
 	canSelect?: boolean;
 	isStriped?: boolean;
+	onHighlight?: (item: number, column: number) => void;
+	onClick?: (item: number, column: number) => void;
 
 	/** @todo: fix this so it doesnt need to be a complex object, and can just be a ParsedScale instead. */
 	_columnWidths?: Parsed<FlexiblePosition>[];
@@ -81,10 +139,12 @@ class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
 		binder.add(this, "items", params.items);
 
 		this.showColumnHeaders = (!isUndefined(params.columns));
+		this.scrollbars = params.scrollbars;
 		this.canSelect = params.canSelect;
 		this.isStriped = params.isStriped;
+		this.onHighlight = params.onHighlight;
+		this.onClick = params.onClick;
 
-		// Figure out if default columns or custom columns were configured..
 		const columns = params.columns;
 		this.columns = <Partial<ListViewColumn>[]>columns;
 
@@ -93,23 +153,33 @@ class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
 			return;
 		}
 
+		// Figure out if default columns or custom columns were configured..
 		const count = columns.length;
 		const columWidths = Array<ParsedScale>(count);
 		let hasPercentileWidth = false;
 
 		for (let i = 0; i < count; i++)
 		{
-			const parsedWidth = parseScaleOrFallback(columns[i].width, defaultScale);
+			const column = columns[i];
+			const tooltip = (<ListViewColumnParams>column).tooltip;
+			const parsedWidth = parseScaleOrFallback(column.width, defaultScale);
+
 			hasPercentileWidth ||= isPercentile(parsedWidth);
 			columWidths[i] = parsedWidth;
+
+			// Rename tooltip property
+			if (tooltip)
+			{
+				(<ListViewColumn>column).headerTooltip = tooltip;
+			}
 		}
 
 		// If there is percentile width, let the plugin handle calculation.
 		if (hasPercentileWidth)
 		{
-			this._columnWidths = columWidths.map(w =>
+			this._columnWidths = columWidths.map(width =>
 			({
-				width: w,
+				width,
 				height: zeroScale,
 				padding: zeroPadding
 			}));

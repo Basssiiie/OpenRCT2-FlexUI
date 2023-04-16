@@ -3,7 +3,7 @@
 import
 {
 	box, button, checkbox, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
-	groupbox, label, LayoutDirection, spinner, textbox, toggle, viewport, window
+	groupbox, label, LayoutDirection, listview, spinner, textbox, toggle, viewport, window
 }
 from "openrct2-flexui";
 
@@ -11,7 +11,7 @@ from "openrct2-flexui";
 const allWidgets = window({
 	title: "All Widgets (fui example)",
 	width: 200, minWidth: 75, maxWidth: 10_000,
-	height: 350, minHeight: 75, maxHeight: 10_000,
+	height: 500, minHeight: 75, maxHeight: 10_000,
 	content: [
 		label({
 			text: "This is a label",
@@ -85,6 +85,11 @@ const allWidgets = window({
 			text: "Toggle this button",
 			height: "28px",
 			onChange: (isPressed: boolean) => console.log(`Toggle has been toggled ${isPressed ? "down" : "up"}`)
+		}),
+		listview({
+			items: [ "Listview item 1", "Listview item 2", "Listview item 3" ],
+			onHighlight: (item: number, column: number) => console.log(`Highlighted item ${item} in column ${column} in listview`),
+			onClick: (item: number, column: number) => console.log(`Clicked item ${item} in column ${column} in listview`),
 		}),
 		viewport({
 			target: map.getAllEntities("car")[0]?.id
