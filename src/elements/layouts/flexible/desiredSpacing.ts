@@ -7,6 +7,7 @@ import { Layoutable } from "@src/windows/layoutable";
 import { ParsedSize, SizeParams } from "../../../positional/size";
 import { endKeys, sizeKeys, startKeys } from "../paddingHelpers";
 import { FlexiblePosition } from "./flexiblePosition";
+import { autoKey } from "@src/windows/windowHelpers";
 
 
 /**
@@ -27,8 +28,17 @@ export const enum InheritFlags
  */
 export function getInheritanceFlags(position: SizeParams): InheritFlags
 {
-	return (isUndefined(position.width) ? InheritFlags.Width : 0)
-		| (isUndefined(position.height) ? InheritFlags.Height : 0);
+	return (isInheritable(position.width) ? InheritFlags.Width : 0)
+		| (isInheritable(position.height) ? InheritFlags.Height : 0);
+}
+
+
+/**
+ * Returns true if the value is inheritable, or false if not.
+ */
+function isInheritable(value: unknown): boolean
+{
+	return (isUndefined(value) || value === autoKey);
 }
 
 

@@ -1,7 +1,10 @@
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { endKeys, sizeKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
 import { Size } from "@src/positional/size";
 import { WindowScale } from "./windowScale";
+import { isAbsolute } from "@src/positional/parsing/parsedScale";
+import * as Log from "@src/utilities/logger";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 
 
 export const inheritKey = "inherit";
@@ -39,14 +42,23 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Layo
 	return size;
 }
 
-export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions, frameSize: Size): void
+export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): void
 {
 	if (scaleOption !== autoKey)
 	{
 		return;
 	}
 
-	const size = frameSize[sizeKeys[direction]];
+	const directionKey = sizeKeys[direction];
+	const startPad = windowPadding[startKeys[direction]];
+	const endPad = windowPadding[endKeys[direction]];
+	const size = (frameSize[directionKey] + startPad[0] + endPad[0] + extraPadding - 1);
+
+	if (!isAbsolute(startPad) || !isAbsolute(endPad))
+	{
+		Log.thrown("Padding for " + directionKey + "must be absolute for auto window resize.");
+	}
+
 	setWindowSize(window, direction, size, size, size);
 }
 

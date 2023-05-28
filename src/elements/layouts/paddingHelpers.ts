@@ -67,7 +67,7 @@ export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirect
 /**
  * Applies padding to the specified axis. Returns total space used.
  */
-export function applyPaddingToAxis(area: Rectangle, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number,
+function applyPaddingToAxis(area: Rectangle, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number,
 	axisKey: typeof axisKeys[number], sizeKey: typeof sizeKeys[number], startKey: typeof startKeys[number], endKey: typeof endKeys[number]): number
 {
 	const
@@ -82,7 +82,7 @@ export function applyPaddingToAxis(area: Rectangle, padding: ParsedPadding, left
 /**
  * Inner total is the sum of the base weight and both sides of padding, whichever match with the parsed scale type check.
  */
-export function calculateTotal(size: ParsedScale, paddingStart: ParsedScale, paddingEnd: ParsedScale, check: (scale: ParsedScale) => boolean): number
+function calculateTotal(size: ParsedScale, paddingStart: ParsedScale, paddingEnd: ParsedScale, check: (scale: ParsedScale) => boolean): number
 {
 	let total = 0;
 

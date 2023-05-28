@@ -69,7 +69,7 @@ export interface BaseWindowParams extends Paddable
 }
 
 
-const defaultTopBarSize: number = 15;
+export const defaultTopBarSize: number = 15;
 const defaultPadding: Padding = 5;
 
 type ExtendedWindowParams = BaseWindowParams & { colours?: number[] };

@@ -51,7 +51,7 @@ Requirements: [Node](https://nodejs.org/en/), NPM.
 
 1. Open command prompt, use `cd` to change your current directory to the root folder of this project and run `npm install`.
 2. Run `npm run build` (production build) or `npm run build:dev` (development build) to build the project.
-    - The output folder for the packaged library is `(project directory)/dist`.
+    - The output folder for the packaged library is `(project directory)/dist`.  
 
 ### Using a development build
 
@@ -62,4 +62,4 @@ To publish a local version of FlexUI for use in your own plugins;
 
 ### Unit tests
 
-The unit tests are written using AVA.js and can be run outside the game. First run `npm run test:setup`  in the main folder to ensure the test dependencies are installed. Then simply run `npm test` to run all tests.
+The unit tests are written using AVA.js and can be run outside the game. First run `npm run install:test-setup` in the main folder to ensure the test dependencies are installed, and then `npm run build` to get a build for the included integration tests. Then simply run `npm test` to run all tests.

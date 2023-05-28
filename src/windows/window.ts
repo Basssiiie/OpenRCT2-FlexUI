@@ -2,7 +2,7 @@ import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
-import { BaseWindowControl, BaseWindowParams } from "./baseWindowControl";
+import { BaseWindowControl, BaseWindowParams, defaultTopBarSize } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
 import { TabLayoutable } from "./tabs/tabLayoutable";
 import { setAxisSizeIfAuto } from "./windowHelpers";
@@ -65,8 +65,9 @@ class WindowControl extends BaseWindowControl
 	{
 		const area = this._createFrameRectangle(width, height);
 		const size = this._frame.layout(area);
+		const padding = this._padding;
 
-		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, this.width, size);
-		setAxisSizeIfAuto(window, LayoutDirection.Vertical, this.height, size);
+		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, this.width, size, padding, 0);
+		setAxisSizeIfAuto(window, LayoutDirection.Vertical, this.height, size, padding, defaultTopBarSize);
 	}
 }

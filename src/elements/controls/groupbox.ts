@@ -5,7 +5,7 @@ import { isUndefined } from "@src/utilities/type";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { FlexibleLayoutControl, FlexibleLayoutParams } from "../layouts/flexible/flexible";
+import { FlexibleDirectionalLayoutParams, FlexibleLayoutControl } from "../layouts/flexible/flexible";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "../layouts/flexible/layoutDirection";
 import { ParsedSize, SizeParams } from "../../positional/size";
@@ -15,7 +15,7 @@ import { BoxContainer, BoxControl, BoxParams } from "./box";
 /**
  * The parameters for configuring a visual box in the user interface.
  */
-export interface GroupBoxParams extends FlexibleLayoutParams, ElementParams
+export interface GroupBoxParams extends FlexibleDirectionalLayoutParams, ElementParams
 {
 	/**
 	 * The content to show within the box. The content will be padded to `6px`
@@ -28,12 +28,6 @@ export interface GroupBoxParams extends FlexibleLayoutParams, ElementParams
 	 * @default "6px"
 	 */
 	gap?: Padding;
-
-	/**
-	 * The direction in which to layout the contents of the box.
-	 * @default LayoutDirection.Vertical
-	 */
-	direction?: LayoutDirection;
 
 	/**
 	 * An optionel label to show at the top of the box.

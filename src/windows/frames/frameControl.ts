@@ -66,17 +66,16 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		const scales = position._scales;
 		const { width, height } = position;
 
-		body.layout(widgets, area);
-
-		// Shrink area if it is absolute
-		if (scales[LayoutDirection.Horizontal] === FrameScaleType.Specified && isAbsolute(width))
+		// Auto shrink area if it is absolute
+		if (scales[LayoutDirection.Horizontal] === FrameScaleType.Auto && isAbsolute(width))
 		{
 			area.width = width[0];
 		}
-		if (scales[LayoutDirection.Vertical] === FrameScaleType.Specified && isAbsolute(height))
+		if (scales[LayoutDirection.Vertical] === FrameScaleType.Auto && isAbsolute(height))
 		{
 			area.height = height[0];
 		}
+		body.layout(widgets, area);
 		return area;
 	}
 

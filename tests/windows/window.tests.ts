@@ -209,7 +209,7 @@ test("Window does auto resizes to content", t =>
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created.width, 100 + 10 - 1);
-	t.is(created.height, 30 + 15 - 1);
+	t.is(created.height, 30 + 10 + 15 - 1);
 
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 5);
@@ -236,9 +236,14 @@ test("Window does auto resizes to nested content", t =>
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created.width, 100 + 12 + 10 - 1);
-	t.is(created.height, 30 + 12 + 15 - 1);
+	t.is(created.height, 30 + 12 + 10 + 15 - 1);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const box1 = created.widgets[0] as GroupBoxWidget;
+	t.is(box1.x, 5);
+	t.is(box1.y, 15 + 5 - 4);
+	t.is(box1.width, 100 + 12);
+	t.is(box1.height, 30 + 12 + 4);
+	const button1 = created.widgets[1] as ButtonWidget;
 	t.is(button1.x, 5 + 6);
 	t.is(button1.y, 15 + 6 + 5);
 	t.is(button1.width, 100);
@@ -263,7 +268,7 @@ test("Window does auto resizes to body size changes", t =>
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created.width, 100 + 10 - 1);
-	t.is(created.height, 30 + 8 + 30 + 15 - 1);
+	t.is(created.height, 30 + 10 + 8 + 30 + 15 - 1);
 
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 5);
@@ -271,15 +276,16 @@ test("Window does auto resizes to body size changes", t =>
 	t.is(button1.width, 100);
 	t.is(button1.height, 30);
 
-	const button2 = created.widgets[0] as ButtonWidget;
+	const button2 = created.widgets[1] as ButtonWidget;
 	t.is(button2.x, 5);
 	t.is(button2.y, 15 + 5 + 30 + 8);
 	t.is(button2.width, 100);
 	t.is(button2.height, 30);
 
 	visible.set("none");
+	call(created.onUpdate);
 	t.is(created.width, 100 + 10 - 1);
-	t.is(created.height, 30 + 15 - 1);
+	t.is(created.height, 30 + 10 + 15 - 1);
 
 	t.is(button1.x, 5);
 	t.is(button1.y, 15 + 5);
