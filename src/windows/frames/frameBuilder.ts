@@ -8,6 +8,8 @@ import { FrameContext } from "./frameContext";
 import { FrameControl } from "./frameControl";
 import { FrameEvent } from "./frameEvent";
 import { FrameContentParams, FrameEventParams } from "./frameParams";
+import { inheritKey } from "../windowHelpers";
+import { ParentWindow } from "../parentWindow";
 
 
 /**
@@ -21,15 +23,17 @@ export class FrameBuilder implements BuildOutput
 	context: FrameControl;
 
 	constructor(
+		parent: ParentWindow,
 		params: FrameEventParams,
 		content: FrameContentParams,
 		padding: Padding | undefined,
-		readonly open: Event<FrameContext>,
-		readonly update: Event<FrameContext>,
-		readonly close: Event<FrameContext>
+		readonly open: Event<FrameContext> = [],
+		readonly update: Event<FrameContext> = [],
+		readonly redraw: Event<FrameContext> = [],
+		readonly close: Event<FrameContext> = []
 	){
 		const parsedPadding = parsePadding(padding);
-		const context = new FrameControl(parsedPadding, open, update, close);
+		const context = new FrameControl(parent, content.width || inheritKey, content.height || inheritKey, parsedPadding, open, update, redraw, close);
 		const binder = new WidgetBinder();
 		const { onOpen, onUpdate, onClose } = params;
 

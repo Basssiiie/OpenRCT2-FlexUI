@@ -7,7 +7,7 @@ import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
+import { SizeParams } from "../../positional/size";
 import { Control } from "./control";
 
 
@@ -41,7 +41,7 @@ export interface TextBoxParams extends ElementParams
  */
 export function textbox(params: TextBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function textbox(params: TextBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function textbox(params: TextBoxParams & Positions): WidgetCreator<Positions>
+export function textbox<I extends SizeParams, P>(params: TextBoxParams & I): WidgetCreator<I, P>
 {
 	ensureDefaultLineHeight(params);
 
@@ -52,14 +52,14 @@ export function textbox(params: TextBoxParams & Positions): WidgetCreator<Positi
 /**
  * A controller class for a textbox widget.
  */
-class TextBoxControl extends Control<TextBoxDesc> implements TextBoxDesc, TextBoxParams
+class TextBoxControl<I, P> extends Control<TextBoxDesc, I, P> implements TextBoxDesc, TextBoxParams
 {
 	text?: string;
 	maxLength?: number;
 	onChange?: (text: string) => void;
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: TextBoxParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: TextBoxParams & I)
 	{
 		super("textbox", parent, output, params);
 

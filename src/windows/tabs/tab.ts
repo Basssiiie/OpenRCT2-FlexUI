@@ -2,6 +2,7 @@ import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/
 import { Paddable } from "@src/positional/paddable";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { TabCreator } from "./tabCreator";
+import { WindowScale } from "../windowScale";
 
 
 /**
@@ -9,6 +10,18 @@ import { TabCreator } from "./tabCreator";
  */
 export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
 {
+	/**
+	 * A custom width for this specific tab, to override the window width.
+	 * @default "inherit"
+	 */
+	width?: number | WindowScale | "auto" | "inherit";
+
+	/**
+	 * A custom height for this specific tab, to override the window height.
+	 * @default "inherit"
+	 */
+	height?: number | WindowScale | "auto" | "inherit";
+
 	/**
 	 * Specifies an image sprite to be used as the icon of the tab.
 	 */
@@ -29,10 +42,6 @@ export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
 	 * user or a plugin.
 	 */
 	onClose?: () => void;
-
-
-	//width?: number;
-	//height?: number;
 }
 
 
@@ -41,9 +50,9 @@ export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
  */
 export function tab(params: TabParams): TabCreator
 {
-	return (output: WindowTabDesc) =>
+	return (parent, output) =>
 	{
-		const builder = new FrameBuilder(params, params, params.padding, [], [], []);
+		const builder = new FrameBuilder(parent, params, params, params.padding);
 
 		output.image = params.image;
 		output.widgets = builder._widgets;

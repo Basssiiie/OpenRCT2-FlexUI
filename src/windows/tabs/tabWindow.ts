@@ -1,13 +1,14 @@
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Paddable } from "@src/positional/paddable";
+import { Rectangle } from "@src/positional/rectangle";
 import { Colour } from "@src/utilities/colour";
-import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
 import { BaseWindowControl, BaseWindowParams } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
-import { FrameContext } from "../frames/frameContext";
 import { createWidgetMap } from "../widgets/widgetMap";
+import { getTabSizeOrInheritWindow, setAxisSizeIfAuto, setAxisSizeIfNumber } from "../windowHelpers";
 import { WindowTemplate } from "../windowTemplate";
 import { TabCreator } from "./tabCreator";
 import { TabLayoutable } from "./tabLayoutable";
@@ -79,39 +80,34 @@ class TabWindowControl extends BaseWindowControl
 	private _tabs: TabLayoutable[];
 	private _selectedTab: number;
 	private _tabChange?: (tabIndex: number) => void;
-	private _rootLayout?: () => void;
+	private _staticWidgetsLayout?: (area: Rectangle) => void;
 
 	constructor(params: TabWindowParams)
 	{
-		const update: Event<FrameContext> = [];
-		super(params, update);
+		super(params);
 
+		const description = this._description;
 		const tabs = params.tabs;
+		const startTab = params.startingTab || 0;
 		const staticWidgets = params.static;
+
 		let rootLayoutable: TabLayoutable;
-		if (staticWidgets)
+		if (staticWidgets) // Create full frame for root
 		{
-			const builder = new FrameBuilder(params, staticWidgets, (<Paddable>staticWidgets).padding, [], update, []);
-			this._description.widgets = builder._widgets;
-			this._rootLayout = (): void =>
+			const builder = new FrameBuilder(this, params, staticWidgets, (<Paddable>staticWidgets).padding);
+			description.widgets = builder._widgets;
+			this._staticWidgetsLayout = (area: Rectangle): void =>
 			{
-				const area = this._getWindowWidgetRectangle();
 				this._root.layout(area);
 			};
 			rootLayoutable = builder.context;
 		}
-		else
+		else // Create slimmed down frame for root, core widgets are all in tabs
 		{
-			const onUpdate = params.onUpdate;
-			if (onUpdate)
-			{
-				update.push(onUpdate);
-			}
-			rootLayoutable = <TabLayoutable>{
-				update: (update.length > 0) ? ((): void => invoke(update)) : noop,
+			rootLayoutable = <TabLayoutable><never>{
 				open: (params.onOpen || noop),
-				close: (params.onClose || noop),
-				layout: noop
+				update: (params.onUpdate || noop),
+				close: (params.onClose || noop)
 			};
 		}
 		this._root = rootLayoutable;
@@ -123,12 +119,10 @@ class TabWindowControl extends BaseWindowControl
 		for (let idx = 0; idx < tabCount; idx++)
 		{
 			const tabParams: WindowTabDesc = { image: defaultTabIcon };
-			tabList[idx] = tabs[idx](tabParams);
+			tabList[idx] = tabs[idx](this, tabParams);
 			tabDescs[idx] = tabParams;
 		}
 
-		const description = this._description;
-		const startTab = params.startingTab || 0;
 		description.tabs = tabDescs;
 		description.tabIndex = startTab;
 		description.onTabChange = (): void => this._tabChanged();
@@ -147,19 +141,28 @@ class TabWindowControl extends BaseWindowControl
 	{
 		const window = this._window;
 		if (!window)
+		{
 			return;
-
+		}
 		this._forActiveTab(tab => tab.close());
 
 		const newWidgets = createWidgetMap(window.widgets);
 		const newTabIdx = window.tabIndex;
+		const onTabChange = this._tabChange;
 		Log.debug("Template.tabChanged() from", this._selectedTab, "to", newTabIdx);
 		this._selectedTab = newTabIdx;
 
-		this._forActiveTab(tab => tab.open(newWidgets));
-		this._layout();
+		this._forActiveTab(tab =>
+		{
+			const tabWidth = getTabSizeOrInheritWindow(tab.width, this.width);
+			const tabHeight = getTabSizeOrInheritWindow(tab.height, this.height);
+			const currentWidth = setAxisSizeIfNumber(window, LayoutDirection.Horizontal, tabWidth);
+			const currentHeight = setAxisSizeIfNumber(window, LayoutDirection.Vertical, tabHeight);
 
-		const onTabChange = this._tabChange;
+			tab.open(newWidgets);
+			this._layout(window, currentWidth, currentHeight);
+		});
+
 		if (onTabChange)
 		{
 			onTabChange(newTabIdx);
@@ -175,23 +178,27 @@ class TabWindowControl extends BaseWindowControl
 		}
 	}
 
-	protected _invoke(callback: (frame: TabLayoutable) => void): void
+	protected override _invoke(callback: (frame: TabLayoutable) => void): void
 	{
 		callback(this._root);
 		this._forActiveTab(callback);
 	}
 
-	_layout(): void
+	override _layout(window: Window, width: number, height: number): void
 	{
-		const rootFunction = this._rootLayout;
-		if (rootFunction)
+		const staticWidgetsLayout = this._staticWidgetsLayout;
+		if (staticWidgetsLayout)
 		{
-			rootFunction();
+			const area = this._createFrameRectangle(width, height);
+			staticWidgetsLayout(area);
 		}
 		this._forActiveTab(tab =>
 		{
-			const area = this._getWindowWidgetRectangle(defaultTopBarSizeWithTabs);
-			tab.layout(area);
+			const area = this._createFrameRectangle(width, height, defaultTopBarSizeWithTabs);
+			const size = tab.layout(area);
+
+			setAxisSizeIfAuto(window, LayoutDirection.Horizontal, this.width, size);
+			setAxisSizeIfAuto(window, LayoutDirection.Vertical, this.height, size);
 		});
 	}
 }

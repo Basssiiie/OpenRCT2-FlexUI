@@ -1,11 +1,11 @@
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
-import { Event } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
 import { BaseWindowControl, BaseWindowParams } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
-import { FrameContext } from "./frames/frameContext";
 import { TabLayoutable } from "./tabs/tabLayoutable";
+import { setAxisSizeIfAuto } from "./windowHelpers";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -49,24 +49,24 @@ class WindowControl extends BaseWindowControl
 
 	constructor(params: WindowParams)
 	{
-		const open: Event<FrameContext> = [];
-		const update: Event<FrameContext> = [];
-		const close: Event<FrameContext> = [];
-		super(params, update);
+		super(params);
 
-		const builder = new FrameBuilder(params, params, undefined, open, update, close);
+		const builder = new FrameBuilder(this, params, params, undefined);
 		this._description.widgets = builder._widgets;
-		this._frame = builder.context;
+		this._frame =  builder.context;
 	}
 
-	protected _invoke(callback: (frame: TabLayoutable) => void): void
+	protected override _invoke(callback: (frame: TabLayoutable) => void): void
 	{
 		callback(this._frame);
 	}
 
-	_layout(): void
+	override _layout(window: Window, width: number, height: number): void
 	{
-		const area = this._getWindowWidgetRectangle();
-		this._frame.layout(area);
+		const area = this._createFrameRectangle(width, height);
+		const size = this._frame.layout(area);
+
+		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, this.width, size);
+		setAxisSizeIfAuto(window, LayoutDirection.Vertical, this.height, size);
 	}
 }

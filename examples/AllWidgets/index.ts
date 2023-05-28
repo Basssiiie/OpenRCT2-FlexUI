@@ -10,8 +10,8 @@ from "openrct2-flexui";
 
 const allWidgets = window({
 	title: "All Widgets (fui example)",
-	width: 200, minWidth: 75, maxWidth: 10_000,
-	height: 500, minHeight: 75, maxHeight: 10_000,
+	width: { value: 200, min: 75, max: 10_000 },
+	height: { value: 500, min: 75, max: 10_000 },
 	content: [
 		label({
 			text: "This is a label",

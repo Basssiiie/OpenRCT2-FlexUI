@@ -7,6 +7,7 @@ import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import test from "ava";
+import { ParentWindow } from "@src/windows/parentWindow";
 
 
 test("Tab gets created", t =>
@@ -19,7 +20,7 @@ test("Tab gets created", t =>
 		]
 	});
 	const description = {} as WindowTabDesc;
-	tabCreator(description);
+	tabCreator({} as ParentWindow, description);
 
 	t.is(description.image, 104);
 	t.truthy(description.widgets);
@@ -41,7 +42,7 @@ test("Tab open() triggers event", t =>
 		onOpen: () => hits.push("opened")
 	});
 	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator(description);
+	const layoutable = tabCreator({} as ParentWindow, description);
 
 	layoutable.open({});
 	t.deepEqual(hits, [ "opened" ]);
@@ -61,7 +62,7 @@ test("Tab update() triggers event", t =>
 		onUpdate: () => hits.push("updated")
 	});
 	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator(description);
+	const layoutable = tabCreator({} as ParentWindow, description);
 
 	layoutable.update();
 	t.deepEqual(hits, [ "updated" ]);
@@ -81,7 +82,7 @@ test("Tab close() triggers event", t =>
 		onClose: () => hits.push("closed")
 	});
 	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator(description);
+	const layoutable = tabCreator({} as ParentWindow, description);
 
 	layoutable.open({});
 	layoutable.close();
@@ -104,7 +105,7 @@ test("Tab all events are bound", t =>
 		onClose: () => hits.push("closed")
 	});
 	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator(description);
+	const layoutable = tabCreator({} as ParentWindow, description);
 
 	layoutable.open({});
 	layoutable.close();
@@ -131,7 +132,7 @@ test("Tab open() refreshes widget properties bound to stores", t =>
 		]
 	});
 	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator(description);
+	const layoutable = tabCreator({} as ParentWindow, description);
 
 	const widgets = description.widgets!;
 	const createdButton = {} as ButtonWidget;

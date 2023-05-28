@@ -8,6 +8,7 @@ import { ElementVisibility } from "@src/elements/elementParams";
 import { mutable } from "@src/utilities/mutable";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { noop } from "@src/utilities/noop";
 
 
 test("read() sets values", t =>
@@ -57,7 +58,7 @@ test("read() sets store in window frame", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const output = new FrameBuilder({}, [], undefined, [], [], []);
+	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
 	const storeNumber = new DefaultStore(25);
@@ -85,7 +86,7 @@ test("read() sets store through converter", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
-	const output = new FrameBuilder({}, [], undefined, [], [], []);
+	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");

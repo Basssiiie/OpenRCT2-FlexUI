@@ -1,7 +1,6 @@
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -16,7 +15,7 @@ export type WidgetParams = Omit<WidgetDesc, "x" | "y" | "width" | "height">;
  */
 export function widget(params: WidgetParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function widget(params: WidgetParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function widget(params: WidgetParams & Positions): WidgetCreator<Positions>
+export function widget<I, P>(params: WidgetParams & I): WidgetCreator<I, P>
 {
 	return (parent, output) => new WidgetControl(params.type, parent, output, params);
 }
@@ -25,6 +24,6 @@ export function widget(params: WidgetParams & Positions): WidgetCreator<Position
 /**
  * A controller class for a custom widget.
  */
-class WidgetControl extends Control<WidgetDesc> implements WidgetParams
+class WidgetControl<I, P> extends Control<WidgetDesc, I, P> implements WidgetParams
 {
 }

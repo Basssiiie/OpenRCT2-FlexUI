@@ -1,4 +1,5 @@
 import { zeroScale } from "@src/elements/constants";
+import * as Log from "@src/utilities/logger";
 import { isNumber, isUndefined } from "@src/utilities/type";
 import { Scale } from "../scale";
 import { ParsedScale } from "./parsedScale";
@@ -56,7 +57,7 @@ export function parseScale(value: Scale | undefined): ParsedScale | undefined
 		}
 	}
 
-	throw Error("Value '" + value + "' is not a valid scale.");
+	Log.thrown("Value '" + value + "' is not a valid scale.");
 }
 
 

@@ -191,6 +191,66 @@ test("Box can center child", t =>
 });
 
 
+test("Box reacts correctly to child size changes", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const model = { active: store(true) };
+	const template = window({
+		width: 100, height: 50 + 15, padding: 4, spacing: 5,
+		content: [
+			box(
+				label({
+					visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
+					text: "managing themes",
+					height: 14,
+				})
+			),
+			button({ height: 25 })
+		]
+	});
+	template.open();
+
+	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	t.is(widget1.type, "groupbox");
+	t.is(widget1.x, 4);
+	t.is(widget1.y, 4 + 15 - 4); // - 4px default top pad
+	t.is(widget1.width, 100 - ((2 * 4) + 1));
+	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
+	t.not(false, widget1.isVisible);
+
+	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	t.is(widget2.type, "label");
+	t.is(widget2.text, "managing themes");
+	t.is(widget2.x, 4 + 6);
+	t.is(widget2.y, 4 + 2 + 6 + 15);
+	t.is(widget2.width, 100 - ((2 * (4 + 6)) + 1));
+	t.is(widget2.height, 14);
+	t.true(widget2.isVisible);
+
+	model.active.set(false);
+	call(mock.createdWindows[0].onUpdate); // redraw
+
+	t.not(false, widget1.isVisible);
+	t.false(widget2.isVisible);
+
+	model.active.set(true);
+	call(mock.createdWindows[0].onUpdate); // redraw
+
+	t.is(widget1.x, 4);
+	t.is(widget1.y, 4 + 15 - 4); // - 4px default top pad
+	t.is(widget1.width, 100 - ((2 * 4) + 1));
+	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
+	t.not(false, widget1.isVisible);
+
+	t.is(widget2.x, 4 + 6);
+	t.is(widget2.y, 4 + 2 + 6 + 15);
+	t.is(widget2.width, 100 - ((2 * (4 + 6)) + 1));
+	t.is(widget2.height, 14);
+	t.true(widget2.isVisible);
+});
+
 
 test("Box reacts correctly to nested child size changes", t =>
 {
@@ -274,7 +334,6 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget1.width, 300 - ((2 * 20) + 1));
 	t.is(widget3.height, 25);
 });
-
 
 
 test("Box does not take space if it starts hidden", t =>

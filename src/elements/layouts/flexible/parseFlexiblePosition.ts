@@ -1,8 +1,8 @@
 import { defaultScale, zeroPadding } from "@src/elements/constants";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { FlexiblePosition } from "./flexiblePosition";
 
 

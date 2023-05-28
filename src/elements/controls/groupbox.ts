@@ -1,14 +1,14 @@
 import { Bindable } from "@src/bindings/bindable";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexibleLayoutControl, FlexibleLayoutParams } from "../layouts/flexible/flexible";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "../layouts/flexible/layoutDirection";
-import { Positions } from "../layouts/positions";
+import { ParsedSize, SizeParams } from "../../positional/size";
 import { BoxContainer, BoxControl, BoxParams } from "./box";
 
 
@@ -52,7 +52,7 @@ export function groupbox(params: BoxContainer[] & FlexiblePosition): WidgetCreat
 export function groupbox(params: BoxContainer[] & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function groupbox(params: GroupBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function groupbox(params: GroupBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions): WidgetCreator<Positions>
+export function groupbox<I extends SizeParams, P extends ParsedSize>(params: (GroupBoxParams | BoxContainer[]) & I): WidgetCreator<I, P>
 {
 	let content: BoxContainer[],
 		gap: Padding | undefined,
@@ -76,9 +76,9 @@ export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions):
 		content = params;
 	}
 
-	const boxParams = <BoxParams & FlexiblePosition><never>params;
+	const boxParams = <BoxParams & I><never>params;
 	const flexParams = { content, direction, spacing, padding: gap };
 	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams));
 
-	return (parent, output) => new BoxControl(parent, output, boxParams);
+	return (parent, output) => new BoxControl<I, P>(parent, output, boxParams);
 }

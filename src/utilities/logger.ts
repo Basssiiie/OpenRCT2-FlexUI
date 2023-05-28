@@ -106,6 +106,15 @@ export function error(...messages: unknown[]): void
 
 
 /**
+ * Throws an error with the specified message.
+ */
+export function thrown(message: string): never
+{
+	throw Error(message);
+}
+
+
+/**
  * Prints an error message to the console and an additional stacktrace
  * if the assert fails and the plugin is run in development mode.
  */
@@ -113,9 +122,8 @@ export function assert(condition: boolean, ...messages: unknown[]): void
 {
 	if (Environment.isDevelopment && !condition)
 	{
-		throw Error(`Assertion failed! ${messages.join(" ")}`);
+		thrown(`Assertion failed! ${messages.join(" ")}`);
 	}
-	return <never>0;
 }
 
 

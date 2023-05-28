@@ -1,23 +1,22 @@
 import { on } from "@src/bindings/stores/on";
-import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Rectangle } from "@src/positional/rectangle";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { ElementParams } from "../elementParams";
 import { fillLayout } from "../layouts/fillLayout";
-import { Positions } from "../layouts/positions";
 import { VisualElement } from "./visualElement";
 
 
 /**
  * Base control that takes care of the base widget properties.
  */
-export abstract class Control<T extends WidgetBaseDesc> extends VisualElement implements WidgetBaseDesc
+export abstract class Control<W extends WidgetBaseDesc, Positioning, ParsedPosition> extends VisualElement<Positioning, ParsedPosition> implements WidgetBaseDesc
 {
 	name: string = identifier();
-	type: T["type"];
+	type: W["type"];
 	x: number = 0;
 	y: number = 0;
 	width: number = 0;
@@ -28,18 +27,17 @@ export abstract class Control<T extends WidgetBaseDesc> extends VisualElement im
 	isVisible?: boolean;
 
 
-	constructor(type: T["type"], parent: ParentControl, output: BuildOutput, params: ElementParams & Positions)
+	constructor(type: W["type"], parent: ParentControl<Positioning, ParsedPosition>, output: BuildOutput, params: ElementParams & Positioning)
 	{
 		super(parent, params);
 		this.type = type;
 
-		const binder = output.binder, visibility = params.visibility;
+		const { binder, context } = output, visibility = params.visibility;
 		binder.add(this, "tooltip", params.tooltip);
 		binder.add(this, "isDisabled", params.disabled);
 		binder.add(this, "isVisible", visibility, v => (v === "visible"));
 
 		// Redraw UI if the visibility changes to and from "none"
-		const context = output.context;
 		on(visibility, v =>
 		{
 			const oldValue = this.skip;
@@ -58,7 +56,7 @@ export abstract class Control<T extends WidgetBaseDesc> extends VisualElement im
 	}
 
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		Log.debug("Control(", this.type, ":", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
 		fillLayout(widgets, this.name, area);

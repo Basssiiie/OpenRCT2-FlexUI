@@ -20,7 +20,7 @@ Designed with a focus on ease of use, performance, light-weighted and flexibilit
 
 For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-FlexUI/tree/main/examples).
 
-## Usages
+## Plugins using FlexUI
 
 Various plugins have already adopted FlexUI as their UI-library:
 
