@@ -52,7 +52,7 @@ export function tab(params: TabParams): TabCreator
 {
 	return (parent, output) =>
 	{
-		const builder = new FrameBuilder(parent, params, params, params.padding);
+		const builder = new FrameBuilder(parent, params, params);
 
 		output.image = params.image;
 		output.widgets = builder._widgets;

@@ -3,6 +3,8 @@ import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
+import * as Log from "@src/utilities/logger";
+import { FrameRectangle } from "@src/windows/frames/frameRectangle";
 
 
 /**
@@ -25,12 +27,31 @@ export function hasPadding(padding: ParsedPadding | undefined): boolean
 
 
 /**
+ * Returns the total amount of absolute padding for the specified direction. Throws an error
+ * if one of the padding values is not absolute.
+ */
+export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: ParsedPadding, direction: LayoutDirection): number
+{
+	const startPad = padding[startKeys[direction]];
+	const endPad = padding[endKeys[direction]];
+
+	if (!isAbsolute(startPad) || !isAbsolute(endPad))
+	{
+		Log.thrown("Window padding must be absolute for \"auto\" window size.");
+	}
+
+	area[axisKeys[direction]] += startPad[0];
+	return (startPad[0] + endPad[0]);
+}
+
+
+/**
  * Applies padding to a specific area as a whole.
  */
 export function setSizeWithPadding(area: Rectangle, width: ParsedScale, height: ParsedScale, padding: ParsedPadding): void
 {
-	setSizeWithPaddingToDirection(area, LayoutDirection.Horizontal, width, padding);
-	setSizeWithPaddingToDirection(area, LayoutDirection.Vertical, height, padding);
+	setSizeWithPaddingForDirection(area, LayoutDirection.Horizontal, width, padding);
+	setSizeWithPaddingForDirection(area, LayoutDirection.Vertical, height, padding);
 }
 
 
@@ -38,7 +59,7 @@ export function setSizeWithPadding(area: Rectangle, width: ParsedScale, height: 
  * Sets the size and padding to a specific area as a whole on the specified direction. Area is
  * interpreted as the available space and updated accordingly. Returns total space used.
  */
-export function setSizeWithPaddingToDirection(area: Rectangle, direction: LayoutDirection, size: ParsedScale, padding: ParsedPadding): number
+export function setSizeWithPaddingForDirection(area: Rectangle, direction: LayoutDirection, size: ParsedScale, padding: ParsedPadding): number
 {
 	const
 		sizeKey = sizeKeys[direction],

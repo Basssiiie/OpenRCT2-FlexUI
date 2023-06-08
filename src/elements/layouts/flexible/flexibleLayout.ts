@@ -5,7 +5,7 @@ import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingToDirection, sizeKeys, startKeys } from "../paddingHelpers";
+import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingForDirection, sizeKeys, startKeys } from "../paddingHelpers";
 
 
 /**
@@ -17,7 +17,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 	if (!elementCount)
 		return;
 
-	const otherDirection = (layoutDirection === LayoutDirection.Horizontal)
+	const otherDirection = (layoutDirection == LayoutDirection.Horizontal)
 		? LayoutDirection.Vertical : LayoutDirection.Horizontal;
 
 	// First pass: calculate available and used space.
@@ -45,7 +45,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		childArea[sizeKeys[otherDirection]] = parentArea[sizeKeys[otherDirection]];
 
 		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal, percentileTotal);
-		setSizeWithPaddingToDirection(childArea, otherDirection, parsed._otherSize, padding);
+		setSizeWithPaddingForDirection(childArea, otherDirection, parsed._otherSize, padding);
 
 		apply(i, childArea);
 		cursor += spaceInPixels;

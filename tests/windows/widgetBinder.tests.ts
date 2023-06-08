@@ -3,7 +3,7 @@
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
 import { FrameBuilder } from "@src/windows/frames/frameBuilder";
-import { createWidgetMap } from "@src/windows/widgets/widgetMap";
+import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { mutable } from "@src/utilities/mutable";
 import test from "ava";
@@ -66,7 +66,7 @@ test("read() sets store in window frame", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(<Widget[]>output._widgets));
+	frame.open(addToWidgetMap(<Widget[]>output._widgets));
 
 	t.is(label.x, 25);
 
@@ -94,7 +94,7 @@ test("read() sets store through converter", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(<Widget[]>output._widgets));
+	frame.open(addToWidgetMap(<Widget[]>output._widgets));
 
 	t.true(label.isVisible);
 

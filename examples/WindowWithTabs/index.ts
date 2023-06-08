@@ -37,11 +37,12 @@ const explosionIcon: ImageAnimation = {
 
 const windowWithTabs = tabwindow({
 	title: "Window with Tabs (fui example)",
-	width: 225, maxWidth: 10_000,
-	height: 175, maxHeight: 10_000,
+	width: { value: 225, max: 10_000 },
+	height: { value: 175, max: 10_000 },
 	padding: 50,
 	static: [ // shown on every tab
 		label({
+			width: "100px",
 			text: compute(source, s => `Last updated from:\n${s}`),
 			alignment: "centred"
 		})
@@ -61,8 +62,11 @@ const windowWithTabs = tabwindow({
 		}),
 		tab({
 			image: hangingMechanicIcon,
+			width: "auto",
+			height: "auto",
 			content: [
 				dropdown({
+					width: 300,
 					items: [ "Zero", "One", "Two", "Three" ],
 					selectedIndex: twoway(value),
 					onChange: val => updateSource(val, "dropdown, tab 2")
@@ -71,6 +75,7 @@ const windowWithTabs = tabwindow({
 		}),
 		tab({
 			image: explosionIcon,
+			height: 200,
 			content: [
 				horizontal([
 					toggle({

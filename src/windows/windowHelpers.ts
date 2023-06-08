@@ -26,23 +26,23 @@ export function getTabSizeOrInheritWindow(tabValue: TabScaleOptions, windowValue
 	return tabValue;
 }
 
-export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions): number
+export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions): number | "auto"
 {
 	if (scaleOption === autoKey)
 	{
-		return window[sizeKeys[direction]];
+		return autoKey;
 	}
 
 	const scale = (<WindowScale>scaleOption);
 	const size = scale.value || <number>scaleOption;
-	const min = scale.min;
-	const max = scale.max;
+	const min = scale.min ;//|| size;
+	const max = scale.max ;//|| size;
 
 	setWindowSize(window, direction, size, min, max);
 	return size;
 }
 
-export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): void
+export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: number | "auto", frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): void
 {
 	if (scaleOption !== autoKey)
 	{
@@ -56,9 +56,8 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Layout
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))
 	{
-		Log.thrown("Padding for " + directionKey + "must be absolute for auto window resize.");
+		Log.thrown("Padding for " + directionKey + " must be absolute for auto window resize.");
 	}
-
 	setWindowSize(window, direction, size, size, size);
 }
 

@@ -1,23 +1,22 @@
 import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { hasPadding, setSizeWithPadding, sizeKeys } from "@src/elements/layouts/paddingHelpers";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
-import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import { Size } from "@src/positional/size";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
-import { isNumber } from "@src/utilities/type";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { ParentControl } from "../parentControl";
-import { TabLayoutable } from "../tabs/tabLayoutable";
-import { WidgetMap } from "../widgets/widgetMap";
-import { TabScaleOptions, autoKey } from "../windowHelpers";
-import { FrameContext } from "./frameContext";
-import { FramePosition, FrameScaleType, ParsedFramePosition } from "./framePosition";
 import { ParentWindow } from "../parentWindow";
+import { TabLayoutable } from "../tabs/tabLayoutable";
+import { WidgetDescMap, WidgetMap } from "../widgets/widgetMap";
+import { TabScaleOptions, autoKey, inheritKey } from "../windowHelpers";
+import { FrameContext } from "./frameContext";
+import { FramePosition, ParsedFramePosition } from "./framePosition";
+import { FrameRectangle } from "./frameRectangle";
 
 
 /**
@@ -36,7 +35,6 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		readonly _parent: ParentWindow,
 		readonly width: TabScaleOptions,
 		readonly height: TabScaleOptions,
-		readonly _padding: ParsedPadding,
 		readonly _open: Event<FrameContext>,
 		readonly _update: Event<FrameContext>,
 		readonly _redraw: Event<FrameContext>,
@@ -46,37 +44,19 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 	/**
 	 * Recalculate the whole layout.
 	 */
-	layout(area: Rectangle): Size
+	layout(area: FrameRectangle, widgets: WidgetDescMap): Size
 	{
-		const widgets = this._activeWidgets;
-		if (!widgets)
-		{
-			return area;
-		}
-		const padding = this._padding;
-		if (hasPadding(padding))
-		{
-			setSizeWithPadding(area,  defaultScale, defaultScale, padding);
-		}
-
 		invoke(this._redraw, this);
 
 		const body = this._body;
 		const position = body.position;
-		const scales = position._scales;
-		const { width, height } = position;
 
-		// Auto shrink area if it is absolute
-		if (scales[LayoutDirection.Horizontal] === FrameScaleType.Auto && isAbsolute(width))
-		{
-			area.width = width[0];
-		}
-		if (scales[LayoutDirection.Vertical] === FrameScaleType.Auto && isAbsolute(height))
-		{
-			area.height = height[0];
-		}
-		body.layout(widgets, area);
-		return area;
+		const frameWidth = applyFrameScaleOption(area, this.width, position, LayoutDirection.Horizontal);
+		const frameHeight = applyFrameScaleOption(area, this.height, position, LayoutDirection.Vertical);
+
+		body.layout(widgets, <Rectangle>area);
+
+		return { width: frameWidth, height: frameHeight };
 	}
 
 	redraw(): void
@@ -94,14 +74,11 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 	 */
 	parse(position: FramePosition): ParsedFramePosition
 	{
-		const parsed = <ParsedFramePosition>{
+		return {
 			width: defaultScale,
 			height: defaultScale,
-			_scales: [ FrameScaleType.Inherit, FrameScaleType.Inherit ]
+			_padding: parsePadding(position.padding)
 		};
-		setParsedFrameScale(parsed, position, LayoutDirection.Horizontal);
-		setParsedFrameScale(parsed, position, LayoutDirection.Vertical);
-		return parsed;
 	}
 
 	getWidget<T extends Widget>(name: string): T | null
@@ -152,20 +129,28 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 
 
 /**
- * Parses the input frame position for the specified direction and sets it for that
- * direction in the output. If the input is to inherit, then nothing is done.
+ * Applies the frame scale option to the specified area and returns the total occupied space by the frame.
  */
-function setParsedFrameScale(output: ParsedFramePosition, input: FramePosition, direction: LayoutDirection): void
+function applyFrameScaleOption(area: FrameRectangle, option: TabScaleOptions, bodyPosition: ParsedFramePosition, direction: LayoutDirection): number
 {
-	const key = sizeKeys[direction];
-	const scale = input[key];
-	if (scale === autoKey)
+	const sizeKey = sizeKeys[direction];
+	const parentSize = area[sizeKey];
+	const bodySize = bodyPosition[sizeKey];
+	const bodyPadding = bodyPosition._padding;
+	const inheritParent = (option == inheritKey);
+
+	if ((inheritParent && parentSize == autoKey) || option == autoKey)
 	{
-		output._scales[direction] = FrameScaleType.Auto;
+		// Get area size of child frame.
+		if (!isAbsolute(bodySize))
+		{
+			Log.thrown("Window body " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
+		}
+
+		return (bodySize[0] + setAbsolutePaddingForDirection(area, bodyPadding, direction));
 	}
-	else if (isNumber(scale))
-	{
-		output._scales[direction] = FrameScaleType.Specified;
-		output[key] = [scale, ScaleType.Pixel];
-	}
+
+	// Apply regular padding to area and return original size.
+	setSizeWithPaddingForDirection(<Rectangle>area, direction, bodySize, bodyPadding);
+	return (inheritParent) ? <number>parentSize : bodySize[0];
 }

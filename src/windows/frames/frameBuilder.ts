@@ -1,15 +1,13 @@
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { Padding } from "@src/positional/padding";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Event } from "@src/utilities/event";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { BuildOutput } from "../buildOutput";
+import { ParentWindow } from "../parentWindow";
+import { inheritKey } from "../windowHelpers";
 import { FrameContext } from "./frameContext";
 import { FrameControl } from "./frameControl";
 import { FrameEvent } from "./frameEvent";
 import { FrameContentParams, FrameEventParams } from "./frameParams";
-import { inheritKey } from "../windowHelpers";
-import { ParentWindow } from "../parentWindow";
 
 
 /**
@@ -26,14 +24,12 @@ export class FrameBuilder implements BuildOutput
 		parent: ParentWindow,
 		params: FrameEventParams,
 		content: FrameContentParams,
-		padding: Padding | undefined,
 		readonly open: Event<FrameContext> = [],
 		readonly update: Event<FrameContext> = [],
 		readonly redraw: Event<FrameContext> = [],
 		readonly close: Event<FrameContext> = []
 	){
-		const parsedPadding = parsePadding(padding);
-		const context = new FrameControl(parent, content.width || inheritKey, content.height || inheritKey, parsedPadding, open, update, redraw, close);
+		const context = new FrameControl(parent, content.width || inheritKey, content.height || inheritKey, open, update, redraw, close);
 		const binder = new WidgetBinder();
 		const { onOpen, onUpdate, onClose } = params;
 

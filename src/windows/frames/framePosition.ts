@@ -1,7 +1,9 @@
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { TabScaleOptions } from "../windowHelpers";
+import { Paddable } from "@src/positional/paddable";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 
-export interface FramePosition
+export interface FramePosition extends Paddable
 {
 	/**
 	 * A custom width for this specific tab, to override the window width.
@@ -30,5 +32,6 @@ export interface ParsedFramePosition
 {
 	width: ParsedScale;
 	height: ParsedScale;
-	_scales: [FrameScaleType, FrameScaleType];
+	_padding: ParsedPadding;
+	//_scales: [FrameScaleType, FrameScaleType];
 }

@@ -79,6 +79,105 @@ test("Simple window with widgets", t =>
 });
 
 
+test("Simple window with single widget", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 200, height: 150 + 15, padding: 0, spacing: 0,
+		content: [
+			button({ text: "hello world", width: 100, height: 50 })
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.title, "test window");
+	t.is(created.width, 200);
+	t.is(created.height, 150 + 15);
+	t.is(created.widgets.length, 1);
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.type, "button");
+	t.is(button1.text, "hello world");
+	t.is(button1.x, 0);
+	t.is(button1.y, 15);
+	t.is(button1.width, 100);
+	t.is(button1.height, 50);
+});
+
+
+test("Simple window with single 100% widget", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 200, height: 150 + 15, padding: 8, spacing: 0,
+		content: [
+			button({ text: "hello world", width: "100%", height: "100%" })
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.title, "test window");
+	t.is(created.width, 200);
+	t.is(created.height, 150 + 15);
+	t.is(created.widgets.length, 1);
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.type, "button");
+	t.is(button1.text, "hello world");
+	t.is(button1.x, 8);
+	t.is(button1.y, 8 + 15);
+	t.is(button1.width, 200 - (16 + 1));
+	t.is(button1.height, 150 - (16 + 1));
+});
+
+
+test("Simple window with default padding and spacing", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 200, height: 75 + 15,
+		content: [
+			button({ text: "hello one" }),
+			button({ text: "hello two" })
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.title, "test window");
+	t.is(created.width, 200);
+	t.is(created.height, 75 + 15);
+	t.is(created.widgets.length, 2);
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.type, "button");
+	t.is(button1.text, "hello one");
+	t.is(button1.x, 5);
+	t.is(button1.y, 5 + 15);
+	t.is(button1.width, 200 - (10 + 1));
+	t.is(button1.height, (75 - (10 + 4 + 1)) / 2);
+
+	const button2 = created.widgets[1] as ButtonWidget;
+	t.is(button2.type, "button");
+	t.is(button2.text, "hello two");
+	t.is(button2.x, 5);
+	t.is(button2.y, 5 + 30 + 4 + 15);
+	t.is(button2.width, 200 - (10 + 1));
+	t.is(button2.height, (75 - (10 + 4 + 1)) / 2);
+});
+
+
 test("Window adjusts to resize", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -210,6 +309,10 @@ test("Window does auto resizes to content", t =>
 	const created = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created.width, 100 + 10 - 1);
 	t.is(created.height, 30 + 10 + 15 - 1);
+	t.is(created.minWidth, created.width);
+	t.is(created.minHeight, created.height);
+	t.is(created.maxWidth, created.width);
+	t.is(created.maxHeight, created.height);
 
 	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.x, 5);
@@ -293,6 +396,66 @@ test("Window does auto resizes to body size changes", t =>
 	t.is(button1.height, 30);
 
 	t.false(button2.isVisible);
+});
+
+
+test("Window with auto resize errors with relative child width", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: "auto", height: 50, padding: 5,
+		content: [
+			button({ text: "hello world", width: "100%", height: 30 })
+		]
+	});
+
+	const error = t.throws(() =>
+	{
+		template.open();
+	});
+	t.is(error?.message, "Window body width must resolve to absolute size for \"auto\" window size.");
+});
+
+
+test("Window with auto resize errors with relative child height", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 100, height: "auto", padding: 5,
+		content: [
+			button({ text: "hello world", width: 50, height: "1w" })
+		]
+	});
+
+	const error = t.throws(() =>
+	{
+		template.open();
+	});
+	t.is(error?.message, "Window body height must resolve to absolute size for \"auto\" window size.");
+});
+
+
+test("Window with auto resize errors with relative window padding", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: "auto", height: 50, padding: "10%",
+		content: [
+			button({ text: "hello world", width: 50, height: 30 })
+		]
+	});
+
+	const error = t.throws(() =>
+	{
+		template.open();
+	});
+	t.is(error?.message, "Window padding must be absolute for \"auto\" window size.");
 });
 
 

@@ -1,3 +1,4 @@
+import { Padding } from "@src/positional/padding";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
@@ -23,6 +24,11 @@ export const updateEvent = "update";
  * Default height for widgets like labels, spinners and dropdowns.
  */
 export const defaultLineHeight = 14;
+
+/**
+ * Default padding for windows.
+ */
+export const defaultWindowPadding: Padding = 5;
 
 /**
  * Default spacing in widgets with more than one child.
