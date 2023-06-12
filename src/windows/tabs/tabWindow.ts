@@ -184,6 +184,7 @@ class TabWindowControl extends BaseWindowControl
 		{
 			const width = setAxisSizeIfInheritedNumber(window, LayoutDirection.Horizontal, tab.width, this._windowWidthOption);
 			const height = setAxisSizeIfInheritedNumber(window, LayoutDirection.Vertical, tab.height, this._windowHeightOption);
+			Log.debug("TabWindow.resize(); tab = (" + Log.stringify(tab.width) + "x" + Log.stringify(tab.height) + "), window = (" + Log.stringify(this._windowWidthOption) + "x" + Log.stringify(this._windowHeightOption) + ")");
 
 			this._layoutTab(tab, window, newWidgets, width, height);
 			tab.open(window, newWidgets);
@@ -212,34 +213,38 @@ class TabWindowControl extends BaseWindowControl
 
 	override _layout(window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
 	{
+		this._forActiveTab(tab => this._layoutTab(tab, window, widgets, width, height));
 		if (this._flags & TabWindowFlags.HasStaticWidgets)
 		{
-			Log.debug("TabWindow.layout() for static frame:", width, "x", height);
 			const area = this._createFrameRectangle(width, height);
 			const padding = this._padding;
 			applyTabPaddingToDirection(area, width, padding, LayoutDirection.Horizontal);
 			applyTabPaddingToDirection(area, height, padding, LayoutDirection.Vertical);
+
+			Log.debug("TabWindow.layout() for window:", width, "x", height, "; static frame:", Log.stringify(area));
 			this._root.layout(area, widgets);
 		}
-		this._forActiveTab(tab => this._layoutTab(tab, window, widgets, width, height));
 	}
 
 	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
 	{
 		const tabWidth = getAxisSizeWithInheritance(width, tab.width);
 		const tabHeight = getAxisSizeWithInheritance(height, tab.height);
-		Log.debug("TabWindow.layout() for active tab", this._selectedTab, "frame:", tabWidth, "x", tabHeight);
-
+		
 		// todo: same as window.layout()
 		const area = this._createFrameRectangle(tabWidth, tabHeight, defaultTopBarSizeWithTabs);
 		const padding = this._padding;
 		applyTabPaddingToDirection(area, tabWidth, padding, LayoutDirection.Horizontal);
 		applyTabPaddingToDirection(area, tabHeight, padding, LayoutDirection.Vertical);
-
+		
+		Log.debug("TabWindow.layout() for window:", width, "x", height, "; active tab", this._selectedTab, "with frame:", Log.stringify(area));
 		const size = tab.layout(area, widgets);
 
 		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, tabWidth, size, padding, 0);
 		setAxisSizeIfAuto(window, LayoutDirection.Vertical, tabHeight, size, padding, defaultTopBarSizeWithTabs);
+
+		//this._lastWidth = window.width; todo reset these somehow
+		//this._lastHeight = window.height;
 	}
 }
 

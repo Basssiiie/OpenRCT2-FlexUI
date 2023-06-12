@@ -142,15 +142,11 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		}
 
 		const flags = this._flags;
-		const autoWidth = (flags & WindowFlags.AutoWidth); // TODO: this doesnt work when some tabs are auto and some arent
-		const autoHeight = (flags & WindowFlags.AutoHeight); //todo
-		const width = (autoWidth) ? autoKey : window.width;
-		const height = (autoHeight) ? autoKey: window.height;
+		const { width, height } = window;
 
 		if (!(flags & WindowFlags.RedrawNextTick))
 		{
-			if ((autoWidth || width == this._lastWidth)
-				&& (autoHeight || height == this._lastHeight))
+			if (width == this._lastWidth && height == this._lastHeight)
 			{
 				return; // nothing has changed, do nothing
 			}

@@ -43,8 +43,8 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Layo
 
 	const scale = (<WindowScale>scaleOption);
 	const size = scale.value || <number>scaleOption;
-	const min = scale.min; //|| size;
-	const max = scale.max; //|| size;
+	const min = scale.min || size;
+	const max = scale.max || size;
 
 	setWindowSize(window, direction, size, min, max);
 	return size;
@@ -72,6 +72,7 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Layout
 
 function setWindowSize(window: WindowDesc | Window, direction: LayoutDirection, size: number, min: number | undefined, max: number | undefined): void
 {
+	Log.debug("Window.resize();", sizeKeys[direction], "=", size, ", min =", min, ", max =", max);
 	window[sizeKeys[direction]] = size;
 	window[minKeys[direction]] = min;
 	window[maxKeys[direction]] = max;

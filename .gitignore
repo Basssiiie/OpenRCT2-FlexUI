@@ -109,3 +109,6 @@ dist
 
 # Visual Studio
 .vs/
+
+# MacOS hidden files
+.DS_Store

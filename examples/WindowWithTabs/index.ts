@@ -42,7 +42,6 @@ const windowWithTabs = tabwindow({
 	padding: 50,
 	static: [ // shown on every tab
 		label({
-			width: "100px",
 			text: compute(source, s => `Last updated from:\n${s}`),
 			alignment: "centred"
 		})
@@ -50,6 +49,7 @@ const windowWithTabs = tabwindow({
 	tabs: [
 		tab({
 			image: spiralSlideIcon,
+			height: 140, 
 			content: [
 				spinner({
 					value: twoway(value),
@@ -66,7 +66,7 @@ const windowWithTabs = tabwindow({
 			height: "auto",
 			content: [
 				dropdown({
-					width: 300,
+					width: 100,
 					items: [ "Zero", "One", "Two", "Three" ],
 					selectedIndex: twoway(value),
 					onChange: val => updateSource(val, "dropdown, tab 2")
@@ -75,7 +75,6 @@ const windowWithTabs = tabwindow({
 		}),
 		tab({
 			image: explosionIcon,
-			height: 200,
 			content: [
 				horizontal([
 					toggle({
