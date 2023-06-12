@@ -44,11 +44,11 @@ test("Tab open() triggers event", t =>
 	const description = {} as WindowTabDesc;
 	const layoutable = tabCreator({} as ParentWindow, description);
 
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	t.deepEqual(hits, [ "opened" ]);
 
 	layoutable.close();
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	t.deepEqual(hits, [ "opened", "opened" ]);
 });
 
@@ -84,11 +84,11 @@ test("Tab close() triggers event", t =>
 	const description = {} as WindowTabDesc;
 	const layoutable = tabCreator({} as ParentWindow, description);
 
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	layoutable.close();
 	t.deepEqual(hits, [ "closed" ]);
 
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	layoutable.close();
 	t.deepEqual(hits, [ "closed", "closed" ]);
 });
@@ -107,11 +107,11 @@ test("Tab all events are bound", t =>
 	const description = {} as WindowTabDesc;
 	const layoutable = tabCreator({} as ParentWindow, description);
 
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	layoutable.close();
 	t.deepEqual(hits, [ "opened", "closed" ]);
 
-	layoutable.open({});
+	layoutable.open(<Window>{}, {});
 	layoutable.update();
 	layoutable.update();
 	layoutable.close();
@@ -141,7 +141,7 @@ test("Tab open() refreshes widget properties bound to stores", t =>
 		[widgets[0].name!]: createdButton,
 		[widgets[1].name!]: createdLabel,
 	};
-	layoutable.open(widgetMap);
+	layoutable.open(<Window>{}, widgetMap);
 
 	t.is(createdButton.text, "hey");
 	t.is(createdLabel.text, "waddup");

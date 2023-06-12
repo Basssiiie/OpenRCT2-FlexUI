@@ -5,6 +5,7 @@ import { WindowScale } from "./windowScale";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import * as Log from "@src/utilities/logger";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { isObject, isString } from "@src/utilities/type";
 
 
 export const inheritKey = "inherit";
@@ -17,26 +18,33 @@ export type WindowScaleOptions = number | WindowScale | "auto";
 export type TabScaleOptions = WindowScaleOptions | "inherit";
 
 
-export function getTabSizeOrInheritWindow(tabValue: TabScaleOptions, windowValue: WindowScaleOptions): WindowScaleOptions
+export function getAxisSizeWithInheritance(windowScaleOption: WindowScaleOptions, tabScaleOption: TabScaleOptions): number | "auto"
 {
-	if (tabValue === inheritKey)
-	{
-		return windowValue;
-	}
-	return tabValue;
+	const result = (tabScaleOption == inheritKey) ? windowScaleOption : tabScaleOption;
+	return (isObject(result)) ? result.value : result;
 }
 
-export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: WindowScaleOptions): number | "auto"
+
+export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direction: LayoutDirection, tabValue: TabScaleOptions, windowValue: WindowScaleOptions): number | "auto"
 {
-	if (scaleOption === autoKey)
+	if (tabValue != inheritKey)
+	{
+		return (isObject(tabValue)) ? tabValue.value : tabValue;
+	}
+	return setAxisSizeIfNumber(window, direction, windowValue);
+}
+
+export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: TabScaleOptions): number | "auto"
+{
+	if (isString(scaleOption))
 	{
 		return autoKey;
 	}
 
 	const scale = (<WindowScale>scaleOption);
 	const size = scale.value || <number>scaleOption;
-	const min = scale.min ;//|| size;
-	const max = scale.max ;//|| size;
+	const min = scale.min; //|| size;
+	const max = scale.max; //|| size;
 
 	setWindowSize(window, direction, size, min, max);
 	return size;

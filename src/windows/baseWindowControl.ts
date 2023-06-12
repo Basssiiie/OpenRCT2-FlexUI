@@ -91,8 +91,8 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	private readonly _position?: WindowPosition;
 	private readonly _windowBinder: WindowBinder | null;
 
-	protected _width: number | "auto";
-	protected _height: number | "auto";
+	protected _lastWidth: number | "auto";
+	protected _lastHeight: number | "auto";
 	protected _activeWidgetMap?: WidgetMap | null;
 	protected _flags: WindowFlags;
 
@@ -117,16 +117,16 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 				this.close();
 			}
 		};
-		this._width = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
-		this._height = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
+		this._lastWidth = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
+		this._lastHeight = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
 
 		windowBinder.add(windowDesc, "title", params.title);
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
 
 		this._position = position;
 		this._description = windowDesc;
-		this._flags = ((width === autoKey) ? WindowFlags.AutoWidth : 0)
-			| ((height === autoKey) ? WindowFlags.AutoHeight : 0);
+		this._flags = ((width == autoKey) ? WindowFlags.AutoWidth : 0)
+			| ((height == autoKey) ? WindowFlags.AutoHeight : 0);
 	}
 
 	/**
@@ -143,25 +143,25 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 		const flags = this._flags;
 		const autoWidth = (flags & WindowFlags.AutoWidth); // TODO: this doesnt work when some tabs are auto and some arent
-		const autoHeight = (flags & WindowFlags.AutoHeight); todo
+		const autoHeight = (flags & WindowFlags.AutoHeight); //todo
 		const width = (autoWidth) ? autoKey : window.width;
 		const height = (autoHeight) ? autoKey: window.height;
 
 		if (!(flags & WindowFlags.RedrawNextTick))
 		{
-			if ((autoWidth || width === this._width)
-				&& (autoHeight || height === this._height))
+			if ((autoWidth || width == this._lastWidth)
+				&& (autoHeight || height == this._lastHeight))
 			{
 				return; // nothing has changed, do nothing
 			}
-			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._width, "x", this._height, "to", width, "x", height);
+			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._lastWidth, "x", this._lastHeight, "to", width, "x", height);
 		}
 
 		const startTime = Log.time();
 		Log.debug("BaseWindow.checkResizeAndRedraw() window size: (", width, "x", height, ")...");
 
-		this._width = width;
-		this._height = height;
+		this._lastWidth = width;
+		this._lastHeight = height;
 		this._layout(window, activeWidgets, width, height);
 		this._flags &= ~WindowFlags.RedrawNextTick;
 
@@ -199,7 +199,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 		const description = this._description;
 		const binder = this._windowBinder;
-		this._layout(description, this._descriptionWidgetMap, this._width, this._height);
+		this._layout(description, this._descriptionWidgetMap, this._lastWidth, this._lastHeight);
 		setWindowPosition(description, this._position);
 
 		if (binder)
@@ -212,7 +212,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 		this._window = window;
 		this._activeWidgetMap = activeWidgets;
-		this._invoke(frame => frame.open(activeWidgets));
+		this._invoke(frame => frame.open(window, activeWidgets));
 	}
 
 	close(): void

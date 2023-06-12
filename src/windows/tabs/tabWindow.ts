@@ -14,7 +14,7 @@ import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowC
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
 import { WidgetDescMap, addToWidgetMap } from "../widgets/widgetMap";
-import { autoKey, getTabSizeOrInheritWindow, setAxisSizeIfAuto, setAxisSizeIfNumber } from "../windowHelpers";
+import { WindowScaleOptions, autoKey, getAxisSizeWithInheritance, setAxisSizeIfAuto, setAxisSizeIfInheritedNumber } from "../windowHelpers";
 import { WindowTemplate } from "../windowTemplate";
 import { TabCreator } from "./tabCreator";
 import { TabLayoutable } from "./tabLayoutable";
@@ -89,6 +89,8 @@ const enum TabWindowFlags
 class TabWindowControl extends BaseWindowControl
 {
 	protected override readonly _descriptionWidgetMap: WidgetDescMap;
+	private readonly _windowWidthOption: WindowScaleOptions;
+	private readonly _windowHeightOption: WindowScaleOptions;
 	private readonly _padding: ParsedPadding;
 	private readonly _root: TabLayoutable;
 	private readonly _tabs: TabLayoutable[];
@@ -101,7 +103,7 @@ class TabWindowControl extends BaseWindowControl
 
 		const description = this._description;
 		const descriptionWidgetMap: WidgetDescMap = {};
-		const { tabs, padding } = params;
+		const { width, height, tabs, padding } = params;
 		const startTab = params.startingTab || 0;
 		const staticWidgetParams = params.static;
 
@@ -125,6 +127,8 @@ class TabWindowControl extends BaseWindowControl
 			};
 		}
 		this._root = rootLayoutable;
+		this._windowWidthOption = width;
+		this._windowHeightOption = height;
 		this._padding = parsePadding(isUndefined(padding) ? defaultWindowPadding : padding);
 
 		const tabCount = tabs.length;
@@ -178,13 +182,11 @@ class TabWindowControl extends BaseWindowControl
 
 		this._forActiveTab(tab =>
 		{
-			const tabWidth = getTabSizeOrInheritWindow(tab.width, this._width);
-			const tabHeight = getTabSizeOrInheritWindow(tab.height, this._height);
-			const currentWidth = setAxisSizeIfNumber(window, LayoutDirection.Horizontal, tabWidth);
-			const currentHeight = setAxisSizeIfNumber(window, LayoutDirection.Vertical, tabHeight);
+			const width = setAxisSizeIfInheritedNumber(window, LayoutDirection.Horizontal, tab.width, this._windowWidthOption);
+			const height = setAxisSizeIfInheritedNumber(window, LayoutDirection.Vertical, tab.height, this._windowHeightOption);
 
-			this._layout(window, newWidgets, currentWidth, currentHeight);
-			tab.open(newWidgets);
+			this._layoutTab(tab, window, newWidgets, width, height);
+			tab.open(window, newWidgets);
 		});
 
 		if (onTabChange)
@@ -219,20 +221,25 @@ class TabWindowControl extends BaseWindowControl
 			applyTabPaddingToDirection(area, height, padding, LayoutDirection.Vertical);
 			this._root.layout(area, widgets);
 		}
-		this._forActiveTab(tab =>
-		{
-			Log.debug("TabWindow.layout() for active tab", this._selectedTab, "frame:", width, "x", height);
-			// todo: same as window.layout()
-			const area = this._createFrameRectangle(width, height, defaultTopBarSizeWithTabs);
-			const padding = this._padding;
-			applyTabPaddingToDirection(area, width, padding, LayoutDirection.Horizontal);
-			applyTabPaddingToDirection(area, height, padding, LayoutDirection.Vertical);
+		this._forActiveTab(tab => this._layoutTab(tab, window, widgets, width, height));
+	}
 
-			const size = tab.layout(area, widgets);
+	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
+	{
+		const tabWidth = getAxisSizeWithInheritance(width, tab.width);
+		const tabHeight = getAxisSizeWithInheritance(height, tab.height);
+		Log.debug("TabWindow.layout() for active tab", this._selectedTab, "frame:", tabWidth, "x", tabHeight);
 
-			setAxisSizeIfAuto(window, LayoutDirection.Horizontal, width, size, padding, 0);
-			setAxisSizeIfAuto(window, LayoutDirection.Vertical, height, size, padding, defaultTopBarSizeWithTabs);
-		});
+		// todo: same as window.layout()
+		const area = this._createFrameRectangle(tabWidth, tabHeight, defaultTopBarSizeWithTabs);
+		const padding = this._padding;
+		applyTabPaddingToDirection(area, tabWidth, padding, LayoutDirection.Horizontal);
+		applyTabPaddingToDirection(area, tabHeight, padding, LayoutDirection.Vertical);
+
+		const size = tab.layout(area, widgets);
+
+		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, tabWidth, size, padding, 0);
+		setAxisSizeIfAuto(window, LayoutDirection.Vertical, tabHeight, size, padding, defaultTopBarSizeWithTabs);
 	}
 }
 

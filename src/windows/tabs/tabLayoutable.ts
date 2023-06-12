@@ -24,7 +24,7 @@ export interface TabLayoutable
 	 * @param widgets The set of widgets of the window, which can be used to find the widgets
 	 * used within the tab. This map contains all widgets currently active for the window.
 	 */
-	open(widgets: WidgetMap): void;
+	open(window: Window, widgets: WidgetMap): void;
 
 	/**
 	 * Called when the tab is to be relayouted within the specified area.

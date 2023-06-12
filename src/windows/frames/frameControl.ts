@@ -13,7 +13,7 @@ import { ParentControl } from "../parentControl";
 import { ParentWindow } from "../parentWindow";
 import { TabLayoutable } from "../tabs/tabLayoutable";
 import { WidgetDescMap, WidgetMap } from "../widgets/widgetMap";
-import { TabScaleOptions, autoKey, inheritKey } from "../windowHelpers";
+import { TabScaleOptions, autoKey, inheritKey, setAxisSizeIfNumber } from "../windowHelpers";
 import { FrameContext } from "./frameContext";
 import { FramePosition, ParsedFramePosition } from "./framePosition";
 import { FrameRectangle } from "./frameRectangle";
@@ -97,8 +97,11 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		return !!this._activeWidgets;
 	}
 
-	open(widgets: WidgetMap): void
+	open(window: Window, widgets: WidgetMap): void
 	{
+		setAxisSizeIfNumber(window, LayoutDirection.Horizontal, this.width);
+		setAxisSizeIfNumber(window, LayoutDirection.Vertical, this.height);
+
 		this._activeWidgets = widgets;
 
 		const binder = this._binder;

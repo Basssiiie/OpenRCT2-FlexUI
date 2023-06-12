@@ -331,10 +331,18 @@ test("Window layouts with tabs", t =>
 		width: 200, height: 150, padding: 30, startingTab: 1,
 		tabs: [
 			tab({
-				image: 456, padding: 5, spacing: 10, direction: LayoutDirection.Horizontal, content: [ label({ text: "label 1", width: 40 }), button({ text: "button 1" }) ]
+				image: 456, padding: 5, spacing: 10, direction: LayoutDirection.Horizontal,
+				content: [
+					label({ text: "label 1", width: 40 }),
+					button({ text: "button 1" })
+				]
 			}),
 			tab({
-				image: 123, padding: 2, spacing: 22, direction: LayoutDirection.Vertical, content: [ label({ text: "label 2" }), button({ text: "button 2" }) ]
+				image: 123, padding: 2, spacing: 22, direction: LayoutDirection.Vertical,
+				content: [
+					label({ text: "label 2" }),
+					button({ text: "button 2" })
+				]
 			})
 		]
 	});
@@ -391,13 +399,27 @@ test("Window layouts with tabs and static", t =>
 
 	const template = tabwindow({
 		width: 200, height: 150, padding: 30, startingTab: 1,
-		static: { padding: 12, spacing: 25, direction: LayoutDirection.Horizontal, content: [ label({ text: "static label", width: 35 }), button({ text: "static button" }) ] },
+		static: {
+			padding: 12, spacing: 25, direction: LayoutDirection.Horizontal,
+			content: [
+				label({ text: "static label", width: 35 }),
+				button({ text: "static button" })
+			]
+		},
 		tabs: [
 			tab({
-				image: 456, padding: 5, spacing: 10, direction: LayoutDirection.Horizontal, content: [ label({ text: "label 1", width: 40 }), button({ text: "button 1" }) ]
+				image: 456, padding: 5, spacing: 10, direction: LayoutDirection.Horizontal,
+				content: [
+					label({ text: "label 1", width: 40 }),
+					button({ text: "button 1" })
+				]
 			}),
 			tab({
-				image: 123, padding: 2, spacing: 22, direction: LayoutDirection.Vertical, content: [ label({ text: "label 2" }), button({ text: "button 2" }) ]
+				image: 123, padding: 2, spacing: 22, direction: LayoutDirection.Vertical,
+				content: [
+					label({ text: "label 2" }),
+					button({ text: "button 2" })
+				]
 			})
 		]
 	});
@@ -748,6 +770,61 @@ test("Window with tabs does auto resizes when tabs switch", t =>
 });
 
 
+test("Window with tabs can do layouts when tabs switch", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: "auto", height: "auto", padding: 10,
+		tabs: [
+			tab({
+				image: 25,
+				content: [
+					button({ text: "tab 1 button", width: 100, height: 50 })
+				]
+			}),
+			tab({
+				image: 35,
+				content: [
+					button({ text: "tab 2 button", width: 20, height: 70 })
+				]
+			})
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.text, "tab 1 button");
+	t.is(button1.x, 10);
+	t.is(button1.y, 10 + 44);
+	t.is(button1.width, 100);
+	t.is(button1.height, 50);
+
+	created.tabIndex = 1;
+	call(created.onTabChange);
+	call(created.onUpdate);
+
+	const button2 = created.widgets[0] as ButtonWidget;
+	t.is(button2.text, "tab 2 button");
+	t.is(button2.x, 10);
+	t.is(button2.y, 10 + 44);
+	t.is(button2.width, 20);
+	t.is(button2.height, 70);
+
+	created.tabIndex = 0;
+	call(created.onTabChange);
+	call(created.onUpdate);
+
+	const button3 = created.widgets[0] as ButtonWidget;
+	t.is(button3.text, "tab 1 button");
+	t.is(button3.x, 10);
+	t.is(button3.y, 10 + 44);
+	t.is(button3.width, 100);
+	t.is(button3.height, 50);
+});
+
+
 test("Window is sized to tab size", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -767,15 +844,15 @@ test("Window is sized to tab size", t =>
 	template.open();
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
-	t.is(created.width, 450 + 50 - 1);
-	t.is(created.height, 300 + 50 + 44 - 1);
+	t.is(created.width, 450);
+	t.is(created.height, 300);
 
-	const button1 = created.widgets[1] as ButtonWidget;
+	const button1 = created.widgets[0] as ButtonWidget;
 	t.is(button1.text, "tab button");
-	t.is(button1.x, 25);
-	t.is(button1.y, 25 + 44);
-	t.is(button1.width, 450 - (25 + 1));
-	t.is(button1.height, 300 - (25 + 44 + 1));
+	t.is(button1.x, 25 + 10);
+	t.is(button1.y, 25 + 10 + 44);
+	t.is(button1.width, 450 - (50 + 20 + 1));
+	t.is(button1.height, 300 - (50 + 20 + 44 + 1));
 });
 
 // tests for auto/absolute/inherit/resize
