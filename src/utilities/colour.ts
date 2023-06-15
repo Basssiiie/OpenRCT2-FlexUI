@@ -39,8 +39,8 @@ export const enum Colour
 	DarkOliveDark,
 	DarkOliveLight,
 	SaturatedBrownLight,
-	BordeauxredDark,
-	BordeauxredLight,
+	BordeauxRedDark,
+	BordeauxRedLight,
 	GrassGreenDark,
 	GrassGreenLight,
 	OliveDark,
@@ -59,4 +59,5 @@ export const enum Colour
 	DullBrownDark,
 	DullBrownLight,
 	Invisible,
+    Void,
 }
