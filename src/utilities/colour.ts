@@ -1,6 +1,6 @@
 /**
- * All the available colours in OpenRCT2 for windows and colour pickers.
- * These are the regular selectable colours from left-to-right and top-to-bottom.
+ * All the available s in OpenRCT2 for windows and  pickers.
+ * These are the regular selectable s from left-to-right and top-to-bottom.
  */
 export const enum Colour
 {
@@ -36,4 +36,27 @@ export const enum Colour
 	DarkPink,
 	BrightPink,
 	LightPink,
+	DarkOliveDark,
+	DarkOliveLight,
+	SaturatedBrownLight,
+	BordeauxredDark,
+	BordeauxredLight,
+	GrassGreenDark,
+	GrassGreenLight,
+	OliveDark,
+	OliveLight,
+	SaturatedGreenLight,
+	TanDark,
+	TanLight,
+	DullPurpleLight,
+	DullGreenDark,
+	DullGreenLight,
+	SaturatedPurpleDark,
+	SaturatedPurpleLight,
+	OrangeLight,
+	AquaDark,
+	MagentaLight,
+	DullBrownDark,
+	DullBrownLight,
+	Invisible,
 }
