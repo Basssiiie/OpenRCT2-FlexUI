@@ -1,5 +1,5 @@
 /**
- * All the available colours in OpenRCT2 for windows and  pickers.
+ * All the available colours in OpenRCT2 for windows and colour pickers.
  * These are the regular selectable colours from left-to-right and top-to-bottom.
  */
 export const enum Colour
