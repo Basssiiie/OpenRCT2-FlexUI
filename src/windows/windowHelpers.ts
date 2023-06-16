@@ -50,11 +50,11 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Layo
 	return size;
 }
 
-export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: number | "auto", frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): void
+export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: number | "auto", frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
 {
 	if (scaleOption !== autoKey)
 	{
-		return;
+		return scaleOption;
 	}
 
 	const directionKey = sizeKeys[direction];
@@ -67,6 +67,7 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Layout
 		Log.thrown("Padding for " + directionKey + " must be absolute for auto window resize.");
 	}
 	setWindowSize(window, direction, size, size, size);
+	return size;
 }
 
 

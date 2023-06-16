@@ -142,23 +142,35 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		}
 
 		const flags = this._flags;
-		const { width, height } = window;
+		let lastWidth = this._lastWidth;
+		let lastHeight = this._lastHeight;
 
 		if (!(flags & WindowFlags.RedrawNextTick))
 		{
-			if (width == this._lastWidth && height == this._lastHeight)
+			const newWidth = window.width;
+			const newHeight = window.height;
+			const widthChanged = (lastWidth != autoKey && lastWidth != newWidth);
+			const heightChanged = (lastHeight != autoKey && lastHeight != newHeight);
+			if (!widthChanged && !heightChanged)
 			{
 				return; // nothing has changed, do nothing
 			}
-			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._lastWidth, "x", this._lastHeight, "to", width, "x", height);
+
+			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._lastWidth, "x", this._lastHeight, "to", newWidth, "x", newHeight);
+			if (widthChanged)
+			{
+				this._lastWidth = lastWidth = newWidth;
+			}
+			if (heightChanged)
+			{
+				this._lastHeight = lastHeight = newHeight;
+			}
 		}
 
 		const startTime = Log.time();
-		Log.debug("BaseWindow.checkResizeAndRedraw() window size: (", width, "x", height, ")...");
+		Log.debug("BaseWindow.checkResizeAndRedraw() window size: (", lastWidth, "x", lastHeight, ")...");
 
-		this._lastWidth = width;
-		this._lastHeight = height;
-		this._layout(window, activeWidgets, width, height);
+		this._layout(window, activeWidgets, lastWidth, lastHeight);
 		this._flags &= ~WindowFlags.RedrawNextTick;
 
 		Log.debug("BaseWindow.checkResizeAndRedraw() finished in", (Log.time() - startTime), "ms");

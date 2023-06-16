@@ -189,6 +189,7 @@ class TabWindowControl extends BaseWindowControl
 			this._layoutTab(tab, window, newWidgets, width, height);
 			tab.open(window, newWidgets);
 		});
+		this._layoutStatic(newWidgets);
 
 		if (onTabChange)
 		{
@@ -214,37 +215,42 @@ class TabWindowControl extends BaseWindowControl
 	override _layout(window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
 	{
 		this._forActiveTab(tab => this._layoutTab(tab, window, widgets, width, height));
-		if (this._flags & TabWindowFlags.HasStaticWidgets)
-		{
-			const area = this._createFrameRectangle(width, height);
-			const padding = this._padding;
-			applyTabPaddingToDirection(area, width, padding, LayoutDirection.Horizontal);
-			applyTabPaddingToDirection(area, height, padding, LayoutDirection.Vertical);
-
-			Log.debug("TabWindow.layout() for window:", width, "x", height, "; static frame:", Log.stringify(area));
-			this._root.layout(area, widgets);
-		}
+		this._layoutStatic(widgets);
 	}
 
 	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
 	{
 		const tabWidth = getAxisSizeWithInheritance(width, tab.width);
 		const tabHeight = getAxisSizeWithInheritance(height, tab.height);
-		
+
 		// todo: same as window.layout()
 		const area = this._createFrameRectangle(tabWidth, tabHeight, defaultTopBarSizeWithTabs);
 		const padding = this._padding;
 		applyTabPaddingToDirection(area, tabWidth, padding, LayoutDirection.Horizontal);
 		applyTabPaddingToDirection(area, tabHeight, padding, LayoutDirection.Vertical);
-		
+
 		Log.debug("TabWindow.layout() for window:", width, "x", height, "; active tab", this._selectedTab, "with frame:", Log.stringify(area));
 		const size = tab.layout(area, widgets);
 
-		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, tabWidth, size, padding, 0);
-		setAxisSizeIfAuto(window, LayoutDirection.Vertical, tabHeight, size, padding, defaultTopBarSizeWithTabs);
+		this._lastWidth = setAxisSizeIfAuto(window, LayoutDirection.Horizontal, tabWidth, size, padding, 0);
+		this._lastHeight = setAxisSizeIfAuto(window, LayoutDirection.Vertical, tabHeight, size, padding, defaultTopBarSizeWithTabs);
+	}
 
-		//this._lastWidth = window.width; todo reset these somehow
-		//this._lastHeight = window.height;
+	private _layoutStatic(widgets: WidgetDescMap): void
+	{
+		if (!(this._flags & TabWindowFlags.HasStaticWidgets))
+		{
+			return;
+		}
+
+		// todo: this create rect could be simplified since there's no auto
+		const area = <Rectangle>this._createFrameRectangle(this._lastWidth, this._lastHeight);
+		const padding = this._padding;
+		setSizeWithPaddingForDirection(area, LayoutDirection.Horizontal, defaultScale, padding);
+		setSizeWithPaddingForDirection(area, LayoutDirection.Vertical, defaultScale, padding);
+
+		Log.debug("TabWindow.layout() for window:", this._lastWidth, "x", this._lastHeight, "; static frame:", Log.stringify(area));
+		this._root.layout(area, widgets);
 	}
 }
 

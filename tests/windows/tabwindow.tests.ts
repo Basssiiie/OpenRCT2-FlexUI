@@ -206,6 +206,46 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 });
 
 
+test("Window with tabs and static includes all paddings", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: 500, height: 400, padding: 10,
+		static: {
+			padding: 7,
+			content: [
+				button({ text: "static button"})
+			]
+		},
+		tabs: [
+			tab({
+				image: 25, width: 150, height: 275, padding: 4,
+				content: [
+					button({ text: "tab 1 button" })
+				]
+			})
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.is(created.width, 150);
+	t.is(created.height, 275);
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.text, "static button");
+	t.is(button1.x, 10 + 7);
+	t.is(button1.y, 10 + 7 + 15);
+	t.is(button1.width, 150 - (20 + 14 + 1));
+	t.is(button1.height, 275 - (20 + 14 + 15 + 1));
+	const button2 = created.widgets[1] as ButtonWidget;
+	t.is(button2.text, "tab 1 button");
+	t.is(button2.x, 10 + 4);
+	t.is(button2.y, 10 + 4 + 44);
+	t.is(button2.width, 150 - (20 + 8 + 1));
+	t.is(button2.height, 275 - (20 + 8 + 44 + 1));
+});
+
 test("Window and tab events execute", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -577,6 +617,37 @@ test("Window and tab rebind to stores on each tab change", t =>
 });
 
 
+test("Window is sized to tab size", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: 240, height: 160, padding: 10,
+		tabs:[
+			tab({
+				image: 25,
+				width: 450, height: 300, padding: 25,
+				content: [
+					button({ text: "tab button" })
+				]
+			})
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.is(created.width, 450);
+	t.is(created.height, 300);
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.text, "tab button");
+	t.is(button1.x, 25 + 10);
+	t.is(button1.y, 25 + 10 + 44);
+	t.is(button1.width, 450 - (50 + 20 + 1));
+	t.is(button1.height, 300 - (50 + 20 + 44 + 1));
+});
+
+
 test("Window with tabs adjusts to resize", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -770,6 +841,48 @@ test("Window with tabs does auto resizes when tabs switch", t =>
 });
 
 
+test("Window with tabs does single redraw after tabs switch", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const hits: string[] = [];
+	const template = tabwindow({
+		width: "auto", height: "auto", padding: 10,
+		tabs: [
+			tab({
+				image: 25,
+				content: [
+					button({ text: "tab 1 button", width: 100, height: 50 })
+				]
+			}),
+			tab({
+				image: 35,
+				content: [
+					(parent, output): any =>
+					{
+						output.on("redraw", () => hits.push("redraw"));
+						const btn = button({ text: "tab 2 button", width: 20, height: 70 });
+						return btn(parent, output);
+					}
+				]
+			})
+		]
+	});
+	template.open();
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	call(created.onUpdate);
+	t.deepEqual(hits, []);
+
+	created.tabIndex = 1;
+	call(created.onTabChange);
+	t.deepEqual(hits, [ "redraw" ]);
+
+	call(created.onUpdate);
+	t.deepEqual(hits, [ "redraw" ]);
+});
+
+
 test("Window with tabs can do layouts when tabs switch", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -825,18 +938,29 @@ test("Window with tabs can do layouts when tabs switch", t =>
 });
 
 
-test("Window is sized to tab size", t =>
+test("Window with tabs relayouts static on tab switch if window size changed", t =>
 {
 	globalThis.ui = Mock.ui();
 
 	const template = tabwindow({
-		width: 240, height: 160, padding: 10,
-		tabs:[
+		width: 500, height: 400, padding: 10,
+		static: {
+			padding: 7,
+			content: [
+				button({ text: "static button"})
+			]
+		},
+		tabs: [
 			tab({
-				image: 25,
-				width: 450, height: 300, padding: 25,
+				image: 25, width: 150, height: 280, padding: 4,
 				content: [
-					button({ text: "tab button" })
+					button({ text: "tab 1 button" })
+				]
+			}),
+			tab({
+				image: 35, width: 265, height: 120, padding: 12,
+				content: [
+					button({ text: "tab 2 button" })
 				]
 			})
 		]
@@ -844,15 +968,34 @@ test("Window is sized to tab size", t =>
 	template.open();
 
 	const created = (globalThis.ui as UiMock).createdWindows[0];
-	t.is(created.width, 450);
-	t.is(created.height, 300);
+	t.is(created.width, 150);
+	t.is(created.height, 280);
+	const firstTab = created.widgets as ButtonWidget[];
+	t.is(firstTab[0].text, "static button");
+	t.is(firstTab[0].x, 10 + 7);
+	t.is(firstTab[0].y, 10 + 7 + 15);
+	t.is(firstTab[0].width, 150 - (20 + 14 + 1));
+	t.is(firstTab[0].height, 280 - (20 + 14 + 15 + 1));
+	t.is(firstTab[1].text, "tab 1 button");
+	t.is(firstTab[1].x, 10 + 4);
+	t.is(firstTab[1].y, 10 + 4 + 44);
+	t.is(firstTab[1].width, 150 - (20 + 8 + 1));
+	t.is(firstTab[1].height, 280 - (20 + 8 + 44 + 1));
 
-	const button1 = created.widgets[0] as ButtonWidget;
-	t.is(button1.text, "tab button");
-	t.is(button1.x, 25 + 10);
-	t.is(button1.y, 25 + 10 + 44);
-	t.is(button1.width, 450 - (50 + 20 + 1));
-	t.is(button1.height, 300 - (50 + 20 + 44 + 1));
+	created.tabIndex = 1;
+	call(created.onTabChange);
+
+	t.is(created.width, 265);
+	t.is(created.height, 120);
+	const secondTab = created.widgets as ButtonWidget[];
+	t.is(secondTab[0].text, "static button");
+	t.is(secondTab[0].x, 10 + 7);
+	t.is(secondTab[0].y, 10 + 7 + 15);
+	t.is(secondTab[0].width, 265 - (20 + 14 + 1));
+	t.is(secondTab[0].height, 120 - (20 + 14 + 15 + 1));
+	t.is(secondTab[1].text, "tab 2 button");
+	t.is(secondTab[1].x, 10 + 12);
+	t.is(secondTab[1].y, 10 + 12 + 44);
+	t.is(secondTab[1].width, 265 - (20 + 24 + 1));
+	t.is(secondTab[1].height, 120 - (20 + 24 + 44 + 1));
 });
-
-// tests for auto/absolute/inherit/resize
