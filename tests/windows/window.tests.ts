@@ -4,6 +4,7 @@ import { store } from "@src/bindings/stores/createStore";
 import { button } from "@src/elements/controls/button";
 import { groupbox } from "@src/elements/controls/groupbox";
 import { label } from "@src/elements/controls/label";
+import { ElementVisibility } from "@src/elements/elementParams";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";
 import { mutable } from "@src/utilities/mutable";
 import { FrameContext } from "@src/windows/frames/frameContext";
@@ -11,7 +12,6 @@ import { window } from "@src/windows/window";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
 import { call } from "../helpers";
-import { ElementVisibility } from "@src/elements/elementParams";
 
 
 test("Simple window with widgets", t =>

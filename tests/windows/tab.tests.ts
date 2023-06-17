@@ -2,12 +2,12 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { tab } from "@src/windows/tabs/tab";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
-import test from "ava";
 import { ParentWindow } from "@src/windows/parentWindow";
+import { tab } from "@src/windows/tabs/tab";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
+import test from "ava";
 
 
 test("Tab gets created", t =>

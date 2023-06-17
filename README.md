@@ -51,7 +51,7 @@ Requirements: [Node](https://nodejs.org/en/), NPM.
 
 1. Open command prompt, use `cd` to change your current directory to the root folder of this project and run `npm install`.
 2. Run `npm run build` (production build) or `npm run build:dev` (development build) to build the project.
-    - The output folder for the packaged library is `(project directory)/dist`.  
+    - The output folder for the packaged library is `(project directory)/dist`.
 
 ### Using a development build
 

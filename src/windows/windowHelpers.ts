@@ -1,11 +1,11 @@
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { endKeys, sizeKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
-import { Size } from "@src/positional/size";
-import { WindowScale } from "./windowScale";
-import { isAbsolute } from "@src/positional/parsing/parsedScale";
-import * as Log from "@src/utilities/logger";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { isAbsolute } from "@src/positional/parsing/parsedScale";
+import { Size } from "@src/positional/size";
+import * as Log from "@src/utilities/logger";
 import { isObject, isString } from "@src/utilities/type";
+import { WindowScale } from "./windowScale";
 
 
 export const inheritKey = "inherit";

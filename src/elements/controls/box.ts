@@ -1,7 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
 import { Padding } from "@src/positional/padding";
-import { Parsed } from "@src/positional/parsing/parsed";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
+import { Parsed } from "@src/positional/parsing/parsed";
 import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import * as Log from "@src/utilities/logger";
@@ -14,7 +14,7 @@ import { ParsedSize, SizeParams } from "../../positional/size";
 import { redrawEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { getInheritanceFlags, InheritFlags, recalculateInheritedSpaceFromChild } from "../layouts/flexible/desiredSpacing";
+import { InheritFlags, getInheritanceFlags, recalculateInheritedSpaceFromChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
 import { setSizeWithPadding } from "../layouts/paddingHelpers";
@@ -155,10 +155,10 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 		area.y += trim;
 		area.height -= trim;
 
-		const { width, height, padding } = this._child.position;
-		Log.debug("Box(", this.name, ") layout() child size: [", width, "x", height, "]");
-		setSizeWithPadding(area, width, height, padding);
 		const child = this._child;
+		const position = child.position;
+		Log.debug("Box(", this.name, ") layout() child size: [", position.width, "x", position.height, "]");
+		setSizeWithPadding(area, position.width, position.height, position.padding);
 		child.layout(widgets, area);
 	}
 }

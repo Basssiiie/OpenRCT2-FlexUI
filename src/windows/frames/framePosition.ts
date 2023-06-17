@@ -1,8 +1,12 @@
-import { ParsedScale } from "@src/positional/parsing/parsedScale";
-import { TabScaleOptions } from "../windowHelpers";
 import { Paddable } from "@src/positional/paddable";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { TabScaleOptions } from "../windowHelpers";
 
+
+/**
+ * Specifies the positional options of a window or a tab.
+ */
 export interface FramePosition extends Paddable
 {
 	/**
@@ -19,19 +23,12 @@ export interface FramePosition extends Paddable
 }
 
 
-export const enum FrameScaleType
-{
-	Specified = 0,
-	Auto = 1,
-	Inherit = 2,
-}
-
-
-
+/**
+ * The parsed variation of the position of a frame.
+ */
 export interface ParsedFramePosition
 {
 	width: ParsedScale;
 	height: ParsedScale;
 	_padding: ParsedPadding;
-	//_scales: [FrameScaleType, FrameScaleType];
 }

@@ -1,4 +1,6 @@
-
+/**
+ * An interface to interact with the parent window of this tab.
+ */
 export interface ParentWindow
 {
 	/**

@@ -3,12 +3,12 @@ import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { ParsedSize, SizeParams } from "../../positional/size";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutControl } from "../layouts/flexible/flexible";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "../layouts/flexible/layoutDirection";
-import { ParsedSize, SizeParams } from "../../positional/size";
 import { BoxContainer, BoxControl, BoxParams } from "./box";
 
 

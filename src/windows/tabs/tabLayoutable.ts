@@ -21,6 +21,8 @@ export interface TabLayoutable
 
 	/**
 	 * Called when the tab is opened.
+	 * @param window A reference to the internal window that just opened. Be aware that any
+	 * unexpected changes to this object may break FlexUI.
 	 * @param widgets The set of widgets of the window, which can be used to find the widgets
 	 * used within the tab. This map contains all widgets currently active for the window.
 	 */

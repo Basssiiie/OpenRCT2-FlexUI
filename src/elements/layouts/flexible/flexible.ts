@@ -139,8 +139,9 @@ export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> e
 
 		output.on(redrawEvent, () =>
 		{
-			Log.debug("Flexible: recalculate size from children ->", !!(this._flags & FlexFlags.RecalculateFromChildren));
-			if (this._flags & FlexFlags.RecalculateFromChildren)
+			const flags = this._flags;
+			Log.debug("Flexible: recalculate size from children ->", !!(flags & FlexFlags.RecalculateFromChildren));
+			if (flags & FlexFlags.RecalculateFromChildren)
 			{
 				// Clear recalculate flag
 				this._flags &= ~FlexFlags.RecalculateFromChildren;
@@ -148,7 +149,7 @@ export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> e
 				const children = this._children;
 				const renderableChildren = children.filter(c => !c.skip);
 
-				if (recalculateInheritedSpaceFromChildren(this.position, this._flags, children, this._spacing, this._direction))
+				if (recalculateInheritedSpaceFromChildren(this.position, flags, children, this._spacing, this._direction))
 				{
 					Log.debug("Flexible: recalculated size to [", this.position, "]");
 				}

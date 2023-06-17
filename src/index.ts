@@ -1,8 +1,10 @@
 // Window related components
 export { window, WindowParams } from "./windows/window";
 export { tabwindow, TabWindowParams } from "./windows/tabs/tabWindow";
-export { WindowTemplate } from "./windows/windowTemplate";
 export { tab, TabParams } from "./windows/tabs/tab";
+export { WindowTemplate } from "./windows/windowTemplate";
+export { WindowScale } from "./windows/windowScale";
+export { OpenWindow } from "./windows/openWindow";
 
 // Store related utilities
 export { Store } from "./bindings/stores/store";

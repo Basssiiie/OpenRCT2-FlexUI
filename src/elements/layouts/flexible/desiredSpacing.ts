@@ -4,10 +4,10 @@ import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
 import { isNull, isUndefined } from "@src/utilities/type";
 import { Layoutable } from "@src/windows/layoutable";
+import { autoKey } from "@src/windows/windowHelpers";
 import { ParsedSize, SizeParams } from "../../../positional/size";
 import { endKeys, sizeKeys, startKeys } from "../paddingHelpers";
 import { FlexiblePosition } from "./flexiblePosition";
-import { autoKey } from "@src/windows/windowHelpers";
 
 
 /**
@@ -98,7 +98,7 @@ function tryInheritSize(position: ParsedSize, inheritFlag: number, direction: La
  * Gets the desired space on the parent for a single child if the child asks for
  * absolute positioning, for a single direction.
  */
-export function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: LayoutDirection): number | null
+function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: LayoutDirection): number | null
 {
 	const
 		sizeKey = sizeKeys[direction],
@@ -118,7 +118,7 @@ export function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePositi
 /**
  * Gets the total desired space for all children, if they are absolutely positioned.
  */
-export function getDesiredSpaceFromChildrenForDirection(items: Layoutable<Parsed<FlexiblePosition>>[], spacing: ParsedScale, layoutDirection: LayoutDirection, axisDirection: LayoutDirection): number | null
+function getDesiredSpaceFromChildrenForDirection(items: Layoutable<Parsed<FlexiblePosition>>[], spacing: ParsedScale, layoutDirection: LayoutDirection, axisDirection: LayoutDirection): number | null
 {
 	const axisIsLayoutDirection = (layoutDirection === axisDirection);
 

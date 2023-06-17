@@ -1,8 +1,8 @@
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Paddable } from "@src/positional/paddable";
 import { FrameBuilder } from "../frames/frameBuilder";
-import { TabCreator } from "./tabCreator";
 import { WindowScale } from "../windowScale";
+import { TabCreator } from "./tabCreator";
 
 
 /**

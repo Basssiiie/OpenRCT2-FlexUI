@@ -71,11 +71,10 @@ type WindowPosition = BaseWindowParams["position"];
 
 export const enum WindowFlags
 {
-	AutoWidth = (1 << 0),
-	AutoHeight = (1 << 1),
-	RedrawNextTick = (1 << 2),
+	None = 0,
+	RedrawNextTick = (1 << 0),
 
-	Count = (1 << 3)
+	Count = (1 << 1)
 }
 
 
@@ -94,7 +93,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	protected _lastWidth: number | "auto";
 	protected _lastHeight: number | "auto";
 	protected _activeWidgetMap?: WidgetMap | null;
-	protected _flags: WindowFlags;
+	protected _flags = WindowFlags.None;
 
 	constructor(params: ExtendedWindowParams)
 	{
@@ -122,11 +121,8 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 		windowBinder.add(windowDesc, "title", params.title);
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
-
 		this._position = position;
 		this._description = windowDesc;
-		this._flags = ((width == autoKey) ? WindowFlags.AutoWidth : 0)
-			| ((height == autoKey) ? WindowFlags.AutoHeight : 0);
 	}
 
 	/**

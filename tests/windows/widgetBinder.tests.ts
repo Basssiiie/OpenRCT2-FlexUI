@@ -1,14 +1,14 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { ElementVisibility } from "@src/elements/elementParams";
+import { mutable } from "@src/utilities/mutable";
+import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
 import { FrameBuilder } from "@src/windows/frames/frameBuilder";
 import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
-import { ElementVisibility } from "@src/elements/elementParams";
-import { mutable } from "@src/utilities/mutable";
 import test from "ava";
 import Mock from "openrct2-mocks";
-import { noop } from "@src/utilities/noop";
 
 
 test("read() sets values", t =>
