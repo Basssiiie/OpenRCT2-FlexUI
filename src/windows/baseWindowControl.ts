@@ -8,7 +8,7 @@ import { WindowBinder } from "./binders/windowBinder";
 import { FrameRectangle } from "./frames/frameRectangle";
 import { ParentWindow } from "./parentWindow";
 import { TabLayoutable } from "./tabs/tabLayoutable";
-import { WidgetDescMap, WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
+import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
 import { autoKey, setAxisSizeIfNumber } from "./windowHelpers";
 import { WindowScale } from "./windowScale";
 import { WindowTemplate } from "./windowTemplate";
@@ -183,7 +183,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		return area;
 	}
 
-	abstract _layout(window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void;
+	abstract _layout(window: Window | WindowDesc, widgets: WidgetMap, width: number | "auto", height: number | "auto"): void;
 
 	protected abstract _invoke(callback: (frame: TabLayoutable) => void): void;
 

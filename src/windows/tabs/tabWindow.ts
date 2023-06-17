@@ -13,7 +13,7 @@ import { isUndefined } from "@src/utilities/type";
 import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
-import { WidgetDescMap, addToWidgetMap } from "../widgets/widgetMap";
+import { WidgetMap, addToWidgetMap } from "../widgets/widgetMap";
 import { WindowScaleOptions, autoKey, getAxisSizeWithInheritance, setAxisSizeIfAuto, setAxisSizeIfInheritedNumber } from "../windowHelpers";
 import { WindowTemplate } from "../windowTemplate";
 import { TabCreator } from "./tabCreator";
@@ -88,7 +88,7 @@ const enum TabWindowFlags
  */
 class TabWindowControl extends BaseWindowControl
 {
-	protected override readonly _descriptionWidgetMap: WidgetDescMap;
+	protected override readonly _descriptionWidgetMap: WidgetMap;
 	private readonly _windowWidthOption: WindowScaleOptions;
 	private readonly _windowHeightOption: WindowScaleOptions;
 	private readonly _padding: ParsedPadding;
@@ -102,7 +102,7 @@ class TabWindowControl extends BaseWindowControl
 		super(params);
 
 		const description = this._description;
-		const descriptionWidgetMap: WidgetDescMap = {};
+		const descriptionWidgetMap: WidgetMap = {};
 		const { width, height, tabs, padding } = params;
 		const startTab = params.startingTab || 0;
 		const staticWidgetParams = params.static;
@@ -212,13 +212,13 @@ class TabWindowControl extends BaseWindowControl
 		this._forActiveTab(callback);
 	}
 
-	override _layout(window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
+	override _layout(window: Window | WindowDesc, widgets: WidgetMap, width: number | "auto", height: number | "auto"): void
 	{
 		this._forActiveTab(tab => this._layoutTab(tab, window, widgets, width, height));
 		this._layoutStatic(widgets);
 	}
 
-	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetDescMap, width: number | "auto", height: number | "auto"): void
+	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetMap, width: number | "auto", height: number | "auto"): void
 	{
 		const tabWidth = getAxisSizeWithInheritance(width, tab.width);
 		const tabHeight = getAxisSizeWithInheritance(height, tab.height);
@@ -236,7 +236,7 @@ class TabWindowControl extends BaseWindowControl
 		this._lastHeight = setAxisSizeIfAuto(window, LayoutDirection.Vertical, tabHeight, size, padding, defaultTopBarSizeWithTabs);
 	}
 
-	private _layoutStatic(widgets: WidgetDescMap): void
+	private _layoutStatic(widgets: WidgetMap): void
 	{
 		if (!(this._flags & TabWindowFlags.HasStaticWidgets))
 		{

@@ -12,7 +12,7 @@ import { WidgetBinder } from "../binders/widgetBinder";
 import { ParentControl } from "../parentControl";
 import { ParentWindow } from "../parentWindow";
 import { TabLayoutable } from "../tabs/tabLayoutable";
-import { WidgetDescMap, WidgetMap } from "../widgets/widgetMap";
+import { WidgetMap } from "../widgets/widgetMap";
 import { TabScaleOptions, autoKey, inheritKey, setAxisSizeIfNumber } from "../windowHelpers";
 import { FrameContext } from "./frameContext";
 import { FramePosition, ParsedFramePosition } from "./framePosition";
@@ -44,7 +44,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 	/**
 	 * Recalculate the whole layout.
 	 */
-	layout(area: FrameRectangle, widgets: WidgetDescMap): Size
+	layout(area: FrameRectangle, widgets: WidgetMap): Size
 	{
 		invoke(this._redraw, this);
 

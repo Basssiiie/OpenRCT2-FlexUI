@@ -1,6 +1,6 @@
 import { Size } from "@src/positional/size";
 import { FrameRectangle } from "../frames/frameRectangle";
-import { WidgetDescMap, WidgetMap } from "../widgets/widgetMap";
+import { WidgetMap } from "../widgets/widgetMap";
 import { WindowScale } from "../windowScale";
 
 
@@ -34,7 +34,7 @@ export interface TabLayoutable
 	 * @param widgets A set of widgets that should be layed out over the area.
 	 * @returns The actual size the tab layout ended up being.
 	 */
-	layout(area: FrameRectangle, widgets: WidgetDescMap): Size;
+	layout(area: FrameRectangle, widgets: WidgetMap): Size;
 
 	/**
 	 * Called every game frame the tab is open. Use with caution.

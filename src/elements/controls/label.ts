@@ -34,7 +34,7 @@ export interface LabelParams extends ElementParams
 	 * Note: colour can also be inserted mid-text by using `{COLOUR}`.
 	 * @todo Not yet implemented.
 	 */
-	color?: Bindable<TextColour>;
+	colour?: Bindable<TextColour>;
 }
 
 

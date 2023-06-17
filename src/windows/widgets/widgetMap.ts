@@ -1,13 +1,7 @@
 /**
- * Defines a dictionary set that contains active widgets by name.
+ * Defines a dictionary set that contains active or description widgets by name.
  */
 export type WidgetMap = Record<string, Widget | WidgetDesc>;
-
-
-/**
- * Defines a dictionary set that contains either active or description widgets by name.
- */
-export type WidgetDescMap = Record<string, Widget | WidgetDesc>;
 
 
 /**
