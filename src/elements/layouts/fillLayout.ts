@@ -14,6 +14,6 @@ export function fillLayout(widgets: WidgetMap, name: string, area: Rectangle): v
 	Log.assert(!!widget, "Widget with name", name, "not in widget map.");
 	widget.x = round(area.x);
 	widget.y = round(area.y);
-	widget.width = round(area.width);
-	widget.height = round(area.height);
+	widget.width = round(area.width - 0.1); // ensure values ending in .5 round down (round inwards)
+	widget.height = round(area.height - 0.1);
 }

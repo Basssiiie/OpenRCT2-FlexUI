@@ -58,7 +58,7 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning, ParsedPosit
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug("Control(", this.type, ":", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
+		Log.debug("Control(", this.type, ":", this.name, ") layout() for area:", Log.stringify(area));
 		fillLayout(widgets, this.name, area);
 	}
 }

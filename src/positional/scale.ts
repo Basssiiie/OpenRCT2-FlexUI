@@ -5,7 +5,6 @@
  *  - **Percentages:** position or size relative to the leftover space within the parent;
  *  - **Weighted:** position or size relative to the total weight of all weighted elements
  *    within the parent, applied to the leftover space within the parent.
- *  - **Inherit**: inherits the value for this field from the parent element.
  *
  * **Leftover space** is all space within the parent after subtracting any absolute sized
  * widgets within the parent.

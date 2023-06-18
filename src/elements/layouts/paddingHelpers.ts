@@ -28,7 +28,7 @@ export function hasPadding(padding: ParsedPadding | undefined): boolean
 
 /**
  * Returns the total amount of absolute padding for the specified direction. Throws an error
- * if one of the padding values is not absolute.
+ * if one of the padding values is not absolute. Returns the total amount of padding applied.
  */
 export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: ParsedPadding, direction: LayoutDirection): number
 {

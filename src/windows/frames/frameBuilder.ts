@@ -29,7 +29,7 @@ export class FrameBuilder implements BuildOutput
 		readonly redraw: Event<FrameContext> = [],
 		readonly close: Event<FrameContext> = []
 	){
-		const context = new FrameControl(parent, content.width || inheritKey, content.height || inheritKey, open, update, redraw, close);
+		const context = new FrameControl(content.width || inheritKey, content.height || inheritKey, parent, open, update, redraw, close);
 		const binder = new WidgetBinder();
 		const { onOpen, onUpdate, onClose } = params;
 

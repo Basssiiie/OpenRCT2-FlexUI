@@ -1,14 +1,13 @@
-import { defaultWindowPadding, zeroPadding } from "@src/elements/constants";
+import { defaultWindowPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
 import { BaseWindowControl, BaseWindowParams, defaultTopBarSize } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
+import { FrameControl } from "./frames/frameControl";
 import { TabLayoutable } from "./tabs/tabLayoutable";
 import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
-import { setAxisSizeIfAuto } from "./windowHelpers";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -52,7 +51,7 @@ export function window(params: WindowParams): WindowTemplate
  */
 class WindowControl extends BaseWindowControl
 {
-	private _frame: TabLayoutable;
+	private _frame: FrameControl;
 	protected override _descriptionWidgetMap: WidgetMap;
 
 
@@ -72,12 +71,11 @@ class WindowControl extends BaseWindowControl
 		callback(this._frame);
 	}
 
-	override _layout(window: Window | WindowDesc, widgets: WidgetMap, width: number | "auto", height: number | "auto"): void
+	override _layout(window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._createFrameRectangle(width, height);
+		const area = this._createFrameRectangle(this._flags);
 		const size = this._frame.layout(area, widgets);
 
-		setAxisSizeIfAuto(window, LayoutDirection.Horizontal, width, size, zeroPadding, 0);
-		setAxisSizeIfAuto(window, LayoutDirection.Vertical, height, size, zeroPadding, defaultTopBarSize);
+		this._setAutoWindowSize(window, size, defaultTopBarSize);
 	}
 }

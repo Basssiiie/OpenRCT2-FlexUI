@@ -151,7 +151,7 @@ export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> e
 
 				if (recalculateInheritedSpaceFromChildren(this.position, flags, children, this._spacing, this._direction))
 				{
-					Log.debug("Flexible: recalculated size to [", this.position, "]");
+					Log.debug("Flexible: recalculated size to", Log.stringify(this.position));
 				}
 
 				this._renderableChildren = renderableChildren;
@@ -171,7 +171,7 @@ export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> e
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug("Flexible; layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
+		Log.debug("Flexible; layout() for area:", Log.stringify(area));
 		Log.assert(!!this._renderableChildren, "redraw event was not called: children are missing");
 
 		flexibleLayout(this._renderableChildrenPositions, area, this._direction, this._spacing, (idx, subarea) =>

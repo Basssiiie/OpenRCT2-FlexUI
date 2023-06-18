@@ -50,17 +50,12 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Layo
 	return size;
 }
 
-export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: number | "auto", frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
+export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
 {
-	if (scaleOption !== autoKey)
-	{
-		return scaleOption;
-	}
-
 	const directionKey = sizeKeys[direction];
 	const startPad = windowPadding[startKeys[direction]];
 	const endPad = windowPadding[endKeys[direction]];
-	const size = (frameSize[directionKey] + startPad[0] + endPad[0] + extraPadding - 1);
+	const size = (frameSize[directionKey] + startPad[0] + endPad[0] + extraPadding);
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))
 	{

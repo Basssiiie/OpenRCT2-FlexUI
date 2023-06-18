@@ -119,7 +119,7 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 
 				if (recalculateInheritedSpaceFromChild(this.position, this._flags, this._child.position))
 				{
-					Log.debug("Box(", this.name, "): recalculated size to [", this.position, "]");
+					Log.debug("Box(", this.name, "): recalculated size to", Log.stringify(this.position));
 				}
 			}
 		});
@@ -146,7 +146,7 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug("Box(", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
+		Log.debug("Box(", this.name, ") layout() for area:", Log.stringify(area));
 		// Align visual box with layout box, will move label slightly out of bounds.
 		const trim = (this._flags & BoxFlags.AddTitlePadding) ? 0 : trimTopWithoutTitle;
 		area.y -= trim;
@@ -157,7 +157,7 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 
 		const child = this._child;
 		const position = child.position;
-		Log.debug("Box(", this.name, ") layout() child size: [", position.width, "x", position.height, "]");
+		Log.debug("Box(", this.name, ") layout() child size:", position.width, "x", position.height);
 		setSizeWithPadding(area, position.width, position.height, position.padding);
 		child.layout(widgets, area);
 	}

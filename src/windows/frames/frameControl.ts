@@ -32,13 +32,13 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 	_activeWidgets?: WidgetMap;
 
 	constructor(
-		readonly _parent: ParentWindow,
 		readonly width: TabScaleOptions,
 		readonly height: TabScaleOptions,
-		readonly _open: Event<FrameContext>,
-		readonly _update: Event<FrameContext>,
-		readonly _redraw: Event<FrameContext>,
-		readonly _close: Event<FrameContext>
+		private readonly _parent: ParentWindow,
+		private readonly _open: Event<FrameContext>,
+		private readonly _update: Event<FrameContext>,
+		private readonly _redraw: Event<FrameContext>,
+		private readonly _close: Event<FrameContext>
 	){}
 
 	/**
@@ -51,12 +51,12 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		const body = this._body;
 		const position = body.position;
 
-		const frameWidth = applyFrameScaleOption(area, this.width, position, LayoutDirection.Horizontal);
-		const frameHeight = applyFrameScaleOption(area, this.height, position, LayoutDirection.Vertical);
+		const width = applyFrameScaleOption(area, this.width, position, LayoutDirection.Horizontal);
+		const height = applyFrameScaleOption(area, this.height, position, LayoutDirection.Vertical);
 
 		body.layout(widgets, <Rectangle>area);
 
-		return { width: frameWidth, height: frameHeight };
+		return { width, height };
 	}
 
 	redraw(): void

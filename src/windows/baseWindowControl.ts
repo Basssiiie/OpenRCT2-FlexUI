@@ -1,7 +1,8 @@
 import { Bindable } from "@src/bindings/bindable";
+import { zeroPadding } from "@src/elements/constants";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { sizeKeys } from "@src/elements/layouts/paddingHelpers";
 import { Paddable } from "@src/positional/paddable";
+import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { WindowBinder } from "./binders/windowBinder";
@@ -9,7 +10,7 @@ import { FrameRectangle } from "./frames/frameRectangle";
 import { ParentWindow } from "./parentWindow";
 import { TabLayoutable } from "./tabs/tabLayoutable";
 import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
-import { autoKey, setAxisSizeIfNumber } from "./windowHelpers";
+import { autoKey, setAxisSizeIfAuto, setAxisSizeIfNumber } from "./windowHelpers";
 import { WindowScale } from "./windowScale";
 import { WindowTemplate } from "./windowTemplate";
 
@@ -65,17 +66,19 @@ export interface BaseWindowParams extends Paddable
 
 
 export const defaultTopBarSize: number = 15;
-
-type ExtendedWindowParams = BaseWindowParams & { colours?: number[] };
-type WindowPosition = BaseWindowParams["position"];
-
 export const enum WindowFlags
 {
 	None = 0,
-	RedrawNextTick = (1 << 0),
+	// Order of axis matches LayoutDirection's order.
+	AutoHeight = (1 << 0),
+	AutoWidth = (1 << 1),
+	RedrawNextTick = (1 << 2),
 
-	Count = (1 << 1)
+	Count = (1 << 3)
 }
+
+type ExtendedWindowParams = BaseWindowParams & { colours?: number[] };
+type WindowPosition = BaseWindowParams["position"];
 
 
 /**
@@ -90,10 +93,10 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	private readonly _position?: WindowPosition;
 	private readonly _windowBinder: WindowBinder | null;
 
-	protected _lastWidth: number | "auto";
-	protected _lastHeight: number | "auto";
 	protected _activeWidgetMap?: WidgetMap | null;
-	protected _flags = WindowFlags.None;
+	protected _width!: number;
+	protected _height!: number;
+	protected _flags!: WindowFlags;
 
 	constructor(params: ExtendedWindowParams)
 	{
@@ -116,14 +119,19 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 				this.close();
 			}
 		};
-		this._lastWidth = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
-		this._lastHeight = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
+		const windowWidth = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
+		const windowHeight = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
+		this._setWindowSizeAndFlags(windowWidth, windowHeight);
 
 		windowBinder.add(windowDesc, "title", params.title);
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
 		this._position = position;
 		this._description = windowDesc;
 	}
+
+	abstract _layout(window: Window | WindowDesc, widgets: WidgetMap): void;
+
+	protected abstract _invoke(callback: (frame: TabLayoutable) => void): void;
 
 	/**
 	 * Checks if the template has been marked dirty, and redraws if that's the case.
@@ -132,41 +140,30 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	{
 		const window = this._window;
 		const activeWidgets = this._activeWidgetMap;
+		const flags = this._flags;
+
 		if (!window || !activeWidgets)
 		{
 			return;
 		}
-
-		const flags = this._flags;
-		let lastWidth = this._lastWidth;
-		let lastHeight = this._lastHeight;
-
 		if (!(flags & WindowFlags.RedrawNextTick))
 		{
 			const newWidth = window.width;
 			const newHeight = window.height;
-			const widthChanged = (lastWidth != autoKey && lastWidth != newWidth);
-			const heightChanged = (lastHeight != autoKey && lastHeight != newHeight);
-			if (!widthChanged && !heightChanged)
+			const widthSame = (flags & WindowFlags.AutoWidth || this._width == newWidth);
+			const heightSame =  (flags & WindowFlags.AutoHeight || this._height == newHeight);
+			if (widthSame && heightSame)
 			{
 				return; // nothing has changed, do nothing
 			}
 
-			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._lastWidth, "x", this._lastHeight, "to", newWidth, "x", newHeight);
-			if (widthChanged)
-			{
-				this._lastWidth = lastWidth = newWidth;
-			}
-			if (heightChanged)
-			{
-				this._lastHeight = lastHeight = newHeight;
-			}
+			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._width, "x", this._height, "to", newWidth, "x", newHeight);
+			this._width = newWidth;
+			this._height = newHeight;
 		}
 
 		const startTime = Log.time();
-		Log.debug("BaseWindow.checkResizeAndRedraw() window size: (", lastWidth, "x", lastHeight, ")...");
-
-		this._layout(window, activeWidgets, lastWidth, lastHeight);
+		this._layout(window, activeWidgets);
 		this._flags &= ~WindowFlags.RedrawNextTick;
 
 		Log.debug("BaseWindow.checkResizeAndRedraw() finished in", (Log.time() - startTime), "ms");
@@ -175,35 +172,60 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
 	 */
-	protected _createFrameRectangle(width: number | "auto", height: number | "auto", extraTopPadding = defaultTopBarSize): FrameRectangle
+	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding = defaultTopBarSize): FrameRectangle
 	{
-		const area = <FrameRectangle>{ x: 0, y: extraTopPadding };
-		setFrameSizeForDirection(area, width, 0, LayoutDirection.Horizontal);
-		setFrameSizeForDirection(area, height, extraTopPadding, LayoutDirection.Vertical);
-		return area;
+		return {
+			x: 0,
+			y: extraTopPadding,
+			width: (flags & WindowFlags.AutoWidth) ? autoKey : this._width,
+			height: (flags & WindowFlags.AutoHeight) ? autoKey : (this._height - extraTopPadding)
+		};
 	}
 
-	abstract _layout(window: Window | WindowDesc, widgets: WidgetMap, width: number | "auto", height: number | "auto"): void;
-
-	protected abstract _invoke(callback: (frame: TabLayoutable) => void): void;
-
-	redraw(): void
+	/**
+	 * Sets the window to the correct width and height when the size is auto-calculated from the frame size.
+	 */
+	protected _setAutoWindowSize(window: Window | WindowDesc, frameSize: Size, topBarSize: number, padding = zeroPadding): void
 	{
-		this._flags |= WindowFlags.RedrawNextTick;
-	}
-
-	open(): void
-	{
-		if (this._window)
+		const flags = this._flags;
+		if (flags & WindowFlags.AutoWidth)
 		{
-			// Multiple windows currently not supported, just refocus current window.
-			this.focus();
-			return;
+			this._width = setAxisSizeIfAuto(window, LayoutDirection.Horizontal, frameSize, padding, 0);
 		}
+		if (flags & WindowFlags.AutoHeight)
+		{
+			this._height = setAxisSizeIfAuto(window, LayoutDirection.Vertical, frameSize, padding, topBarSize);
+		}
+		Log.debug("BaseWindow.setAutoWindowSize() to", this._width, "x", this._height, ", from size:", Log.stringify(frameSize), ", padding:", Log.stringify(padding), ", flags:", flags);
+	}
 
-		const description = this._description;
-		const binder = this._windowBinder;
-		this._layout(description, this._descriptionWidgetMap, this._lastWidth, this._lastHeight);
+	protected _setWindowSizeAndFlags(width: number | "auto", height: number | "auto"): void
+	{
+		let flags = this._flags;
+		if (width == autoKey)
+		{
+			flags |= WindowFlags.AutoWidth;
+		}
+		else
+		{
+			flags &= ~WindowFlags.AutoWidth;
+			this._width = width;
+		}
+		if (height == autoKey)
+		{
+			flags |= WindowFlags.AutoHeight;
+		}
+		else
+		{
+			flags &= ~WindowFlags.AutoHeight;
+			this._height = height;
+		}
+		this._flags = flags;
+	}
+
+	protected _open(description: WindowDesc, binder: WindowBinder | null): void
+	{
+		this._layout(description, this._descriptionWidgetMap);
 		setWindowPosition(description, this._position);
 
 		if (binder)
@@ -217,6 +239,20 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		this._window = window;
 		this._activeWidgetMap = activeWidgets;
 		this._invoke(frame => frame.open(window, activeWidgets));
+	}
+
+	open(): void
+	{
+		if (this._window)
+		{
+			// Multiple windows currently not supported, just refocus current window.
+			this.focus();
+			return;
+		}
+
+		const description = this._description;
+		const binder = this._windowBinder;
+		this._open(description, binder);
 	}
 
 	close(): void
@@ -242,6 +278,11 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 			this._window.bringToFront();
 		}
 	}
+
+	redraw(): void
+	{
+		this._flags |= WindowFlags.RedrawNextTick;
+	}
 }
 
 
@@ -262,15 +303,4 @@ function setWindowPosition(window: WindowDesc, position: WindowPosition): void
 
 	window.x = position.x;
 	window.y = position.y;
-}
-
-
-/**
- * Sets the size for the frame for the specific direction if not `"auto"`, including padding.
- */
-function setFrameSizeForDirection(area: FrameRectangle, value: number | "auto", extraPadding: number, direction: LayoutDirection): void
-{
-	area[sizeKeys[direction]] = (value == autoKey)
-		? value
-		: value - (extraPadding + 1);
 }

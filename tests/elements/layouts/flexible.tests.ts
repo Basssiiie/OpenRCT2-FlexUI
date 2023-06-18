@@ -429,7 +429,7 @@ test("Padding: single weighted value", t =>
 	t.is(widget.x, 9);
 	t.is(widget.y, 22);
 	t.is(widget.width, 43);
-	t.is(widget.height, 56);
+	t.is(widget.height, 55);
 });
 
 
@@ -1172,4 +1172,35 @@ test("Invisible childs should still count for size inheritance", t =>
 	t.is(widget2.height, 25);
 	t.deepEqual(position.width, defaultScale);
 	t.deepEqual(position.height, defaultScale);
+});
+
+
+test("Rounding: uneven sizes get rounded inwards", t =>
+{
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 3, y: 5, width: 37, height: 23 };
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a" }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator(parentMock, output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	const label1 = output.widgets[0] as LabelWidget;
+	t.is(label1.x, 3);
+	t.is(label1.y, 5);
+	t.is(label1.width, 37);
+	t.is(label1.height, 11); // 11 instead of 11.5
+
+	const label2 = output.widgets[1] as LabelWidget;
+	t.is(label2.x, 3);
+	t.is(label2.y, 5 + 12);  // 12 instead of 11.5
+	t.is(label2.width, 37);
+	t.is(label2.height, 11);  // 11 instead of 11.5
 });
