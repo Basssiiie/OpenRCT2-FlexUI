@@ -1,9 +1,10 @@
 import { zeroPadding } from "@src/elements/constants";
+import * as Log from "@src/utilities/logger";
 import { isArray, isObject, isUndefined } from "@src/utilities/type";
 import { Padding } from "../padding";
+import { parseScaleOrFallback, parseScaleOrZero } from "./parseScale";
 import { ParsedPadding } from "./parsedPadding";
 import { ParsedScale } from "./parsedScale";
-import { parseScaleOrFallback, parseScaleOrZero } from "./parseScale";
 
 
 /**
@@ -38,7 +39,9 @@ export function parsePadding(padding: Padding | undefined, fallbackPadding: Pars
 			);
 		}
 		else
-			throw Error("Padding array of unknown length: " + length + ". Only lengths of 2 or 4 are supported.");
+		{
+			Log.thrown("Padding array of unknown length: " + length + ". Only lengths of 2 or 4 are supported.");
+		}
 	}
 	else if (isObject(padding))
 	{

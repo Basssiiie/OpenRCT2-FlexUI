@@ -1,64 +1,62 @@
 import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
-import { parseFlexiblePosition } from "@src/elements/layouts/flexible/parseFlexiblePosition";
-import { hasPadding, setSizeWithPadding } from "@src/elements/layouts/paddingHelpers";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
+import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Rectangle } from "@src/positional/rectangle";
+import { Size } from "@src/positional/size";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { ParentControl } from "../parentControl";
+import { ParentWindow } from "../parentWindow";
 import { TabLayoutable } from "../tabs/tabLayoutable";
 import { WidgetMap } from "../widgets/widgetMap";
+import { TabScaleOptions, autoKey, inheritKey, setAxisSizeIfNumber } from "../windowHelpers";
 import { FrameContext } from "./frameContext";
+import { FramePosition, ParsedFramePosition } from "./framePosition";
+import { FrameRectangle } from "./frameRectangle";
 
 
 /**
  * An independant window component that can hold one or more widgets and manage their lifecycle.
  */
-export class FrameControl implements FrameContext, ParentControl<FlexiblePosition>, TabLayoutable
+export class FrameControl implements FrameContext, ParentControl<FramePosition, ParsedFramePosition>, TabLayoutable
 {
-	parse = parseFlexiblePosition;
 	recalculate = this.redraw;
 
-	_body!: FlexibleLayoutControl;
+	_body!: FlexibleLayoutControl<FramePosition, ParsedFramePosition>;
 	_binder!: WidgetBinder | null;
 
 	_activeWidgets?: WidgetMap;
-	_redrawNextTick: boolean = true;
-
-	_area?: Rectangle;
 
 	constructor(
-		readonly _padding: ParsedPadding,
-		readonly _open: Event<FrameContext>,
-		readonly _update: Event<FrameContext>,
-		readonly _close: Event<FrameContext>
+		readonly width: TabScaleOptions,
+		readonly height: TabScaleOptions,
+		private readonly _parent: ParentWindow,
+		private readonly _open: Event<FrameContext>,
+		private readonly _update: Event<FrameContext>,
+		private readonly _redraw: Event<FrameContext>,
+		private readonly _close: Event<FrameContext>
 	){}
 
 	/**
 	 * Recalculate the whole layout.
 	 */
-	layout(area: Rectangle): void
+	layout(area: FrameRectangle, widgets: WidgetMap): Size
 	{
-		const widgets = this._activeWidgets;
-		if (!widgets)
-		{
-			return;
-		}
-		const padding = this._padding;
-		if (hasPadding(padding))
-		{
-			setSizeWithPadding(area,  defaultScale, defaultScale, padding);
-		}
-
-		this._redrawNextTick = false;
-		this._area = area;
+		invoke(this._redraw, this);
 
 		const body = this._body;
-		body._recalculateSizeFromChildren();
-		body.layout(widgets, area);
+		const position = body.position;
+
+		const width = applyFrameScaleOption(area, this.width, position, LayoutDirection.Horizontal);
+		const height = applyFrameScaleOption(area, this.height, position, LayoutDirection.Vertical);
+
+		body.layout(widgets, <Rectangle>area);
+
+		return { width, height };
 	}
 
 	redraw(): void
@@ -68,8 +66,19 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 			Log.debug("FrameControl.redraw() not required, frame is not active.");
 			return;
 		}
+		this._parent.redraw();
+	}
 
-		this._redrawNextTick = true;
+	/**
+	 * Parser for the direct child body of the control.
+	 */
+	parse(position: FramePosition): ParsedFramePosition
+	{
+		return {
+			width: defaultScale,
+			height: defaultScale,
+			_padding: parsePadding(position.padding)
+		};
 	}
 
 	getWidget<T extends Widget>(name: string): T | null
@@ -88,8 +97,11 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 		return !!this._activeWidgets;
 	}
 
-	open(widgets: WidgetMap): void
+	open(window: Window, widgets: WidgetMap): void
 	{
+		setAxisSizeIfNumber(window, LayoutDirection.Horizontal, this.width);
+		setAxisSizeIfNumber(window, LayoutDirection.Vertical, this.height);
+
 		this._activeWidgets = widgets;
 
 		const binder = this._binder;
@@ -102,10 +114,6 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 
 	update(): void
 	{
-		if (this._redrawNextTick && this._area)
-		{
-			this.layout(this._area);
-		}
 		invoke(this._update, this);
 	}
 
@@ -120,4 +128,32 @@ export class FrameControl implements FrameContext, ParentControl<FlexiblePositio
 		}
 		this._activeWidgets = undefined;
 	}
+}
+
+
+/**
+ * Applies the frame scale option to the specified area and returns the total occupied space by the frame.
+ */
+function applyFrameScaleOption(area: FrameRectangle, option: TabScaleOptions, bodyPosition: ParsedFramePosition, direction: LayoutDirection): number
+{
+	const sizeKey = sizeKeys[direction];
+	const parentSize = area[sizeKey];
+	const bodySize = bodyPosition[sizeKey];
+	const bodyPadding = bodyPosition._padding;
+	const inheritParent = (option == inheritKey);
+
+	if ((inheritParent && parentSize == autoKey) || option == autoKey)
+	{
+		// Get area size of child frame.
+		if (!isAbsolute(bodySize))
+		{
+			Log.thrown("Window body " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
+		}
+
+		return (bodySize[0] + setAbsolutePaddingForDirection(area, bodyPadding, direction));
+	}
+
+	// Apply regular padding to area and return original size.
+	setSizeWithPaddingForDirection(<Rectangle>area, direction, bodySize, bodyPadding);
+	return (inheritParent) ? <number>parentSize : bodySize[0];
 }

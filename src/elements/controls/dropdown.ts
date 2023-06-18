@@ -7,11 +7,11 @@ import { decorateWithSilencer } from "@src/utilities/silencer";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -61,7 +61,7 @@ export interface DropdownParams extends ElementParams
  */
 export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function dropdown(params: DropdownParams & Positions): WidgetCreator<Positions>
+export function dropdown<I extends SizeParams, P>(params: DropdownParams & I): WidgetCreator<I, P>
 {
 	ensureDefaultLineHeight(params);
 
@@ -72,7 +72,7 @@ export function dropdown(params: DropdownParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a dropdown widget.
  */
-export class DropdownControl extends Control<DropdownDesc> implements DropdownDesc
+export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implements DropdownDesc
 {
 	items: string[] = [];
 	selectedIndex: number = 0;
@@ -82,7 +82,7 @@ export class DropdownControl extends Control<DropdownDesc> implements DropdownDe
 	_previousItems?: string[];
 	_silenceOnChange?: boolean;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: DropdownParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: DropdownParams & I)
 	{
 		super("dropdown", parent, output, params);
 

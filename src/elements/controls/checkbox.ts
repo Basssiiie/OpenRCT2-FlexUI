@@ -5,11 +5,11 @@ import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
+import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -43,7 +43,7 @@ export interface CheckboxParams extends ElementParams
  */
 export function checkbox(params: CheckboxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function checkbox(params: CheckboxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function checkbox(params: CheckboxParams & Positions): WidgetCreator<Positions>
+export function checkbox<I extends SizeParams, P>(params: CheckboxParams & I): WidgetCreator<I, P>
 {
 	ensureDefaultLineHeight(params); // todo check for different size without text
 
@@ -54,14 +54,14 @@ export function checkbox(params: CheckboxParams & Positions): WidgetCreator<Posi
 /**
  * A controller class for a checkbox widget.
  */
-class CheckboxControl extends Control<CheckboxDesc> implements CheckboxDesc, CheckboxParams
+class CheckboxControl<I, P> extends Control<CheckboxDesc, I, P> implements CheckboxDesc, CheckboxParams
 {
 	text?: string;
 	isChecked?: boolean;
 	onChange?: (isChecked: boolean) => void;
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: CheckboxParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: CheckboxParams & I)
 	{
 		super("checkbox", parent, output, params);
 

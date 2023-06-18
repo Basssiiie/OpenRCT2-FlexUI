@@ -7,10 +7,10 @@ import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
+import { SizeParams } from "../../positional/size";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -41,7 +41,7 @@ export interface ColourPickerParams extends ElementParams
  */
 export function colourPicker(params: ColourPickerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function colourPicker(params: ColourPickerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function colourPicker(params: ColourPickerParams & Positions): WidgetCreator<Positions>
+export function colourPicker<I extends SizeParams, P>(params: ColourPickerParams & I): WidgetCreator<I, P>
 {
 	if (isUndefined(params.width))
 	{
@@ -58,7 +58,7 @@ export function colourPicker(params: ColourPickerParams & Positions): WidgetCrea
 /**
  * A controller class for a colour picker widget.
  */
-class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPickerDesc, ColourPickerParams
+class ColourPickerControl<I, P> extends Control<ColourPickerDesc, I, P> implements ColourPickerDesc, ColourPickerParams
 {
 	colour?: number;
 	onChange?: (colour: number) => void;
@@ -66,7 +66,7 @@ class ColourPickerControl extends Control<ColourPickerDesc> implements ColourPic
 	_silenceOnChange?: boolean;
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: ColourPickerParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ColourPickerParams & I)
 	{
 		super("colourpicker", parent, output, params);
 

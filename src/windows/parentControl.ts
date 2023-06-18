@@ -1,16 +1,14 @@
-import { Positions } from "@src/elements/layouts/positions";
 import { Parsed } from "@src/positional/parsing/parsed";
-
 
 /**
  * An interface to interact with the parent of this control.
  */
-export interface ParentControl<TPos extends Positions = Positions>
+export interface ParentControl<Positioning, ParsedPosition = Parsed<Positioning>>
 {
 	/**
 	 * Parses a position according to the positional context of the parent.
 	 */
-	parse(position: TPos): Parsed<TPos>;
+	parse(position: Positioning): ParsedPosition;
 
 	/**
 	 * Indicate to the parent that it should recalculate its own required area, because (for example)

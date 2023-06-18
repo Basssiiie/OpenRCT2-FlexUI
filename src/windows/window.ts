@@ -1,11 +1,13 @@
+import { defaultWindowPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Colour } from "@src/utilities/colour";
-import { Event } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
-import { BaseWindowControl, BaseWindowParams } from "./baseWindowControl";
+import { isUndefined } from "@src/utilities/type";
+import { BaseWindowControl, BaseWindowParams, defaultTopBarSize } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
-import { FrameContext } from "./frames/frameContext";
+import { FrameControl } from "./frames/frameControl";
 import { TabLayoutable } from "./tabs/tabLayoutable";
+import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -33,6 +35,10 @@ export function window(params: WindowParams): WindowTemplate
 	Log.debug("window() started");
 	const startTime = Log.time();
 
+	if (isUndefined(params.padding))
+	{
+		params.padding = defaultWindowPadding;
+	}
 	const template = new WindowControl(params);
 
 	Log.debug("window() creation time:", (Log.time() - startTime), "ms");
@@ -45,28 +51,31 @@ export function window(params: WindowParams): WindowTemplate
  */
 class WindowControl extends BaseWindowControl
 {
-	private _frame: TabLayoutable;
+	private _frame: FrameControl;
+	protected override _descriptionWidgetMap: WidgetMap;
+
 
 	constructor(params: WindowParams)
 	{
-		const open: Event<FrameContext> = [];
-		const update: Event<FrameContext> = [];
-		const close: Event<FrameContext> = [];
-		super(params, update);
+		super(params);
 
-		const builder = new FrameBuilder(params, params, undefined, open, update, close);
-		this._description.widgets = builder._widgets;
-		this._frame = builder.context;
+		const builder = new FrameBuilder(this, params, params);
+		const widgets = builder._widgets;
+		this._description.widgets = widgets;
+		this._descriptionWidgetMap = addToWidgetMap(widgets);
+		this._frame =  builder.context;
 	}
 
-	protected _invoke(callback: (frame: TabLayoutable) => void): void
+	protected override _invoke(callback: (frame: TabLayoutable) => void): void
 	{
 		callback(this._frame);
 	}
 
-	_layout(): void
+	override _layout(window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._getWindowWidgetRectangle();
-		this._frame.layout(area);
+		const area = this._createFrameRectangle(this._flags);
+		const size = this._frame.layout(area, widgets);
+
+		this._setAutoWindowSize(window, size, defaultTopBarSize);
 	}
 }

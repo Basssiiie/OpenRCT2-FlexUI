@@ -1,6 +1,7 @@
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
-import { Positions } from "@src/elements/layouts/positions";
 import { Paddable } from "@src/positional/paddable";
+import { FramePosition } from "./framePosition";
+
 
 /**
  * Parameters to allow for frame events; these are separate to allow for custom
@@ -16,4 +17,4 @@ export interface FrameEventParams extends Paddable
 /**
  * Parameters to allow for frame content to be passed around.
  */
-export type FrameContentParams = (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Positions;
+export type FrameContentParams = (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & FramePosition;

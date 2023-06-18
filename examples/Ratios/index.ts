@@ -5,8 +5,8 @@ import { box, horizontal, label, vertical, window } from "openrct2-flexui";
 
 const ratios = window({
 	title: "Ratios (fui example)",
-	width: 400, minWidth: 100, maxWidth: 10000,
-	height: 300, minHeight: 75, maxHeight: 7500,
+	width: { value: 400, min: 100, max: 10000 },
+	height: { value: 300, min: 75, max: 7500 },
 	padding: 5,
 	content: [
 		horizontal([

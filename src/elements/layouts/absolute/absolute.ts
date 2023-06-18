@@ -1,18 +1,17 @@
+import { VisualElement } from "@src/elements/controls/visualElement";
+import { parseScale } from "@src/positional/parsing/parseScale";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { Rectangle } from "@src/positional/rectangle";
+import { noop } from "@src/utilities/noop";
+import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { VisualElement } from "@src/elements/controls/visualElement";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { parseScale } from "@src/positional/parsing/parseScale";
-import { Rectangle } from "@src/positional/rectangle";
-import { isArray } from "@src/utilities/type";
 import { FlexiblePosition } from "../flexible/flexiblePosition";
-import { Positions } from "../positions";
 import { absoluteLayout } from "./absoluteLayout";
 import { AbsolutePosition } from "./absolutePosition";
-import { noop } from "@src/utilities/noop";
 
 
 /**
@@ -40,25 +39,25 @@ export function absolute(params: AbsoluteLayoutContainer & FlexiblePosition): Wi
 export function absolute(params: AbsoluteLayoutContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function absolute(params: AbsoluteLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function absolute(params: AbsoluteLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function absolute(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions): WidgetCreator<Positions>
+export function absolute<I, P>(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & I): WidgetCreator<I, P>
 {
-	return (parent, output) => new AbsoluteLayoutControl(parent, output, params);
+	return (parent, output) => new AbsoluteLayoutControl<I, P>(parent, output, params);
 }
 
 
-class AbsoluteLayoutControl extends VisualElement implements ParentControl<AbsolutePosition>
+class AbsoluteLayoutControl<I, P> extends VisualElement<I, P> implements ParentControl<AbsolutePosition>
 {
 	recalculate = noop; // Nothing to recalculate
 
-	_children: Layoutable<AbsolutePosition>[];
+	_children: Layoutable<Parsed<AbsolutePosition>>[];
 
-	constructor(parent: ParentControl, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Positions)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & I)
 	{
 		super(parent, params);
 
 		const childCreators = (isArray(params)) ? params : params.content;
 		const count = childCreators.length;
-		this._children = Array<Layoutable<AbsolutePosition>>(count);
+		this._children = Array<Layoutable<Parsed<AbsolutePosition>>>(count);
 
 		for (let i = 0; i < childCreators.length; i++)
 		{

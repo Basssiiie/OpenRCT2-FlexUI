@@ -1,15 +1,15 @@
 import { Bindable } from "@src/bindings/bindable";
+import { Rectangle } from "@src/positional/rectangle";
+import { TextColour } from "@src/utilities/textColour";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { Rectangle } from "@src/positional/rectangle";
-import { TextColour } from "@src/utilities/textColour";
+import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -32,9 +32,9 @@ export interface LabelParams extends ElementParams
 	 * The colour of the text.
 	 *
 	 * Note: colour can also be inserted mid-text by using `{COLOUR}`.
-	 * @todo
+	 * @todo Not yet implemented.
 	 */
-	color?: Bindable<TextColour>;
+	colour?: Bindable<TextColour>;
 }
 
 
@@ -43,7 +43,7 @@ export interface LabelParams extends ElementParams
  */
 export function label(params: LabelParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function label(params: LabelParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function label(params: LabelParams & Positions): WidgetCreator<Positions>
+export function label<I extends SizeParams, P>(params: LabelParams & I): WidgetCreator<I, P>
 {
 	ensureDefaultLineHeight(params);
 
@@ -54,12 +54,12 @@ export function label(params: LabelParams & Positions): WidgetCreator<Positions>
 /**
  * A controller class for a label widget.
  */
-class LabelControl extends Control<LabelDesc> implements LabelDesc
+class LabelControl<I, P> extends Control<LabelDesc, I, P> implements LabelDesc
 {
 	text: string = "";
 	textAlign?: TextAlignment;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: LabelParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: LabelParams & I)
 	{
 		super("label", parent, output, params);
 

@@ -20,7 +20,7 @@ Designed with a focus on ease of use, performance, light-weighted and flexibilit
 
 For examples see the [examples folder](https://github.com/Basssiiie/OpenRCT2-FlexUI/tree/main/examples).
 
-## Usages
+## Plugins using FlexUI
 
 Various plugins have already adopted FlexUI as their UI-library:
 
@@ -62,4 +62,4 @@ To publish a local version of FlexUI for use in your own plugins;
 
 ### Unit tests
 
-The unit tests are written using AVA.js and can be run outside the game. First run `npm run test:setup`  in the main folder to ensure the test dependencies are installed. Then simply run `npm test` to run all tests.
+The unit tests are written using AVA.js and can be run outside the game. First run `npm run install:test-setup` in the main folder to ensure the test dependencies are installed, and then `npm run build` to get a build for the included integration tests. Then simply run `npm test` to run all tests.

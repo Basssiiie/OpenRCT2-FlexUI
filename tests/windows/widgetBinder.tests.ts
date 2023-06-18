@@ -1,11 +1,12 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { DefaultStore } from "@src/bindings/stores/defaultStore";
-import { WidgetBinder } from "@src/windows/binders/widgetBinder";
-import { FrameBuilder } from "@src/windows/frames/frameBuilder";
-import { createWidgetMap } from "@src/windows/widgets/widgetMap";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { mutable } from "@src/utilities/mutable";
+import { noop } from "@src/utilities/noop";
+import { WidgetBinder } from "@src/windows/binders/widgetBinder";
+import { FrameBuilder } from "@src/windows/frames/frameBuilder";
+import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
@@ -57,7 +58,7 @@ test("read() sets store in window frame", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const output = new FrameBuilder({}, [], undefined, [], [], []);
+	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
 	const storeNumber = new DefaultStore(25);
@@ -65,7 +66,7 @@ test("read() sets store in window frame", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(<Widget[]>output._widgets));
+	frame.open(<Window>{}, addToWidgetMap(<Widget[]>output._widgets));
 
 	t.is(label.x, 25);
 
@@ -85,7 +86,7 @@ test("read() sets store through converter", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
-	const output = new FrameBuilder({}, [], undefined, [], [], []);
+	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
 	const storeNumber = new DefaultStore<ElementVisibility>("visible");
@@ -93,7 +94,7 @@ test("read() sets store through converter", t =>
 
 	const frame = mutable(output.context);
 	frame._binder = output.binder; // prevents the binder to be optimized away internally
-	frame.open(createWidgetMap(<Widget[]>output._widgets));
+	frame.open(<Window>{}, addToWidgetMap(<Widget[]>output._widgets));
 
 	t.true(label.isVisible);
 

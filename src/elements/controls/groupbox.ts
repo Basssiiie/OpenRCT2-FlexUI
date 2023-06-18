@@ -1,21 +1,21 @@
 import { Bindable } from "@src/bindings/bindable";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { ParsedSize, SizeParams } from "../../positional/size";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { FlexibleLayoutControl, FlexibleLayoutParams } from "../layouts/flexible/flexible";
+import { FlexibleDirectionalLayoutParams, FlexibleLayoutControl } from "../layouts/flexible/flexible";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "../layouts/flexible/layoutDirection";
-import { Positions } from "../layouts/positions";
 import { BoxContainer, BoxControl, BoxParams } from "./box";
 
 
 /**
  * The parameters for configuring a visual box in the user interface.
  */
-export interface GroupBoxParams extends FlexibleLayoutParams, ElementParams
+export interface GroupBoxParams extends FlexibleDirectionalLayoutParams, ElementParams
 {
 	/**
 	 * The content to show within the box. The content will be padded to `6px`
@@ -28,12 +28,6 @@ export interface GroupBoxParams extends FlexibleLayoutParams, ElementParams
 	 * @default "6px"
 	 */
 	gap?: Padding;
-
-	/**
-	 * The direction in which to layout the contents of the box.
-	 * @default LayoutDirection.Vertical
-	 */
-	direction?: LayoutDirection;
 
 	/**
 	 * An optionel label to show at the top of the box.
@@ -52,7 +46,7 @@ export function groupbox(params: BoxContainer[] & FlexiblePosition): WidgetCreat
 export function groupbox(params: BoxContainer[] & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function groupbox(params: GroupBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function groupbox(params: GroupBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions): WidgetCreator<Positions>
+export function groupbox<I extends SizeParams, P extends ParsedSize>(params: (GroupBoxParams | BoxContainer[]) & I): WidgetCreator<I, P>
 {
 	let content: BoxContainer[],
 		gap: Padding | undefined,
@@ -76,9 +70,9 @@ export function groupbox(params: (GroupBoxParams | BoxContainer[]) & Positions):
 		content = params;
 	}
 
-	const boxParams = <BoxParams & FlexiblePosition><never>params;
+	const boxParams = <BoxParams & I><never>params;
 	const flexParams = { content, direction, spacing, padding: gap };
 	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams));
 
-	return (parent, output) => new BoxControl(parent, output, boxParams);
+	return (parent, output) => new BoxControl<I, P>(parent, output, boxParams);
 }

@@ -1,16 +1,16 @@
 import { Bindable } from "@src/bindings/bindable";
 import { isStore } from "@src/bindings/stores/isStore";
 import { read } from "@src/bindings/stores/read";
+import * as Log from "@src/utilities/logger";
+import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { FrameContext } from "@src/windows/frames/frameContext";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
-import * as Log from "@src/utilities/logger";
-import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
+import { openEvent, updateEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 import { ViewportFlags } from "./enums/viewportFlags";
 
@@ -46,7 +46,7 @@ export interface ViewportParams extends ElementParams
  */
 export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function viewport(params: ViewportParams & Positions): WidgetCreator<Positions>
+export function viewport<I, P>(params: ViewportParams & I): WidgetCreator<I, P>
 {
 	return (parent, output) => new ViewportControl(parent, output, params);
 }
@@ -62,7 +62,7 @@ const disabledFlags = ViewportFlags.HideBase | ViewportFlags.HideVertical
 /**
  * A controller class for a viewport widget.
  */
-class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
+class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements ViewportDesc
 {
 	_target?: CoordsXY | CoordsXYZ | number | null;
 
@@ -70,7 +70,7 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 	/**
 	 * Create a viewport control with the specified parameters.
 	 */
-	constructor(parent: ParentControl, output: BuildOutput, params: ViewportParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ViewportParams & I)
 	{
 		super("viewport", parent, output, params);
 
@@ -94,7 +94,7 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 			}
 		});
 
-		output.on("open", (context) =>
+		output.on(openEvent, (context) =>
 		{
 			const viewport = this._getViewportFromContext(context);
 			if (viewport && zoom)
@@ -106,7 +106,7 @@ class ViewportControl extends Control<ViewportDesc> implements ViewportDesc
 
 		if (isStore(target) || isNumber(target))
 		{
-			output.on("update", (context) =>
+			output.on(updateEvent, (context) =>
 			{
 				const viewport = this._getViewportFromContext(context);
 				this._updateViewport(viewport, target, visibilityFlags, disabled);

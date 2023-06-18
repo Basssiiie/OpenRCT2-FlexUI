@@ -10,11 +10,11 @@ import * as MathUtils from "@src/utilities/math";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -90,7 +90,7 @@ export interface SpinnerParams extends ElementParams
  */
 export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function spinner(params: SpinnerParams & Positions): WidgetCreator<Positions>
+export function spinner<I extends SizeParams, P>(params: SpinnerParams & I): WidgetCreator<I, P>
 {
 	ensureDefaultLineHeight(params);
 
@@ -101,7 +101,7 @@ export function spinner(params: SpinnerParams & Positions): WidgetCreator<Positi
 /**
  * A controller class for a spinner widget.
  */
-export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
+export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements SpinnerDesc
 {
 	text?: string;
 	onIncrement: () => void;
@@ -116,7 +116,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 	_onChange?: (value: number, adjustment: number) => void;
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: SpinnerParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: SpinnerParams & I)
 	{
 		super("spinner", parent, output, params);
 
@@ -174,7 +174,7 @@ export class SpinnerControl extends Control<SpinnerDesc> implements SpinnerDesc
 
 		if (this._minimum > this._maximum)
 		{
-			throw Error("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
+			Log.thrown("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
 		}
 	}
 

@@ -1,21 +1,21 @@
+import { defaultSpacing, redrawEvent } from "@src/elements/constants";
+import { VisualElement } from "@src/elements/controls/visualElement";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { parseScale } from "@src/positional/parsing/parseScale";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
+import * as Log from "@src/utilities/logger";
+import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { defaultSpacing } from "@src/elements/constants";
-import { VisualElement } from "@src/elements/controls/visualElement";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { ParsedScale } from "@src/positional/parsing/parsedScale";
-import { parseScale } from "@src/positional/parsing/parseScale";
-import { Rectangle } from "@src/positional/rectangle";
-import { Scale } from "@src/positional/scale";
-import * as Log from "@src/utilities/logger";
-import { isArray } from "@src/utilities/type";
+import { ParsedSize, SizeParams } from "../../../positional/size";
 import { AbsolutePosition } from "../absolute/absolutePosition";
-import { Positions } from "../positions";
-import { getInheritanceFlags, InheritFlags, recalculateInheritedSpaceFromChildren } from "./desiredSpacing";
+import { InheritFlags, getInheritanceFlags, recalculateInheritedSpaceFromChildren } from "./desiredSpacing";
 import { flexibleLayout } from "./flexibleLayout";
 import { FlexiblePosition } from "./flexiblePosition";
 import { parseFlexiblePosition } from "./parseFlexiblePosition";
@@ -24,7 +24,7 @@ import { parseFlexiblePosition } from "./parseFlexiblePosition";
 /**
  * Array of widgets for use in a flexible layout container.
  */
-export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition>[];
+export type FlexibleLayoutContainer = WidgetCreator<FlexiblePosition, Parsed<FlexiblePosition>>[];
 
 
 /**
@@ -65,10 +65,10 @@ export function horizontal(params: FlexibleLayoutContainer & FlexiblePosition): 
 export function horizontal(params: FlexibleLayoutContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function horizontal(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<Positions>
+export function horizontal<I extends SizeParams, P extends ParsedSize>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & I): WidgetCreator<I, P>
 {
 	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Horizontal;
-	return flexible(<never>params);
+	return <never>flexible(<never>params);
 }
 
 
@@ -79,10 +79,10 @@ export function vertical(params: FlexibleLayoutContainer & FlexiblePosition): Wi
 export function vertical(params: FlexibleLayoutContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function vertical(params: FlexibleLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Positions): WidgetCreator<Positions>
+export function vertical<I extends SizeParams, P extends ParsedSize>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & I): WidgetCreator<I, P>
 {
 	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Vertical;
-	return flexible(<never>params);
+	return <never>flexible(<never>params);
 }
 
 
@@ -91,9 +91,9 @@ export function vertical(params: (FlexibleLayoutParams | FlexibleLayoutContainer
  */
 export function flexible(params: FlexibleDirectionalLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function flexible(params: FlexibleDirectionalLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function flexible(params: FlexibleDirectionalLayoutParams & Positions): WidgetCreator<Positions>
+export function flexible<I extends SizeParams, P extends ParsedSize>(params: FlexibleDirectionalLayoutParams & I): WidgetCreator<I, P>
 {
-	return (parent, output): FlexibleLayoutControl => new FlexibleLayoutControl(parent, output, params);
+	return (parent, output) => new FlexibleLayoutControl<I, P>(parent, output, params);
 }
 
 
@@ -102,49 +102,62 @@ const enum FlexFlags
 	RecalculateFromChildren = (InheritFlags.Count << 0)
 }
 
+type FlexChild = Layoutable<Parsed<FlexiblePosition>>;
 
-export class FlexibleLayoutControl extends VisualElement implements ParentControl<FlexiblePosition>
+
+export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> extends VisualElement<I, P> implements Layoutable<P>, ParentControl<FlexiblePosition>
 {
 	parse = parseFlexiblePosition;
 
-	_children: Layoutable<FlexiblePosition>[];
-	_renderableChildren!: Layoutable<FlexiblePosition>[];
+	_children: FlexChild[];
+	_renderableChildren!: FlexChild[];
 	_renderableChildrenPositions!: Parsed<FlexiblePosition>[];
 
 	_direction: LayoutDirection;
 	_spacing: ParsedScale;
 	_flags: number;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Positions)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & I)
 	{
 		super(parent, params);
-		let direction: LayoutDirection | undefined;
-		if ("direction" in params)
-		{
-			direction = params.direction;
-		}
-		this._direction = (direction || LayoutDirection.Vertical);
+		this._direction = (<{ direction?: LayoutDirection }>params).direction || LayoutDirection.Vertical;
+		this._spacing = (parseScale((<{ spacing?: Scale }>params).spacing) || defaultSpacing);
 
-		let spacing: ParsedScale | undefined;
-		if ("spacing" in params)
-		{
-			spacing = parseScale(params.spacing);
-		}
-		this._spacing = (spacing || defaultSpacing);
-
+		const inheritFlags = getInheritanceFlags(params);
 		const childCreators = (isArray(params)) ? params : params.content;
 		const count = childCreators.length;
-		const children = Array<Layoutable<FlexiblePosition>>(count);
+		const children = Array<FlexChild>(count);
 
 		for (let i = 0; i < count; i++)
 		{
 			const creator = childCreators[i];
-			const layoutable = creator(this, output);
-			children[i] = layoutable;
+			children[i] = creator(this, output);
 		}
 
-		this._flags = (getInheritanceFlags(params) | FlexFlags.RecalculateFromChildren);
+		this._flags = (inheritFlags | FlexFlags.RecalculateFromChildren);
 		this._children = children;
+
+		output.on(redrawEvent, () =>
+		{
+			const flags = this._flags;
+			Log.debug("Flexible: recalculate size from children ->", !!(flags & FlexFlags.RecalculateFromChildren));
+			if (flags & FlexFlags.RecalculateFromChildren)
+			{
+				// Clear recalculate flag
+				this._flags &= ~FlexFlags.RecalculateFromChildren;
+
+				const children = this._children;
+				const renderableChildren = children.filter(c => !c.skip);
+
+				if (recalculateInheritedSpaceFromChildren(this.position, flags, children, this._spacing, this._direction))
+				{
+					Log.debug("Flexible: recalculated size to", Log.stringify(this.position));
+				}
+
+				this._renderableChildren = renderableChildren;
+				this._renderableChildrenPositions = renderableChildren.map(c => c.position);
+			}
+		});
 	}
 
 	recalculate(): void
@@ -156,37 +169,10 @@ export class FlexibleLayoutControl extends VisualElement implements ParentContro
 		}
 	}
 
-	_recalculateSizeFromChildren(): void
-	{
-		Log.debug("Flexible: recalculateSizeFromChildren() ->", !!(this._flags & FlexFlags.RecalculateFromChildren));
-		if (this._flags & FlexFlags.RecalculateFromChildren)
-		{
-			// Clear recalculate flag
-			this._flags &= ~FlexFlags.RecalculateFromChildren;
-
-			const renderableChildren = this._children.filter(c => !c.skip);
-			const positions = renderableChildren.map(c => c.position());
-
-			if (recalculateInheritedSpaceFromChildren(this._position, this._flags, positions, this._spacing, this._direction))
-			{
-				Log.debug("Flexible: recalculated size to [", this._position.width, "x", this._position.height, "]");
-			}
-
-			this._renderableChildren = renderableChildren;
-			this._renderableChildrenPositions = positions;
-		}
-	}
-
-	override position(): Parsed<Positions>
-	{
-		this._recalculateSizeFromChildren();
-		return this._position;
-	}
-
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug("Flexible; layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
-		Log.assert(!!this._renderableChildren, "_recalculateSizeFromChildren() was not called: children are missing");
+		Log.debug("Flexible; layout() for area:", Log.stringify(area));
+		Log.assert(!!this._renderableChildren, "redraw event was not called: children are missing");
 
 		flexibleLayout(this._renderableChildrenPositions, area, this._direction, this._spacing, (idx, subarea) =>
 		{

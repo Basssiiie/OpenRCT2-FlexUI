@@ -1,22 +1,23 @@
 import { Bindable } from "@src/bindings/bindable";
+import { Padding } from "@src/positional/padding";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ScaleType } from "@src/positional/parsing/scaleType";
+import { Rectangle } from "@src/positional/rectangle";
+import * as Log from "@src/utilities/logger";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { Padding } from "@src/positional/padding";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
-import { ScaleType } from "@src/positional/parsing/scaleType";
-import { Rectangle } from "@src/positional/rectangle";
-import * as Log from "@src/utilities/logger";
+import { ParsedSize, SizeParams } from "../../positional/size";
+import { redrawEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { getInheritanceFlags, InheritFlags, recalculateInheritedSpaceFromChild } from "../layouts/flexible/desiredSpacing";
+import { InheritFlags, getInheritanceFlags, recalculateInheritedSpaceFromChild } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
 import { setSizeWithPadding } from "../layouts/paddingHelpers";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -52,9 +53,9 @@ export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<Flex
 export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function box(params: BoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function box(params: BoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function box(params: (BoxParams | BoxContainer) & Positions): WidgetCreator<Positions>
+export function box<I extends SizeParams, P extends ParsedSize>(params: (BoxParams | BoxContainer) & I): WidgetCreator<I, P>
 {
-	return (parent, output): BoxControl => new BoxControl(parent, output, params);
+	return (parent, output) => new BoxControl<I, P>(parent, output, params);
 }
 
 
@@ -72,24 +73,25 @@ const trimTopWithoutTitle: number = 4;
 /**
  * A controller class for a groupbox widget.
  */
-export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, ParentControl<FlexiblePosition>
+export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Control<GroupBoxDesc, I, P> implements GroupBoxDesc, ParentControl<FlexiblePosition>
 {
 	text?: string;
 
-	_child: Layoutable<FlexiblePosition>;
+	_child: Layoutable<Parsed<FlexiblePosition>>;
 	_flags: number;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: (BoxParams | BoxContainer) & Positions)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (BoxParams | BoxContainer) & I)
 	{
 		const type = "groupbox";
+		const content = "content";
 		let flags = getInheritanceFlags(params);
 		let childCreator: WidgetCreator<FlexiblePosition>;
 
-		if ("content" in params)
+		if (content in params)
 		{
 			// Is BoxParams (complex object)
 			super(type, parent, output, params);
-			childCreator = params.content;
+			childCreator = params[content];
 
 			const binder = output.binder, text = params.text;
 			binder.add(this, "text", text);
@@ -98,7 +100,7 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 		else
 		{
 			// Is BoxContainer (flat params, just a creator)
-			super(type, parent, output, {});
+			super(type, parent, output, <I>{});
 			childCreator = params;
 		}
 
@@ -106,6 +108,21 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 
 		const child = childCreator(this, output);
 		this._child = child;
+
+		output.on(redrawEvent, () =>
+		{
+			Log.debug("Box(", this.name, "): recalculate size from children ->", !!(this._flags & BoxFlags.RecalculateFromChildren));
+			if (this._flags & BoxFlags.RecalculateFromChildren)
+			{
+				// Clear recalculate flag
+				this._flags &= ~BoxFlags.RecalculateFromChildren;
+
+				if (recalculateInheritedSpaceFromChild(this.position, this._flags, this._child.position))
+				{
+					Log.debug("Box(", this.name, "): recalculated size to", Log.stringify(this.position));
+				}
+			}
+		});
 	}
 
 	parse(position: FlexiblePosition): Parsed<FlexiblePosition>
@@ -127,30 +144,9 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 		}
 	}
 
-	_recalculateSizeFromChildren(): void
-	{
-		Log.debug("Box(", this.name, "): recalculateSizeFromChild() ->", !!(this._flags & BoxFlags.RecalculateFromChildren));
-		if (this._flags & BoxFlags.RecalculateFromChildren)
-		{
-			// Clear recalculate flag
-			this._flags &= ~BoxFlags.RecalculateFromChildren;
-
-			if (recalculateInheritedSpaceFromChild(this._position, this._flags, this._child.position()))
-			{
-				Log.debug("Box(", this.name, "): recalculated size to [", this._position.width, "x", this._position.height, "]");
-			}
-		}
-	}
-
-	override position(): Parsed<Positions>
-	{
-		this._recalculateSizeFromChildren();
-		return this._position;
-	}
-
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		Log.debug("Box(", this.name, ") layout() for area: [", area.x, ",", area.y, ",", area.width, ",", area.height, "]");
+		Log.debug("Box(", this.name, ") layout() for area:", Log.stringify(area));
 		// Align visual box with layout box, will move label slightly out of bounds.
 		const trim = (this._flags & BoxFlags.AddTitlePadding) ? 0 : trimTopWithoutTitle;
 		area.y -= trim;
@@ -159,10 +155,10 @@ export class BoxControl extends Control<GroupBoxDesc> implements GroupBoxDesc, P
 		area.y += trim;
 		area.height -= trim;
 
-		const { width, height, padding } = this._child.position();
-		Log.debug("Box(", this.name, ") layout() child size: [", width, "x", height, "]");
-		setSizeWithPadding(area, width, height, padding);
 		const child = this._child;
+		const position = child.position;
+		Log.debug("Box(", this.name, ") layout() child size:", position.width, "x", position.height);
+		setSizeWithPadding(area, position.width, position.height, position.padding);
 		child.layout(widgets, area);
 	}
 }

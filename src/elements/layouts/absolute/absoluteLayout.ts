@@ -1,16 +1,16 @@
-import { Layoutable } from "@src/windows/layoutable";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
+import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isWeighted } from "@src/positional/parsing/parsedScale";
-import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
+import { Layoutable } from "@src/windows/layoutable";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { AbsolutePosition } from "./absolutePosition";
 
 
 /**
  * Lay out all elements over at absolute positions relative to the parent area, then calls apply for each element.
  */
-export function absoluteLayout(elements: Layoutable<AbsolutePosition>[], parentArea: Rectangle, widgetMap: WidgetMap): void
+export function absoluteLayout(elements: Layoutable<Parsed<AbsolutePosition>>[], parentArea: Rectangle, widgetMap: WidgetMap): void
 {
 	const elementCount = elements.length;
 	const leftoverWidth = parentArea.width;
@@ -25,7 +25,7 @@ export function absoluteLayout(elements: Layoutable<AbsolutePosition>[], parentA
 		if (element.skip)
 			continue;
 
-		const position = element.position(), { width, height } = position;
+		const position = element.position, { width, height } = position;
 		if (isWeighted(width))
 		{
 			weightedTotalWidth += width[0];

@@ -15,7 +15,7 @@ export interface Paddable
 	 *  * `padding: [ 2, "3w", 4, "5%" ]` - applies in clockwise order; top, right, bottom, left.
 	 *  * `padding: { top: 15 }` - applies only to named sides, the rest is default.
 	 *
-	 * @default "4px" for window frame, "6px" for box children, "0px" for everything else.
+	 * @default "5px" for window frame, "6px" for box children, "0px" for everything else.
 	 */
 	padding?: Padding;
 }

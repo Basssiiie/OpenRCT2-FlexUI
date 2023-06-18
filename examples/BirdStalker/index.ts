@@ -21,8 +21,8 @@ model.selectedDuckIndex.subscribe(index =>
 
 const birdStalker = window({
 	title: "Bird Stalker (fui example)",
-	width: 350, minWidth: 220, maxWidth: 500,
-	height: 300, minHeight: 220, maxHeight: 400,
+	width: { value: 350, min: 220, max: 500 },
+	height: { value: 300, min: 220, max: 400 },
 	position: "center",
 	padding: 8,
 	onOpen: () =>

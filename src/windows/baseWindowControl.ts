@@ -1,19 +1,17 @@
 import { Bindable } from "@src/bindings/bindable";
-import { defaultScale } from "@src/elements/constants";
-import { hasPadding, setSizeWithPadding } from "@src/elements/layouts/paddingHelpers";
+import { zeroPadding } from "@src/elements/constants";
+import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Paddable } from "@src/positional/paddable";
-import { Padding } from "@src/positional/padding";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
-import { Rectangle } from "@src/positional/rectangle";
-import { Event } from "@src/utilities/event";
+import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
-import { isUndefined } from "@src/utilities/type";
 import { WindowBinder } from "./binders/windowBinder";
-import { FrameContext } from "./frames/frameContext";
+import { FrameRectangle } from "./frames/frameRectangle";
+import { ParentWindow } from "./parentWindow";
 import { TabLayoutable } from "./tabs/tabLayoutable";
-import { createWidgetMap } from "./widgets/widgetMap";
+import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
+import { autoKey, setAxisSizeIfAuto, setAxisSizeIfNumber } from "./windowHelpers";
+import { WindowScale } from "./windowScale";
 import { WindowTemplate } from "./windowTemplate";
 
 
@@ -28,14 +26,16 @@ export interface BaseWindowParams extends Paddable
 	title?: Bindable<string>;
 
 	/**
-	 * The initial width of the window in pixels.
+	 * The initial width of the window in pixels, or `"auto"` to fit it to the child's
+	 * frame if all children are absolute sized.
 	 */
-	width: number;
+	width: number | WindowScale | "auto";
 
 	/**
-	 * The initial height of the window in pixels.
+	 * The initial height of the window in pixels, or `"auto"` to fit it to the child's
+	 * frame if all children are absolute sized.
 	 */
-	height: number;
+	height: number | WindowScale | "auto";
 
 	/**
 	 * The initial starting position of the window in pixels.
@@ -49,34 +49,6 @@ export interface BaseWindowParams extends Paddable
 	position?: "default" | "center" | { x: number; y: number };
 
 	/**
-	 * The absolute minimum width the window can be resized to. If set, the
-	 * window will be rescalable by the user.
-	 * @default this.width
-	 */
-	minWidth?: number;
-
-	/**
-	 * The absolute minimum height the window can be resized to. If set, the
-	 * window will be rescalable by the user.
-	 * @default this.height
-	 */
-	minHeight?: number;
-
-	/**
-	 * The absolute maximum width the window can be resized to. If set, the
-	 * window will be rescalable by the user.
-	 * @default this.width
-	 */
-	maxWidth?: number;
-
-	/**
-	 * The absolute maximum height the window can be resized to. If set, the
-	 * window will be rescalable by the user.
-	 * @default this.height
-	 */
-	maxHeight?: number;
-
-	/**
 	 * Event that gets triggered when the window is opened.
 	 */
 	onOpen?: () => void;
@@ -87,15 +59,23 @@ export interface BaseWindowParams extends Paddable
 	onUpdate?: () => void;
 
 	/**
-	 * Event that gets triggered when the window gets closed by either the
-	 * user or a plugin.
+	 * Event that gets triggered when the window gets closed by either the user or a plugin.
 	 */
 	onClose?: () => void;
 }
 
 
-const defaultTopBarSize: number = 15;
-const defaultPadding: Padding = 5;
+export const defaultTopBarSize: number = 15;
+export const enum WindowFlags
+{
+	None = 0,
+	// Order of axis matches LayoutDirection's order.
+	AutoHeight = (1 << 0),
+	AutoWidth = (1 << 1),
+	RedrawNextTick = (1 << 2),
+
+	Count = (1 << 3)
+}
 
 type ExtendedWindowParams = BaseWindowParams & { colours?: number[] };
 type WindowPosition = BaseWindowParams["position"];
@@ -104,97 +84,162 @@ type WindowPosition = BaseWindowParams["position"];
 /**
  * A base window control for shared functionality between different window types.
  */
-export abstract class BaseWindowControl implements WindowTemplate
+export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 {
 	readonly _description: WindowDesc;
+	protected abstract _descriptionWidgetMap: WidgetMap;
+
+	_window?: Window | null;
+	private readonly _position?: WindowPosition;
 	private readonly _windowBinder: WindowBinder | null;
 
-	_window: Window | null = null;
-	_width: number;
-	_height: number;
-	private _padding: ParsedPadding;
-	private _position?: WindowPosition;
-	private _redrawNextTick: boolean = false;
+	protected _activeWidgetMap?: WidgetMap | null;
+	protected _width!: number;
+	protected _height!: number;
+	protected _flags!: WindowFlags;
 
-	constructor(
-		params: ExtendedWindowParams,
-		update: Event<FrameContext>
-	){
-		const { width, height, minWidth, maxWidth, minHeight, maxHeight, padding } = params;
-		const windowDesc: WindowDesc =
-		{
+	constructor(params: ExtendedWindowParams)
+	{
+		const { width, height, position } = params;
+		const windowBinder = new WindowBinder();
+
+		const windowDesc = <WindowDesc>{
 			classification: ("fui-" + identifier()),
 			title: "",
 			colours: params.colours,
-			width: width,
-			height: height,
-			minWidth: minWidth,
-			minHeight: minHeight,
-			maxWidth: maxWidth,
-			maxHeight: maxHeight,
 			onUpdate: (): void =>
 			{
-				this._checkRedraw();
+				this._checkResizeAndRedraw();
 				this._invoke(frame => frame.update());
 			},
 			onClose: (): void =>
 			{
-				Log.debug("Template.onClose() triggered");
+				Log.debug("BaseWindow.onClose() triggered");
 				this._window = null; // to prevent infinite close loop
 				this.close();
 			}
 		};
-		this._description = windowDesc;
-		this._width = width;
-		this._height = height;
-		this._position = params.position;
-		this._padding = parsePadding(isUndefined(padding) ? defaultPadding : padding);
+		const windowWidth = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
+		const windowHeight = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
+		this._setWindowSizeAndFlags(windowWidth, windowHeight);
 
-		if (minWidth || minHeight || maxWidth || maxHeight)
-		{
-			setWindowLayoutResizing(this, windowDesc, update, width, height);
-		}
-
-		const windowBinder = new WindowBinder();
 		windowBinder.add(windowDesc, "title", params.title);
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
+		this._position = position;
+		this._description = windowDesc;
 	}
+
+	abstract _layout(window: Window | WindowDesc, widgets: WidgetMap): void;
+
+	protected abstract _invoke(callback: (frame: TabLayoutable) => void): void;
 
 	/**
 	 * Checks if the template has been marked dirty, and redraws if that's the case.
 	 */
-	private _checkRedraw(): void
+	private _checkResizeAndRedraw(): void
 	{
-		if (!this._window || !this._redrawNextTick)
+		const window = this._window;
+		const activeWidgets = this._activeWidgetMap;
+		const flags = this._flags;
+
+		if (!window || !activeWidgets)
+		{
 			return;
+		}
+		if (!(flags & WindowFlags.RedrawNextTick))
+		{
+			const newWidth = window.width;
+			const newHeight = window.height;
+			const widthSame = (flags & WindowFlags.AutoWidth || this._width == newWidth);
+			const heightSame =  (flags & WindowFlags.AutoHeight || this._height == newHeight);
+			if (widthSame && heightSame)
+			{
+				return; // nothing has changed, do nothing
+			}
+
+			Log.debug("BaseWindow.checkResizeAndRedraw() user has resized the window from", this._width, "x", this._height, "to", newWidth, "x", newHeight);
+			this._width = newWidth;
+			this._height = newHeight;
+		}
 
 		const startTime = Log.time();
-		Log.debug("Template.onRedraw() window size: (", this._window?.width, "x", this._window?.height, ")...");
+		this._layout(window, activeWidgets);
+		this._flags &= ~WindowFlags.RedrawNextTick;
 
-		this._layout();
-		this._redrawNextTick = false;
-
-		Log.debug("Template.onRedraw() finished in", (Log.time() - startTime), "ms");
+		Log.debug("BaseWindow.checkResizeAndRedraw() finished in", (Log.time() - startTime), "ms");
 	}
 
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
-	 * @param topBarSize The size at the top that should be skipped.
 	 */
-	protected _getWindowWidgetRectangle(topBarSize: number = defaultTopBarSize): Rectangle
+	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding = defaultTopBarSize): FrameRectangle
 	{
-		const padding = this._padding;
-		const area: Rectangle = { x: 0, y: topBarSize, width: this._width - 1, height: this._height - (topBarSize + 1) };
-		if (hasPadding(padding))
-		{
-			setSizeWithPadding(area, defaultScale, defaultScale, padding);
-		}
-		return area;
+		return {
+			x: 0,
+			y: extraTopPadding,
+			width: (flags & WindowFlags.AutoWidth) ? autoKey : this._width,
+			height: (flags & WindowFlags.AutoHeight) ? autoKey : (this._height - extraTopPadding)
+		};
 	}
 
-	protected abstract _invoke(callback: (frame: TabLayoutable) => void): void;
+	/**
+	 * Sets the window to the correct width and height when the size is auto-calculated from the frame size.
+	 */
+	protected _setAutoWindowSize(window: Window | WindowDesc, frameSize: Size, topBarSize: number, padding = zeroPadding): void
+	{
+		const flags = this._flags;
+		if (flags & WindowFlags.AutoWidth)
+		{
+			this._width = setAxisSizeIfAuto(window, LayoutDirection.Horizontal, frameSize, padding, 0);
+		}
+		if (flags & WindowFlags.AutoHeight)
+		{
+			this._height = setAxisSizeIfAuto(window, LayoutDirection.Vertical, frameSize, padding, topBarSize);
+		}
+		Log.debug("BaseWindow.setAutoWindowSize() to", this._width, "x", this._height, ", from size:", Log.stringify(frameSize), ", padding:", Log.stringify(padding), ", flags:", flags);
+	}
 
-	abstract _layout(): void;
+	protected _setWindowSizeAndFlags(width: number | "auto", height: number | "auto"): void
+	{
+		let flags = this._flags;
+		if (width == autoKey)
+		{
+			flags |= WindowFlags.AutoWidth;
+		}
+		else
+		{
+			flags &= ~WindowFlags.AutoWidth;
+			this._width = width;
+		}
+		if (height == autoKey)
+		{
+			flags |= WindowFlags.AutoHeight;
+		}
+		else
+		{
+			flags &= ~WindowFlags.AutoHeight;
+			this._height = height;
+		}
+		this._flags = flags;
+	}
+
+	protected _open(description: WindowDesc, binder: WindowBinder | null): void
+	{
+		this._layout(description, this._descriptionWidgetMap);
+		setWindowPosition(description, this._position);
+
+		if (binder)
+		{
+			binder._bind(this);
+		}
+
+		const window = ui.openWindow(description);
+		const activeWidgets = addToWidgetMap(window.widgets);
+
+		this._window = window;
+		this._activeWidgetMap = activeWidgets;
+		this._invoke(frame => frame.open(window, activeWidgets));
+	}
 
 	open(): void
 	{
@@ -206,20 +251,8 @@ export abstract class BaseWindowControl implements WindowTemplate
 		}
 
 		const description = this._description;
-		setWindowPosition(this, description, this._position);
-
 		const binder = this._windowBinder;
-		if (binder)
-		{
-			binder._bind(this);
-		}
-
-		const window = ui.openWindow(description);
-		const activeWidgets = createWidgetMap(window.widgets);
-
-		this._window = window;
-		this._invoke(frame => frame.open(activeWidgets));
-		this._layout();
+		this._open(description, binder);
 	}
 
 	close(): void
@@ -235,6 +268,7 @@ export abstract class BaseWindowControl implements WindowTemplate
 			binder._unbind();
 		}
 		this._window = null;
+		this._activeWidgetMap = null;
 	}
 
 	focus(): void
@@ -244,47 +278,26 @@ export abstract class BaseWindowControl implements WindowTemplate
 			this._window.bringToFront();
 		}
 	}
-}
 
-
-/**
- * Enables resizing the window by the user.
- */
-function setWindowLayoutResizing(control: BaseWindowControl, window: WindowDesc, update: Event, width: number, height: number): void
-{
-	window.minWidth ||= width;
-	window.maxWidth ||= width;
-	window.minHeight ||= height;
-	window.maxHeight ||= height;
-
-	update.push((): void =>
+	redraw(): void
 	{
-		const instance = ui.getWindow(control._description.classification);
-		const { width, height } = instance;
-
-		if (width === control._width && height === control._height)
-			return;
-
-		Log.debug("User has resized the window from", control._width, "x", control._height, "to", width, "x", height);
-		control._width = width;
-		control._height = height;
-		control._layout();
-	});
+		this._flags |= WindowFlags.RedrawNextTick;
+	}
 }
 
 
 /**
  * Updates the x and y of the window description to match the preferred position.
  */
-function setWindowPosition(control: BaseWindowControl, window: WindowDesc, position: WindowPosition): void
+function setWindowPosition(window: WindowDesc, position: WindowPosition): void
 {
 	if (!position || position === "default")
 		return;
 
 	if (position === "center")
 	{
-		window.x = (ui.width / 2) - (control._width / 2);
-		window.y = (ui.height / 2) - (control._height / 2);
+		window.x = (ui.width / 2) - (window.width / 2);
+		window.y = (ui.height / 2) - (window.height / 2);
 		return;
 	}
 

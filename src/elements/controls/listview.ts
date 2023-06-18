@@ -1,8 +1,4 @@
 import { Bindable } from "@src/bindings/bindable";
-import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { isAbsolute, isPercentile, ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -10,12 +6,15 @@ import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
+import { BuildOutput } from "@src/windows/buildOutput";
+import { ParentControl } from "@src/windows/parentControl";
+import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { defaultScale, zeroPadding, zeroScale } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { flexibleLayout } from "../layouts/flexible/flexibleLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { Positions } from "../layouts/positions";
 import { Control } from "./control";
 
 
@@ -107,16 +106,16 @@ export interface ListViewParams extends ElementParams
  */
 export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function listview(params: ListViewParams & Positions): WidgetCreator<Positions>
+export function listview<I, P>(params: ListViewParams & I): WidgetCreator<I, P>
 {
-	return (parent, output) => new ListViewControl(parent, output, params);
+	return (parent, output) => new ListViewControl<I, P>(parent, output, params);
 }
 
 
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
+class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListViewDesc
 {
 	showColumnHeaders: boolean;
 	columns: Partial<ListViewColumn>[];
@@ -131,7 +130,7 @@ class ListViewControl extends Control<ListViewDesc> implements ListViewDesc
 	_columnWidths?: Parsed<FlexiblePosition>[];
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: ListViewParams)
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ListViewParams & I)
 	{
 		super("listview", parent, output, params);
 
