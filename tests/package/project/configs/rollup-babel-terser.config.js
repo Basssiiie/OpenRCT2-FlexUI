@@ -1,6 +1,6 @@
+import babel from "@rollup/plugin-babel";
 import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
-import babel from "@rollup/plugin-babel";
 
 
 /**
@@ -16,6 +16,7 @@ const config = {
 		resolve(),
 		babel({
 			babelrc: false,
+			babelHelpers: "bundled",
 			presets: [
 				"@babel/preset-env",
 				["@babel/preset-typescript", { optimizeConstEnums: true }]
