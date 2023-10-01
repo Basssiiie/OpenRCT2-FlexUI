@@ -20,6 +20,7 @@ const config = [
 				dir: "./dist/esm",
 				format: "esm",
 				exports: "named",
+				entryFileNames: "[name].mjs",
 				preserveModules: true
 			},
 			{
