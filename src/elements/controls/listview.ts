@@ -1,10 +1,12 @@
 import { Bindable } from "@src/bindings/bindable";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { isAbsolute, isPercentile, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
+import { Parsed } from "@src/positional/parsing/parsed";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
+import { round } from "@src/utilities/math";
 import { isUndefined } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
@@ -60,7 +62,7 @@ export interface ListViewParams extends ElementParams
 	 * If specified, will add header information above each column and optionally adds sorting.
 	 * @default undefined
 	 */
-	columns?: ListViewColumn[] | ListViewColumnParams[];
+	columns?: Partial<ListViewColumn>[] | ListViewColumnParams[];
 
 	/**
 	 * Specifies the items within the listview, either as a single dimension array for
@@ -155,15 +157,23 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 		// Figure out if default columns or custom columns were configured..
 		const count = columns.length;
 		const columWidths = Array<ParsedScale>(count);
-		let hasPercentileWidth = false;
+		let type = -1;
+		let differentTypes = false;
 
 		for (let i = 0; i < count; i++)
 		{
 			const column = columns[i];
 			const tooltip = (<ListViewColumnParams>column).tooltip;
-			const parsedWidth = parseScaleOrFallback(column.width, defaultScale);
+			const ratioWidth = (<Partial<ListViewColumn>>column).ratioWidth;
+			const width = column.width;
+			const parsedWidth: ParsedScale = (isUndefined(width) && !isUndefined(ratioWidth))
+				? [ratioWidth, ScaleType.Weight]
+				: parseScaleOrFallback(width, defaultScale);
+			const parsedType = parsedWidth[1];
 
-			hasPercentileWidth ||= isPercentile(parsedWidth);
+			differentTypes ||= (type != parsedType && type != -1);
+			type = parsedType;
+
 			columWidths[i] = parsedWidth;
 
 			// Rename tooltip property
@@ -173,8 +183,8 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 			}
 		}
 
-		// If there is percentile width, let the plugin handle calculation.
-		if (hasPercentileWidth)
+		// If there is different width types, or there is percentile width, let the plugin handle calculation.
+		if (differentTypes || type == ScaleType.Percentage)
 		{
 			this._columnWidths = columWidths.map(width =>
 			({
@@ -190,11 +200,11 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 		{
 			const column = <Partial<ListViewColumn>>columns[i], width = columWidths[i];
 
-			if (isAbsolute(width))
+			if (type == ScaleType.Pixel)
 			{
 				column.width = width[0];
 			}
-			else // = weighted scale
+			else // = weight scale or undefined
 			{
 				column.width = undefined;
 				column.ratioWidth = width[0];
@@ -221,7 +231,7 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 		{
 			flexibleLayout(widths, area, LayoutDirection.Horizontal, zeroScale, (idx, subarea) =>
 			{
-				this.columns[idx].width = subarea.width;
+				this.columns[idx].width = round(subarea.width);
 			});
 			widget.columns = this.columns;
 			widget.width = area.width;
