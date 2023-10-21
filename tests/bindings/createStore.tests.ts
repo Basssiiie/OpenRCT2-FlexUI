@@ -1,5 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
-import { arrayStore, store } from "@src/bindings/stores/createStore";
+import { arrayStore } from "@src/bindings/stores/createArrayStore";
+import { store } from "@src/bindings/stores/createStore";
 import test from "ava";
 
 

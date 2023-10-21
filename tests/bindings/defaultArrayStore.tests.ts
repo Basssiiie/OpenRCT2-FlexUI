@@ -1,11 +1,11 @@
 /// <reference path="../../lib/openrct2.d.ts" />
-import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
+import { arrayStore } from "@src/bindings/stores/createArrayStore";
 import test from "ava";
 
 
 test("set() changes entire array", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -17,7 +17,7 @@ test("set() changes entire array", t =>
 
 test("set() changes item at index", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -29,7 +29,7 @@ test("set() changes item at index", t =>
 
 test("set() also triggers for non-changes", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -41,7 +41,7 @@ test("set() also triggers for non-changes", t =>
 
 test("insert() adds items at index", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom" ]);
+	const store = arrayStore([ "Bob", "Tom" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -53,7 +53,7 @@ test("insert() adds items at index", t =>
 
 test("resize() makes the array shorter", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane", "Patrick" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane", "Patrick" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -65,7 +65,7 @@ test("resize() makes the array shorter", t =>
 
 test("resize() makes the array longer", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom" ]);
+	const store = arrayStore([ "Bob", "Tom" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -77,7 +77,7 @@ test("resize() makes the array longer", t =>
 
 test("push() adds items at the end", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -89,7 +89,7 @@ test("push() adds items at the end", t =>
 
 test("pop() removes the last item", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -101,7 +101,7 @@ test("pop() removes the last item", t =>
 
 test("unshift() adds items at the start", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -113,7 +113,7 @@ test("unshift() adds items at the start", t =>
 
 test("shift() removes the first item", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -125,7 +125,7 @@ test("shift() removes the first item", t =>
 
 test("splice() removes items", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -137,7 +137,7 @@ test("splice() removes items", t =>
 
 test("splice() removes items and adds new", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -149,7 +149,7 @@ test("splice() removes items and adds new", t =>
 
 test("sort() reorders the items in ASCII order", t =>
 {
-	const store = new DefaultArrayStore([ "Dany", "Po", "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Dany", "Po", "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
@@ -161,7 +161,7 @@ test("sort() reorders the items in ASCII order", t =>
 
 test("sort() reorders the items in specified order", t =>
 {
-	const store = new DefaultArrayStore([ "Dany", "Po", "Bob", "Tom", "Jack", "Jane" ]);
+	const store = arrayStore([ "Dany", "Po", "Bob", "Tom", "Jack", "Jane" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /// <reference path="../../lib/openrct2.d.ts" />
 import { compute } from "@src/bindings/stores/compute";
-import { arrayStore, store } from "@src/bindings/stores/createStore";
+import { arrayStore } from "@src/bindings/stores/createArrayStore";
+import { store } from "@src/bindings/stores/createStore";
 import { isStore, isWritableStore } from "@src/bindings/stores/isStore";
 import test from "ava";
 
