@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { compute, dropdown, horizontal, label, spinner, store, tab, tabwindow, toggle, twoway } from "openrct2-flexui";
+import { compute, dropdown, format, horizontal, label, spinner, store, tab, tabwindow, toggle, twoway } from "openrct2-flexui";
 
 
 const value = store(0);
@@ -42,14 +42,14 @@ const windowWithTabs = tabwindow({
 	padding: 50,
 	static: [ // shown on every tab
 		label({
-			text: compute(source, s => `Last updated from:\n${s}`),
+			text: format("Last updated from:{NEWLINE}{PALEGOLD}{STRING}", source),
 			alignment: "centred"
 		})
 	],
 	tabs: [
 		tab({
 			image: spiralSlideIcon,
-			height: 140, 
+			height: 140,
 			content: [
 				spinner({
 					value: twoway(value),

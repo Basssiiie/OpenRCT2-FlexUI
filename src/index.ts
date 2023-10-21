@@ -15,6 +15,7 @@ export { arrayStore } from "./bindings/stores/createArrayStore";
 export { isStore, isWritableStore } from "./bindings/stores/isStore";
 export { read } from "./bindings/stores/read";
 export { compute } from "./bindings/stores/compute";
+export { format } from "./bindings/stores/format";
 export { twoway } from "./bindings/twoway/twoway";
 export { isTwoWay } from "./bindings/twoway/isTwoWay";
 export { TwoWayBinding } from "./bindings/twoway/twowayBinding";
