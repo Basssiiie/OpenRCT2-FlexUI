@@ -3,6 +3,42 @@ import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
 import test from "ava";
 
 
+test("set() changes entire array", t =>
+{
+	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const calls: string[][] = [];
+	store.subscribe(v => calls.push(v));
+
+	store.set([ "Jack", "Jane", "Patrick" ]);
+	t.deepEqual(store.get(), [ "Jack", "Jane", "Patrick" ]);
+	t.deepEqual(calls, [ store.get() ]);
+});
+
+
+test("set() changes item at index", t =>
+{
+	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const calls: string[][] = [];
+	store.subscribe(v => calls.push(v));
+
+	store.set(2, "Patrick");
+	t.deepEqual(store.get(), [ "Bob", "Tom", "Patrick", "Jane" ]);
+	t.deepEqual(calls, [ store.get() ]);
+});
+
+
+test("set() also triggers for non-changes", t =>
+{
+	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const calls: string[][] = [];
+	store.subscribe(v => calls.push(v));
+
+	store.set(store.get());
+	t.deepEqual(store.get(), [ "Bob", "Tom", "Jack", "Jane" ]);
+	t.deepEqual(calls, [ store.get() ]);
+});
+
+
 test("insert() adds items at index", t =>
 {
 	const store = new DefaultArrayStore([ "Bob", "Tom" ]);
@@ -15,14 +51,26 @@ test("insert() adds items at index", t =>
 });
 
 
-test("update() changes item at index", t =>
+test("resize() makes the array shorter", t =>
 {
-	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane" ]);
+	const store = new DefaultArrayStore([ "Bob", "Tom", "Jack", "Jane", "Patrick" ]);
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
-	t.is(store.update(2, "Patrick"), "Jack");
-	t.deepEqual(store.get(), [ "Bob", "Tom", "Patrick", "Jane" ]);
+	store.resize(3);
+	t.deepEqual(store.get(), [ "Bob", "Tom", "Jack" ]);
+	t.deepEqual(calls, [ store.get() ]);
+});
+
+
+test("resize() makes the array longer", t =>
+{
+	const store = new DefaultArrayStore([ "Bob", "Tom" ]);
+	const calls: string[][] = [];
+	store.subscribe(v => calls.push(v));
+
+	store.resize(5);
+	t.deepEqual(store.get(), [ "Bob", "Tom", undefined, undefined, undefined ]);
 	t.deepEqual(calls, [ store.get() ]);
 });
 

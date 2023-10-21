@@ -1,10 +1,24 @@
-import { WritableStore } from "./writableStore";
+import { Store } from "./store";
 
 
 /**
  * A store for arrays that can be modified without replacing the entire array.
  */
-export interface ArrayStore<T> extends WritableStore<T[]> {
+export interface ArrayStore<T> extends Store<T[]>
+{
+	/**
+	 * Updates the current value to a new one.
+	 * Notifies all listeners with the updated array.
+	 * @param value The new value.
+	 */
+	set(array: T[]): void;
+
+	/**
+	 * Updates the element at the specified index and returns the value it replaced.
+	 * Notifies all listeners with the updated array.
+	 */
+	set(index: number, item: T): void;
+
 	/**
 	 * Inserts one or more elements into the array at the specified index, and returns its new length.
 	 * Notifies all listeners with the updated array.
@@ -12,10 +26,10 @@ export interface ArrayStore<T> extends WritableStore<T[]> {
 	insert(index: number, ...items: T[]): number;
 
 	/**
-	 * Updates the element at the specified index and returns the value it replaced.
+	 * Sets the length of the array to the specified value.
 	 * Notifies all listeners with the updated array.
 	 */
-	update(index: number, item: T): T;
+	resize(length: number): void;
 
 	/**
 	 * Appends the new elements to the end of the array and returns its new length.

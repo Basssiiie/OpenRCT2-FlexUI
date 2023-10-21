@@ -1,3 +1,4 @@
+import { isArray } from "@src/utilities/type";
 import { ArrayStore } from "./arrayStore";
 import { DefaultStore } from "./defaultStore";
 
@@ -7,6 +8,21 @@ import { DefaultStore } from "./defaultStore";
  */
 export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStore<T>
 {
+	override set(array: T[]): void;
+	override set(index: number, item: T): void;
+	override set(indexOrArray: number | T[], optionalItem?: T): void
+	{
+		if (isArray(indexOrArray))
+		{
+			this._value = indexOrArray;
+		}
+		else
+		{
+			this._value[indexOrArray] = <T>optionalItem;
+		}
+		this._updateListeners(this._value);
+	}
+
 	insert(index: number, ...values: T[]): number
 	{
 		const array = this._value;
@@ -16,13 +32,11 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 		return array.length;
 	}
 
-	update(index: number, value: T): T
+	resize(length: number): void
 	{
 		const array = this._value;
-		const oldValue = array[index];
-		array[index] = value;
+		array.length = length;
 		this._updateListeners(array);
-		return oldValue;
 	}
 
 	/**
