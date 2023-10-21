@@ -1,29 +1,37 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /// <reference path="../../lib/openrct2.d.ts" />
-import { DefaultArrayStore } from "@src/bindings/stores/defaultArrayStore";
-import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { compute } from "@src/bindings/stores/compute";
+import { arrayStore, store } from "@src/bindings/stores/createStore";
 import { isStore, isWritableStore } from "@src/bindings/stores/isStore";
 import test from "ava";
 
 
 test("Store string is true", t =>
 {
-	const store = new DefaultStore("Bob");
-	t.true(isStore(store));
+	const source = store("Bob");
+	t.true(isStore(source));
 });
 
 
 test("Store number is true", t =>
 {
-	const store = new DefaultStore(54);
-	t.true(isStore(store));
+	const source = store(54);
+	t.true(isStore(source));
 });
 
 
 test("Array store is true", t =>
 {
-	const store = new DefaultArrayStore([ "a", "b" ]);
-	t.true(isStore(store));
+	const source = arrayStore([ "a", "b" ]);
+	t.true(isStore(source));
+});
+
+
+test("Compute store is true", t =>
+{
+	const child = store(54);
+	const source = compute(child, v => v * 15);
+	t.true(isStore(source));
 });
 
 

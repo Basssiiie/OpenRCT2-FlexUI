@@ -1,27 +1,27 @@
 /// <reference path="../../lib/openrct2.d.ts" />
-import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { store } from "@src/bindings/stores/createStore";
 import test from "ava";
 
 
 test("get() returns string from constructor", t =>
 {
-	const store = new DefaultStore("Bob");
-	t.is(store.get(), "Bob");
+	const source = store("Bob");
+	t.is(source.get(), "Bob");
 });
 
 
 test("get() returns number from constructor", t =>
 {
-	const store = new DefaultStore(10.54);
-	t.is(store.get(), 10.54);
+	const source = store(10.54);
+	t.is(source.get(), 10.54);
 });
 
 
 test("set() changes get() value", t =>
 {
-	const store = new DefaultStore("Cheese");
-	store.set("Pineapple");
-	t.is(store.get(), "Pineapple");
+	const source = store("Cheese");
+	source.set("Pineapple");
+	t.is(source.get(), "Pineapple");
 });
 
 
@@ -29,12 +29,12 @@ test("set() triggers subscription", t =>
 {
 	const events: string[] = [];
 
-	const store = new DefaultStore("Cheese");
-	store.subscribe(() =>
+	const source = store("Cheese");
+	source.subscribe(() =>
 	{
 		events.push("hit");
 	});
-	store.set("Pineapple");
+	source.set("Pineapple");
 
 	t.deepEqual(events, [ "hit" ]);
 });
@@ -44,12 +44,12 @@ test("subscription receives new value", t =>
 {
 	const events: string[] = [];
 
-	const store = new DefaultStore("Cheese");
-	store.subscribe(value =>
+	const source = store("Cheese");
+	source.subscribe(value =>
 	{
 		events.push(value);
 	});
-	store.set("Pineapple");
+	source.set("Pineapple");
 
 	t.deepEqual(events, [ "Pineapple" ]);
 });
@@ -57,23 +57,26 @@ test("subscription receives new value", t =>
 
 test("set() triggers multiple subscriptions", t =>
 {
-	t.plan(4);
+	t.plan(6);
 	let first = false, second = false;
 
-	const store = new DefaultStore("Cheese");
-	store.subscribe(v =>
+	const source = store("Cheese");
+	source.subscribe(v =>
 	{
 		// First
 		t.is(v, "Pineapple");
 		t.false(first);
 		first = true;
 	});
-	store.subscribe(v =>
+	source.subscribe(v =>
 	{
 		// Second
 		t.is(v, "Pineapple");
 		t.false(second);
 		second = true;
 	});
-	store.set("Pineapple");
+	source.set("Pineapple");
+
+	t.true(first);
+	t.true(second);
 });

@@ -1,13 +1,13 @@
 /// <reference path="../../lib/openrct2.d.ts" />
-import { DefaultStore } from "@src/bindings/stores/defaultStore";
 import { decorate } from "@src/bindings/stores/decorate";
+import { DefaultWritableStore } from "@src/bindings/stores/defaultWritableStore";
 import test from "ava";
 
 
 test("Decorate calls in order", t =>
 {
 	const hits: string[] = [];
-	const store = new DefaultStore(12);
+	const store = new DefaultWritableStore(12);
 	store.subscribe(v => hits.push(`store ${v}`));
 
 	const decorator = decorate(store, (v, c) =>
@@ -49,7 +49,7 @@ test("Decorate calls in order", t =>
 test("Decorate can silence inner calls", t =>
 {
 	const hits: string[] = [];
-	const store = new DefaultStore(12);
+	const store = new DefaultWritableStore(12);
 	store.subscribe(v => hits.push(`store ${v}`));
 
 	const decorator = decorate(store, (v) =>
@@ -90,7 +90,7 @@ test("Decorate can silence inner calls", t =>
 test("Decorate can silence only odd calls", t =>
 {
 	const hits: string[] = [];
-	const store = new DefaultStore(12);
+	const store = new DefaultWritableStore(12);
 	store.subscribe(v => hits.push(`store ${v}`));
 
 	const decorator = decorate(store, (v, c) =>

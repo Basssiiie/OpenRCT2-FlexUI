@@ -1,5 +1,5 @@
 /// <reference path="../../lib/openrct2.d.ts" />
-import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import { storify } from "@src/bindings/stores/storify";
 import test from "ava";
@@ -17,7 +17,7 @@ test("Storify returns store for value", t =>
 
 test("Storify returns itself for store", t =>
 {
-	const original = new DefaultStore("Bob");
+	const original = store("Bob");
 	const storified = storify(original);
 
 	t.is(storified, original);

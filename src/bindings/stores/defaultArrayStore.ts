@@ -8,9 +8,9 @@ import { DefaultStore } from "./defaultStore";
  */
 export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStore<T>
 {
-	override set(array: T[]): void;
-	override set(index: number, item: T): void;
-	override set(indexOrArray: number | T[], optionalItem?: T): void
+	set(array: T[]): void;
+	set(index: number, item: T): void;
+	set(indexOrArray: number | T[], optionalItem?: T): void
 	{
 		if (isArray(indexOrArray))
 		{

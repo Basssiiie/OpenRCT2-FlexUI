@@ -1,6 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import { DefaultStore } from "@src/bindings/stores/defaultStore";
+import { store } from "@src/bindings/stores/createStore";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { mutable } from "@src/utilities/mutable";
 import { noop } from "@src/utilities/noop";
@@ -44,7 +44,7 @@ test("read() adds store to binder", t =>
 
 	t.deepEqual(binder["_bindings"], []);
 
-	const storeNumber = new DefaultStore(25);
+	const storeNumber = store(25);
 	binder.add(label, "y", storeNumber);
 	t.is(binder["_bindings"].length, 1);
 });
@@ -61,7 +61,7 @@ test("read() sets store in window frame", t =>
 	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
-	const storeNumber = new DefaultStore(25);
+	const storeNumber = store(25);
 	output.binder.add(label, "x", storeNumber);
 
 	const frame = mutable(output.context);
@@ -89,7 +89,7 @@ test("read() sets store through converter", t =>
 	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
 	output.add(label);
 
-	const storeNumber = new DefaultStore<ElementVisibility>("visible");
+	const storeNumber = store<ElementVisibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
 
 	const frame = mutable(output.context);

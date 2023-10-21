@@ -1,12 +1,12 @@
-import { DefaultStore } from "./defaultStore";
-import { WritableStore } from "./writableStore";
+import { DefaultWritableStore } from "./defaultWritableStore";
 import { subscribe } from "./subscribe";
+import { WritableStore } from "./writableStore";
 
 
 /**
  * Default implementation of a store that decorates another store.
  */
-export class DefaultStoreDecorator<T> extends DefaultStore<T>
+export class DefaultStoreDecorator<T> extends DefaultWritableStore<T>
 {
 	constructor(
 		private _store: WritableStore<T>,

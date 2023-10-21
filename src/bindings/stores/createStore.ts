@@ -1,6 +1,6 @@
 import { ArrayStore } from "./arrayStore";
 import { DefaultArrayStore } from "./defaultArrayStore";
-import { DefaultStore } from "./defaultStore";
+import { DefaultWritableStore } from "./defaultWritableStore";
 import { WritableStore } from "./writableStore";
 
 
@@ -14,7 +14,7 @@ export function store<U>(): WritableStore<U | undefined>;
 export function store<T>(initialValue: T): WritableStore<T>;
 export function store<T>(initialValue?: T): WritableStore<T | undefined>
 {
-	return new DefaultStore<T | undefined>(initialValue);
+	return new DefaultWritableStore<T | undefined>(initialValue);
 }
 
 

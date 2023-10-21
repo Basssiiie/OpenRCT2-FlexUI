@@ -1,14 +1,13 @@
 import { Event, invoke } from "@src/utilities/event";
-import { WritableStore } from "./writableStore";
-import * as Log from "@src/utilities/logger";
+import { Store } from "./store";
 
 
 /**
- * The default implementation of a store.
+ * The default implementation of a read-only store.
  */
-export class DefaultStore<T> implements WritableStore<T>
+export abstract class DefaultStore<T> implements Store<T>
 {
-	private _listeners?: Event<T>;
+	protected _listeners?: Event<T>;
 
 	constructor(protected _value: T)
 	{
@@ -17,16 +16,6 @@ export class DefaultStore<T> implements WritableStore<T>
 	get(): T
 	{
 		return this._value;
-	}
-
-	set(value: T): void
-	{
-		if (this._value !== value)
-		{
-			Log.debug("(Update store from", this._value, "to", value, "-> update", this._listeners?.length, "listeners)");
-			this._value = value;
-			this._updateListeners(value);
-		}
 	}
 
 	subscribe(callback: (value: T) => void): () => void
