@@ -26,6 +26,7 @@ Various plugins have already adopted FlexUI as their UI-library:
 
 - **[RideVehicleEditor](https://openrct2plugins.org/plugin/MDEwOlJlcG9zaXRvcnkzMTI2MjQ1MjY=/OpenRCT2-RideVehicleEditor)**, by Basssiiie
 - **[ParkRatingInspector](https://openrct2plugins.org/plugin/MDEwOlJlcG9zaXRvcnkzOTY0NTM0NjA=/OpenRCT2-ParkRatingInspector)**, by Basssiiie
+- **[RCTris (Tetris)](https://openrct2plugins.org/plugin/R_kgDOLBRY8A/openrct2-rctris)**, by Sadret
 - **[Ride Painter](https://openrct2plugins.org/plugin/R_kgDOGuBtxQ/OpenRCT-Ride-Painter)**, by ItsSmitty
 - **[Wet Paint Plugin](https://openrct2plugins.org/plugin/R_kgDOIOX2DQ/Wet-Paint-Plugin)**, by ItsSmitty
 - **[Soft Guest Cap Inspector](https://openrct2plugins.org/plugin/R_kgDOJUjXiA/openrct2-soft-guest-cap-inspector)**, by Beam41
