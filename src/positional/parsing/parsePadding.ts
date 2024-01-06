@@ -1,10 +1,17 @@
 import { zeroPadding } from "@src/elements/constants";
+import { endKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
 import * as Log from "@src/utilities/logger";
 import { isArray, isObject, isUndefined } from "@src/utilities/type";
 import { Padding } from "../padding";
 import { parseScaleOrFallback, parseScaleOrZero } from "./parseScale";
 import { ParsedPadding } from "./parsedPadding";
 import { ParsedScale } from "./parsedScale";
+
+
+/*
+ * A type specifying the padding object notation.
+ */
+type PaddingObject = Extract<Padding, Record<string, unknown>>;
 
 
 /**
@@ -47,10 +54,10 @@ export function parsePadding(padding: Padding | undefined, fallbackPadding: Pars
 	{
 		// padding specified as object
 		returnValue = createParsed(
-			parseScaleOrFallback(padding.top, fallbackPadding.top),
-			parseScaleOrFallback(padding.right, fallbackPadding.right),
-			parseScaleOrFallback(padding.bottom, fallbackPadding.bottom),
-			parseScaleOrFallback(padding.left, fallbackPadding.left)
+			parsePaddingSideOrFallback(startKeys[0], padding, fallbackPadding),
+			parsePaddingSideOrFallback(endKeys[1], padding, fallbackPadding),
+			parsePaddingSideOrFallback(endKeys[0], padding, fallbackPadding),
+			parsePaddingSideOrFallback(startKeys[1], padding, fallbackPadding)
 		);
 	}
 	else
@@ -60,6 +67,16 @@ export function parsePadding(padding: Padding | undefined, fallbackPadding: Pars
 		returnValue = createParsed(value, value, value, value);
 	}
 	return returnValue || fallbackPadding;
+}
+
+
+/**
+ * Determines the padding for a specific side, or takes the fallback value.
+ */
+function parsePaddingSideOrFallback(side: keyof ParsedPadding, padding: PaddingObject, fallback: ParsedPadding): ParsedScale
+{
+	const value = padding[side];
+	return parseScaleOrFallback(isUndefined(value) ? padding.rest : value, fallback[side]);
 }
 
 

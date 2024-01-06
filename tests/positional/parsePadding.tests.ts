@@ -94,3 +94,19 @@ test("Missing key applies fallback", t =>
 	t.is(area.width, 47);
 	t.is(area.height, 160);
 });
+
+
+test("Missing key applies rest value", t =>
+{
+	const area: Rectangle = { x: 10, y: 20, width: 77, height: 200 };
+	const fallbackScale = parseScale(15);
+	const fallback = { top: fallbackScale, right: fallbackScale, bottom: fallbackScale, left: fallbackScale };
+
+	const padding: ParsedPadding = parsePadding({ left: "23px", rest: "7px" }, fallback);
+	setSizeWithPadding(area, defaultScale, defaultScale, padding);
+
+	t.is (area.x, 10 + 23);
+	t.is(area.y, 20 + 7);
+	t.is(area.width, 47);
+	t.is(area.height, 186);
+});

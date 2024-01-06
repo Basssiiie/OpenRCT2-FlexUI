@@ -9,4 +9,4 @@ export type Padding = Scale
 	| [Scale, Scale]
 	/* top | right | bottom | left */
 	| [Scale, Scale, Scale, Scale]
-	| { top?: Scale; right?: Scale; bottom?: Scale; left?: Scale };
+	| { top?: Scale; right?: Scale; bottom?: Scale; left?: Scale; rest?: Scale };
