@@ -1,3 +1,5 @@
+/* @ts-check */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
@@ -9,7 +11,48 @@ const isDev = (build === "development");
 
 
 /**
- * @type {import("rollup").RollupOptions}
+ * Builds a cache of all properties that should be mangled.
+ * @param {Record<string, string>} cache
+ * @returns {import("rollup").Plugin}
+ */
+function precache(cache)
+{
+	const leading = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_";
+    const all = (leading+"0123456789");
+	let mangleId = 0;
+
+	function getName(index)
+	{
+		let result = leading[index % leading.length];
+		index = Math.floor(index / leading.length) - 1;
+		while (index >= 0)
+		{
+			result += all[index % all.length];
+			index = Math.floor(index / all.length) - 1;
+		}
+		return result;
+	}
+
+	return {
+		name: "Prepare property mangle cache",
+		renderChunk(code)
+		{
+			[...code.matchAll(/(?:\.prototype|this)\.(_[\w\d]+)\s*=/g)]
+				.map(m => `$${m[1]}`)
+				.filter(m => !(m in cache))
+				.forEach(m => cache[m] = getName(mangleId++));
+		}
+	};
+}
+
+// Cache for mangled property names
+const cache = {
+	props: { props: {} }
+};
+
+
+/**
+ * @type {(import("rollup").RollupOptions)[]}
  */
 const config = [
 	{
@@ -36,13 +79,8 @@ const config = [
 					...(isDev ? {} : { "Log.debug": "//" })
 				}
 			}),
-			typescript({
-				tsconfig: "./tsconfig.json",
-				include: [
-					"./lib/**/*.ts",
-					"./src/**/*.ts"
-				]
-			}),
+			typescript(),
+			precache(cache.props.props),
 			terser({
 				compress: {
 					passes: 5,
@@ -56,6 +94,14 @@ const config = [
 
 					beautify: isDev,
 				},
+				mangle: isDev ? {} : {
+					cache: false,
+					properties: {
+						regex: /^_/
+					},
+				},
+				nameCache: cache,
+
 				// Useful only for stacktraces:
 				keep_fnames: isDev,
 			})
