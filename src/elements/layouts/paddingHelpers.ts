@@ -1,4 +1,4 @@
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Axis } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
@@ -30,7 +30,7 @@ export function hasPadding(padding: ParsedPadding | undefined): boolean
  * Returns the total amount of absolute padding for the specified direction. Throws an error
  * if one of the padding values is not absolute. Returns the total amount of padding applied.
  */
-export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: ParsedPadding, direction: LayoutDirection): number
+export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: ParsedPadding, direction: Axis): number
 {
 	const startPad = padding[startKeys[direction]];
 	const endPad = padding[endKeys[direction]];
@@ -50,8 +50,8 @@ export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: Pa
  */
 export function setSizeWithPadding(area: Rectangle, width: ParsedScale, height: ParsedScale, padding: ParsedPadding): void
 {
-	setSizeWithPaddingForDirection(area, LayoutDirection.Horizontal, width, padding);
-	setSizeWithPaddingForDirection(area, LayoutDirection.Vertical, height, padding);
+	setSizeWithPaddingForDirection(area, Axis.Horizontal, width, padding);
+	setSizeWithPaddingForDirection(area, Axis.Vertical, height, padding);
 }
 
 
@@ -59,7 +59,7 @@ export function setSizeWithPadding(area: Rectangle, width: ParsedScale, height: 
  * Sets the size and padding to a specific area as a whole on the specified direction. Area is
  * interpreted as the available space and updated accordingly. Returns total space used.
  */
-export function setSizeWithPaddingForDirection(area: Rectangle, direction: LayoutDirection, size: ParsedScale, padding: ParsedPadding): number
+export function setSizeWithPaddingForDirection(area: Rectangle, direction: Axis, size: ParsedScale, padding: ParsedPadding): number
 {
 	const
 		sizeKey = sizeKeys[direction],
@@ -79,7 +79,7 @@ export function setSizeWithPaddingForDirection(area: Rectangle, direction: Layou
 /**
  * Applies padding to a specific area as a whole on the specified direction. Returns total space used.
  */
-export function applyPaddingToDirection(area: Rectangle, direction: LayoutDirection, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number): number
+export function applyPaddingToDirection(area: Rectangle, direction: Axis, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number): number
 {
 	return applyPaddingToAxis(area, padding, leftoverSpace, weightedTotal, percentileTotal, axisKeys[direction], sizeKeys[direction], startKeys[direction], endKeys[direction]);
 }

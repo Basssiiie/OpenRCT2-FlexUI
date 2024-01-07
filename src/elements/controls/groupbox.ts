@@ -1,4 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
+import { Axis } from "@src/positional/axis";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
@@ -8,7 +9,6 @@ import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutControl } from "../layouts/flexible/flexible";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { LayoutDirection } from "../layouts/flexible/layoutDirection";
 import { BoxContainer, BoxControl, BoxParams } from "./box";
 
 
@@ -51,7 +51,7 @@ export function groupbox<I extends SizeParams, P extends ParsedSize>(params: (Gr
 	let content: BoxContainer[],
 		gap: Padding | undefined,
 		spacing: Scale | undefined,
-		direction: LayoutDirection = LayoutDirection.Vertical;
+		direction: number = Axis.Vertical;
 
 	if ("content" in params)
 	{

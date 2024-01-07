@@ -1,5 +1,5 @@
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { endKeys, sizeKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
+import { Axis } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Size } from "@src/positional/size";
@@ -25,7 +25,7 @@ export function getAxisSizeWithInheritance(windowScaleOption: WindowScaleOptions
 }
 
 
-export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direction: LayoutDirection, tabValue: TabScaleOptions, windowValue: WindowScaleOptions): number | "auto"
+export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direction: Axis, tabValue: TabScaleOptions, windowValue: WindowScaleOptions): number | "auto"
 {
 	if (tabValue != inheritKey)
 	{
@@ -34,7 +34,7 @@ export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direct
 	return setAxisSizeIfNumber(window, direction, windowValue);
 }
 
-export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: LayoutDirection, scaleOption: TabScaleOptions): number | "auto"
+export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis, scaleOption: TabScaleOptions): number | "auto"
 {
 	if (isString(scaleOption))
 	{
@@ -50,7 +50,7 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Layo
 	return size;
 }
 
-export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: LayoutDirection, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
+export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
 {
 	const directionKey = sizeKeys[direction];
 	const startPad = windowPadding[startKeys[direction]];
@@ -66,7 +66,7 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Layout
 }
 
 
-function setWindowSize(window: WindowDesc | Window, direction: LayoutDirection, size: number, min: number | undefined, max: number | undefined): void
+function setWindowSize(window: WindowDesc | Window, direction: Axis, size: number, min: number | undefined, max: number | undefined): void
 {
 	Log.debug("Window.resize();", sizeKeys[direction], "=", size, ", min =", min, ", max =", max);
 	window[sizeKeys[direction]] = size;

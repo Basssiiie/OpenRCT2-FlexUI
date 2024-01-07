@@ -1,5 +1,5 @@
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Axis } from "@src/positional/axis";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -11,14 +11,14 @@ import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingForDirect
 /**
  * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, layoutDirection: LayoutDirection, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
+export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, layoutDirection: Axis, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
 {
 	const elementCount = elements.length;
 	if (!elementCount)
 		return;
 
-	const otherDirection = (layoutDirection == LayoutDirection.Horizontal)
-		? LayoutDirection.Vertical : LayoutDirection.Horizontal;
+	const otherDirection = (layoutDirection == Axis.Horizontal)
+		? Axis.Vertical : Axis.Horizontal;
 
 	// First pass: calculate available and used space.
 	const stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection);
@@ -72,7 +72,7 @@ interface ParsedStackElement
 /**
  * Parses all specified child positions
  */
-function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, mainDirection: LayoutDirection, otherDirection: LayoutDirection): ParsedStack
+function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, mainDirection: Axis, otherDirection: Axis): ParsedStack
 {
 	const elementCount = elements.length;
 	const stack: ParsedStack = {

@@ -1,6 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { zeroPadding } from "@src/elements/constants";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Axis } from "@src/positional/axis";
 import { Paddable } from "@src/positional/paddable";
 import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
@@ -119,8 +119,8 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 				this.close();
 			}
 		};
-		const windowWidth = setAxisSizeIfNumber(windowDesc, LayoutDirection.Horizontal, width);
-		const windowHeight = setAxisSizeIfNumber(windowDesc, LayoutDirection.Vertical, height);
+		const windowWidth = setAxisSizeIfNumber(windowDesc, Axis.Horizontal, width);
+		const windowHeight = setAxisSizeIfNumber(windowDesc, Axis.Vertical, height);
 		this._setWindowSizeAndFlags(windowWidth, windowHeight);
 
 		windowBinder.add(windowDesc, "title", params.title);
@@ -190,11 +190,11 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		const flags = this._flags;
 		if (flags & WindowFlags.AutoWidth)
 		{
-			this._width = setAxisSizeIfAuto(window, LayoutDirection.Horizontal, frameSize, padding, 0);
+			this._width = setAxisSizeIfAuto(window, Axis.Horizontal, frameSize, padding, 0);
 		}
 		if (flags & WindowFlags.AutoHeight)
 		{
-			this._height = setAxisSizeIfAuto(window, LayoutDirection.Vertical, frameSize, padding, topBarSize);
+			this._height = setAxisSizeIfAuto(window, Axis.Vertical, frameSize, padding, topBarSize);
 		}
 		Log.debug("BaseWindow.setAutoWindowSize() to", this._width, "x", this._height, ", from size:", Log.stringify(frameSize), ", padding:", Log.stringify(padding), ", flags:", flags);
 	}

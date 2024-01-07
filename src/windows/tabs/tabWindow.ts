@@ -1,7 +1,7 @@
 import { defaultScale, defaultWindowPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { Axis } from "@src/positional/axis";
 import { Paddable } from "@src/positional/paddable";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
@@ -184,8 +184,8 @@ class TabWindowControl extends BaseWindowControl
 
 	private _openTab(window: Window | WindowDesc, tab: TabLayoutable): void
 	{
-		const width = setAxisSizeIfInheritedNumber(window, LayoutDirection.Horizontal, tab.width, this._windowWidthOption);
-		const height = setAxisSizeIfInheritedNumber(window, LayoutDirection.Vertical, tab.height, this._windowHeightOption);
+		const width = setAxisSizeIfInheritedNumber(window, Axis.Horizontal, tab.width, this._windowWidthOption);
+		const height = setAxisSizeIfInheritedNumber(window, Axis.Vertical, tab.height, this._windowHeightOption);
 		this._setWindowSizeAndFlags(width, height);
 	}
 
@@ -202,8 +202,8 @@ class TabWindowControl extends BaseWindowControl
 	{
 		const area = this._createFrameRectangle(this._flags, defaultTopBarSizeWithTabs);
 		const padding = this._padding;
-		setFramePaddingToDirection(area, padding, LayoutDirection.Horizontal);
-		setFramePaddingToDirection(area, padding, LayoutDirection.Vertical);
+		setFramePaddingToDirection(area, padding, Axis.Horizontal);
+		setFramePaddingToDirection(area, padding, Axis.Vertical);
 
 		Log.debug("TabWindow.layout() for window:", this._width, "x", this._height, "; active tab", this._selectedTab, "with frame:", Log.stringify(area));
 		const size = tab.layout(area, widgets);
@@ -220,8 +220,8 @@ class TabWindowControl extends BaseWindowControl
 
 		const area = <Rectangle>this._createFrameRectangle(WindowFlags.None);
 		const padding = this._padding;
-		setSizeWithPaddingForDirection(area, LayoutDirection.Horizontal, defaultScale, padding);
-		setSizeWithPaddingForDirection(area, LayoutDirection.Vertical, defaultScale, padding);
+		setSizeWithPaddingForDirection(area, Axis.Horizontal, defaultScale, padding);
+		setSizeWithPaddingForDirection(area, Axis.Vertical, defaultScale, padding);
 
 		Log.debug("TabWindow.layout() for window:", this._width, "x", this._height, "; static frame:", Log.stringify(area));
 		this._root.layout(area, widgets);
@@ -266,7 +266,7 @@ class TabWindowControl extends BaseWindowControl
 }
 
 
-function setFramePaddingToDirection(area: FrameRectangle, padding: ParsedPadding, direction: LayoutDirection): void
+function setFramePaddingToDirection(area: FrameRectangle, padding: ParsedPadding, direction: Axis): void
 {
 	if (area[sizeKeys[direction]] == autoKey)
 	{

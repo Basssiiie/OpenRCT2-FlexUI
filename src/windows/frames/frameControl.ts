@@ -1,7 +1,7 @@
 import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { Axis } from "@src/positional/axis";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Rectangle } from "@src/positional/rectangle";
@@ -51,8 +51,8 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		const body = this._body;
 		const position = body.position;
 
-		const width = applyFrameScaleOption(area, this.width, position, LayoutDirection.Horizontal);
-		const height = applyFrameScaleOption(area, this.height, position, LayoutDirection.Vertical);
+		const width = applyFrameScaleOption(area, this.width, position, Axis.Horizontal);
+		const height = applyFrameScaleOption(area, this.height, position, Axis.Vertical);
 
 		body.layout(widgets, <Rectangle>area);
 
@@ -99,8 +99,8 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 
 	open(window: Window, widgets: WidgetMap): void
 	{
-		setAxisSizeIfNumber(window, LayoutDirection.Horizontal, this.width);
-		setAxisSizeIfNumber(window, LayoutDirection.Vertical, this.height);
+		setAxisSizeIfNumber(window, Axis.Horizontal, this.width);
+		setAxisSizeIfNumber(window, Axis.Vertical, this.height);
 
 		this._activeWidgets = widgets;
 
@@ -134,7 +134,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 /**
  * Applies the frame scale option to the specified area and returns the total occupied space by the frame.
  */
-function applyFrameScaleOption(area: FrameRectangle, option: TabScaleOptions, bodyPosition: ParsedFramePosition, direction: LayoutDirection): number
+function applyFrameScaleOption(area: FrameRectangle, option: TabScaleOptions, bodyPosition: ParsedFramePosition, direction: Axis): number
 {
 	const sizeKey = sizeKeys[direction];
 	const parentSize = area[sizeKey];

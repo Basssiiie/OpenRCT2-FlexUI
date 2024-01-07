@@ -1,6 +1,7 @@
 import { defaultSpacing, redrawEvent } from "@src/elements/constants";
 import { VisualElement } from "@src/elements/controls/visualElement";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Axis } from "@src/positional/axis";
 import { parseScale } from "@src/positional/parsing/parseScale";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -67,7 +68,7 @@ export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): Wid
 export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function horizontal<I extends SizeParams, P extends ParsedSize>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & I): WidgetCreator<I, P>
 {
-	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Horizontal;
+	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Horizontal;
 	return <never>flexible(<never>params);
 }
 
@@ -81,7 +82,7 @@ export function vertical(params: FlexibleLayoutParams & FlexiblePosition): Widge
 export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function vertical<I extends SizeParams, P extends ParsedSize>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & I): WidgetCreator<I, P>
 {
-	(<FlexibleDirectionalLayoutParams>params).direction = LayoutDirection.Vertical;
+	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Vertical;
 	return <never>flexible(<never>params);
 }
 
@@ -113,14 +114,14 @@ export class FlexibleLayoutControl<I extends SizeParams, P extends ParsedSize> e
 	_renderableChildren!: FlexChild[];
 	_renderableChildrenPositions!: Parsed<FlexiblePosition>[];
 
-	_direction: LayoutDirection;
+	_direction: Axis;
 	_spacing: ParsedScale;
 	_flags: number;
 
 	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & I)
 	{
 		super(parent, params);
-		this._direction = (<{ direction?: LayoutDirection }>params).direction || LayoutDirection.Vertical;
+		this._direction = (<{ direction?: Axis }>params).direction || Axis.Vertical;
 		this._spacing = (parseScale((<{ spacing?: Scale }>params).spacing) || defaultSpacing);
 
 		const inheritFlags = getInheritanceFlags(params);

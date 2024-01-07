@@ -1,5 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
-import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Axis } from "@src/positional/axis";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Parsed } from "@src/positional/parsing/parsed";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -229,7 +229,7 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 		const columnWidths = this._columnWidths;
 		if (columnWidths && widget.width !== area.width)
 		{
-			flexibleLayout(widths, area, LayoutDirection.Horizontal, zeroScale, (idx, subarea) =>
+			flexibleLayout(widths, area, Axis.Horizontal, zeroScale, (idx, subarea) =>
 			{
 				this.columns[idx].width = round(subarea.width);
 			});
