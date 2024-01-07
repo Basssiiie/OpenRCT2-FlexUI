@@ -1,7 +1,7 @@
 /**
  * Available visibility flags for the viewport.
  */
-export const enum ViewportFlags
+export enum ViewportFlags
 {
 	Gridlines = (1 << 7),
 	UndergroundInside = (1 << 0),

@@ -47,4 +47,13 @@ export function integrations(test: TestFn<unknown>, name: string): void
 
 		t.false(data.includes("InvisibleRides"));
 	});
+
+	test("Output contains no internal enums", async t =>
+	{
+		const data = await getFile(name);
+
+		t.false(data.includes("RedrawNextTick"));
+		t.false(data.includes("RecalculateFromChildren"));
+		t.false(data.includes("Horizontal"));
+	});
 }

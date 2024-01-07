@@ -12,7 +12,7 @@
 		"noImplicitThis": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"preserveConstEnums": true,
+		"preserveConstEnums": false,
 		"paths": {
 			"@src/*": [ "src/*" ]
 		},
@@ -22,8 +22,7 @@
 	},
 	"include": [
 		"./lib/**/*.ts",
-		"./src/**/*.ts",
-		"./tests/**/*.ts"
+		"./src/**/*.ts"
 	],
 	"exclude": [
 		"./dist/**/*"

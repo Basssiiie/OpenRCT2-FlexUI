@@ -1,7 +1,7 @@
 /**
  * All the available colours in OpenRCT2 for windows and colour pickers.
  */
-export const enum Colour
+export enum Colour
 {
 	Black,
 	Grey,
