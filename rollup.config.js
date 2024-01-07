@@ -9,7 +9,7 @@ const isDev = (build === "development");
 
 
 /**
- * @type {import("rollup").RollupOptions}
+ * @type {(import("rollup").RollupOptions)[]}
  */
 const config = [
 	{
@@ -56,6 +56,12 @@ const config = [
 
 					beautify: isDev,
 				},
+				mangle: {
+					properties: {
+						regex: /^_/
+					},
+				},
+				nameCache: {},
 				// Useful only for stacktraces:
 				keep_fnames: isDev,
 			})
