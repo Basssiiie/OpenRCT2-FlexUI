@@ -103,9 +103,9 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 			start = parsed._padding[startKeys[mainDirection]],
 			end = parsed._padding[endKeys[mainDirection]];
 
-		addScaleToStack(size, stack);
-		addScaleToStack(start, stack);
-		addScaleToStack(end, stack);
+		addScaleToStack(size, stack, 1);
+		addScaleToStack(start, stack, 1);
+		addScaleToStack(end, stack, 1);
 	}
 	return stack;
 }
@@ -115,7 +115,7 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
  * Adds the specified scale to the stack's weighted total or absolute space,
  * depending on whether it's a weighted or absolute scale.
  */
-function addScaleToStack(scale: ParsedScale, stack: ParsedStack, multiplier: number = 1): void
+function addScaleToStack(scale: ParsedScale, stack: ParsedStack, multiplier: number): void
 {
 	const value = (scale[0] * multiplier);
 	if (isWeighted(scale))

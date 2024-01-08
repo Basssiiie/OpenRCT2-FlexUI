@@ -1,10 +1,10 @@
 import { Bindable } from "@src/bindings/bindable";
-import { zeroPadding } from "@src/elements/constants";
 import { Axis } from "@src/positional/axis";
 import { Paddable } from "@src/positional/paddable";
 import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import { ParsedPadding } from "..";
 import { WindowBinder } from "./binders/windowBinder";
 import { FrameRectangle } from "./frames/frameRectangle";
 import { ParentWindow } from "./parentWindow";
@@ -172,7 +172,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
 	 */
-	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding = defaultTopBarSize): FrameRectangle
+	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
 	{
 		return {
 			x: 0,
@@ -185,7 +185,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 	/**
 	 * Sets the window to the correct width and height when the size is auto-calculated from the frame size.
 	 */
-	protected _setAutoWindowSize(window: Window | WindowDesc, frameSize: Size, topBarSize: number, padding = zeroPadding): void
+	protected _setAutoWindowSize(window: Window | WindowDesc, frameSize: Size, topBarSize: number, padding: ParsedPadding): void
 	{
 		const flags = this._flags;
 		if (flags & WindowFlags.AutoWidth)

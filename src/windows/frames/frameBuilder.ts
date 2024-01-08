@@ -18,21 +18,31 @@ export class FrameBuilder implements BuildOutput
 	readonly binder: WidgetBinder;
 	readonly _widgets: WidgetDesc[] = [];
 
+	readonly open: Event<FrameContext>;
+	readonly update: Event<FrameContext>;
+	readonly redraw: Event<FrameContext>;
+	readonly close: Event<FrameContext>;
+
 	context: FrameControl;
 
 	constructor(
 		parent: ParentWindow,
 		params: FrameEventParams,
-		content: FrameContentParams,
-		readonly open: Event<FrameContext> = [],
-		readonly update: Event<FrameContext> = [],
-		readonly redraw: Event<FrameContext> = [],
-		readonly close: Event<FrameContext> = []
+		content: FrameContentParams
 	){
+		const open: Event<FrameContext> = [];
+		const update: Event<FrameContext> = [];
+		const redraw: Event<FrameContext> = [];
+		const close: Event<FrameContext> = [];
+
 		const context = new FrameControl(content.width || inheritKey, content.height || inheritKey, parent, open, update, redraw, close);
 		const binder = new WidgetBinder();
 		const { onOpen, onUpdate, onClose } = params;
 
+		this.open = open;
+		this.update = update;
+		this.redraw = redraw;
+		this.close = close;
 		this.binder = binder;
 		this.context = context;
 		context._body = new FlexibleLayoutControl(context, this, content);

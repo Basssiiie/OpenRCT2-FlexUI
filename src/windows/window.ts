@@ -1,4 +1,4 @@
-import { defaultWindowPadding } from "@src/elements/constants";
+import { defaultWindowPadding, zeroPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
@@ -73,9 +73,9 @@ class WindowControl extends BaseWindowControl
 
 	override _layout(window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._createFrameRectangle(this._flags);
+		const area = this._createFrameRectangle(this._flags, defaultTopBarSize);
 		const size = this._frame.layout(area, widgets);
 
-		this._setAutoWindowSize(window, size, defaultTopBarSize);
+		this._setAutoWindowSize(window, size, defaultTopBarSize, zeroPadding);
 	}
 }

@@ -91,7 +91,7 @@ export function isParsedScaleEqual(left: ParsedScale, right: ParsedScale): boole
 /**
  * Calculates the pixel scale using the leftover space and weighted total if necessary.
  */
-export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal?: number, percentileTotal: number = 0): number
+export function convertToPixels(scale: ParsedScale, leftoverSpace: number, weightedTotal: number, percentileTotal: number): number
 {
 	switch (scale[1])
 	{

@@ -10,7 +10,7 @@ import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
 import { isUndefined } from "@src/utilities/type";
-import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowControl";
+import { BaseWindowControl, BaseWindowParams, WindowFlags, defaultTopBarSize } from "../baseWindowControl";
 import { WindowBinder } from "../binders/windowBinder";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
@@ -218,7 +218,7 @@ class TabWindowControl extends BaseWindowControl
 			return;
 		}
 
-		const area = <Rectangle>this._createFrameRectangle(WindowFlags.None);
+		const area = <Rectangle>this._createFrameRectangle(WindowFlags.None, defaultTopBarSize);
 		const padding = this._padding;
 		setSizeWithPaddingForDirection(area, Axis.Horizontal, defaultScale, padding);
 		setSizeWithPaddingForDirection(area, Axis.Vertical, defaultScale, padding);

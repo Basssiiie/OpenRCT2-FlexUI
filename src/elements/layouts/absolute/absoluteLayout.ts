@@ -43,10 +43,10 @@ export function absoluteLayout(elements: Layoutable<Parsed<AbsolutePosition>>[],
 	{
 		const element = parsedElements[i];
 
-		rect.x = (parentArea.x + convertToPixels(element.x, leftoverWidth, weightedTotalWidth));
-		rect.y = (parentArea.y + convertToPixels(element.y, leftoverHeight, weightedTotalHeight));
-		rect.width = convertToPixels(element.width, leftoverWidth, weightedTotalWidth);
-		rect.height = convertToPixels(element.height, leftoverHeight, weightedTotalHeight);
+		rect.x = (parentArea.x + convertToPixels(element.x, leftoverWidth, weightedTotalWidth, 0));
+		rect.y = (parentArea.y + convertToPixels(element.y, leftoverHeight, weightedTotalHeight, 0));
+		rect.width = convertToPixels(element.width, leftoverWidth, weightedTotalWidth, 0);
+		rect.height = convertToPixels(element.height, leftoverHeight, weightedTotalHeight, 0);
 
 		elements[i].layout(widgetMap, rect);
 	}

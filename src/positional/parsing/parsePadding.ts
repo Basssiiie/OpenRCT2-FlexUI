@@ -17,9 +17,11 @@ type PaddingObject = Extract<Padding, Record<string, unknown>>;
 /**
  * Parses the padding to usable tuples of parsed scales.
  */
-export function parsePadding(padding: Padding | undefined, fallbackPadding: ParsedPadding = zeroPadding): ParsedPadding
+export function parsePadding(padding: Padding | undefined, fallbackPadding?: ParsedPadding): ParsedPadding
 {
+	fallbackPadding ||= zeroPadding;
 	let returnValue: ParsedPadding | undefined;
+
 	if (isUndefined(padding))
 	{
 		// padding not specified, apply no padding.

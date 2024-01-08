@@ -8,8 +8,10 @@ export type WidgetMap = Record<string, Widget | WidgetDesc>;
  * Creates a map of all widgets in the window, for quick access from layout functions
  * and window events.
  */
-export function addToWidgetMap<T extends { name?: string }>(widgets: T[], dictionary: Record<string, T> = {}): Record<string, T>
+export function addToWidgetMap<T extends { name?: string }>(widgets: T[], dictionary?: Record<string, T>): Record<string, T>
 {
+	dictionary ||= {};
+
 	for (const widget of widgets)
 	{
 		const name = widget.name;
