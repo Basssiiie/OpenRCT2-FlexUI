@@ -179,10 +179,7 @@ export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implement
  */
 function getDisabledCount(disableMode: DropdownDisableMode | undefined): number
 {
-	switch (disableMode)
-	{
-		case "empty": return 0;
-		case "single": return 1;
-	}
-	return -1;
+	return (disableMode === "empty") ? 0
+		: (disableMode === "single") ? 1
+		: -1;
 }

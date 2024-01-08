@@ -190,28 +190,23 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 		const step = (this._step * direction);
 		const oldValue = this._value.get();
 		const newValue = (oldValue + step);
+		const wrapMode = this._wrapMode;
 
 		let result: number;
-		switch (this._wrapMode)
+		if (wrapMode === "wrap")
 		{
-			case "wrap":
-			{
-				result = MathUtils.wrap(newValue, min, max);
-				break;
-			}
-			case "clampThenWrap":
-			{
-				// Wrap if old value is at the limit, otherwise clamp.
-				result = (newValue < min && oldValue === min) || (newValue > max && oldValue === max)
-					? MathUtils.wrap(newValue, min, max)
-					: MathUtils.clamp(newValue, min, max);
-				break;
-			}
-			default:
-			{
-				result = MathUtils.clamp(newValue, min, max);
-				break;
-			}
+			result = MathUtils.wrap(newValue, min, max);
+		}
+		else if (wrapMode === "clampThenWrap")
+		{
+			// Wrap if old value is at the limit, otherwise clamp.
+			result = (newValue < min && oldValue === min) || (newValue > max && oldValue === max)
+				? MathUtils.wrap(newValue, min, max)
+				: MathUtils.clamp(newValue, min, max);
+		}
+		else
+		{
+			result = MathUtils.clamp(newValue, min, max);
 		}
 		this._updateValueAndTriggerChange(result, step);
 	}
