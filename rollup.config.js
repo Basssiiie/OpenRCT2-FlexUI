@@ -94,16 +94,22 @@ const config = [
 
 					beautify: isDev,
 				},
-				mangle: isDev ? {} : {
-					cache: false,
-					properties: {
-						regex: /^_/
+				...(isDev
+				? {
+					// Dev: readable code and stacktraces
+					mangle: false,
+					keep_fnames: isDev,
+				}
+				: {
+					// Prod: minify aggresively
+					mangle: {
+						cache: false, // cache only properties, not vars
+						properties: {
+							regex: /^_/
+						},
 					},
-				},
-				nameCache: cache,
-
-				// Useful only for stacktraces:
-				keep_fnames: isDev,
+					nameCache: cache,
+				}),
 			})
 		]
 	},
