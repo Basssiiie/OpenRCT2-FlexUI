@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.18
       - run: npm ci --prefer-offline --no-audit --no-save
       - run: npm run lint
 
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.18 # https://github.com/privatenumber/tsx/issues/354
       - run: npm ci --prefer-offline --no-audit --no-save
       - run: npm run build
       - run: npm run install:examples
