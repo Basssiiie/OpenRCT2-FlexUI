@@ -27,11 +27,15 @@ Various plugins have already adopted FlexUI as their UI-library:
 - **[RideVehicleEditor](https://openrct2plugins.org/plugin/MDEwOlJlcG9zaXRvcnkzMTI2MjQ1MjY=/OpenRCT2-RideVehicleEditor)**, by Basssiiie
 - **[ParkRatingInspector](https://openrct2plugins.org/plugin/MDEwOlJlcG9zaXRvcnkzOTY0NTM0NjA=/OpenRCT2-ParkRatingInspector)**, by Basssiiie
 - **[RCTris (Tetris)](https://openrct2plugins.org/plugin/R_kgDOLBRY8A/openrct2-rctris)**, by Sadret
+- **[Consistent Guest Stats](https://openrct2plugins.org/plugin/R_kgDOK8S5TQ/consistent-guest-stats)**, by ItsSmitty
 - **[Ride Painter](https://openrct2plugins.org/plugin/R_kgDOGuBtxQ/OpenRCT-Ride-Painter)**, by ItsSmitty
 - **[Wet Paint Plugin](https://openrct2plugins.org/plugin/R_kgDOIOX2DQ/Wet-Paint-Plugin)**, by ItsSmitty
+- **[Force Visualiser](https://openrct2plugins.org/plugin/R_kgDOLhm8Bg/OpenRCT2-Force-Visualiser)**, by Alfinch
 - **[Soft Guest Cap Inspector](https://openrct2plugins.org/plugin/R_kgDOJUjXiA/openrct2-soft-guest-cap-inspector)**, by Beam41
 - **[Maze Generator](https://openrct2plugins.org/plugin/R_kgDOJVzaYg/openrct2-maze-generator)**, by Beam41
 - **[RemoteHandymen](https://openrct2plugins.org/plugin/R_kgDOJeMV7Q/openrct2-remotehandymen)**, by mrmagic2020
+- **[Plugin Manager](https://openrct2plugins.org/plugin/R_kgDOLerpYQ/openrct2-plugin-manager)**, by Harry-Hopkinson
+- **[Statistics](https://openrct2plugins.org/plugin/R_kgDOK7U8Bw/openrct2-statistics)**, by KatieZeldaKat
 
 ---
 
