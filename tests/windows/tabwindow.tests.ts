@@ -392,6 +392,7 @@ test("Window with tabs and static includes all paddings", t =>
 	t.is(button2.height, 275 - (20 + 8 + 44));
 });
 
+
 test("Window and tab events execute", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -447,6 +448,23 @@ test("Window and tab events execute", t =>
 	hits.length = 0;
 	call(created.onClose);
 	t.deepEqual(hits, ["window close", "tab 1 close"]);
+});
+
+
+test("Window close method calls on close event", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const calls: string[] = [];
+	const template = tabwindow({
+		title: "test window", width: 150, height: 100,
+		tabs: [],
+		onClose: () => calls.push("close it")
+	});
+	template.open();
+	template.close();
+
+	t.deepEqual(calls, [ "close it" ]);
 });
 
 
@@ -1004,6 +1022,7 @@ test("Window with tabs does single redraw after tabs switch", t =>
 			tab({
 				image: 35,
 				content: [
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(parent, output): any =>
 					{
 						output.on("redraw", () => hits.push("redraw"));

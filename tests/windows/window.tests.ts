@@ -625,6 +625,23 @@ test("Window events are triggered", t =>
 });
 
 
+test("Window close method calls on close event", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const calls: string[] = [];
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		content: [],
+		onClose: () => calls.push("close it")
+	});
+	template.open();
+	template.close();
+
+	t.deepEqual(calls, [ "close it" ]);
+});
+
+
 test("Window focuses on double open", t =>
 {
 	globalThis.ui = Mock.ui();

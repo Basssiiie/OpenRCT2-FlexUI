@@ -115,8 +115,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 			onClose: (): void =>
 			{
 				Log.debug("BaseWindow.onClose() triggered");
-				this._window = null; // to prevent infinite close loop
-				this.close();
+				this._close();
 			}
 		};
 		const windowWidth = setAxisSizeIfNumber(windowDesc, Axis.Horizontal, width);
@@ -241,6 +240,19 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		this._invoke(frame => frame.open(window, activeWidgets));
 	}
 
+	private _close(): void
+	{
+		this._invoke(frame => frame.close());
+
+		const binder = this._windowBinder;
+		if (binder)
+		{
+			binder._unbind();
+		}
+		this._window = null;
+		this._activeWidgetMap = null;
+	}
+
 	open(): void
 	{
 		if (this._window)
@@ -257,18 +269,11 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 	close(): void
 	{
-		this._invoke(frame => frame.close());
 		if (this._window)
 		{
+			// This triggers the onClose event, which will then close and clean up everything.
 			this._window.close();
 		}
-		const binder = this._windowBinder;
-		if (binder)
-		{
-			binder._unbind();
-		}
-		this._window = null;
-		this._activeWidgetMap = null;
 	}
 
 	focus(): void
