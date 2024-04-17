@@ -114,7 +114,7 @@ class TabWindowControl extends BaseWindowControl
 			const staticWidgets = builder._widgets;
 
 			description.widgets = staticWidgets;
-			addToWidgetMap(staticWidgets, descriptionWidgetMap);
+			addToWidgetMap<Widget | WidgetDesc>(staticWidgets, descriptionWidgetMap);
 			rootLayoutable = builder.context;
 			this._flags |= TabWindowFlags.HasStaticWidgets;
 		}
@@ -144,7 +144,7 @@ class TabWindowControl extends BaseWindowControl
 			const tabWidgets = tabParams.widgets;
 			if (tabWidgets)
 			{
-				addToWidgetMap(tabWidgets, descriptionWidgetMap);
+				addToWidgetMap<Widget | WidgetDesc>(tabWidgets, descriptionWidgetMap);
 			}
 		}
 

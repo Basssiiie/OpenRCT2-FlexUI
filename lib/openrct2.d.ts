@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2014-2022 OpenRCT2 developers
+ * Copyright (c) 2014-2024 OpenRCT2 developers
  *
  * For a complete list of all authors, please refer to contributors.md
  * Interested in contributing? Visit https://github.com/OpenRCT2/OpenRCT2
@@ -42,6 +42,10 @@ declare global {
     /** APIs for performance profiling. */
     var profiler: Profiler;
     /**
+     * APIs for getting, loading, and unloading objects.
+     */
+    var objectManager: ObjectManager;
+    /**
      * APIs for creating and editing title sequences.
      * These will only be available to clients that are not running headless mode.
      */
@@ -52,7 +56,10 @@ declare global {
      * Plugin writers should check if ui is available using `typeof ui !== 'undefined'`.
      */
     var ui: Ui;
-
+    /**
+     * APIs for managing the installed plugins
+     */
+    var pluginManager: PluginManager;
     /**
      * Registers the plugin. This may only be called once.
      * @param metadata Information about the plugin and the entry point.
@@ -217,22 +224,47 @@ declare global {
         captureImage(options: CaptureOptions): void;
 
         /**
-         * Gets the loaded object at the given index.
-         * @param type The object type.
-         * @param index The index.
+         * @deprecated Use {@link ObjectManager.getObject} instead.
          */
-        getObject(type: ObjectType, index: number): LoadedObject;
+        getObject(type: ObjectType, index: number): LoadedImageObject;
+
+        /**
+         * @deprecated Use {@link ObjectManager.getObject} instead.
+         */
         getObject(type: "ride", index: number): RideObject;
+
+        /**
+         * @deprecated Use {@link ObjectManager.getObject} instead.
+         */
         getObject(type: "small_scenery", index: number): SmallSceneryObject;
 
-        getAllObjects(type: ObjectType): LoadedObject[];
+        /**
+         * @deprecated Use {@link ObjectManager.getObject} instead.
+         */
+        getObject(type: "music", index: number): LoadedObject;
+
+        /**
+         * @deprecated Use {@link ObjectManager.getAllObjects} instead.
+         */
+        getAllObjects(type: ObjectType): LoadedImageObject[];
+
+        /**
+         * @deprecated Use {@link ObjectManager.getAllObjects} instead.
+         */
         getAllObjects(type: "ride"): RideObject[];
+
+        /**
+         * @deprecated Use {@link ObjectManager.getAllObjects} instead.
+         */
+        getAllObjects(type: "music"): LoadedObject[];
 
         /**
          * Gets the {@link TrackSegment} for the given type.
          * @param type The track segment type.
          */
         getTrackSegment(type: number): TrackSegment | null;
+
+        getAllTrackSegments(): TrackSegment[];
 
         /**
          * Gets the image number for the given icon.
@@ -265,10 +297,10 @@ declare global {
          * @param execute Logic for validating and executing the action.
          * @throws An error if the action has already been registered by this or another plugin.
          */
-        registerAction(
+        registerAction<T = object>(
             action: string,
-            query: (args: object) => GameActionResult,
-            execute: (args: object) => GameActionResult): void;
+            query: (args: GameActionEventArgs<T>) => GameActionResult,
+            execute: (args: GameActionEventArgs<T>) => GameActionResult): void;
 
         /**
          * Query the result of running a game action. This allows you to check the outcome and validity of
@@ -285,7 +317,7 @@ declare global {
         queryAction(action: "bannersetcolour", args: BannerSetColourArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "bannersetname", args: BannerSetNameArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "bannersetstyle", args: BannerSetStyleArgs, callback?: (result: GameActionResult) => void): void;
-        queryAction(action: "changemapsize", args: ChangeMapSizeArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "cheatset", args: CheatSetArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "clearscenery", args: ClearSceneryArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "climateset", args: ClimateSetArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "footpathadditionplace", args: FootpathAdditionPlaceArgs, callback?: (result: GameActionResult) => void): void;
@@ -293,6 +325,7 @@ declare global {
         queryAction(action: "footpathplace", args: FootpathPlaceArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "footpathlayoutplace", args: FootpathLayoutPlaceArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "footpathremove", args: FootpathRemoveArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "gamesetspeed", args: GameSetSpeedArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "guestsetflags", args: GuestSetFlagsArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "guestsetname", args: GuestSetNameArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "landbuyrights", args: LandBuyRightsArgs, callback?: (result: GameActionResult) => void): void;
@@ -305,6 +338,7 @@ declare global {
         queryAction(action: "largesceneryremove", args: LargeSceneryRemoveArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "largescenerysetcolour", args: LargeScenerySetColourArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "loadorquit", args: LoadOrQuitArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "mapchangesize", args: MapChangeSizeArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "mazeplacetrack", args: MazePlaceTrackArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "mazesettrack", args: MazeSetTrackArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "networkmodifygroup", args: NetworkModifyGroupArgs, callback?: (result: GameActionResult) => void): void;
@@ -312,6 +346,7 @@ declare global {
         queryAction(action: "parkentranceremove", args: ParkEntranceRemoveArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "parkmarketing", args: ParkMarketingArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "parksetdate", args: ParkSetDateArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "parksetentrancefee", args: ParkSetEntranceFeeArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "parksetloan", args: ParkSetLoanArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "parksetname", args: ParkSetNameArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "parksetparameter", args: ParkSetParameterArgs, callback?: (result: GameActionResult) => void): void;
@@ -321,7 +356,7 @@ declare global {
         queryAction(action: "peepspawnplace", args: PeepSpawnPlaceArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "playerkick", args: PlayerKickArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "playersetgroup", args: PlayerSetGroupArgs, callback?: (result: GameActionResult) => void): void;
-        queryAction(action: "ridecreate", args: RideCreateArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "ridecreate", args: RideCreateArgs, callback?: (result: RideCreateActionResult) => void): void;
         queryAction(action: "ridedemolish", args: RideDemolishArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "rideentranceexitplace", args: RideEntranceExitPlaceArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "rideentranceexitremove", args: RideEntranceExitRemoveArgs, callback?: (result: GameActionResult) => void): void;
@@ -334,15 +369,13 @@ declare global {
         queryAction(action: "ridesetstatus", args: RideSetStatusArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "ridesetvehicle", args: RideSetVehicleArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "scenariosetsetting", args: ScenarioSetSettingArgs, callback?: (result: GameActionResult) => void): void;
-        queryAction(action: "setcheat", args: SetCheatArgs, callback?: (result: GameActionResult) => void): void;
-        queryAction(action: "setparkentrancefee", args: SetParkEntranceFeeArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "signsetname", args: SignSetNameArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "signsetstyle", args: SignSetStyleArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "smallsceneryplace", args: SmallSceneryPlaceArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "smallsceneryremove", args: SmallSceneryRemoveArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "smallscenerysetcolour", args: SmallScenerySetColourArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "stafffire", args: StaffFireArgs, callback?: (result: GameActionResult) => void): void;
-        queryAction(action: "staffhire", args: StaffHireArgs, callback?: (result: GameActionResult) => void): void;
+        queryAction(action: "staffhire", args: StaffHireArgs, callback?: (result: StaffHireNewActionResult) => void): void;
         queryAction(action: "staffsetcolour", args: StaffSetColourArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "staffsetcostume", args: StaffSetCostumeArgs, callback?: (result: GameActionResult) => void): void;
         queryAction(action: "staffsetname", args: StaffSetNameArgs, callback?: (result: GameActionResult) => void): void;
@@ -376,7 +409,7 @@ declare global {
         executeAction(action: "bannersetcolour", args: BannerSetColourArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "bannersetname", args: BannerSetNameArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "bannersetstyle", args: BannerSetStyleArgs, callback?: (result: GameActionResult) => void): void;
-        executeAction(action: "changemapsize", args: ChangeMapSizeArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "cheatset", args: CheatSetArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "clearscenery", args: ClearSceneryArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "climateset", args: ClimateSetArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "footpathadditionplace", args: FootpathAdditionPlaceArgs, callback?: (result: GameActionResult) => void): void;
@@ -384,6 +417,7 @@ declare global {
         executeAction(action: "footpathplace", args: FootpathPlaceArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "footpathlayoutplace", args: FootpathLayoutPlaceArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "footpathremove", args: FootpathRemoveArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "gamesetspeed", args: GameSetSpeedArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "guestsetflags", args: GuestSetFlagsArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "guestsetname", args: GuestSetNameArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "landbuyrights", args: LandBuyRightsArgs, callback?: (result: GameActionResult) => void): void;
@@ -396,6 +430,7 @@ declare global {
         executeAction(action: "largesceneryremove", args: LargeSceneryRemoveArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "largescenerysetcolour", args: LargeScenerySetColourArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "loadorquit", args: LoadOrQuitArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "mapchangesize", args: MapChangeSizeArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "mazeplacetrack", args: MazePlaceTrackArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "mazesettrack", args: MazeSetTrackArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "networkmodifygroup", args: NetworkModifyGroupArgs, callback?: (result: GameActionResult) => void): void;
@@ -403,6 +438,7 @@ declare global {
         executeAction(action: "parkentranceremove", args: ParkEntranceRemoveArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "parkmarketing", args: ParkMarketingArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "parksetdate", args: ParkSetDateArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "parksetentrancefee", args: ParkSetEntranceFeeArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "parksetloan", args: ParkSetLoanArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "parksetname", args: ParkSetNameArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "parksetparameter", args: ParkSetParameterArgs, callback?: (result: GameActionResult) => void): void;
@@ -412,7 +448,7 @@ declare global {
         executeAction(action: "peepspawnplace", args: PeepSpawnPlaceArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "playerkick", args: PlayerKickArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "playersetgroup", args: PlayerSetGroupArgs, callback?: (result: GameActionResult) => void): void;
-        executeAction(action: "ridecreate", args: RideCreateArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "ridecreate", args: RideCreateArgs, callback?: (result: RideCreateActionResult) => void): void;
         executeAction(action: "ridedemolish", args: RideDemolishArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "rideentranceexitplace", args: RideEntranceExitPlaceArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "rideentranceexitremove", args: RideEntranceExitRemoveArgs, callback?: (result: GameActionResult) => void): void;
@@ -425,15 +461,13 @@ declare global {
         executeAction(action: "ridesetstatus", args: RideSetStatusArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "ridesetvehicle", args: RideSetVehicleArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "scenariosetsetting", args: ScenarioSetSettingArgs, callback?: (result: GameActionResult) => void): void;
-        executeAction(action: "setcheat", args: SetCheatArgs, callback?: (result: GameActionResult) => void): void;
-        executeAction(action: "setparkentrancefee", args: SetParkEntranceFeeArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "signsetname", args: SignSetNameArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "signsetstyle", args: SignSetStyleArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "smallsceneryplace", args: SmallSceneryPlaceArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "smallsceneryremove", args: SmallSceneryRemoveArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "smallscenerysetcolour", args: SmallScenerySetColourArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "stafffire", args: StaffFireArgs, callback?: (result: GameActionResult) => void): void;
-        executeAction(action: "staffhire", args: StaffHireArgs, callback?: (result: GameActionResult) => void): void;
+        executeAction(action: "staffhire", args: StaffHireArgs, callback?: (result: StaffHireNewActionResult) => void): void;
         executeAction(action: "staffsetcolour", args: StaffSetColourArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "staffsetcostume", args: StaffSetCostumeArgs, callback?: (result: GameActionResult) => void): void;
         executeAction(action: "staffsetname", args: StaffSetNameArgs, callback?: (result: GameActionResult) => void): void;
@@ -609,7 +643,7 @@ declare global {
         "bannersetcolour" |
         "bannersetname" |
         "bannersetstyle" |
-        "changemapsize" |
+        "cheatset" |
         "clearscenery" |
         "climateset" |
         "footpathadditionplace" |
@@ -617,6 +651,7 @@ declare global {
         "footpathplace" |
         "footpathlayoutplace" |
         "footpathremove" |
+        "gamesetspeed" |
         "guestsetflags" |
         "guestsetname" |
         "landbuyrights" |
@@ -629,6 +664,7 @@ declare global {
         "largesceneryremove" |
         "largescenerysetcolour" |
         "loadorquit" |
+        "mapchangesize" |
         "mazeplacetrack" |
         "mazesettrack" |
         "networkmodifygroup" |
@@ -636,6 +672,7 @@ declare global {
         "parkentranceremove" |
         "parkmarketing" |
         "parksetdate" |
+        "parksetentrancefee" |
         "parksetloan" |
         "parksetname" |
         "parksetparameter" |
@@ -658,8 +695,6 @@ declare global {
         "ridesetstatus" |
         "ridesetvehicle" |
         "scenariosetsetting" |
-        "setcheat" |
-        "setparkentrancefee" |
         "signsetname" |
         "signsetstyle" |
         "smallsceneryplace" |
@@ -729,9 +764,10 @@ declare global {
         parameter: number; // primary colour | secondary colour | 0: disable, 1: enable
     }
 
-    interface ChangeMapSizeArgs extends GameActionArgs {
-        targetSizeX: number;
-        targetSizeY: number;
+    interface CheatSetArgs extends GameActionArgs {
+        type: number; // see CheatType in openrct2/Cheats.h
+        param1: number; // see openrct2/actions/CheatSetAction.cpp
+        param2: number; // see openrct2/actions/CheatSetAction.cpp
     }
 
     interface ClearSceneryArgs extends GameActionArgs {
@@ -782,6 +818,10 @@ declare global {
         x: number;
         y: number;
         z: number;
+    }
+
+    interface GameSetSpeedArgs extends GameActionArgs {
+        speed: number;
     }
 
     // recommendation: use Peep.setFlag instead of the GuestSetFlag action
@@ -891,6 +931,11 @@ declare global {
         savePromptMode: number; // 0: save before load, 1: save before quit. Only used if mode = 0 (open save prompt).
     }
 
+    interface MapChangeSizeArgs extends GameActionArgs {
+        targetSizeX: number;
+        targetSizeY: number;
+    }
+
     interface MazePlaceTrackArgs extends GameActionArgs {
         x: number;
         y: number;
@@ -941,6 +986,10 @@ declare global {
         year: number;
         month: number;
         day: number;
+    }
+
+    interface ParkSetEntranceFeeArgs extends GameActionArgs {
+        value: number;
     }
 
     interface ParkSetLoanArgs extends GameActionArgs {
@@ -1080,16 +1129,6 @@ declare global {
         value: number;
     }
 
-    interface SetCheatArgs extends GameActionArgs {
-        type: number; // see CheatType in openrct2/Cheats.h
-        param1: number; // see openrct2/actions/SetCheatAction.cpp
-        param2: number; // see openrct2/actions/SetCheatAction.cpp
-    }
-
-    interface SetParkEntranceFeeArgs extends GameActionArgs {
-        value: number;
-    }
-
     interface SignSetNameArgs extends GameActionArgs {
         id: number;
         name: string;
@@ -1111,6 +1150,7 @@ declare global {
         quadrant: number;
         primaryColour: number;
         secondaryColour: number;
+        tertiaryColour: number;
     }
 
     interface SmallSceneryRemoveArgs extends GameActionArgs {
@@ -1278,12 +1318,12 @@ declare global {
         height: number;
     }
 
-    interface GameActionEventArgs {
+    interface GameActionEventArgs<T = object> {
         readonly player: number;
         readonly type: number;
         readonly action: string;
         readonly isClientOnly: boolean;
-        readonly args: object;
+        readonly args: T;
         result: GameActionResult;
     }
 
@@ -1296,8 +1336,12 @@ declare global {
         expenditureType?: ExpenditureType;
     }
 
-    interface RideCreateGameActionResult extends GameActionResult {
-        readonly ride: number;
+    interface RideCreateActionResult extends GameActionResult {
+        readonly ride?: number;
+    }
+
+    interface StaffHireNewActionResult extends GameActionResult {
+        readonly peep?: number;
     }
 
     interface NetworkEventArgs {
@@ -1458,12 +1502,12 @@ declare global {
 
         edges: number;
         corners: number;
-        slopeDirection: number | null;
+        slopeDirection: Direction | null;
         isBlockedByVehicle: boolean;
         isWide: boolean;
 
         isQueue: boolean;
-        queueBannerDirection: number | null;
+        queueBannerDirection: Direction | null;
         ride: number | null;
         station: number | null;
 
@@ -1502,6 +1546,7 @@ declare global {
         object: number;
         primaryColour: number;
         secondaryColour: number;
+        tertiaryColour: number;
         quadrant: number;
         age: number;
     }
@@ -1512,10 +1557,14 @@ declare global {
         direction: Direction;
         object: number;
         primaryColour: number;
+        /** If the element is a banner, this is the text colour. */
         secondaryColour: number;
         tertiaryColour: number;
-        bannerIndex: number | null;
         slope: Direction;
+        /** Writing to bannerIndex is deprecated and may result in uncontrolled behaviour. */
+        readonly bannerIndex: number | null;
+        /** If the element is a banner, this is its text. */
+        bannerText: string | null;
     }
 
     interface EntranceElement extends BaseTileElement {
@@ -1536,16 +1585,28 @@ declare global {
         direction: Direction;
         object: number;
         primaryColour: number;
+        /** If the element is a banner, this is the text colour. */
         secondaryColour: number;
         tertiaryColour: number;
-        bannerIndex: number | null;
         sequence: number;
+        /** Writing to bannerIndex is deprecated and may result in uncontrolled behaviour. */
+        readonly bannerIndex: number | null;
+        /** If the element is a banner, this is its text. */
+        bannerText: string | null;
     }
 
     interface BannerElement extends BaseTileElement {
         type: "banner";
+
         direction: Direction;
-        bannerIndex: number;
+        object: number;
+        primaryColour: number;
+        /** This is the text colour. */
+        secondaryColour: number;
+        /** Writing to bannerIndex is deprecated and may result in uncontrolled behaviour. */
+        readonly bannerIndex: number;
+        bannerText: string;
+        isNoEntry: boolean;
     }
 
     /**
@@ -1578,10 +1639,80 @@ declare global {
         removeElement(index: number): void;
     }
 
+    type ObjectSourceGame =
+        "rct1" |
+        "added_attractions" |
+        "loopy_landscapes" |
+        "rct2" |
+        "wacky_worlds" |
+        "time_twister" |
+        "custom" |
+        "openrct2_official";
+
+    type ObjectGeneration = "dat" | "json";
+
     /**
-     * Represents the definition of a loaded object (.DAT or .json) such a ride type or scenery item.
+     * Represents an installed OpenRCT2 object which may or may not be currently loaded into the park.
+     */
+    interface InstalledObject {
+        /**
+         * The full path of the object file.
+         */
+        readonly path: string;
+
+        /**
+         * Whether the object is an original .DAT file, or a .parkobj / .json file.
+         */
+        readonly generation: ObjectGeneration;
+
+        /**
+         * The object type.
+         */
+        readonly type: ObjectType;
+
+        /**
+         * The original game or expansion pack this object first appeared in.
+         */
+        readonly sourceGames: ObjectSourceGame[];
+
+        /**
+         * The unique identifier of the object, e.g. "rct2.burgb".
+         * For legacy DAT objects, the identifier will be in a format similar to "09F55405|DirtGras|B9B19A7F".
+         */
+        readonly identifier: string;
+
+        /**
+         * The original unique identifier of the object, e.g. "BURGB   ".
+         * This may have trailing spaces if the name is shorter than 8 characters.
+         * Only .DAT objects or JSON objects based on .DAT objects will have legacy identifiers.
+         */
+        readonly legacyIdentifier: string | null;
+
+        /**
+         * The object version, e.g. "1.5.2-pre".
+         */
+        readonly version: string;
+
+        /**
+         * Gets the list of authors for the object.
+         */
+        readonly authors: string[];
+
+        /**
+         * The name in the user's current language.
+         */
+        readonly name: string;
+    }
+
+    /**
+     * Represents the definition of a loaded object (.DAT or .json) such as ride type or scenery item.
      */
     interface LoadedObject {
+        /**
+         * Gets a reference to the installed object.
+         */
+        readonly installedObject: InstalledObject;
+
         /**
          * The object type.
          */
@@ -1594,7 +1725,7 @@ declare global {
 
         /**
          * The unique identifier of the object, e.g. "rct2.burgb".
-         * Only JSON objects will have an identifier.
+         * For legacy DAT objects, the identifier will be in a format similar to "09F55405|DirtGras|B9B19A7F".
          */
         readonly identifier: string;
 
@@ -1612,9 +1743,25 @@ declare global {
     }
 
     /**
+    * Represents the definition of a loaded object that has one or more associated images.
+    */
+    interface LoadedImageObject extends LoadedObject {
+        /**
+         * Id of the objects base image. This is also known as the preview image.
+         */
+        readonly baseImageId: number;
+
+        /**
+         * The number of images for this object.
+         * Use this in conjunction with the baseImageId to iterate over an objects images.
+         */
+        readonly numImages: number;
+    }
+
+    /**
      * Represents the object definition of a ride or stall.
      */
-    interface RideObject extends LoadedObject {
+    interface RideObject extends LoadedImageObject {
         /**
          * The description of the ride / stall in the player's current language.
          */
@@ -1677,11 +1824,21 @@ declare global {
         readonly slopes12Banked22?: SpriteGroup;
         readonly slopes8Banked22?: SpriteGroup;
         readonly slopes25Banked22?: SpriteGroup;
+        readonly slopes8Banked45?: SpriteGroup;
+        readonly slopes16Banked22?: SpriteGroup;
+        readonly slopes16Banked45?: SpriteGroup;
         readonly slopes25Banked45?: SpriteGroup;
         readonly slopes12Banked45?: SpriteGroup;
+        readonly slopes25Banked67?: SpriteGroup;
+        readonly slopes25InlineTwists?: SpriteGroup;
+        readonly slopes42Banked22?: SpriteGroup;
+        readonly slopes42Banked45?: SpriteGroup;
+        readonly slopes42Banked90?: SpriteGroup;
+        readonly slopes60Banked22?: SpriteGroup;
         readonly corkscrews?: SpriteGroup;
         readonly restraintAnimation?: SpriteGroup;
-        readonly curvedLiftHill?: SpriteGroup;
+        readonly curvedLiftHillUp?: SpriteGroup;
+        readonly curvedLiftHillDown?: SpriteGroup;
     }
 
     /**
@@ -1718,10 +1875,19 @@ declare global {
         readonly numVerticalFramesOverride: number;
     }
 
+    interface SceneryObject extends LoadedImageObject {
+        /**
+         * A list of scenery groups this object belongs to. This may not contain any
+         * scenery groups that contain this object by default. This is typically
+         * used for custom objects to be part of existing scenery groups.
+         */
+        readonly sceneryGroups: string[];
+    }
+
     /**
      * Represents the object definition of a small scenery item such a tree.
      */
-    interface SmallSceneryObject extends LoadedObject {
+    interface SmallSceneryObject extends SceneryObject {
         /**
          * Raw bit flags that describe characteristics of the scenery item.
          */
@@ -1741,6 +1907,32 @@ declare global {
          * How much the scenery item costs to remove.
          */
         readonly removalPrice: number;
+    }
+
+    interface LargeSceneryObject extends SceneryObject {
+
+    }
+
+    interface WallObject extends SceneryObject {
+
+    }
+
+    interface FootpathAdditionObject extends SceneryObject {
+
+    }
+
+    interface BannerObject extends SceneryObject {
+
+    }
+
+    /**
+     * Represents the object definition of a scenery group.
+     */
+    interface SceneryGroupObject extends LoadedImageObject {
+        /**
+         * The scenery items that belong to this scenery group.
+         */
+        readonly items: string[];
     }
 
     /**
@@ -1949,9 +2141,24 @@ declare global {
         readonly description: string;
 
         /**
-         * The relative starting Z position.
+         * The relative starting Z position from the base of the first track sequence block.
          */
         readonly beginZ: number;
+
+        /**
+         * The relative ending Z position from the base of the first track sequence block.
+         */
+        readonly endZ: number;
+
+        /**
+         * The relative ending X position. BeginX is always 0.
+         */
+        readonly endX: number;
+
+        /**
+         * The relative ending Y position. BeginY is always 0.
+         */
+        readonly endY: number;
 
         /**
         * The relative starting direction. Usually 0, but will be 4
@@ -1960,9 +2167,19 @@ declare global {
         readonly beginDirection: Direction8;
 
         /**
+         * The relative ending direction.
+         */
+        readonly endDirection: Direction8;
+
+        /**
          * The slope angle the segment starts with.
          */
-        readonly beginAngle: TrackSlope;
+        readonly beginSlope: TrackSlope;
+
+        /**
+         * The slope angle the segment ends with.
+         */
+        readonly endSlope: TrackSlope;
 
         /**
          * The kind of banking the segment starts with.
@@ -1970,41 +2187,12 @@ declare global {
         readonly beginBank: TrackBanking;
 
         /**
-         * The relative ending X position.
-         */
-        readonly endX: number;
-
-        /**
-         * The relative ending Y position.
-         */
-        readonly endY: number;
-
-        /**
-         * The relative ending Z position. Negative numbers indicate
-         * that the track ends upside down.
-         */
-        readonly endZ: number;
-
-        /**
-         * The relative ending direction.
-         */
-        readonly endDirection: Direction8;
-
-
-        /**
-         * The slope angle the segment ends with.
-         */
-        readonly endAngle: TrackSlope;
-
-        /**
          * The kind of banking the segment ends with.
          */
         readonly endBank: TrackBanking;
 
         /**
-         * The length of the segment in RCT track length units.
-         *
-         * *1 metre = 1 / (2 ^ 16)*
+         * The rough length of the segment.
          */
         readonly length: number;
 
@@ -2012,6 +2200,97 @@ declare global {
          * Gets a list of the elements that make up the track segment.
          */
         readonly elements: TrackSegmentElement[];
+
+        /**
+         * The curve direction of the suggested following piece, or track segment if it is specified.
+         */
+        readonly nextSuggestedSegment: TrackCurveType | number;
+
+        /**
+         * The curve direction of the suggested preceding piece, or track segment if it is specified.
+         */
+        readonly previousSuggestedSegment: TrackCurveType | number;
+
+        /**
+         * The base price of the track segment.
+         */
+        readonly priceModifier: number;
+
+        /**
+         * Track segment representing the mirror image of the track segment.
+         */
+        readonly mirrorSegment: number | null;
+
+        /**
+         * Track segment representing the covered/flume variant of the track segment.
+         */
+        readonly alternateTypeSegment: number | null;
+
+        /**
+         * The group the track element belongs to. Ride types allow or disallow track groups to limit the
+         * buildable track segments.
+         */
+        readonly trackGroup: number;
+
+        /**
+         * Which direction the track curves towards.
+         */
+        readonly turnDirection: TrackCurveType;
+
+        /**
+         * Which direction the track slopes towards.
+         */
+        readonly slopeDirection: TrackSlopeType;
+
+        readonly onlyAllowedUnderwater: boolean;
+        readonly onlyAllowedAboveGround: boolean;
+        readonly allowsChainLift: boolean;
+
+        /**
+         * The track segment counts as banked for vehicles with "no banked track" behaviour.
+         */
+        readonly isBanked: boolean;
+
+        /**
+         * The track segment counts as an inversion for vehicles with "no inversions" behaviour.
+         */
+        readonly isInversion: boolean;
+
+        /**
+         * Pevents steep forward chainlifts but allows steep reverse chainlifts for reverse incline
+         * shuttle mode for ride types which do not normally allow steep chainlifts.
+         */
+        readonly isSteepUp: boolean;
+
+        /**
+         * The track segment begins one height unit above normal track height units.
+         */
+        readonly startsHalfHeightUp: boolean;
+
+        /**
+         * The track segment adds to golf hole counter.
+         */
+        readonly countsAsGolfHole: boolean;
+
+        /**
+         * The track segment adds to banked turn counter.
+         */
+        readonly isBankedTurn: boolean;
+
+        /**
+         * The track segment adds to sloped turn counter.
+         */
+        readonly isSlopedTurn: boolean;
+
+        /**
+         * The track segment adds to helix counter.
+         */
+        readonly isHelix: boolean;
+
+        /**
+         * The track segment adds to inversion counter. Usually applied to the first half of inversions.
+         */
+        readonly countsAsInversion: boolean;
 
         /**
          * Gets a length of the subpositions list for this track segment.
@@ -2041,6 +2320,9 @@ declare global {
         Right = 4,
         UpsideDown = 15
     }
+
+    type TrackCurveType = "straight" | "left" | "right";
+    type TrackSlopeType = "flat" | "up" | "down";
 
     interface TrackSegmentElement extends Readonly<CoordsXYZ> {
     }
@@ -2213,6 +2495,11 @@ declare global {
          * The current tilt of the car in the X/Y axis.
          */
         bankRotation: number;
+
+        /**
+         * Whether the car sprite is reversed or not.
+         */
+        isReversed: boolean;
 
         /**
          * The colour of the car.
@@ -2498,6 +2785,35 @@ declare global {
          * The list of thoughts this guest has.
          */
         readonly thoughts: Thought[];
+
+        /**
+         * The list of items this guest has.
+         */
+        readonly items: GuestItem[];
+
+        /**
+         * Checks whether this guest has a certain item.
+         * @param item The item to check.
+         */
+        hasItem(item: GuestItem): boolean;
+
+        /**
+         * Gives an item to the guest. Guests can only have one item of a given type.
+         * If this guest already has an item of the same type, this will override the current item.
+         * @param item The item to give.
+         */
+        giveItem(item: GuestItem): void;
+
+        /**
+         * Removes an item from the guest's possession.
+         * @param item The item to remove.
+         */
+        removeItem(item: GuestItem): void;
+
+        /**
+         * Removes all items from the guest's possession.
+         */
+        removeAllItems(): void;
     }
 
     /**
@@ -2660,6 +2976,120 @@ declare global {
         "excited_deprecated" |
         "here_we_are";
 
+    type GuestItemType =
+        "balloon" |
+        "hat" |
+        "map" |
+        "sunglasses" |
+        "toy" |
+        "tshirt" |
+        "umbrella" |
+        "photo1" |
+        "photo2" |
+        "photo3" |
+        "photo4" |
+        "voucher" |
+        "beef_noodles" |
+        "burger" |
+        "candyfloss" |
+        "chicken" |
+        "chips" |
+        "chocolate" |
+        "cookie" |
+        "doughnut" |
+        "hot_dog" |
+        "fried_rice_noodles" |
+        "funnel_cake" |
+        "ice_cream" |
+        "meatball_soup" |
+        "pizza" |
+        "popcorn" |
+        "pretzel" |
+        "roast_sausage" |
+        "sub_sandwich" |
+        "tentacle" |
+        "toffee_apple" |
+        "wonton_soup" |
+        "coffee" |
+        "drink" |
+        "fruit_juice" |
+        "iced_tea" |
+        "lemonade" |
+        "soybean_milk" |
+        "sujeonggwa" |
+        "empty_bottle" |
+        "empty_bowl_blue" |
+        "empty_bowl_red" |
+        "empty_box" |
+        "empty_burger_box" |
+        "empty_can" |
+        "empty_cup" |
+        "empty_drink_carton" |
+        "empty_juice_cup" |
+        "rubbish";
+
+    type VoucherType =
+        "entry_free" |
+        "entry_half_price" |
+        "ride_free" |
+        "food_drink_free";
+
+    /**
+     * Represents an item in a guest's possession.
+     * If giving a guest a photo or voucher, use the other interfaces instead.
+     */
+    interface GuestItem {
+        /**
+         * The type of item.
+         */
+        readonly type: GuestItemType;
+    }
+
+    /**
+     * Represents an on-ride photo in a guest's possession.
+     */
+    interface GuestPhoto extends GuestItem {
+        readonly type: "photo1" | "photo2" | "photo3" | "photo4";
+        /**
+         * The id of the ride the on-ride photo is for.
+         */
+        readonly rideId: number;
+    }
+
+    /**
+     * Represents a voucher in a guest's possession. If giving a guest a voucher for free rides
+     * or free food/drink, use the other interfaces instead.
+     */
+    interface Voucher extends GuestItem {
+        readonly type: "voucher";
+        /**
+         * The type of voucher.
+         */
+        readonly voucherType: VoucherType;
+    }
+
+    /**
+     * Represents a voucher for a free ride in a guest's possession.
+     */
+    interface RideVoucher extends Voucher {
+        readonly voucherType: "ride_free";
+        /**
+         * The id of the ride the voucher is for.
+         */
+        readonly rideId: number;
+    }
+
+    /**
+     * Represents a voucher for free food or drink in a guest's possession.
+     */
+    interface FoodDrinkVoucher extends Voucher {
+        readonly voucherType: "food_drink_free";
+        /**
+         * The type of food or drink the voucher is for.
+         */
+        readonly item: GuestItemType;
+    }
+
     /**
      * Represents a staff member.
      */
@@ -2757,25 +3187,100 @@ declare global {
      * Use `network.mode` to determine whether the current game is a client, server or in single player mode.
      */
     interface Network {
+        /**
+         * The current network mode. This can be used to determine whether the current
+         * session is single player, a multiplayer server, or a multiplayer client.
+         */
         readonly mode: NetworkMode;
+
+        /**
+         * The number of multiplayer groups there are in the server.
+         */
         readonly numGroups: number;
+
+        /**
+         * The number of players there are in the server.
+         */
         readonly numPlayers: number;
+
+        /**
+         * Gets all the multiplayer groups within the server. Groups are used to give individual
+         * players roles and permissions.
+         */
         readonly groups: PlayerGroup[];
+
+        /**
+         * Gets all the players that are currently in the server.
+         */
         readonly players: Player[];
+
+        /**
+         * The player this instance of the game is controlling.
+         */
         readonly currentPlayer: Player;
+
+        /**
+         * Gets or sets the default group ID that new players joining the server should be assigned to.
+         */
         defaultGroup: number;
+
+        /**
+         * Various statistics related to networking.
+         */
         readonly stats: NetworkStats;
 
-        getServerInfo(): ServerInfo;
+        /**
+         * Creates a new multiplayer group for managing player permissions.
+         */
         addGroup(): void;
-        getGroup(index: number): PlayerGroup;
-        removeGroup(index: number): void;
-        getPlayer(index: number): Player;
-        kickPlayer(index: number): void;
+
+        /**
+         * Gets the player group with the specified ID.
+         * @param id The group ID. Prior to API version 77, this is the group index.
+         */
+        getGroup(id: number): PlayerGroup;
+
+        /**
+         * Removes the player group with the specified ID.
+         * @param id The group ID. Prior to API version 77, this is the group index.
+         */
+        removeGroup(id: number): void;
+
+        /*
+         * Gets the player with the specified ID.
+         * @param id The player ID. Prior to API version 77, this is the player index.
+         */
+        getPlayer(id: number): Player;
+
+        /*
+         * Kicks the player with the specified ID from the server.
+         * @param id The player ID. Prior to API version 77, this is the player index.
+         */
+        kickPlayer(id: number): void;
+
+        /**
+         * Sends a chat message to all players.
+         * @param message The message text.
+         */
         sendMessage(message: string): void;
+
+        /**
+         * Sends a chat message to only the specified players.
+         * @param message The message text.
+         * @param players A list of player IDs that should receive the chat message.
+         *                Note: the message will be internally transmitted to players via
+         *                      the server, even if the server is not a recipient.
+         */
         sendMessage(message: string, players: number[]): void;
 
+        /**
+         * Creates a new listener that can accept TCP connections on a given port.
+         */
         createListener(): Listener;
+
+        /**
+         * Creates a new TCP client that can connect to a server.
+         */
         createSocket(): Socket;
     }
 
@@ -2785,34 +3290,81 @@ declare global {
      * Represents a player within a network game.
      */
     interface Player {
+        /**
+         * The unique ID for the player.
+         */
         readonly id: number;
+
+        /**
+         * The name of the player.
+         */
         readonly name: string;
+
+        /**
+         * The group ID the player is a member of.
+         */
         group: number;
+
+        /**
+         * The latest measured ping in milliseconds for the player.
+         */
         readonly ping: number;
+
+        /**
+         * The number of actions the player has successfully executed.
+         */
         readonly commandsRan: number;
+
+        /**
+         * The total amount of cash spent from actions performed by the player.
+         */
         readonly moneySpent: number;
+
+        /**
+         * The player's IP address.
+         */
         readonly ipAddress: string;
+
+        /**
+         * A hash of the player's public key used to authenticate with the server.
+         */
         readonly publicKeyHash: string;
     }
 
+    /**
+     * Represents a group in a network game for assigning roles and permissions
+     * to one or more players.
+     */
     interface PlayerGroup {
+        /**
+         * The unique ID for the group.
+         */
         readonly id: number;
+
+        /**
+         * The name of the group.
+         */
         name: string;
+
+        /**
+         * The permissions granted to each player belonging to the group.
+         */
         permissions: PermissionType[];
     }
 
-    interface ServerInfo {
-        readonly name: string;
-        readonly description: string;
-        readonly greeting: string;
-        readonly providerName: string;
-        readonly providerEmail: string;
-        readonly providerWebsite: string;
-    }
-
+    /**
+     * Represents various network statistics.
+     */
     interface NetworkStats {
-        bytesReceived: number[];
-        bytesSent: number[];
+        /**
+         * The number of bytes received for each category.
+         */
+        readonly bytesReceived: number[];
+
+        /**
+         * The number of bytes sent for each category.
+         */
+        readonly bytesSent: number[];
     }
 
     type PermissionType =
@@ -3016,7 +3568,21 @@ declare global {
          */
         readonly parkSize: number;
 
+        /**
+         * The name of the park, shown on the park entrance.
+         * Not the name of the scenario.
+         */
         name: string;
+
+        /**
+         * The current research status, and what
+         * has and hasn't yet been researched.
+         */
+        readonly research: Research;
+
+        /**
+         * The park message / notification queue, and historical messages.
+         */
         messages: ParkMessage[];
 
         /**
@@ -3036,6 +3602,123 @@ declare global {
         postMessage(message: ParkMessageDesc): void;
     }
 
+    interface Research {
+        /**
+         * The list of rides and scenery sets that have already been researched.
+         */
+        inventedItems: ResearchItem[];
+
+        /**
+         * The order of rides and scenery sets to be researched.
+         */
+        uninventedItems: ResearchItem[];
+
+        /**
+         * The last item that was researched, or null if no
+         * item has been researched yet.
+         */
+        readonly lastResearchedItem: ResearchItem | null;
+
+        /**
+         * The item currently being researched, or null if
+         * research is complete.
+         */
+        readonly expectedItem: ResearchItem | null;
+
+        /**
+         * The amount of funding currently spent on research.
+         * 0: none, 1: minimum, 2: normal, 3: maximum
+         */
+        funding: number;
+
+        /**
+         * The categories of research which should be prioritised.
+         */
+        priorities: ResearchCategory[];
+
+        /**
+         * The current stage for the ride or scenery set being researched.
+         */
+        stage: ResearchFundingStage;
+
+        /**
+         * The progress for the current stage between 0 and 65535.
+         * This will increment more quickly the higher the research funding.
+         */
+        progress: number;
+
+        /**
+         * The expected month the current item being researched will complete.
+         * Value is between 0 and 7, 0 being March and 7 being October.
+         * Value is null if there is not yet an expected month.
+         */
+        readonly expectedMonth: number | null;
+
+        /**
+         * The expected day of the month the current item being researched will complete.
+         * Value is between 1 and 31.
+         * Value is null if there is not yet an expected month.
+         */
+        readonly expectedDay: number | null;
+
+        /**
+         * Gets whether a particular object has been researched and is available to construct.
+         * @param type The type of object, e.g. ride, scenery group, or small scenery.
+         * @param index The object index.
+         */
+        isObjectResearched(type: ObjectType, index: number): boolean;
+    }
+
+    type ResearchItem = RideResearchItem | SceneryResearchItem;
+
+    interface RideResearchItem {
+        readonly type: "ride";
+
+        /**
+         * The research category this item belongs in.
+         * E.g. gentle rides, thrill rides, shops etc.
+         * Note: Any updates to this field are ignored by OpenRCT2, the category will be derived from the ride type.
+         */
+        readonly category: RideResearchCategory;
+
+        /**
+         * The ride type. Each vehicle can have a seperate invention for each ride type.
+         */
+        readonly rideType: number;
+
+        /**
+         * The ride (vehicle) object index.
+         */
+        readonly object: number;
+    }
+
+    interface SceneryResearchItem {
+        readonly category: "scenery";
+        readonly type: "scenery";
+
+        /**
+         * The scenery set object index.
+         */
+        readonly object: number;
+    }
+
+    type RideResearchCategory =
+        "transport" |
+        "gentle" |
+        "rollercoaster" |
+        "thrill" |
+        "water" |
+        "shop";
+
+    type ResearchCategory = RideResearchCategory | "scenery";
+
+    type ResearchFundingStage =
+        "initial_research" |
+        "designing" |
+        "completing_design" |
+        "unknown" |
+        "finished_all";
+
     type ScenarioObjectiveType =
         "none" |
         "guestsBy" |
@@ -3054,7 +3737,7 @@ declare global {
         /**
          * The objective type.
          */
-        type: ScenarioObjective;
+        type: ScenarioObjectiveType;
 
         /**
          * The required number of guests.
@@ -3480,7 +4163,7 @@ declare global {
         "map_north_pressed" | "map_south" | "map_south_pressed" | "map_west" | "map_west_pressed" |
         "mountain_tool_even" | "mountain_tool_odd" | "multiplayer" | "multiplayer_desync" | "multiplayer_sync" |
         "multiplayer_toolbar" | "multiplayer_toolbar_pressed" | "mute" | "mute_pressed" | "news_messages" |
-        "normal_selection_6x6" | "paste" | "path_railings" | "path_surfaces" | "paths" | "placeholder" |
+        "normal_selection_6x6" | "palette_invisible" | "palette_invisible_pressed" | "paste" | "path_railings" | "path_surfaces" | "paths" | "placeholder" |
         "rct1_close_off" | "rct1_close_off_pressed" | "rct1_close_on" | "rct1_close_on_pressed" | "rct1_open_off" |
         "rct1_open_off_pressed" | "rct1_open_on" | "rct1_open_on_pressed" | "rct1_simulate_off" |
         "rct1_simulate_off_pressed" | "rct1_simulate_on" | "rct1_simulate_on_pressed" | "rct1_test_off" |
@@ -3573,14 +4256,16 @@ declare global {
         column: number;
     }
 
+    type ListViewItem = ListViewItemSeperator | string[] | string;
+
     interface ListViewWidget extends WidgetBase {
         type: "listview";
         scrollbars: ScrollbarType;
         isStriped: boolean;
         showColumnHeaders: boolean;
         columns: ListViewColumn[];
-        items: string[];
-        selectedCell: RowColumn;
+        items: ListViewItem[];
+        selectedCell: RowColumn | null;
         readonly highlightedCell: RowColumn;
         canSelect: boolean;
     }
@@ -3702,8 +4387,6 @@ declare global {
         text?: string;
     }
 
-    type ListViewItem = ListViewItemSeperator | string[];
-
     interface RowColumn {
         row: number;
         column: number;
@@ -3715,7 +4398,7 @@ declare global {
         isStriped?: boolean;
         showColumnHeaders?: boolean;
         columns?: Partial<ListViewColumn>[];
-        items?: string[] | ListViewItem[];
+        items?: ListViewItem[];
         selectedCell?: RowColumn;
         canSelect?: boolean;
         onHighlight?: (item: number, column: number) => void;
@@ -4198,5 +4881,89 @@ declare global {
         readonly totalTime: number;
         readonly parents: number[];
         readonly children: number[];
+    }
+
+    interface ObjectManager {
+        /**
+         * Gets all the objects that are installed and can be loaded into the park.
+         */
+        readonly installedObjects: InstalledObject[];
+
+        /**
+         * Gets the installed object with the given identifier, or null
+         * if the object was not found.
+         * @param identifier The object identifier.
+         */
+        getInstalledObject(identifier: string): InstalledObject | null;
+
+        /**
+         * Attempt to load the object into the current park at the given index for the object type.
+         * If an object already exists at the given index, that object will be unloaded and this object
+         * will replace it, providing the object type is the same.
+         * @param identifier The object identifier.
+         * @param index The index to load the object to. If not provided, an empty slot will be used.
+         * @returns The index of the loaded object.
+         */
+        load(identifier: string, index?: number): LoadedObject | null;
+
+        /**
+         * Attempt to load the given objects into the current park, given they are not already loaded.
+         */
+        load(identifiers: string[]): (LoadedObject | null)[];
+
+        /**
+         * Unloads the object, if loaded.
+         * @param identifier The object identifier to unload.
+         */
+        unload(identifier: string): void;
+
+        /**
+         * Unloads the specified objects, if loaded.
+         * @param identifiers The object identifiers to unload.
+         */
+        unload(identifiers: string[]): void;
+
+        /**
+         * Unloads the specified object, if loaded.
+         * @param type The object type.
+         * @param index The index of the slot to unload for the given type.
+         */
+        unload(type: ObjectType, index: number): void;
+
+        /**
+         * Gets the loaded object at the given index.
+         * @param type The object type.
+         * @param index The index.
+         */
+        getObject(type: ObjectType, index: number): LoadedObject;
+        getObject(type: "ride", index: number): RideObject;
+        getObject(type: "small_scenery", index: number): SmallSceneryObject;
+        getObject(type: "large_scenery", index: number): LargeSceneryObject;
+        getObject(type: "wall", index: number): WallObject;
+        getObject(type: "footpath_addition", index: number): FootpathAdditionObject;
+        getObject(type: "banner", index: number): BannerObject;
+        getObject(type: "scenery_group", index: number): SceneryGroupObject;
+        getObject(type: "music", index: number): LoadedObject;
+
+        /**
+         * Gets all the currently loaded objects for a given object type.
+         * @param type The object type.
+         */
+        getAllObjects(type: ObjectType): LoadedObject[];
+        getAllObjects(type: "ride"): RideObject[];
+        getAllObjects(type: "small_scenery"): SmallSceneryObject[];
+        getAllObjects(type: "large_scenery"): LargeSceneryObject[];
+        getAllObjects(type: "wall"): WallObject[];
+        getAllObjects(type: "footpath_addition"): FootpathAdditionObject[];
+        getAllObjects(type: "banner"): BannerObject[];
+        getAllObjects(type: "scenery_group"): SceneryGroupObject[];
+        getAllObjects(type: "music"): LoadedObject[];
+    }
+
+    /**
+     * Interface to handle the plugin manager
+     */
+    interface PluginManager {
+        readonly plugins: PluginMetadata[];
     }
 }
