@@ -30,6 +30,7 @@ export { dropdown, DropdownParams, DropdownDisableMode } from "./elements/contro
 export { dropdownButton, DropdownButtonParams, DropdownButtonAction } from "./elements/controls/dropdownButton";
 export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
 export { flexible, horizontal, vertical, FlexibleLayoutParams, FlexibleLayoutContainer } from "./elements/layouts/flexible/flexible";
+export { graphics, GraphicsParams } from "./elements/controls/graphics";
 export { groupbox, GroupBoxParams } from "./elements/controls/groupbox";
 export { label, LabelParams } from "./elements/controls/label";
 export { listview, ListViewParams, ListViewColumnParams } from "./elements/controls/listview";
