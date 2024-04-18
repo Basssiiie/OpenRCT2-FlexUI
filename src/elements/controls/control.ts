@@ -17,10 +17,10 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning, ParsedPosit
 {
 	name: string = identifier();
 	type: W["type"];
-	x: number = 0;
-	y: number = 0;
-	width: number = 0;
-	height: number = 0;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
 
 	tooltip?: string;
 	isDisabled?: boolean;
@@ -31,6 +31,7 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning, ParsedPosit
 	{
 		super(parent, params);
 		this.type = type;
+		this.x = this.y = this.width = this.height = 0;
 
 		const { binder, context } = output, visibility = params.visibility;
 		binder.add(this, "tooltip", params.tooltip);
