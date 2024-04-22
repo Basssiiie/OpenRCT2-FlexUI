@@ -17,12 +17,14 @@ const isDev = (build === "development");
  */
 function precache(cache)
 {
+	const bans = [ "x", "y", "id", "on", "add", "get", "set", "gap", "pop", "min", "max", "top" ];
 	const leading = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_";
     const all = (leading+"0123456789");
 	let mangleId = 0;
 
-	function getName(index)
+	function getName()
 	{
+		let index = mangleId++;
 		let result = leading[index % leading.length];
 		index = Math.floor(index / leading.length) - 1;
 		while (index >= 0)
@@ -30,17 +32,17 @@ function precache(cache)
 			result += all[index % all.length];
 			index = Math.floor(index / all.length) - 1;
 		}
-		return result;
+		return bans.includes(result) ? getName() : result;
 	}
 
 	return {
 		name: "Prepare property mangle cache",
 		renderChunk(code)
 		{
-			[...code.matchAll(/(?:\.prototype|this)\.(_[\w\d]+)\s*=/g)]
+			[...code.matchAll(/(?:\.prototype|this)\.(_\w+)\s*=/g)]
 				.map(m => `$${m[1]}`)
 				.filter(m => !(m in cache))
-				.forEach(m => cache[m] = getName(mangleId++));
+				.forEach(m => cache[m] = getName());
 		}
 	};
 }
