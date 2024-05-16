@@ -1,4 +1,5 @@
 import { Bindable } from "@src/bindings/bindable";
+import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { Axis } from "@src/positional/axis";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Parsed } from "@src/positional/parsing/parsed";
@@ -84,6 +85,12 @@ export interface ListViewParams extends ElementParams
 	canSelect?: boolean;
 
 	/**
+	 * Whether a specific cell is selected in the listview.
+	 * @default undefined
+	 */
+	selectedCell?: TwoWayBindable<RowColumn>;
+
+	/**
 	 * Whether the rows are displayed in alternating darkness to make each row easier to see.
 	 * @default false
 	 */
@@ -124,6 +131,7 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 	items?: string[] | ListViewItem[];
 	scrollbars?: ScrollbarType;
 	canSelect?: boolean;
+	selectedCell?: RowColumn;
 	isStriped?: boolean;
 	onHighlight?: (item: number, column: number) => void;
 	onClick?: (item: number, column: number) => void;
@@ -138,6 +146,12 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListV
 
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
+		binder.twoway(this, "selectedCell", "onClick", params.selectedCell, (position: RowColumn) => {
+			if (this.onClick)
+			{
+				this.onClick(position.row, position.column);
+			}
+		});
 
 		this.showColumnHeaders = (!isUndefined(params.columns));
 		this.scrollbars = params.scrollbars;
