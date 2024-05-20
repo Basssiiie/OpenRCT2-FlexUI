@@ -10,7 +10,7 @@ import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
 import { round } from "@src/utilities/math";
-import { isUndefined } from "@src/utilities/type";
+import { isString, isUndefined } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
 import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
@@ -65,14 +65,14 @@ export interface ListViewParams extends ElementParams
 	 * If specified, will add header information above each column and optionally adds sorting.
 	 * @default undefined
 	 */
-	columns?: Partial<ListViewColumn>[] | ListViewColumnParams[];
+	columns?: Partial<ListViewColumn>[] | ListViewColumnParams[] | string[];
 
 	/**
 	 * Specifies the items within the listview, either as a single dimension array for
 	 * a single row or a multi-dimensional array for multiple columns per row. Can also
 	 * include seperator objects to divide the list into multiple sections.
 	 */
-	items: Bindable<string[] | ListViewItem[]>;
+	items: Bindable<ListViewItem[] | string[]>;
 
 	/**
 	 * Whether to allow scrolling horizontally, vertically, both, or neither.
@@ -191,27 +191,42 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		let type = -1;
 		let differentTypes = false;
 
+		let column: typeof columns[0];
+		let parsedWidth: ParsedScale;
+		let parsedType: ScaleType;
+
 		for (let i = 0; i < count; i++)
 		{
-			const column = columns[i];
-			const tooltip = (<ListViewColumnParams>column).tooltip;
-			const ratioWidth = (<Partial<ListViewColumn>>column).ratioWidth;
-			const width = column.width;
-			const parsedWidth: ParsedScale = (isUndefined(width) && !isUndefined(ratioWidth))
-				? [ratioWidth, ScaleType.Weight]
-				: parseScaleOrFallback(width, defaultScale);
-			const parsedType = parsedWidth[1];
+			column = columns[i];
+
+			if (isString(column))
+			{
+				// Parse simplified string column to OpenRCT2's ListViewColumn.
+				columns[i] = { header: column };
+				parsedWidth = defaultScale;
+			}
+			else
+			{
+				const tooltip = (<ListViewColumnParams>column).tooltip;
+				const ratioWidth = (<Partial<ListViewColumn>>column).ratioWidth;
+				const width = column.width;
+
+				parsedWidth = (isUndefined(width) && !isUndefined(ratioWidth))
+					? [ratioWidth, ScaleType.Weight]
+					: parseScaleOrFallback(width, defaultScale);
+
+				// Rename tooltip property
+				if (tooltip)
+				{
+					(<ListViewColumn>column).headerTooltip = tooltip;
+				}
+			}
+
+			parsedType = parsedWidth[1];
+			columWidths[i] = parsedWidth;
 
 			differentTypes ||= (type != parsedType && type != -1);
 			type = parsedType;
-
-			columWidths[i] = parsedWidth;
-
-			// Rename tooltip property
-			if (tooltip)
-			{
-				(<ListViewColumn>column).headerTooltip = tooltip;
-			}
 		}
 
 		// If there is different width types, or there is percentile width, let the plugin handle calculation.

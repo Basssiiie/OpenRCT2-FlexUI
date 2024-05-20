@@ -85,6 +85,67 @@ test("Standard properties are set", t =>
 	t.deepEqual(items[2], [ "2.", "bottom entry" ]);
 });
 
+test("Simple column names get converted", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 100,
+		content: [
+			listview({
+				columns: [ "First", "Second", "Third" ],
+				items: [
+					[ "1.", "top entry" ],
+					{ type: "seperator", text: "central entry" },
+					[ "2.", "bottom entry" ]
+				],
+				scrollbars: "vertical"
+			})
+		]
+	});
+
+	template.open();
+
+	const widget = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	t.is(widget.type, "listview");
+	t.is(widget.scrollbars, "vertical");
+	t.true(widget.showColumnHeaders);
+	t.falsy(widget.selectedCell);
+	t.falsy(widget.canSelect);
+	t.falsy(widget.isStriped);
+
+	const columns = widget.columns;
+	t.is(columns.length, 3);
+
+	t.is(columns[0].header, "First");
+	t.is(columns[0].ratioWidth, 1);
+	t.falsy(columns[0].headerTooltip);
+	t.falsy(columns[0].sortOrder);
+	t.falsy(columns[0].canSort);
+	t.falsy(columns[0].width);
+	t.falsy(columns[0].minWidth);
+	t.falsy(columns[0].maxWidth);
+
+	t.is(columns[1].header, "Second");
+	t.is(columns[1].ratioWidth, 1);
+	t.falsy(columns[1].headerTooltip);
+	t.falsy(columns[1].sortOrder);
+	t.falsy(columns[1].canSort);
+	t.falsy(columns[1].width);
+	t.falsy(columns[1].minWidth);
+	t.falsy(columns[1].maxWidth);
+
+	t.is(columns[2].header, "Third");
+	t.is(columns[2].ratioWidth, 1);
+	t.falsy(columns[2].headerTooltip);
+	t.falsy(columns[2].sortOrder);
+	t.falsy(columns[2].canSort);
+	t.falsy(columns[2].width);
+	t.falsy(columns[2].minWidth);
+	t.falsy(columns[2].maxWidth);
+});
+
 test("Items is bindable", t =>
 {
 	const mock = Mock.ui();
