@@ -1,6 +1,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
+import { twoway } from "@src/bindings/twoway/twoway";
 import { listview } from "@src/elements/controls/listview";
 import { window } from "@src/windows/window";
 import test from "ava";
@@ -40,6 +41,7 @@ test("Standard properties are set", t =>
 					[ "2.", "bottom entry" ]
 				],
 				scrollbars: "both",
+				selectedCell: { row: 2, column: 1 },
 				canSelect: true,
 				isStriped: true
 			})
@@ -51,6 +53,7 @@ test("Standard properties are set", t =>
 	const widget = mock.createdWindows[0].widgets[0] as ListViewWidget;
 	t.is(widget.type, "listview");
 	t.is(widget.scrollbars, "both");
+	t.deepEqual(widget.selectedCell, { row: 2, column: 1 });
 	t.true(widget.showColumnHeaders);
 	t.true(widget.canSelect);
 	t.true(widget.isStriped);
@@ -363,4 +366,204 @@ test("All percentage widths is custom scaling", t =>
 	t.falsy(columns[0].ratioWidth);
 	t.falsy(columns[1].ratioWidth);
 	t.falsy(columns[2].ratioWidth);
+});
+
+test("On click callback is propagated and skips duplicate clicks", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const calls: string[] = [];
+	const template = window({
+		width: 210, height: 100,
+		content: [
+			listview({
+				items: [ "First", "Second", "Third", "Fourth" ],
+				onClick: (r, c) => calls.push(`R${r}/C${c}`)
+			})
+		]
+	});
+
+	template.open();
+
+	const listview1 = mock.createdWindows[0].widgets[0] as ListViewDesc;
+	listview1.onClick!(2, 1);
+	listview1.onClick!(1, 0);
+	listview1.onClick!(1, 1);
+	listview1.onClick!(1, 1);
+	listview1.onClick!(2, 1);
+
+	t.deepEqual(calls, ["R2/C1", "R1/C0", "R1/C1", "R1/C1", "R2/C1"]);
+});
+
+test("Selected cell can be bound", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const selected = store<RowColumn | null>({ row: 2, column: 0 });
+	const updates: (RowColumn | null)[] = [];
+	selected.subscribe(c => updates.push(c));
+	const template = window({
+		width: 210, height: 100,
+		content: [
+			listview({
+				items: [ "First", "Second", "Third", "Fourth" ],
+				selectedCell: selected
+			})
+		]
+	});
+
+	template.open();
+
+	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+
+	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
+	t.deepEqual(updates, []);
+
+	selected.set({ row: 0, column: 0 });
+	t.deepEqual(listview1.selectedCell, { row: 0, column: 0 });
+	t.deepEqual(updates, [{ row: 0, column: 0 }]);
+
+	selected.set(null);
+	t.is(listview1.selectedCell, null);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, null]);
+
+	selected.set({ row: 1, column: 1 });
+	t.deepEqual(listview1.selectedCell, { row: 1, column: 1 });
+	t.deepEqual(updates, [{ row: 0, column: 0 }, null, { row: 1, column: 1 }]);
+});
+
+test("Selected cell can be bound with separate on click event", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const selected = store<RowColumn | null>(null);
+	const updates: (RowColumn | null)[] = [];
+	const calls: [number, number][] = [];
+	selected.subscribe(c => updates.push(c));
+	const template = window({
+		width: 210, height: 100,
+		content: [
+			listview({
+				items: [ "First", "Second", "Third", "Fourth" ],
+				selectedCell: selected,
+				onClick: (r, c) => calls.push([r, c])
+			})
+		]
+	});
+
+	template.open();
+
+	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+
+	t.deepEqual(listview1.selectedCell, null);
+	t.deepEqual(calls, []);
+
+	selected.set({ row: 2, column: 1 });
+	t.deepEqual(listview1.selectedCell, { row: 2, column: 1 });
+	t.deepEqual(updates, [{ row: 2, column: 1 }]);
+	t.deepEqual(calls, []);
+
+	listview1.onClick!(0, 0);
+	t.deepEqual(updates, [{ row: 2, column: 1 }]); // No change due to not being two-way binding
+	t.deepEqual(calls, [[0, 0]]);
+
+	selected.set({ row: 0, column: 0 });
+	t.deepEqual(listview1.selectedCell, { row: 0, column: 0 });
+	t.deepEqual(updates, [{ row: 2, column: 1 }, { row: 0, column: 0 }]); // No changes due to same object
+	t.deepEqual(calls, [[0, 0]]);
+
+	listview1.onClick!(0, 0);
+	t.deepEqual(updates, [{ row: 2, column: 1 }, { row: 0, column: 0 }]); // No changes due to same object
+	t.deepEqual(calls, [[0, 0], [0, 0]]);
+});
+
+test("Selected cell can be two-way bound", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const selected = store<RowColumn | null>({ row: 2, column: 0 });
+	const updates: (RowColumn | null)[] = [];
+	selected.subscribe(c => updates.push(c));
+	const template = window({
+		width: 210, height: 100,
+		content: [
+			listview({
+				items: [ "First", "Second", "Third", "Fourth" ],
+				selectedCell: twoway(selected)
+			})
+		]
+	});
+
+	template.open();
+
+	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+
+	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
+	t.deepEqual(updates, []);
+
+	selected.set({ row: 0, column: 0 });
+	t.deepEqual(listview1.selectedCell, { row: 0, column: 0 });
+	t.deepEqual(updates, [{ row: 0, column: 0 }]);
+
+	listview1.onClick!(2, 1);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }]);
+
+	selected.set({ row: 1, column: 1 });
+	t.deepEqual(listview1.selectedCell, { row: 1, column: 1 });
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }, { row: 1, column: 1 }]);
+});
+
+test("Selected cell can be two-way bound with extra on click event", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const selected = store<RowColumn | null>({ row: 2, column: 0 });
+	const calls: [number, number][] = [];
+	const updates: (RowColumn | null)[] = [];
+	selected.subscribe(c => updates.push(c));
+	const template = window({
+		width: 210, height: 100,
+		content: [
+			listview({
+				items: [ "First", "Second", "Third", "Fourth" ],
+				selectedCell: twoway(selected),
+				onClick: (r, c) => calls.push([r, c])
+			})
+		]
+	});
+
+	template.open();
+
+	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+
+	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
+	t.deepEqual(calls, []);
+	t.deepEqual(updates, []);
+
+	selected.set({ row: 0, column: 0 });
+	t.deepEqual(listview1.selectedCell, { row: 0, column: 0 });
+	t.deepEqual(calls, []);
+	t.deepEqual(updates, [{ row: 0, column: 0 }]);
+
+	listview1.onClick!(2, 1);
+	t.deepEqual(calls, [[2, 1]]);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }]);
+
+	selected.set({ row: 1, column: 1 });
+	t.deepEqual(listview1.selectedCell, { row: 1, column: 1 });
+	t.deepEqual(calls, [[2, 1]]);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }, { row: 1, column: 1 }]);
+
+	listview1.onClick!(0, 0);
+	t.deepEqual(calls, [[2, 1], [0, 0]]);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }, { row: 1, column: 1 }, { row: 0, column: 0 }]);
+
+	listview1.onClick!(0, 0);
+	t.deepEqual(calls, [[2, 1], [0, 0], [0, 0]]);
+	t.deepEqual(updates, [{ row: 0, column: 0 }, { row: 2, column: 1 }, { row: 1, column: 1 }, { row: 0, column: 0 }]); // No changes
 });

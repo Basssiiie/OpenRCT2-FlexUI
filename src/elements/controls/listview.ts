@@ -1,5 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
+import { read } from "@src/bindings/stores/read";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
+import { unwrap } from "@src/bindings/twoway/unwrap";
 import { Axis } from "@src/positional/axis";
 import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Parsed } from "@src/positional/parsing/parsed";
@@ -88,7 +90,7 @@ export interface ListViewParams extends ElementParams
 	 * Whether a specific cell is selected in the listview.
 	 * @default undefined
 	 */
-	selectedCell?: TwoWayBindable<RowColumn>;
+	selectedCell?: TwoWayBindable<RowColumn | null>;
 
 	/**
 	 * Whether the rows are displayed in alternating darkness to make each row easier to see.
@@ -124,41 +126,56 @@ export function listview<I, P>(params: ListViewParams & I): WidgetCreator<I, P>
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements ListViewDesc
+class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<ListViewDesc, "selectedCell"> // ListViewDesc.selectedCell does not support `null`
 {
 	showColumnHeaders: boolean;
 	columns: Partial<ListViewColumn>[];
 	items?: string[] | ListViewItem[];
 	scrollbars?: ScrollbarType;
 	canSelect?: boolean;
-	selectedCell?: RowColumn;
+	selectedCell?: RowColumn | null;
 	isStriped?: boolean;
 	onHighlight?: (item: number, column: number) => void;
 	onClick?: (item: number, column: number) => void;
 
 	/** @todo: fix this so it doesnt need to be a complex object, and can just be a ParsedScale instead. */
 	_columnWidths?: Parsed<FlexiblePosition>[];
+	_selected?: Bindable<RowColumn | null>;
 
 
 	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ListViewParams & I)
 	{
 		super("listview", parent, output, params);
 
+		const selected = params.selectedCell;
+		const onClick = params.onClick;
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
-		binder.twoway(this, "selectedCell", "onClick", params.selectedCell, (position: RowColumn) => {
-			if (this.onClick)
+		binder.add(this, "selectedCell", selected);
+		binder.callback(this, "onClick", selected,
+			// Unwrap RowColumn parameter to separate row and column for optionally supplied user callback.
+			onClick && ((cell: RowColumn | null): void =>
 			{
-				this.onClick(position.row, position.column);
+				if (cell)
+				{
+					onClick(cell.row, cell.column);
+				}
+			}),
+			// Avoid allocating new object and extra callback if user clicked same cell.
+			// This also prevents bound stores from sending out duplicate updates.
+			(row: number, column: number) =>
+			{
+				const last = read(this._selected);
+				return (last && last.row == row && last.column == column) ? last : ({ row, column });
 			}
-		});
+		);
 
 		this.showColumnHeaders = (!isUndefined(params.columns));
 		this.scrollbars = params.scrollbars;
 		this.canSelect = params.canSelect;
 		this.isStriped = params.isStriped;
 		this.onHighlight = params.onHighlight;
-		this.onClick = params.onClick;
+		this._selected = unwrap(selected);
 
 		const columns = params.columns;
 		this.columns = <Partial<ListViewColumn>[]>columns;

@@ -27,13 +27,15 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		});
 	}
 
-	callback<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined, converter?: (value: unknown) => V): void
+	callback<T extends TTarget, K extends keyof T, V, P extends Array<unknown>>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((a: V) => void) | undefined, converter?: (arg1: P[0], arg2: P[1]) => V): void
 	{
+		// Implementation note: callback only allows up to two parameters! Add more once necessary.
 		if (isTwoWay(value))
 		{
-			target[key] = <T[K]>((arg: V): void =>
+			target[key] = <T[K]>((a: V | P[0], b: P[1]): void =>
 			{
-				const result = (converter) ? converter(arg) : arg;
+				// If no converter present, take just the first one. Multiple parameters must be converted anyway to fit into one store.
+				const result = ((converter) ? converter(<P[0]>a, b) : <V>a);
 				value.twoway.set(result);
 				if (callback)
 				{
@@ -44,7 +46,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		else if (callback)
 		{
 			target[key] = <T[K]>((converter)
-				? ((v: V): void => callback(converter(v)))
+				? ((a?: P[0], b?: P[1]): void => callback(converter(a, b)))
 				: callback
 			);
 		}
