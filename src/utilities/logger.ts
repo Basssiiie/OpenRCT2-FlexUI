@@ -26,7 +26,7 @@ function print(level: LogLevel, messages: unknown[]): void
 		.map(v => (isArray(v) ? `[${v}]` : isObject(v) ? String(v) : v))
 		.join(" ");
 
-	console.log(`<FUI/${level}> ${message}`);
+	console.log(`\x1b[95m<FUI/${level}>\x1b[37m ${message}`);
 }
 
 
