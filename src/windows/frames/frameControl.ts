@@ -99,6 +99,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 
 	open(window: Window, widgets: WidgetMap): void
 	{
+		Log.debug("FrameControl.open(", widgets.length, "widgets )");
 		setAxisSizeIfNumber(window, Axis.Horizontal, this.width);
 		setAxisSizeIfNumber(window, Axis.Vertical, this.height);
 
@@ -119,6 +120,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 
 	close(): void
 	{
+		Log.debug("FrameControl.close()");
 		invoke(this._close, this);
 
 		const binder = this._binder;

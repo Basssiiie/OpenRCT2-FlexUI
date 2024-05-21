@@ -224,6 +224,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 	protected _open(description: WindowDesc, binder: WindowBinder | null): void
 	{
+		Log.debug("BaseWindowControl.open()");
 		this._layout(description, this._descriptionWidgetMap);
 		setWindowPosition(description, this._position);
 
@@ -242,6 +243,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 
 	private _close(): void
 	{
+		Log.debug("BaseWindowControl.close()");
 		this._invoke(frame => frame.close());
 
 		const binder = this._windowBinder;

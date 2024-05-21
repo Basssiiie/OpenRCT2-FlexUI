@@ -160,6 +160,7 @@ class TabWindowControl extends BaseWindowControl
 
 	protected override _open(description: WindowDesc, binder: WindowBinder | null): void
 	{
+		Log.debug("TabWindow.open( tab", this._selectedTab, ")");
 		if (this._flags & TabWindowFlags.HasTabs)
 		{
 			this._openTab(description, this._getActiveTab());
