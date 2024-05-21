@@ -241,7 +241,7 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		this._invoke(frame => frame.open(window, activeWidgets));
 	}
 
-	private _close(): void
+	protected _close(): void
 	{
 		Log.debug("BaseWindowControl.close()");
 		this._invoke(frame => frame.close());

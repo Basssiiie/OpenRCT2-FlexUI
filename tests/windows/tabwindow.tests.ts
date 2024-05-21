@@ -1531,3 +1531,44 @@ test("Window with tabs does auto resizes to body size changes", t =>
 
 	t.false(button2.isVisible);
 });
+
+
+test("Window with tabs and bindings resets properly to first tab after close", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const text = store("my bla");
+	const template = tabwindow({
+		width: 200, height: 100,
+		tabs: [
+			tab({ image: 3, content: [] }),
+			tab({ image: 4, content: [ button({ text }) ]})
+		]
+	});
+	template.open();
+
+	const created1 = (globalThis.ui as UiMock).createdWindows[0];
+	t.is(created1.width, 200);
+	t.is(created1.height, 100);
+	t.deepEqual(created1.widgets, []);
+
+	created1.tabIndex = 1;
+	created1.onTabChange!();
+
+	const tab1widgets = created1.widgets;
+	t.is(tab1widgets.length, 1);
+
+	const button1 = created1.widgets[0] as ButtonWidget;
+	t.is(button1.x, 5);
+	t.is(button1.y, 44 + 5);
+	t.is(button1.width, 200 - 10);
+	t.is(button1.height, 100 - (44 + 10));
+	t.is(button1.text, "my bla");
+
+	created1.onClose!();
+	template.open();
+
+	const created2 = (globalThis.ui as UiMock).createdWindows[0];
+	t.is(created2.tabIndex, 0);
+	t.deepEqual(created2.widgets, []);
+});

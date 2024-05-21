@@ -168,9 +168,10 @@ class TabWindowControl extends BaseWindowControl
 		super._open(description, binder);
 	}
 
-	override close(): void
+	protected override _close(): void
 	{
-		super.close();
+		Log.debug("TabWindow.close()");
+		super._close();
 		this._selectedTab = this._description.tabIndex || 0;
 	}
 
