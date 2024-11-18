@@ -14,13 +14,14 @@ export default tseslint.config(
 		},
 		rules: {
 			"@typescript-eslint/consistent-type-assertions": ["error", { assertionStyle: "angle-bracket" }],
-			"@typescript-eslint/prefer-nullish-coalescing": "off",
-			"@typescript-eslint/prefer-optional-chain": "off",
+			"@typescript-eslint/prefer-includes": "off", // not in es5
+			"@typescript-eslint/prefer-nullish-coalescing": "off", // verbose in es5
+			"@typescript-eslint/prefer-optional-chain": "off", // verbose in es5
     		"@typescript-eslint/no-inferrable-types": "warn",
 			"@typescript-eslint/no-unnecessary-condition": "warn",
-			"@typescript-eslint/no-unsafe-enum-comparison": "off",
+			"@typescript-eslint/no-unsafe-enum-comparison": "off", // enums are only used as labelled numbers
 			"@typescript-eslint/restrict-template-expressions": ["warn", { allowArray: true, allowBoolean: true, allowNullish: true, allowNumber: true }],
-    		"@typescript-eslint/triple-slash-reference": "off",
+    		"@typescript-eslint/triple-slash-reference": "off", // needed for openrct2 symbols
 		}
 	},
 	{
