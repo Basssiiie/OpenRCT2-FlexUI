@@ -24,6 +24,7 @@ import { FrameRectangle } from "./frameRectangle";
  */
 export class FrameControl implements FrameContext, ParentControl<FramePosition, ParsedFramePosition>, TabLayoutable
 {
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	recalculate = this.redraw;
 
 	_body!: FlexibleLayoutControl<FramePosition, ParsedFramePosition>;

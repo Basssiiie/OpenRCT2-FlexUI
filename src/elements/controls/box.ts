@@ -66,8 +66,8 @@ const enum BoxFlags
 }
 
 const defaultBoxPadding: Padding = 6;
-const paddingWithTitle: number = 15;
-const trimTopWithoutTitle: number = 4;
+const paddingWithTitle = 15;
+const trimTopWithoutTitle = 4;
 
 
 /**

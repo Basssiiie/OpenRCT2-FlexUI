@@ -23,6 +23,7 @@ const isDuktapeAvailable = (typeof Duktape !== "undefined");
 function print(level: LogLevel, messages: unknown[]): void
 {
 	const message = messages
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
 		.map(v => (isArray(v) ? `[${v}]` : isObject(v) ? String(v) : v))
 		.join(" ");
 
@@ -41,7 +42,7 @@ function stacktrace(): string
 	}
 
 	const depth = -4; // skips act(), stacktrace() and the calling method.
-	let entry: DukStackEntry, result = "";
+	let entry: DukStackEntry | undefined, result = "";
 
 	for (let i = depth; (entry = Duktape.act(i)); i--)
 	{

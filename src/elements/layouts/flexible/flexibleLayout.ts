@@ -36,7 +36,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		const mainSize = convertToPixels(parsed._mainSize, leftoverSpace, weightedTotal, percentileTotal);
 		const padding = parsed._padding;
 
-		const childArea = {} as Rectangle;
+		const childArea = <Rectangle>{};
 		childArea[axisKeys[layoutDirection]] = mainAxis;
 		childArea[sizeKeys[layoutDirection]] = mainSize;
 		childArea[axisKeys[otherDirection]] = parentArea[axisKeys[otherDirection]];

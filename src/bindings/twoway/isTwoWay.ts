@@ -14,6 +14,6 @@ export function isTwoWay(target: unknown): target is TwoWayBinding<unknown>
 	if (!target || !isObject(target))
 		return false;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return isWritableStore((target as any).twoway);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+	return isWritableStore((<any>target).twoway);
 }

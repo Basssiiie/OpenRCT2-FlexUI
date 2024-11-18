@@ -11,10 +11,10 @@ import { FrameRectangle } from "@src/windows/frames/frameRectangle";
  * Keys for accessing values directionally
  */
 export const
-	axisKeys = ["y", "x"] as const,
-	sizeKeys = ["height", "width"] as const,
-	startKeys = ["top", "left"] as const,
-	endKeys = ["bottom", "right"] as const;
+	axisKeys = <const>["y", "x"],
+	sizeKeys = <const>["height", "width"],
+	startKeys = <const>["top", "left"],
+	endKeys = <const>["bottom", "right"];
 
 
 /**

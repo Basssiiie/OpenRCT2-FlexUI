@@ -30,7 +30,7 @@ export function parsePadding(padding: Padding | undefined, fallbackPadding?: Par
 	else if (isArray(padding))
 	{
 		// padding specified as 2 or 4 item tuple.
-		const length = padding.length;
+		const length = <number>padding.length;
 		if (length === 2)
 		{
 			// Todo: do we need to take in account `undefined` for fallback ?

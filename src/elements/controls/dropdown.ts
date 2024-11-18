@@ -75,7 +75,7 @@ export function dropdown<I extends SizeParams, P>(params: DropdownParams & I): W
 export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implements DropdownDesc
 {
 	items: string[] = [];
-	selectedIndex: number = 0;
+	selectedIndex = 0;
 	onChange?: (index: number) => void;
 
 	_selectedIndex?: number;

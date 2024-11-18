@@ -125,12 +125,6 @@ const config = [
 		plugins: [
 			dts({
 				tsconfig: "./tsconfig.json",
-				compilerOptions: {
-					declaration: true,
-					declarationDir: "./@types",
-					emitDeclarationOnly: true,
-					target: "ESNext"
-				},
 				exclude: [
 					"./src/**/*.d.ts",
 					"./tests/**/*"

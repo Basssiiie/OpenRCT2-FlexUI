@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+
 /**
  * Allows access to the duktape object.
  */
@@ -19,7 +21,7 @@ interface Duktape
 	/**
 	 * Returns an entry on the call stack.
 	 */
-	act(depth: number): DukStackEntry;
+	act(depth: number): DukStackEntry | undefined;
 
 
 	/**

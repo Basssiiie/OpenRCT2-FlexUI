@@ -20,9 +20,9 @@ export function compute<U>(): Store<U>
 	// Optimized for ES5 minification
 	// eslint-disable-next-line prefer-rest-params
 	const args = arguments;
-	const stores = slice.call(args, 0, -1);
+	const stores = <Store<unknown>[]>slice.call(args, 0, -1);
 	const storeCount = stores.length;
-	const callback = args[storeCount];
+	const callback = <(...values: unknown[]) => U>args[storeCount];
 	const dependant = store(getComputedValue<U>(stores, callback));
 	let idx = 0;
 

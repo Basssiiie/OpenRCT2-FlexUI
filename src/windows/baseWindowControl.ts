@@ -1,10 +1,10 @@
 import { Bindable } from "@src/bindings/bindable";
 import { Axis } from "@src/positional/axis";
 import { Paddable } from "@src/positional/paddable";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
-import { ParsedPadding } from "..";
 import { WindowBinder } from "./binders/windowBinder";
 import { FrameRectangle } from "./frames/frameRectangle";
 import { ParentWindow } from "./parentWindow";
@@ -65,7 +65,7 @@ export interface BaseWindowParams extends Paddable
 }
 
 
-export const defaultTopBarSize: number = 15;
+export const defaultTopBarSize = 15;
 export const enum WindowFlags
 {
 	None = 0,

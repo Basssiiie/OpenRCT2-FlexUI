@@ -46,6 +46,7 @@ class WidgetControl<I, P> extends Control<WidgetDesc, I, P>
 			if (omittedKeys.indexOf(key) == -1)
 			{
 				// @ts-expect-error This mapping defies TS logic.
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this[key] = params[key];
 			}
 		}

@@ -1,6 +1,6 @@
 import { isFunction, isObject } from "@src/utilities/type";
-import { WritableStore } from "./writableStore";
 import { Store } from "./store";
+import { WritableStore } from "./writableStore";
 
 
 /**
@@ -11,9 +11,8 @@ export function isStore(target: unknown): target is Store<unknown>
 	if (!target || !isObject(target))
 		return false;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const any = <any>target;
-	return isFunction(any.get) && isFunction(any.subscribe);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+	return isFunction((<any>target).get) && isFunction((<any>target).subscribe);
 }
 
 /**
@@ -24,6 +23,6 @@ export function isWritableStore(target: unknown): target is WritableStore<unknow
 	if (!target || !isObject(target))
 		return false;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return isStore(target) && isFunction((target as any).set);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+	return isStore(target) && isFunction((<any>target).set);
 }

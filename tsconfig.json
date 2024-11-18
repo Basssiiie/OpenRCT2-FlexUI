@@ -18,7 +18,7 @@
 		},
 		"strict": true,
 		"target": "ES5",
-		"lib": [ "ES5" ],
+		"lib": [ "ES5", "ES2015.Iterable" ],
 	},
 	"include": [
 		"./lib/**/*.ts",

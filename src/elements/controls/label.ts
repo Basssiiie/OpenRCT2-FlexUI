@@ -56,7 +56,7 @@ export function label<I extends SizeParams, P>(params: LabelParams & I): WidgetC
  */
 class LabelControl<I, P> extends Control<LabelDesc, I, P> implements LabelDesc
 {
-	text: string = "";
+	text = "";
 	textAlign?: TextAlignment;
 
 	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: LabelParams & I)

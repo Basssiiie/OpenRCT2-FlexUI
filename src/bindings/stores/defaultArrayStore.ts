@@ -26,7 +26,7 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 	insert(index: number, ...values: T[]): number
 	{
 		const array = this._value;
-		// eslint-disable-next-line prefer-spread, @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line prefer-spread, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		array.splice.apply(array, (<any>[index, 0]).concat(values));
 		this._updateListeners(array);
 		return array.length;
@@ -49,7 +49,7 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 		return function(...args: unknown[]): never
 		{
 			const array = store._value;
-			const arrayMethod = <(...arg: unknown[]) => unknown>array[<keyof Array<T>>method];
+			const arrayMethod = <(...arg: unknown[]) => unknown>array[<keyof T[]>method];
 			const value = arrayMethod.apply(array, args);
 			store._updateListeners(array);
 			return <never>value;

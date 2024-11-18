@@ -107,7 +107,7 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 	onIncrement: () => void;
 	onDecrement: () => void;
 
-	_step: number = 1;
+	_step = 1;
 	_minimum: number = -(2 ** 31); // min. 32-bit signed integer
 	_maximum: number = (2 ** 31) - 1; // max. 32-bit signed integer
 

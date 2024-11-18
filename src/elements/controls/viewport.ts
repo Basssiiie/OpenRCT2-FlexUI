@@ -87,7 +87,7 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 		binder.on(<ViewportWidget><unknown>this, target, viewportSetter);
 		binder.on(<ViewportWidget><unknown>this, zoom, (widget: ViewportWidget, value: number) =>
 		{
-			const viewport = widget.viewport;
+			const viewport = <Viewport | null>widget.viewport;
 			if (viewport)
 			{
 				viewport.zoom = value;
@@ -138,7 +138,7 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 		{
 			if (isNumber(target))
 			{
-				const entity = map.getEntity(target);
+				const entity = <Entity | null>map.getEntity(target);
 				if (entity)
 				{
 					moveToLocation = <CoordsXYZ>{

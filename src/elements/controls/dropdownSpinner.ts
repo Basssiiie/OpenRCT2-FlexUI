@@ -1,3 +1,4 @@
+import { Bindable } from "@src/bindings/bindable";
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
 import { subscribe } from "@src/bindings/stores/subscribe";
@@ -72,14 +73,14 @@ class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
 
 		// If items is a store, ensure the spinner maximum is always updated
 		// when the item list changes.
-		const items = params.items;
+		const items = <Bindable<string[]> | undefined>params.items;
 		if (isStore(items))
 		{
 			const maximum = store(0);
 			subscribe(items, val =>
 			{
 				const length = val.length;
-				maximum.set((val && length > 0) ? (length - 1) : 0);
+				maximum.set(length > 0 ? (length - 1) : 0);
 			});
 			spinParams.maximum = maximum;
 		}

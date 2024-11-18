@@ -11,8 +11,8 @@ import { WindowScale } from "./windowScale";
 export const inheritKey = "inherit";
 export const autoKey = "auto";
 
-const minKeys = ["minHeight", "minWidth"] as const;
-const maxKeys = ["maxHeight", "maxWidth"] as const;
+const minKeys = <const>["minHeight", "minWidth"];
+const maxKeys = <const>["maxHeight", "maxWidth"];
 
 export type WindowScaleOptions = number | WindowScale | "auto";
 export type TabScaleOptions = WindowScaleOptions | "inherit";

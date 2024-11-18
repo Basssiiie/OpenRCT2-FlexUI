@@ -1,5 +1,6 @@
 import { Binding } from "@src/bindings/binding";
 import { Store } from "@src/bindings/stores/store";
+import * as Log from "@src/utilities/logger";
 import { BaseWindowControl } from "../baseWindowControl";
 import { GenericBinder } from "./genericBinder";
 
@@ -14,11 +15,9 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	 */
 	override _bind(control: BaseWindowControl): void
 	{
-		const window = control._description;
-		if (window)
-		{
-			this._refresh(window);
-		}
+		Log.assert(!!control._description, "Window control is missing description!");
+
+		this._refresh(control._description);
 		this._source = control;
 	}
 
@@ -43,12 +42,9 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	private _refresh(window: Window | WindowDesc): void
 	{
 		const bindings = this._bindings;
-		if (bindings)
+		for (const binding of bindings)
 		{
-			for (const binding of bindings)
-			{
-				binding._callback(window, binding._store.get());
-			}
+			binding._callback(window, binding._store.get());
 		}
 	}
 }

@@ -65,12 +65,9 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 	private _refresh(widgets: WidgetMap): void
 	{
 		const bindings = this._bindings;
-		if (bindings)
+		for (const binding of bindings)
 		{
-			for (const binding of bindings)
-			{
-				binding._callback(widgets[binding._id], binding._store.get());
-			}
+			binding._callback(widgets[binding._id], binding._store.get());
 		}
 	}
 }
