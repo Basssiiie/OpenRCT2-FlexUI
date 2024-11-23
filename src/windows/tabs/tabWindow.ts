@@ -62,24 +62,29 @@ export interface TabWindowParams extends BaseWindowParams
 /**
  * Create a new flexiblely designed window that has tabs. An arrow function can be used to create windows to fit a specific viewmodel.
  *
- * @example <caption>Create a simple window</caption>
- *
+ * @example
  * const template = tabwindow({ title: "Hello world!" })
  *
  * template.open()
- *
- * @example <caption>Create a window based on a viewmodel</caption>
- *
+ */
+export function tabwindow(params: TabWindowParams): WindowTemplate<void>;
+/**
+ * Create a new flexiblely designed window that has tabs. An arrow function can be used to create windows to fit a specific viewmodel.
+ * *
+ * @example
  * class MyModel
  * {
  *     header: store("Hello world!")
  * };
- * const template = tabwindow<MyModel>(model => ({ title: model.header }))
+ *
+ * const template = tabwindow<MyModel>(model =>
+ * ({
+ *     title: model.header
+ * }))
  *
  * template.open(new MyModel())
  */
-export function tabwindow<TModel>(params: (model: TModel) => TabWindowParams): WindowTemplate<TModel>;
-export function tabwindow(params: TabWindowParams): WindowTemplate<void>;
+export function tabwindow<TModel extends object>(params: (model: TModel) => TabWindowParams): WindowTemplate<TModel>;
 export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindowParams): WindowTemplate<T>
 {
 	Log.debug("tabwindow() started");

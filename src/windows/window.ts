@@ -31,24 +31,29 @@ export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayou
 /**
  * Create a new flexiblely designed window.
  *
- * @example <caption>Create a simple window</caption>
- *
+ * @example
  * const template = window({ title: "Hello world!" })
  *
  * template.open()
+ */
+export function window(params: WindowParams): WindowTemplate<void>;
+/**
+ * Create a new flexiblely designed window with a viewmodel.
  *
- * @example <caption>Create a window based on a viewmodel</caption>
- *
+ * @example
  * class MyModel
  * {
  *     header: store("Hello world!")
  * };
- * const template = window<MyModel>(model => ({ title: model.header }))
+ *
+ * const template = window<MyModel>(model =>
+ * ({
+ *     title: model.header
+ * }))
  *
  * template.open(new MyModel())
  */
-export function window<TModel>(params: (model: TModel) => WindowParams): WindowTemplate<TModel>;
-export function window(params: WindowParams): WindowTemplate<void>;
+export function window<TModel extends object>(params: (model: TModel) => WindowParams): WindowTemplate<TModel>;
 export function window<T>(params: ((model: T) => WindowParams) | WindowParams): WindowTemplate<T>
 {
 	Log.debug("window() started");
