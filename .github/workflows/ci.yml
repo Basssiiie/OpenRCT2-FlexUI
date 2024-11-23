@@ -10,7 +10,7 @@ on:
     - main
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,10 +18,10 @@ jobs:
         with:
           node-version: 20
       - run: npm ci --prefer-offline --no-audit --no-save
-      - run: npm run lint
+      - run: npm run build # includes linting
 
   test:
-    needs: lint
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,8 +29,19 @@ jobs:
         with:
           node-version: 20
       - run: npm ci --prefer-offline --no-audit --no-save
-      - run: npm run build
-      - run: npm run install:examples
-      - run: npm run build:examples
       - run: npm run install:test-setup
+      - run: npm run build
       - run: npm run test
+
+  examples:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --prefer-offline --no-audit --no-save
+      - run: npm run install:examples
+      - run: npm run build
+      - run: npm run build:examples

@@ -34,7 +34,7 @@
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
 		"build:examples": "npm run for:examples --action=\"run build\"",
 		"install:examples": "npm run for:examples --action=\"install --prefer-offline\"",
-		"install:test-setup": "npm install --prefix ./tests/package/project --prefer-offline --no-audit --no-save",
+		"install:test-setup": "npm install --prefix ./tests/package/project --prefer-offline",
 		"install:all": "npm run for:all --action=\"install --prefer-offline\"",
 		"lint": "eslint",
 		"test": "nyc ava",
