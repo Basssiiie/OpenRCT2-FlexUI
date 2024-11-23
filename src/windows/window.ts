@@ -7,6 +7,7 @@ import { BaseWindowControl, BaseWindowParams, defaultTopBarSize } from "./baseWi
 import { FrameBuilder } from "./frames/frameBuilder";
 import { FrameControl } from "./frames/frameControl";
 import { TabLayoutable } from "./tabs/tabLayoutable";
+import { Template } from "./template";
 import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
 import { WindowTemplate } from "./windowTemplate";
 
@@ -29,17 +30,31 @@ export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayou
 
 /**
  * Create a new flexiblely designed window.
+ *
+ * @example <caption>Create a simple window</caption>
+ *
+ * const template = window({ title: "Hello world!" })
+ *
+ * template.open()
+ *
+ * @example <caption>Create a window based on a viewmodel</caption>
+ *
+ * class MyModel
+ * {
+ *     header: store("Hello world!")
+ * };
+ * const template = window<MyModel>(model => ({ title: model.header }))
+ *
+ * template.open(new MyModel())
  */
-export function window(params: WindowParams): WindowTemplate
+export function window<TModel>(params: (model: TModel) => WindowParams): WindowTemplate<TModel>;
+export function window(params: WindowParams): WindowTemplate<void>;
+export function window<T>(params: ((model: T) => WindowParams) | WindowParams): WindowTemplate<T>
 {
 	Log.debug("window() started");
 	const startTime = Log.time();
 
-	if (isUndefined(params.padding))
-	{
-		params.padding = defaultWindowPadding;
-	}
-	const template = new WindowControl(params);
+	const template = new Template(WindowControl, params);
 
 	Log.debug("window() creation time:", (Log.time() - startTime), "ms");
 	return template;
@@ -57,6 +72,11 @@ class WindowControl extends BaseWindowControl
 
 	constructor(params: WindowParams)
 	{
+		if (isUndefined(params.padding))
+		{
+			params.padding = defaultWindowPadding;
+		}
+
 		super(params);
 
 		const builder = new FrameBuilder(this, params, params);

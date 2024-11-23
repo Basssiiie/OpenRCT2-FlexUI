@@ -3,10 +3,10 @@ import { OpenWindow } from "./openWindow";
 /**
  * A fully created and compressed window template that can now be used.
  */
-export interface WindowTemplate extends OpenWindow
+export interface WindowTemplate<TModel>
 {
 	/**
-	 * Opens this window on-screen.
+	 * Opens this window on-screen with the specified details.
 	 */
-	open(): void;
+	open(model: TModel): OpenWindow;
 }

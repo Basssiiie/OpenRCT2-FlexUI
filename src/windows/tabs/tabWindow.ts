@@ -11,9 +11,9 @@ import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
 import { isUndefined } from "@src/utilities/type";
 import { BaseWindowControl, BaseWindowParams, WindowFlags, defaultTopBarSize } from "../baseWindowControl";
-import { WindowBinder } from "../binders/windowBinder";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
+import { Template } from "../template";
 import { WidgetMap, addToWidgetMap } from "../widgets/widgetMap";
 import { WindowScaleOptions, autoKey, setAxisSizeIfInheritedNumber } from "../windowHelpers";
 import { WindowTemplate } from "../windowTemplate";
@@ -60,14 +60,32 @@ export interface TabWindowParams extends BaseWindowParams
 
 
 /**
- * Create a new flexiblely designed window that has tabs.
+ * Create a new flexiblely designed window that has tabs. An arrow function can be used to create windows to fit a specific viewmodel.
+ *
+ * @example <caption>Create a simple window</caption>
+ *
+ * const template = tabwindow({ title: "Hello world!" })
+ *
+ * template.open()
+ *
+ * @example <caption>Create a window based on a viewmodel</caption>
+ *
+ * class MyModel
+ * {
+ *     header: store("Hello world!")
+ * };
+ * const template = tabwindow<MyModel>(model => ({ title: model.header }))
+ *
+ * template.open(new MyModel())
  */
-export function tabwindow(params: TabWindowParams): WindowTemplate
+export function tabwindow<TModel>(params: (model: TModel) => TabWindowParams): WindowTemplate<TModel>;
+export function tabwindow(params: TabWindowParams): WindowTemplate<void>;
+export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindowParams): WindowTemplate<T>
 {
 	Log.debug("tabwindow() started");
 	const startTime = Log.time();
 
-	const template = new TabWindowControl(params);
+	const template = new Template(TabWindowControl, params);
 
 	Log.debug("tabwindow() creation time:", (Log.time() - startTime), "ms");
 	return template;
@@ -158,14 +176,14 @@ class TabWindowControl extends BaseWindowControl
 		this._flags |= (tabCount > 0) ? TabWindowFlags.HasTabs : 0;
 	}
 
-	protected override _open(description: WindowDesc, binder: WindowBinder | null): void
+	override _open(): void
 	{
 		Log.debug("TabWindow.open( tab", this._selectedTab, ")");
 		if (this._flags & TabWindowFlags.HasTabs)
 		{
-			this._openTab(description, this._getActiveTab());
+			this._openTab(this._description, this._getActiveTab());
 		}
-		super._open(description, binder);
+		super._open();
 	}
 
 	protected override _close(): void

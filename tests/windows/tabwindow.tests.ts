@@ -51,6 +51,61 @@ test("Window with one tab and one absolute widget", t =>
 });
 
 
+test("Window with viewmodel", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	class Model
+	{
+		title = store("better window");
+		text = store("hello world");
+	}
+
+	const template = tabwindow<Model>(model =>
+	({
+		title: model.title,
+		width: 120, height: 70, padding: 10,
+		tabs: [
+			tab({
+				image: 11,
+				content: [
+					button({
+						text: model.text,
+						width: 40,
+						height: 25
+					}),
+				]
+			})
+		]
+	}));
+
+	const model = new Model();
+	template.open(model);
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.width, 120);
+	t.is(created.height, 70);
+	t.is(created.widgets.length, 1);
+	t.is(created.tabIndex, 0);
+	t.is(created.title, "better window");
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.type, "button");
+	t.is(button1.text, "hello world");
+	t.is(button1.x, 10);
+	t.is(button1.y, 10 + 44);
+	t.is(button1.width, 40);
+	t.is(button1.height, 25);
+
+	model.title.set("Another title");
+	t.is(created.title, "Another title");
+
+	model.text.set("Another button text");
+	t.is(button1.text, "Another button text");
+});
+
+
 test("Window with one tab and one 100% widget", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -461,8 +516,8 @@ test("Window close method calls on close event", t =>
 		tabs: [],
 		onClose: () => calls.push("close it")
 	});
-	template.open();
-	template.close();
+	const instance = template.open();
+	instance.close();
 
 	t.deepEqual(calls, [ "close it" ]);
 });

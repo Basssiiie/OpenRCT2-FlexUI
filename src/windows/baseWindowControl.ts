@@ -7,12 +7,12 @@ import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { WindowBinder } from "./binders/windowBinder";
 import { FrameRectangle } from "./frames/frameRectangle";
+import { OpenWindow } from "./openWindow";
 import { ParentWindow } from "./parentWindow";
 import { TabLayoutable } from "./tabs/tabLayoutable";
 import { WidgetMap, addToWidgetMap } from "./widgets/widgetMap";
 import { autoKey, setAxisSizeIfAuto, setAxisSizeIfNumber } from "./windowHelpers";
 import { WindowScale } from "./windowScale";
-import { WindowTemplate } from "./windowTemplate";
 
 
 /**
@@ -84,7 +84,7 @@ type WindowPosition = BaseWindowParams["position"];
 /**
  * A base window control for shared functionality between different window types.
  */
-export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
+export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 {
 	readonly _description: WindowDesc;
 	protected abstract _descriptionWidgetMap: WidgetMap;
@@ -222,9 +222,12 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		this._flags = flags;
 	}
 
-	protected _open(description: WindowDesc, binder: WindowBinder | null): void
+	_open(): void
 	{
 		Log.debug("BaseWindowControl.open()");
+		const description = this._description;
+		const binder = this._windowBinder;
+
 		this._layout(description, this._descriptionWidgetMap);
 		setWindowPosition(description, this._position);
 
@@ -253,20 +256,6 @@ export abstract class BaseWindowControl implements WindowTemplate, ParentWindow
 		}
 		this._window = null;
 		this._activeWidgetMap = null;
-	}
-
-	open(): void
-	{
-		if (this._window)
-		{
-			// Multiple windows currently not supported, just refocus current window.
-			this.focus();
-			return;
-		}
-
-		const description = this._description;
-		const binder = this._windowBinder;
-		this._open(description, binder);
 	}
 
 	close(): void

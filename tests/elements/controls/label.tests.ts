@@ -1,8 +1,8 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
 import { label } from "@src/elements/controls/label";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
@@ -46,7 +46,7 @@ test("Text is bindable", t =>
 		]
 	});
 
-	template.open();
+	const instance1 = template.open();
 
 	const label1 = mock.createdWindows[0].widgets[0] as LabelWidget;
 	t.is(label1.text, "Hello");
@@ -54,7 +54,7 @@ test("Text is bindable", t =>
 	text.set("Bye");
 	t.is(label1.text, "Bye");
 
-	template.close();
+	instance1.close();
 	text.set("Still there");
 	template.open();
 
@@ -76,7 +76,7 @@ test("Alignment is bindable", t =>
 		]
 	});
 
-	template.open();
+	const instance1 = template.open();
 
 	const label1 = mock.createdWindows[0].widgets[0] as LabelWidget;
 	t.is(label1.textAlign, "centred");
@@ -84,7 +84,7 @@ test("Alignment is bindable", t =>
 	alignment.set("left");
 	t.is(label1.textAlign, "left");
 
-	template.close();
+	instance1.close();
 	alignment.set("centred");
 	template.open();
 

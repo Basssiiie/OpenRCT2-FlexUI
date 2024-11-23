@@ -159,7 +159,7 @@ test("Items is bindable", t =>
 		]
 	});
 
-	template.open();
+	const instance1 = template.open();
 
 	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
 	t.deepEqual(listview1.items, [ "Hello", "world" ]);
@@ -167,7 +167,7 @@ test("Items is bindable", t =>
 	items.set([ "Bye", "friendly", "friend" ]);
 	t.deepEqual(listview1.items, [ "Bye", "friendly", "friend" ]);
 
-	template.close();
+	instance1.close();
 	items.set([ "Still", "there" ]);
 	template.open();
 

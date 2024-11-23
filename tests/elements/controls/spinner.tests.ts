@@ -267,17 +267,18 @@ test("Throw error on minimum larger than maximum", t =>
 
 	const error = t.throws(() =>
 	{
-		window({
+		const instance = window({
 			width: 100, height: 100,
 			content: [
 				spinner({ value: 4, minimum: 5678, maximum: 1234, wrapMode: "wrap" })
 			]
 		});
+		instance.open();
 	});
 	t.truthy(error);
-	t.not(error?.message.indexOf("5678"), -1);
-	t.not(error?.message.indexOf("1234"), -1);
-	t.not(error?.message.indexOf("is larger than maximum"), -1);
+	t.not(error.message.indexOf("5678"), -1);
+	t.not(error.message.indexOf("1234"), -1);
+	t.not(error.message.indexOf("is larger than maximum"), -1);
 });
 
 

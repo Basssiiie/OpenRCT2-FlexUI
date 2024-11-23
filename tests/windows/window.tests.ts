@@ -109,6 +109,49 @@ test("Simple window with single widget", t =>
 });
 
 
+test("Simple window with viewmodel", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const model =
+	{
+		title: store("better window"),
+		text: store("hello world")
+	}
+
+	const template = window<typeof model>(model =>
+	({
+		title: model.title,
+		width: 200, height: 150 + 15, padding: 0, spacing: 0,
+		content: [
+			button({ text: model.text, width: 100, height: 50 })
+		]
+	}));
+	template.open(model);
+
+	const created = (globalThis.ui as UiMock).createdWindows[0];
+	t.truthy(created);
+	t.is(created.title, "better window");
+	t.is(created.width, 200);
+	t.is(created.height, 150 + 15);
+	t.is(created.widgets.length, 1);
+
+	const button1 = created.widgets[0] as ButtonWidget;
+	t.is(button1.type, "button");
+	t.is(button1.text, "hello world");
+	t.is(button1.x, 0);
+	t.is(button1.y, 15);
+	t.is(button1.width, 100);
+	t.is(button1.height, 50);
+
+	model.title.set("Another title");
+	t.is(created.title, "Another title");
+
+	model.text.set("Another button text");
+	t.is(button1.text, "Another button text");
+});
+
+
 test("Simple window with single 100% widget", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -521,7 +564,7 @@ test("Window title is bindable", t =>
 			label({ text: "some text" })
 		]
 	});
-	template.open();
+	const instance1 = template.open();
 
 	const created1 = (globalThis.ui as UiMock).createdWindows[0];
 	t.is(created1.title, "test");
@@ -529,7 +572,7 @@ test("Window title is bindable", t =>
 	viewmodel.title.set("blub");
 	t.is(created1.title, "blub");
 
-	template.close();
+	instance1.close();
 	viewmodel.title.set("bobby");
 	t.is(created1.title, "blub"); // dont update on close
 
@@ -635,8 +678,8 @@ test("Window close method calls on close event", t =>
 		content: [],
 		onClose: () => calls.push("close it")
 	});
-	template.open();
-	template.close();
+	const instance = template.open();
+	instance.close();
 
 	t.deepEqual(calls, [ "close it" ]);
 });
@@ -776,8 +819,8 @@ test("Window opens at center position after game window resize", t =>
 		position: "center",
 		content: []
 	});
-	template.open();
-	template.close();
+	const instance = template.open();
+	instance.close();
 
 	uiMock.width = 1280;
 	uiMock.height = 720;
