@@ -11,11 +11,11 @@ import { Control } from "./control";
  */
 export interface GraphicsParams extends ElementParams
 {
-    /**
-     * Use for drawing custom graphics. See {@link GraphicsContext} for more information.
-     * @default undefined
-     */
-    onDraw?: (g: GraphicsContext) => void;
+	/**
+	 * Use for drawing custom graphics. See {@link GraphicsContext} for more information.
+	 * @default undefined
+	 */
+	onDraw?: (g: GraphicsContext) => void;
 }
 
 /**
@@ -25,7 +25,7 @@ export function graphics(params: GraphicsParams & FlexiblePosition): WidgetCreat
 export function graphics(params: GraphicsParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function graphics<I, P>(params: GraphicsParams & I): WidgetCreator<I, P>
 {
-    return (parent, output) => new GraphicsControls<I, P>(parent, output, params);
+	return (parent, output) => new GraphicsControls<I, P>(parent, output, params);
 }
 
 /**
@@ -33,11 +33,11 @@ export function graphics<I, P>(params: GraphicsParams & I): WidgetCreator<I, P>
  */
 export class GraphicsControls<I, P> extends Control<CustomDesc, I, P> implements CustomDesc, GraphicsParams
 {
-    onDraw?: ((g: GraphicsContext) => void);
+	onDraw?: ((g: GraphicsContext) => void);
 
-    constructor(parent: ParentControl<I, P>, output: BuildOutput, params: GraphicsParams & I)
-    {
-        super("custom", parent, output, params);
-        this.onDraw = params.onDraw;
-    }
+	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: GraphicsParams & I)
+	{
+		super("custom", parent, output, params);
+		this.onDraw = params.onDraw;
+	}
 }

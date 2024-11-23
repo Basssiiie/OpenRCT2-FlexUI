@@ -71,7 +71,7 @@ test("Store contract is true", t =>
 	{
 		get: () => t.fail("Calling get is not allowed"),
 		set: () => t.fail("Calling set is not allowed"),
-		subscribe: () => t.fail("Calling subscribe is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
 	t.true(isStore(store));
 });
@@ -82,7 +82,7 @@ test("Store contract without get() is false", t =>
 	const store =
 	{
 		set: () => t.fail("Calling set is not allowed"),
-		subscribe: () => t.fail("Calling subscribe is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
 	t.false(isStore(store));
 });
@@ -93,7 +93,7 @@ test("Store contract without set() is true", t =>
 	const store =
 	{
 		get: () => t.fail("Calling get is not allowed"),
-		subscribe: () => t.fail("Calling subscribe is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
 	t.true(isStore(store));
 });
@@ -104,7 +104,7 @@ test("Store contract without subscribe() is false", t =>
 	const store =
 	{
 		get: () => t.fail("Calling get is not allowed"),
-		set: () => t.fail("Calling set is not allowed"),
+		set: () => t.fail("Calling set is not allowed")
 	};
 	t.false(isStore(store));
 });
@@ -115,7 +115,7 @@ test("Writable store contract without get() is false", t =>
 	const store =
 	{
 		set: () => t.fail("Calling set is not allowed"),
-		subscribe: () => t.fail("Calling subscribe is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
 	t.false(isWritableStore(store));
 });
@@ -126,7 +126,7 @@ test("Writable store contract without set() is false", t =>
 	const store =
 	{
 		get: () => t.fail("Calling get is not allowed"),
-		subscribe: () => t.fail("Calling subscribe is not allowed"),
+		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
 	t.false(isWritableStore(store));
 });
@@ -137,7 +137,7 @@ test("Writable contract without subscribe() is false", t =>
 	const store =
 	{
 		get: () => t.fail("Calling get is not allowed"),
-		set: () => t.fail("Calling set is not allowed"),
+		set: () => t.fail("Calling set is not allowed")
 	};
 	t.false(isWritableStore(store));
 });

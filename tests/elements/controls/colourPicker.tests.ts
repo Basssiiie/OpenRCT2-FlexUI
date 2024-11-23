@@ -4,11 +4,11 @@ import { store } from "@src/bindings/stores/createStore";
 import { twoway } from "@src/bindings/twoway/twoway";
 import { colourPicker } from "@src/elements/controls/colourPicker";
 import { Colour } from "@src/utilities/colour";
-import { proxy } from "@src/utilities/proxy";
 import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
+import { proxy } from "tests/utilities/proxy";
 
 
 test("Standard properties are set", t =>

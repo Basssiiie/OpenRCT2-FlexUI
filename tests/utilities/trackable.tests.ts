@@ -71,7 +71,7 @@ test("Array items are counted", t =>
 {
 	const array = track([
 		{ a: "aa" },
-		{ a: "bb" },
+		{ a: "bb" }
 	]);
 
 	t.is(array._gets.total(), 0);

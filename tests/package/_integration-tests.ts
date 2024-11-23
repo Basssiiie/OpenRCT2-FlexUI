@@ -1,4 +1,4 @@
-import { TestFn } from 'ava';
+import { TestFn } from "ava";
 import { getFile } from "./_integration-helpers";
 
 

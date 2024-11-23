@@ -58,7 +58,7 @@ const ratios = window({
 								alignment: "centred",
 								padding: [ "50%", 0 ]
 							})
-						),
+						)
 					]),
 					box(
 						label({
@@ -66,7 +66,7 @@ const ratios = window({
 							alignment: "centred",
 							padding: [ "50%", 0 ]
 						})
-					),
+					)
 				])
 			])
 		])

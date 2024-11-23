@@ -17,9 +17,9 @@ class ViewModel
 			// Update the selected duck when a new index is selected in the dropdown.
 			const ducks = this.allDucks.get();
 			this.selectedDuck.set(ducks[index]);
-		})
+		});
 	}
-};
+}
 
 const birdStalker = window<ViewModel>(model =>
 ({
@@ -48,7 +48,7 @@ const birdStalker = window<ViewModel>(model =>
 		box({
 			text: "Duck-o-cam",
 			content: viewport({
-				target: compute(model.selectedDuck, duck => (duck) ? duck.id : null),
+				target: compute(model.selectedDuck, duck => (duck) ? duck.id : null)
 			})
 		}),
 		label({
@@ -95,7 +95,7 @@ const birdStalker = window<ViewModel>(model =>
 					while (randomIndex === currentSelectedIndex);
 					model.selectedDuckIndex.set(randomIndex);
 				}
-			}),
+			})
 		])
 	]
 }));

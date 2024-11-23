@@ -27,7 +27,7 @@ test("Window with one tab and one absolute widget", t =>
 						text: "hello world",
 						width: 40,
 						height: 25
-					}),
+					})
 				]
 			})
 		]
@@ -73,7 +73,7 @@ test("Window with viewmodel", t =>
 						text: model.text,
 						width: 40,
 						height: 25
-					}),
+					})
 				]
 			})
 		]
@@ -116,7 +116,7 @@ test("Window with one tab and one 100% widget", t =>
 			tab({
 				image: 11,
 				content: [
-					button({ text: "hello world" }),
+					button({ text: "hello world" })
 				]
 			})
 		]
@@ -151,7 +151,7 @@ test("Window with no tabs and one static absolute widget", t =>
 				text: "hello world",
 				width: 50,
 				height: 40
-			}),
+			})
 		],
 		tabs: []
 	});
@@ -181,7 +181,7 @@ test("Window with no tabs and one static 100% widget", t =>
 	const template = tabwindow({
 		width: 200, height: 150, padding: 10,
 		static: [
-			button({ text: "hello world" }),
+			button({ text: "hello world" })
 		],
 		tabs: []
 	});
@@ -258,7 +258,7 @@ test("Window with tabs allows weighted widget for static widget in auto-sized ta
 
 	const template = tabwindow({
 		width: 100, height: 120, padding: 8,
-		static:  [
+		static: [
 			button({ text: "static button" })
 		],
 		tabs: [
@@ -359,19 +359,19 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 		startingTab: 1,
 
 		static: [
-			label({ text: "hello world" }),
+			label({ text: "hello world" })
 		],
 		tabs: [
 			tab({
 				image: 456,
 				content: [
-					label({ text: "tab 1" }),
+					label({ text: "tab 1" })
 				]
 			}),
 			tab({
 				image: 123,
 				content: [
-					label({ text: "tab 2" }),
+					label({ text: "tab 2" })
 				]
 			})
 		]
@@ -463,19 +463,19 @@ test("Window and tab events execute", t =>
 				image: 456, content: [ label({ text: "1" }) ],
 				onOpen() { hits.push("tab 1 open"); },
 				onUpdate() { hits.push("tab 1 update"); },
-				onClose() { hits.push("tab 1 close"); },
+				onClose() { hits.push("tab 1 close"); }
 			}),
 			tab({
 				image: 123, content: [ label({ text: "2" }) ],
 				onOpen() { hits.push("tab 2 open"); },
 				onUpdate() { hits.push("tab 2 update"); },
-				onClose() { hits.push("tab 2 close"); },
+				onClose() { hits.push("tab 2 close"); }
 			}),
 			tab({
 				image: 884, content: [ label({ text: "3" }) ],
 				onOpen() { hits.push("tab 3 open"); },
 				onUpdate() { hits.push("tab 3 update"); },
-				onClose() { hits.push("tab 3 close"); },
+				onClose() { hits.push("tab 3 close"); }
 			})
 		]
 	});
@@ -539,19 +539,19 @@ test("Window and tab events with static content execute", t =>
 				image: 456, content: [ label({ text: "1" }) ],
 				onOpen() { hits.push("tab 1 open"); },
 				onUpdate() { hits.push("tab 1 update"); },
-				onClose() { hits.push("tab 1 close"); },
+				onClose() { hits.push("tab 1 close"); }
 			}),
 			tab({
 				image: 123, content: [ label({ text: "2" }) ],
 				onOpen() { hits.push("tab 2 open"); },
 				onUpdate() { hits.push("tab 2 update"); },
-				onClose() { hits.push("tab 2 close"); },
+				onClose() { hits.push("tab 2 close"); }
 			}),
 			tab({
 				image: 884, content: [ label({ text: "3" }) ],
 				onOpen() { hits.push("tab 3 open"); },
 				onUpdate() { hits.push("tab 3 update"); },
-				onClose() { hits.push("tab 3 close"); },
+				onClose() { hits.push("tab 3 close"); }
 			})
 		]
 	});
@@ -842,7 +842,7 @@ test("Window is sized to tab size", t =>
 
 	const template = tabwindow({
 		width: 240, height: 160, padding: 10,
-		tabs:[
+		tabs: [
 			tab({
 				image: 25,
 				width: 450, height: 300, padding: 25,
@@ -878,7 +878,7 @@ test("Window with tabs adjusts to resize", t =>
 		static: [
 			button({ text: "static button" })
 		],
-		tabs:[
+		tabs: [
 			tab({
 				image: 25,
 				content: [
@@ -928,7 +928,7 @@ test("Window with tabs does not resize if size has not changed", t =>
 		static: [
 			button({ text: "static button" })
 		],
-		tabs:[
+		tabs: [
 			tab({
 				image: 25,
 				content: [
@@ -967,7 +967,7 @@ test("Window with tabs does auto resizes to tab content", t =>
 		static: [
 			button({ text: "static button", width: 500, height: 800 })
 		],
-		tabs:[
+		tabs: [
 			tab({
 				image: 25,
 				content: [
@@ -1550,7 +1550,7 @@ test("Window with tabs does auto resizes to body size changes", t =>
 				image: 4, spacing: 8,
 				content: [
 					button({ text: "hello world", width: 100, height: 30 }),
-					button({ text: "maybe hello", width: 100, height: 30, visibility: visible }),
+					button({ text: "maybe hello", width: 100, height: 30, visibility: visible })
 				]
 			})
 		]

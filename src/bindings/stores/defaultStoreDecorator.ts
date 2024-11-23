@@ -11,7 +11,8 @@ export class DefaultStoreDecorator<T> extends DefaultWritableStore<T>
 	constructor(
 		private _store: WritableStore<T>,
 		private _updater: (value: T, set: (value: T) => void) => void
-	){
+	)
+	{
 		super(_store.get());
 		subscribe(_store, v => this._updater(v, p => super.set(p)));
 	}

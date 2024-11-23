@@ -1,10 +1,12 @@
 import eslint from '@eslint/js';
+import stylisticTs from '@stylistic/eslint-plugin-ts';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
 	eslint.configs.recommended,
-	...tseslint.configs.strictTypeChecked,
-	...tseslint.configs.stylisticTypeChecked,
+	tseslint.configs.strictTypeChecked,
+	tseslint.configs.stylisticTypeChecked,
+	stylisticTs.configs["all-flat"],
 	{
 		languageOptions: {
 			parserOptions: {
@@ -26,6 +28,16 @@ export default tseslint.config(
 			"@typescript-eslint/restrict-template-expressions": ["error", { allowArray: true, allowBoolean: true, allowNullish: true, allowNumber: true }],
     		"@typescript-eslint/triple-slash-reference": "off", // needed for openrct2 symbols
 			"@typescript-eslint/unified-signatures": "off", // signatures are split for easier readability
+			"@stylistic/ts/brace-style": ["error", "allman"],
+			"@stylistic/ts/indent": ["error", "tab", { "flatTernaryExpressions": true, "ignoredNodes": ["ArrowFunctionExpression", "ImportDeclaration", "ObjectExpression"], "SwitchCase": 1 }],
+			"@stylistic/ts/keyword-spacing": ["error", { "overrides": { "this": { "before": false } } }],
+			"@stylistic/ts/space-before-function-paren": ["error", "never"],
+			"@stylistic/ts/quote-props": "off",
+			"@stylistic/ts/lines-around-comment": "off",
+			"@stylistic/ts/lines-between-class-members": "off",
+			"@stylistic/ts/no-extra-parens": "off",
+			"@stylistic/ts/object-curly-spacing": "off",
+			"@stylistic/ts/object-property-newline": "off",
 		}
 	},
 	{
@@ -34,7 +46,8 @@ export default tseslint.config(
 		],
 		rules: {
 			"@typescript-eslint/dot-notation": "off", // by-passes allowed in tests
-    		"@typescript-eslint/no-non-null-assertion": "off" // allowed in tests
+    		"@typescript-eslint/no-non-null-assertion": "off", // allowed in tests
+			"@stylistic/ts/brace-style": ["error", "allman", { "allowSingleLine": true }], // single lines allowed in tests
 		}
 	},
 	{

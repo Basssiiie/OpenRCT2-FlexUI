@@ -165,7 +165,7 @@ test("sort() reorders the items in specified order", t =>
 	const calls: string[][] = [];
 	store.subscribe(v => calls.push(v));
 
-	store.sort((a, b) => a[a.length-1].localeCompare(b[b.length-1]));
+	store.sort((a, b) => a[a.length - 1].localeCompare(b[b.length - 1]));
 	t.deepEqual(store.get(), [ "Bob", "Jane", "Jack", "Tom", "Po", "Dany" ]);
 	t.deepEqual(calls, [ store.get() ]);
 });

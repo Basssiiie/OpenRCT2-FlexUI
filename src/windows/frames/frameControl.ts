@@ -40,7 +40,8 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		private readonly _update: Event<FrameContext>,
 		private readonly _redraw: Event<FrameContext>,
 		private readonly _close: Event<FrameContext>
-	){}
+	)
+	{}
 
 	/**
 	 * Recalculate the whole layout.

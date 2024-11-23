@@ -60,6 +60,7 @@
 		"@rollup/plugin-replace": "^6.0.1",
 		"@rollup/plugin-terser": "^0.4.0",
 		"@rollup/plugin-typescript": "^12.1.1",
+		"@stylistic/eslint-plugin-ts": "^2.11.0",
 		"@types/eslint__js": "^8.42.3",
 		"@types/node": "^22.9.0",
 		"ava": "^6.0.1",

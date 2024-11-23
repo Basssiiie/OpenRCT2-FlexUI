@@ -61,7 +61,7 @@ function createTotalCounter<T>(root: Trackable<T>, children: Trackable<T>[], key
 					.map(t => <number>selector(t)[<keyof T>key])
 					.reduce((sum, cur) => sum + cur);
 			},
-			enumerable: true,
+			enumerable: true
 		});
 	}
 }
@@ -89,8 +89,8 @@ export default function track<T extends object>(source: T | T[]): Trackable<T> |
 function trackArray<T extends object>(source: T[]): Trackable<Trackable<T>[]>
 {
 	const tracker = <Trackable<Trackable<T>[]>>source;
-	Object.defineProperty(tracker ,"_gets", { value: {} });
-	Object.defineProperty(tracker ,"_sets", { value: {} });
+	Object.defineProperty(tracker, "_gets", { value: {} });
+	Object.defineProperty(tracker, "_sets", { value: {} });
 
 	const subtrackers = new Array<Trackable<T>>(source.length);
 
@@ -113,31 +113,31 @@ function trackArray<T extends object>(source: T[]): Trackable<Trackable<T>[]>
 function trackObject<T extends object>(source: T): Trackable<T>
 {
 	const trackable = <Trackable<T>>source;
-    const internal = <Record<keyof T, unknown>>{};
+	const internal = <Record<keyof T, unknown>>{};
 
-    const keys = <(keyof T)[]>Object.keys(source);
-	Object.defineProperty(trackable ,"_gets", { value: { total: calculateTotal } });
-	Object.defineProperty(trackable ,"_sets", { value: { total: calculateTotal } });
+	const keys = <(keyof T)[]>Object.keys(source);
+	Object.defineProperty(trackable, "_gets", { value: { total: calculateTotal } });
+	Object.defineProperty(trackable, "_sets", { value: { total: calculateTotal } });
 
 	for (const key of keys)
 	{
-        internal[key] = trackable[key];
+		internal[key] = trackable[key];
 		trackable._gets[key] = <never>0;
 		trackable._sets[key] = <never>0;
 
-        Object.defineProperty(source, key,
+		Object.defineProperty(source, key,
 		{
-            get: function()
+			get: function()
 			{
 				trackable._gets[key]++;
-                return internal[key];
-            },
-            set: function(value: unknown)
+				return internal[key];
+			},
+			set: function(value: unknown)
 			{
 				trackable._sets[key]++;
-                internal[key] = value;
-            },
-        });
-    }
-    return trackable;
+				internal[key] = value;
+			}
+		});
+	}
+	return trackable;
 }

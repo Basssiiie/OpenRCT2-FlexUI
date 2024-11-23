@@ -32,7 +32,7 @@ test("Standard properties are set", t =>
 						sortOrder: "descending",
 						header: "Header 2",
 						headerTooltip: "Tooltip 2",
-						width: 25,
+						width: 25
 					}
 				],
 				items: [
@@ -261,7 +261,7 @@ test("Custom colum params with mixed widths map correctly", t =>
 					{ header: "First", tooltip: "Aa", canSort: true, width: "20px" },
 					{ header: "Second", tooltip: "Bb", canSort: false, width: "35%" },
 					{ tooltip: "Third" },
-					{ header: "Fourth", width: "3w" },
+					{ header: "Fourth", width: "3w" }
 				],
 				items: []
 			})
@@ -310,7 +310,7 @@ test("Custom columns with unspecified width", t =>
 			listview({
 				columns: [
 					{ header: "First" },
-					{ header: "Second" },
+					{ header: "Second" }
 				],
 				items: [ "Hello", "world" ]
 			})
@@ -348,7 +348,7 @@ test("All pixel widths is built-in scaling", t =>
 				columns: [
 					{ width: 25 },
 					{ width: "35px" },
-					{ width: 12 },
+					{ width: 12 }
 				],
 				items: []
 			})
@@ -379,7 +379,7 @@ test("All weighted widths is built-in scaling", t =>
 				columns: [
 					{ width: "1w" },
 					{ width: "3w" },
-					{ width: "2w" },
+					{ width: "2w" }
 				],
 				items: []
 			})
@@ -410,7 +410,7 @@ test("All percentage widths is custom scaling", t =>
 				columns: [
 					{ width: "25%" },
 					{ width: "35%" },
-					{ width: "10%" },
+					{ width: "10%" }
 				],
 				items: []
 			})

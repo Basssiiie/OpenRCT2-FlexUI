@@ -81,29 +81,45 @@ const windowWithTabs = tabwindow({
 						text: "0",
 						width: "25%",
 						isPressed: compute(value, val => (val === 0)),
-						onChange: () => { value.set(0); updateSource(0, "button 1, tab 3"); }
+						onChange: () =>
+						{
+							value.set(0);
+							updateSource(0, "button 1, tab 3");
+						}
 					}),
 					toggle({
 						text: "1",
 						width: "25%",
 						isPressed: compute(value, val => (val === 1)),
-						onChange: () => { value.set(1); updateSource(1, "button 2, tab 3"); }
+						onChange: () =>
+						{
+							value.set(1);
+							updateSource(1, "button 2, tab 3");
+						}
 					}),
 					toggle({
 						text: "2",
 						width: "25%",
 						isPressed: compute(value, val => (val === 2)),
-						onChange: () => { value.set(2); updateSource(2, "button 3, tab 3"); }
+						onChange: () =>
+						{
+							value.set(2);
+							updateSource(2, "button 3, tab 3");
+						}
 					}),
 					toggle({
 						text: "3",
 						width: "25%",
 						isPressed: compute(value, val => (val === 3)),
-						onChange: () => { value.set(3); updateSource(3, "button 4, tab 3"); }
+						onChange: () =>
+						{
+							value.set(3);
+							updateSource(3, "button 4, tab 3");
+						}
 					})
 				])
 			]
-		}),
+		})
 	]
 });
 

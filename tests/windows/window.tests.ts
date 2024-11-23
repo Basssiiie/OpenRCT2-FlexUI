@@ -117,8 +117,7 @@ test("Simple window with viewmodel", t =>
 	{
 		title: store("better window"),
 		text: store("hello world")
-	}
-
+	};
 	const template = window<typeof model>(model =>
 	({
 		title: model.title,
@@ -407,7 +406,7 @@ test("Window does auto resizes to body size changes", t =>
 		width: "auto", height: "auto", padding: 5, spacing: 8,
 		content: [
 			button({ text: "hello world", width: 100, height: 30 }),
-			button({ text: "maybe hello", width: 100, height: 30, visibility: visible }),
+			button({ text: "maybe hello", width: 100, height: 30, visibility: visible })
 		]
 	});
 	template.open();
@@ -747,8 +746,8 @@ test("Window opens at unspecified default position", t =>
 	const created = (<UiMock>globalThis.ui).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
-	t.is<number|undefined, number|undefined>(created[0].x, undefined);
-	t.is<number|undefined, number|undefined>(created[0].y, undefined);
+	t.is<number | undefined, number | undefined>(created[0].x, undefined);
+	t.is<number | undefined, number | undefined>(created[0].y, undefined);
 });
 
 
@@ -766,8 +765,8 @@ test("Window opens at specified default position", t =>
 	const created = (<UiMock>globalThis.ui).createdWindows;
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
-	t.is<number|undefined, number|undefined>(created[0].x, undefined);
-	t.is<number|undefined, number|undefined>(created[0].y, undefined);
+	t.is<number | undefined, number | undefined>(created[0].x, undefined);
+	t.is<number | undefined, number | undefined>(created[0].y, undefined);
 });
 
 

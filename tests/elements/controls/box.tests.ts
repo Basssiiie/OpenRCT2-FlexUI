@@ -204,7 +204,7 @@ test("Box reacts correctly to child size changes", t =>
 				label({
 					visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
 					text: "managing themes",
-					height: 14,
+					height: 14
 				})
 			),
 			button({ height: 25 })
@@ -269,10 +269,10 @@ test("Box reacts correctly to nested child size changes", t =>
 						label({
 							visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
 							text: "managing themes",
-							height: 14,
-						}),
-					],
-				}),
+							height: 14
+						})
+					]
+				})
 			}),
 			button({ height: 25 })
 		]
@@ -353,10 +353,10 @@ test("Box does not take space if it starts hidden", t =>
 						label({
 							visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
 							text: "managing themes",
-							height: 14,
-						}),
-					],
-				}),
+							height: 14
+						})
+					]
+				})
 			}),
 			button({ height: 25 })
 		]

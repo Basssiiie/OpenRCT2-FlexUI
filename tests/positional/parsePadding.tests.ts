@@ -59,7 +59,7 @@ test("Apply weighted padding", t =>
 	const padding: ParsedPadding = parsePadding({ top: "1w", right: "2w", bottom: "3w", left: "4w" });
 	setSizeWithPadding(area, defaultScale, defaultScale, padding);
 
-	t.is (area.x, 10 + 44);
+	t.is(area.x, 10 + 44);
 	t.is(area.y, 20 + 40);
 	t.is(area.width, 11);
 	t.is(area.height, 40);
@@ -89,7 +89,7 @@ test("Missing key applies fallback", t =>
 	const padding: ParsedPadding = parsePadding({ top: "25px" }, fallback);
 	setSizeWithPadding(area, defaultScale, defaultScale, padding);
 
-	t.is (area.x, 10 + 15);
+	t.is(area.x, 10 + 15);
 	t.is(area.y, 20 + 25);
 	t.is(area.width, 47);
 	t.is(area.height, 160);
@@ -105,7 +105,7 @@ test("Missing key applies rest value", t =>
 	const padding: ParsedPadding = parsePadding({ left: "23px", rest: "7px" }, fallback);
 	setSizeWithPadding(area, defaultScale, defaultScale, padding);
 
-	t.is (area.x, 10 + 23);
+	t.is(area.x, 10 + 23);
 	t.is(area.y, 20 + 7);
 	t.is(area.width, 47);
 	t.is(area.height, 186);

@@ -14,7 +14,7 @@ const allWidgets = window({
 	height: { value: 500, min: 75, max: 10_000 },
 	content: [
 		label({
-			text: "This is a label",
+			text: "This is a label"
 		}),
 		box({
 			content: label({
@@ -50,7 +50,7 @@ const allWidgets = window({
 		}),
 		checkbox({
 			text: "Toggle this checkbox",
-			onChange: (checked: boolean) => console.log(`Checkbox has changed to ${checked ? '' : 'not '}checked`)
+			onChange: (checked: boolean) => console.log(`Checkbox has changed to ${checked ? "" : "not "}checked`)
 		}),
 		dropdown({
 			items: [ "First", "Second", "Third", "Fourth" ],
@@ -79,7 +79,7 @@ const allWidgets = window({
 		button({
 			text: "Press this button",
 			height: "28px",
-			onClick: () => console.log(`Button has been pressed`)
+			onClick: () => console.log("Button has been pressed")
 		}),
 		toggle({
 			text: "Toggle this button",
@@ -89,7 +89,7 @@ const allWidgets = window({
 		listview({
 			items: [ "Listview item 1", "Listview item 2", "Listview item 3" ],
 			onHighlight: (item: number, column: number) => console.log(`Highlighted item ${item} in column ${column} in listview`),
-			onClick: (item: number, column: number) => console.log(`Clicked item ${item} in column ${column} in listview`),
+			onClick: (item: number, column: number) => console.log(`Clicked item ${item} in column ${column} in listview`)
 		}),
 		viewport({
 			target: map.getAllEntities("car")[0]?.id

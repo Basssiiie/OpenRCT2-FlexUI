@@ -57,7 +57,7 @@ test("Compute from five stores", t =>
 	const d = store("something");
 	const e = store(66);
 
-	const dependant = compute(a, b, c, d, e, (a, b, c ,d, e) => a.value + b + c[1] + d.length + e);
+	const dependant = compute(a, b, c, d, e, (a, b, c, d, e) => a.value + b + c[1] + d.length + e);
 	t.is(dependant.get(), 200);
 
 	a.set({ value: 3 });

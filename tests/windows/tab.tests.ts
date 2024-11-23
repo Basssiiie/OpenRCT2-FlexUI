@@ -15,7 +15,7 @@ test("Tab gets created", t =>
 		image: 104,
 		content: [
 			button({ text: "hey" }),
-			label({ text: "waddup" }),
+			label({ text: "waddup" })
 		]
 	});
 	const description = <WindowTabDesc>{};
@@ -127,7 +127,7 @@ test("Tab open() refreshes widget properties bound to stores", t =>
 		image: 88,
 		content: [
 			button({ text: buttonStore }),
-			label({ text: labelStore }),
+			label({ text: labelStore })
 		]
 	});
 	const description = <WindowTabDesc>{};
@@ -138,7 +138,7 @@ test("Tab open() refreshes widget properties bound to stores", t =>
 	const createdLabel = <LabelWidget>{};
 	const widgetMap: WidgetMap = {
 		[widgets[0].name!]: createdButton,
-		[widgets[1].name!]: createdLabel,
+		[widgets[1].name!]: createdLabel
 	};
 	layoutable.open(<Window>{}, widgetMap);
 

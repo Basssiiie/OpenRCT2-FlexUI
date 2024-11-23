@@ -229,7 +229,7 @@ test("Groupbox has correct size with padding in flex layout", t =>
 					button({ height: 20, text: "click" })
 				]
 			}),
-			button({ text: "press" }),
+			button({ text: "press" })
 		]
 	});
 	template.open();

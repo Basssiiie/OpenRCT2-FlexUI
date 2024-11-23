@@ -11,7 +11,7 @@ test("Standard properties are set", t =>
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
-	const callback = (): void => {/* empty */};
+	const callback = (): void => { /* empty */ };
 	const template = window({
 		width: 100, height: 100, padding: 10,
 		content: [

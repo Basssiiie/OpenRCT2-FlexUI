@@ -79,7 +79,7 @@ test("isArray() returns false", t =>
 
 test("isFunction() returns true", t =>
 {
-	t.true(Type.isFunction(function () { /** no-op */ }));
+	t.true(Type.isFunction(function() { /** no-op */ }));
 	t.true(Type.isFunction(() => { /** no-op */ }));
 	t.true(Type.isFunction(() => "hello"));
 	t.true(Type.isFunction(Type.isFunction));

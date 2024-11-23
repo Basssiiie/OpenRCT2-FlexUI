@@ -29,7 +29,8 @@ export class FrameBuilder implements BuildOutput
 		parent: ParentWindow,
 		params: FrameEventParams,
 		content: FrameContentParams
-	){
+	)
+	{
 		const open: Event<FrameContext> = [];
 		const update: Event<FrameContext> = [];
 		const redraw: Event<FrameContext> = [];

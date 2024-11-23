@@ -103,7 +103,7 @@ const defaultTopBarSizeWithTabs = 44;
 const enum TabWindowFlags
 {
 	HasTabs = (WindowFlags.Count << 0), // Yes, no tabs can happen with an empty tab array
-	HasStaticWidgets = (WindowFlags.Count << 1),
+	HasStaticWidgets = (WindowFlags.Count << 1)
 }
 
 /**
@@ -265,7 +265,6 @@ class TabWindowControl extends BaseWindowControl
 		this._getActiveTab().close();
 
 		Log.debug("TabWindow.tabChanged() from", this._selectedTab, "to", newTabIdx);
-		Log.debug("Widget map:", Log.stringify(Object.keys(newWidgets).map(x => ({ name: newWidgets[x].name, type: newWidgets[x].type }))));
 		this._selectedTab = newTabIdx;
 		this._activeWidgetMap = newWidgets;
 

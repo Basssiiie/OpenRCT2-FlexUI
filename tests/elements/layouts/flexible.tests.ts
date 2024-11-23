@@ -889,11 +889,11 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 				spacing: "0px",
 				content: [
 					box({
-						text:  "b-a",
+						text: "b-a",
 						content: label({ text: "l-a", padding: [ "50%", 0 ] })
 					}),
 					box({
-						text:  "b-b",
+						text: "b-b",
 						content: label({ text: "l-b", padding: [ "50%", 0 ] })
 					})
 				]
@@ -902,11 +902,11 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 				spacing: "0px",
 				content: [
 					box({
-						text:  "b-c",
+						text: "b-c",
 						content: label({ text: "l-c", padding: [ "50%", 0 ] })
 					}),
 					box({
-						text:  "b-d",
+						text: "b-d",
 						content: label({ text: "l-d", padding: [ "50%", 0 ] })
 					})
 				]
@@ -987,7 +987,7 @@ test("Child with visibility 'none' is not updated", t =>
 		content: [
 			label({ text: "abc", height: "1w" }),
 			label({ text: "nada", visibility: "none" }),
-			label({ text: "def", height: "1w" }),
+			label({ text: "def", height: "1w" })
 		]
 	});
 
@@ -1031,7 +1031,7 @@ test("None update if all children have visibility set to 'none'", t =>
 		content: [
 			label({ text: "abc", visibility: "none" }),
 			label({ text: "def", visibility: "none" }),
-			label({ text: "ghi", visibility: "none" }),
+			label({ text: "ghi", visibility: "none" })
 		]
 	});
 
@@ -1077,7 +1077,7 @@ test("Child visibility is updated by store", t =>
 		content: [
 			label({ text: "abc", height: "1w" }),
 			label({ text: "wow", height: "1w", visibility }),
-			label({ text: "def", height: "1w" }),
+			label({ text: "def", height: "1w" })
 		]
 	});
 
@@ -1131,7 +1131,7 @@ test("Invisible childs should still count for size inheritance", t =>
 		spacing: 10,
 		content: [
 			label({ text: "abc", width: 10, height: "15px" }),
-			label({ text: "wow", width: "1w", height: "1w", visibility }),
+			label({ text: "wow", width: "1w", height: "1w", visibility })
 		]
 	});
 

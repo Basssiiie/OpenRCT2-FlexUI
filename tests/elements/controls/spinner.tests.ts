@@ -25,7 +25,7 @@ test("Standard properties are set", t =>
 
 	const widget = <SpinnerWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "spinner");
-	t.is(widget.text, "45", );
+	t.is(widget.text, "45");
 	t.is(widget.tooltip, "spin me");
 });
 

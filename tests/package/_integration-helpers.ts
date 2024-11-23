@@ -1,6 +1,6 @@
 import child_process from "child_process";
-import util from "util";
 import fs from "fs/promises";
+import util from "util";
 
 
 const exec = util.promisify(child_process.exec);
@@ -48,7 +48,7 @@ export async function getFile(script: string): Promise<string>
 		return cache[script];
 	}
 
-	const code = await fs.readFile(`${projectPath}/dist/${script}.js`, { encoding: 'utf8' });
+	const code = await fs.readFile(`${projectPath}/dist/${script}.js`, { encoding: "utf8" });
 	cache[script] = code;
 	return code;
 }

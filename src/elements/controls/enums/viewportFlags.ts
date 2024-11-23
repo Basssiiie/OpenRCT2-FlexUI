@@ -30,9 +30,9 @@ export enum ViewportFlags
 	InvisibleGuests = (1 << 11),
 	InvisibleStaff = (1 << 23),
 	InvisibleRides = SeeThroughRides | (1 << 24),
-    InvisibleVehicles = SeeThroughVehicles | (1 << 25),
-    InvisibleVegetation = SeeThroughVegetation | (1 << 26),
-    InvisibleScenery = SeeThroughScenery | (1 << 27),
-    InvisiblePaths = SeeThroughPaths | (1 << 28),
-    InvisibleSupports = SeeThroughSupports | (1 << 29),
+	InvisibleVehicles = SeeThroughVehicles | (1 << 25),
+	InvisibleVegetation = SeeThroughVegetation | (1 << 26),
+	InvisibleScenery = SeeThroughScenery | (1 << 27),
+	InvisiblePaths = SeeThroughPaths | (1 << 28),
+	InvisibleSupports = SeeThroughSupports | (1 << 29)
 }

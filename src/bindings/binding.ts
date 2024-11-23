@@ -14,7 +14,8 @@ export class Binding<TTarget, TValue>
 		readonly _store: Store<TValue>,
 		readonly _callback: (target: TTarget, value: TValue) => void,
 		_apply: (value: TValue) => void
-	){
+	)
+	{
 		this._unsubscribe = subscribe(_store, _apply);
 	}
 }

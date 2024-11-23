@@ -17,7 +17,7 @@ test("read() sets values", t =>
 	const label: LabelDesc =
 	{
 		type: "label",
-		x: 0, y: 0, height: 10, width: 100,
+		x: 0, y: 0, height: 10, width: 100
 	};
 	const binder = new WidgetBinder();
 
@@ -39,7 +39,7 @@ test("read() adds store to binder", t =>
 	const label: LabelDesc =
 	{
 		type: "label",
-		x: 0, y: 0, height: 10, width: 100,
+		x: 0, y: 0, height: 10, width: 100
 	};
 	const binder = new WidgetBinder();
 
@@ -57,7 +57,7 @@ test("read() sets store in window frame", t =>
 	const label: LabelDesc =
 	{
 		type: "label",
-		x: 0, y: 0, height: 10, width: 100,
+		x: 0, y: 0, height: 10, width: 100
 	};
 	const output = new FrameBuilder(<ParentWindow>{ redraw: noop }, {}, []);
 	output.add(label);

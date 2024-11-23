@@ -1,4 +1,4 @@
-import { identifier } from "./identifier";
+import { identifier } from "@src/utilities/identifier";
 
 
 type AnyObject = Record<string, unknown>;

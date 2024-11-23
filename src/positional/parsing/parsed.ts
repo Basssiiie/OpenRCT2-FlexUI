@@ -9,8 +9,7 @@ import { ParsedScale } from "./parsedScale";
  */
 export type Parsed<T> =
 {
-	[K in keyof T]-?
-		: T[K] extends (Scale | undefined) ? (ParsedScale)
-		: T[K] extends (Padding | undefined) ? (ParsedPadding)
-		: T[K]
+	[K in keyof T]-?: T[K] extends (Scale | undefined)
+		? (ParsedScale) : T[K] extends (Padding | undefined)
+			? (ParsedPadding) : T[K]
 };

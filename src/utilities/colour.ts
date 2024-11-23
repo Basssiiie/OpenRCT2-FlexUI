@@ -58,5 +58,5 @@ export enum Colour
 	DullBrownDark,
 	DullBrownLight,
 	Invisible,
-    Void,
+	Void
 }
