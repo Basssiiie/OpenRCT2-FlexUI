@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 20
       - run: npm run ci:all
-      - run: npm run build
+      - run: npm run build:prod
       - run: npm run test
 
   examples:
@@ -42,5 +42,5 @@ jobs:
         with:
           node-version: 20
       - run: npm run ci:all
-      - run: npm run build
+      - run: npm run build:prod
       - run: npm run build:examples
