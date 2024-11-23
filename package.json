@@ -30,17 +30,24 @@
 	"scripts": {
 		"start": "npm run watch",
 		"watch": "nodemon --watch ./src --ext js,ts --exec \"npm run build:dev\"",
-		"build": "npm run clean && rollup --config rollup.config.js --environment BUILD:production && npm run lint",
+
+		"build": "npm run build:prod && npm run lint",
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
+		"build:prod": "npm run clean && rollup --config rollup.config.js --environment BUILD:production",
 		"build:examples": "npm run for:examples --action=\"run build\"",
+
 		"install:examples": "npm run for:examples --action=\"install --prefer-offline\"",
 		"install:test-setup": "npm install --prefix ./tests/package/project --prefer-offline",
 		"install:all": "npm run for:all --action=\"install --prefer-offline\"",
+		"ci:all": "npm run for:all --action=\"ci --prefer-offline --no-audit --no-save\"",
+
 		"lint": "eslint",
 		"test": "nyc ava",
+
 		"version:prerelease": "npm version prerelease --preid=prerelease",
 		"publish:local": "npm run build && npm install --global",
 		"publish:prerelease": "npm run build && release-it --prerelease=prerelease",
+
 		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\"",
 		"exec": "node --eval \"var t=process.env.npm_config_target;child_process.execSync('npm '+process.env.npm_config_action+(t?(' --prefix '+t):''),{stdio: 'inherit'})\"",
 		"for:examples": "npm run exec --target=examples/AllWidgets && npm run exec --target=examples/BirdStalker && npm run exec --target=examples/Ratios && npm run exec --target=examples/WindowWithTabs",
