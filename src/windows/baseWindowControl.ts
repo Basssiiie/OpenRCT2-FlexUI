@@ -258,6 +258,11 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 		this._activeWidgetMap = null;
 	}
 
+	isOpen(): boolean
+	{
+		return !!this._window;
+	}
+
 	close(): void
 	{
 		if (this._window)

@@ -1627,3 +1627,22 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 	t.is(created2.tabIndex, 0);
 	t.deepEqual(created2.widgets, []);
 });
+
+
+test("Window.isOpen() returns open state", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: 200, height: 100,
+		tabs: [
+			tab({ image: 3, content: [] })
+		]
+	});
+
+	const instance = template.open();
+	t.true(instance.isOpen());
+
+	instance.close();
+	t.false(instance.isOpen());
+});

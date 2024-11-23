@@ -831,3 +831,20 @@ test("Window opens at center position after game window resize", t =>
 	t.is(created[0].x, (1280 / 2) - (150 / 2));
 	t.is(created[0].y, (720 / 2) - (100 / 2));
 });
+
+
+test("Window.isOpen() returns open state", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		width: 200, height: 100,
+		content: []
+	});
+
+	const instance = template.open();
+	t.true(instance.isOpen());
+
+	instance.close();
+	t.false(instance.isOpen());
+});

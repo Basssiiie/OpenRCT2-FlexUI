@@ -5,6 +5,11 @@
 export interface OpenWindow
 {
 	/**
+	 * Specifies whether the window is still open.
+	 */
+	isOpen(): boolean;
+
+	/**
 	 * Moves the window into focus, if it is open.
 	 */
 	focus(): void;
