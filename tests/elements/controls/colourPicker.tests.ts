@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -25,7 +24,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerWidget;
+	const widget = <ColourPickerWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "colourpicker");
 	t.is(widget.colour, Colour.BrightYellow);
 	t.is(widget.tooltip, "colourable!");
@@ -46,7 +45,7 @@ test("Colour is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerWidget;
+	const widget = <ColourPickerWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.colour, Colour.Aquamarine);
 
 	colour.set(Colour.OliveGreen);
@@ -68,7 +67,7 @@ test("Change event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
+	const widget = <ColourPickerDesc>mock.createdWindows[0].widgets[0];
 	call(widget.onChange, Colour.IcyBlue);
 	call(widget.onChange, Colour.Black);
 	call(widget.onChange, Colour.LightPink);
@@ -96,7 +95,7 @@ test("Assigning bound colour should silence on change", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
+	const widget = <ColourPickerDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "colour", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 	t.is(widget.colour, 20);
 
@@ -128,7 +127,7 @@ test("Two-way bindings update colour picker", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ColourPickerDesc;
+	const widget = <ColourPickerDesc>mock.createdWindows[0].widgets[0];
 	t.is(widget.colour, Colour.BrightPurple);
 	t.is(colour.get(), Colour.BrightPurple);
 	t.deepEqual(hits, []);

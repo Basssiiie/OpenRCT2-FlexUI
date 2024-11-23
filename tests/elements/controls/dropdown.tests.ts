@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -25,7 +23,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "dropdown");
 	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 	t.is(widget.selectedIndex, 2);
@@ -47,7 +45,7 @@ test("Items are bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 
 	items.set([ "q", "p" ]);
@@ -69,7 +67,7 @@ test("Selected index is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.selectedIndex, 2);
 
 	selected.set(1);
@@ -94,7 +92,7 @@ test("Select event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	call(widget.onChange, 1);
 	call(widget.onChange, 2);
 	call(widget.onChange, 0);
@@ -118,7 +116,7 @@ test("Disable message shows when disabled", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(widget.items, [ "a", "b" ]);
 
 	disabled.set(true);
@@ -142,7 +140,7 @@ test("Disable message shows when always disabled", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(widget.items, [ "Sorry!" ]);
 });
 
@@ -160,7 +158,7 @@ test("Disable message doesn't show when always enabled", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(widget.items, [ "a", "b" ]);
 });
 
@@ -181,7 +179,7 @@ test("Disable message shows with items and disabled stores", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(widget.items, []);
 	t.false(widget.isDisabled);
 
@@ -220,7 +218,7 @@ test("Auto disable on single item disables when just one item", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.true(widget.isDisabled);
 });
 
@@ -238,7 +236,7 @@ test("Auto disable on single item enabled when more than one item", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.false(widget.isDisabled);
 });
 
@@ -256,7 +254,7 @@ test("Auto disable on empty disables when empty", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.true(widget.isDisabled);
 });
 
@@ -274,7 +272,7 @@ test("Auto disable on empty enabled when at least one item", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.false(widget.isDisabled);
 });
 
@@ -292,7 +290,7 @@ test("Auto disable on never is never disabled", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownWidget;
+	const widget = <DropdownWidget>mock.createdWindows[0].widgets[0];
 	t.falsy(widget.isDisabled);
 });
 
@@ -317,7 +315,7 @@ test("Invoke on change if item is at different index in new list", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
@@ -360,7 +358,7 @@ test("Do not change selected index if item at same index in new list", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
@@ -393,7 +391,7 @@ test("Reset selected index if item not present in new list", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 
 	t.deepEqual(widget.items, [ "a", "b", "c", "d" ]);
@@ -425,7 +423,7 @@ test("Assigning bound selected index should silence on change", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "selectedIndex", v => call(widget.onChange, v!)); // immitate the ingame bubbled callback
 	t.is(widget.selectedIndex, 1);
 
@@ -456,7 +454,7 @@ test("Assigning bound items should silence on change", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "items", () => call(widget.onChange, 0)); // immitate the ingame bubbled callback
 	t.deepEqual(widget.items, [ "a", "b", "c" ]);
 
@@ -488,7 +486,7 @@ test("Items and selected index gets restored when disabled dropdown with message
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "items", () => widget.selectedIndex = 0); // immitate the ingame selected reset
 	t.is(widget.selectedIndex, 2);
 
@@ -525,7 +523,7 @@ test("Dropdown items changed but new selected index should stay the same", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	proxy(widget, "items", () => call(widget.onChange, 0)); // immitate the ingame bubbled callback
 	proxy(widget, "selectedIndex", i => call(widget.onChange, i!)); // immitate the ingame bubbled callback
 
@@ -568,7 +566,7 @@ test("Two-way bindings update dropdown", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as DropdownDesc;
+	const widget = <DropdownDesc>mock.createdWindows[0].widgets[0];
 	t.is(widget.selectedIndex, 1);
 	t.is(selectedIndex.get(), 1);
 	t.deepEqual(hits, []);

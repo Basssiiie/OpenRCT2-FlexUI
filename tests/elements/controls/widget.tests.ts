@@ -11,7 +11,7 @@ test("Standard properties are set", t =>
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
-	const callback = (): void => {};
+	const callback = (): void => {/* empty */};
 	const template = window({
 		width: 100, height: 100, padding: 10,
 		content: [
@@ -29,7 +29,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const result = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const result = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.is(result.type, "button");
 	t.is(result.text, "Click me!");
 	t.is(result.tooltip, "Best button in the world");

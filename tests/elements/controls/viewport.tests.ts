@@ -1,9 +1,9 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
 import { ViewportFlags } from "@src/elements/controls/enums/viewportFlags";
 import { viewport } from "@src/elements/controls/viewport";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -27,7 +27,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ViewportWidget;
+	const widget = <ViewportWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "viewport");
 	t.is(widget.tooltip, "view this");
 	const vp = widget.viewport;
@@ -52,10 +52,10 @@ test("Viewport updates on store update", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	call(created.onUpdate);
 
-	const widget = created.widgets[0] as ViewportWidget;
+	const widget = <ViewportWidget>created.widgets[0];
 	const vp = widget.viewport;
 	t.is(vp.left, 10 - 50);
 	t.is(vp.bottom, 20 - 50);
@@ -86,8 +86,8 @@ test("Viewport goes into disabled appearance", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
-	const widget = created.widgets[0] as ViewportWidget;
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const widget = <ViewportWidget>created.widgets[0];
 	const vp = widget.viewport;
 	t.is(vp.visibilityFlags, 1);
 	t.is(widget.isDisabled, false);

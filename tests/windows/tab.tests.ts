@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
@@ -19,15 +18,15 @@ test("Tab gets created", t =>
 			label({ text: "waddup" }),
 		]
 	});
-	const description = {} as WindowTabDesc;
-	tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	tabCreator(<ParentWindow>{}, description);
 
 	t.is(description.image, 104);
 	t.truthy(description.widgets);
-	const buttonWidget = description.widgets![0] as ButtonWidget;
+	const buttonWidget = <ButtonWidget>description.widgets![0];
 	t.is(buttonWidget.type, "button");
 	t.is(buttonWidget.text, "hey");
-	const labelWidget = description.widgets![1] as LabelWidget;
+	const labelWidget = <LabelWidget>description.widgets![1];
 	t.is(labelWidget.type, "label");
 	t.is(labelWidget.text, "waddup");
 });
@@ -41,8 +40,8 @@ test("Tab open() triggers event", t =>
 		content: [],
 		onOpen: () => hits.push("opened")
 	});
-	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.open(<Window>{}, {});
 	t.deepEqual(hits, [ "opened" ]);
@@ -61,8 +60,8 @@ test("Tab update() triggers event", t =>
 		content: [],
 		onUpdate: () => hits.push("updated")
 	});
-	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.update();
 	t.deepEqual(hits, [ "updated" ]);
@@ -81,8 +80,8 @@ test("Tab close() triggers event", t =>
 		content: [],
 		onClose: () => hits.push("closed")
 	});
-	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.open(<Window>{}, {});
 	layoutable.close();
@@ -104,8 +103,8 @@ test("Tab all events are bound", t =>
 		onUpdate: () => hits.push("updated"),
 		onClose: () => hits.push("closed")
 	});
-	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.open(<Window>{}, {});
 	layoutable.close();
@@ -131,12 +130,12 @@ test("Tab open() refreshes widget properties bound to stores", t =>
 			label({ text: labelStore }),
 		]
 	});
-	const description = {} as WindowTabDesc;
-	const layoutable = tabCreator({} as ParentWindow, description);
+	const description = <WindowTabDesc>{};
+	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	const widgets = description.widgets!;
-	const createdButton = {} as ButtonWidget;
-	const createdLabel = {} as LabelWidget;
+	const createdButton = <ButtonWidget>{};
+	const createdLabel = <LabelWidget>{};
 	const widgetMap: WidgetMap = {
 		[widgets[0].name!]: createdButton,
 		[widgets[1].name!]: createdLabel,

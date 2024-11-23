@@ -6,6 +6,7 @@ import { mutable } from "@src/utilities/mutable";
 import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
 import { FrameBuilder } from "@src/windows/frames/frameBuilder";
+import { ParentWindow } from "@src/windows/parentWindow";
 import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
 import test from "ava";
 import Mock from "openrct2-mocks";
@@ -58,7 +59,7 @@ test("read() sets store in window frame", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100,
 	};
-	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
+	const output = new FrameBuilder(<ParentWindow>{ redraw: noop }, {}, []);
 	output.add(label);
 
 	const storeNumber = store(25);
@@ -86,7 +87,7 @@ test("read() sets store through converter", t =>
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};
-	const output = new FrameBuilder({ redraw: noop }, {}, [], undefined);
+	const output = new FrameBuilder(<ParentWindow>{ redraw: noop }, {}, []);
 	output.add(label);
 
 	const storeNumber = store<ElementVisibility>("visible");

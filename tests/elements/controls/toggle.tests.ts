@@ -22,7 +22,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "button");
 	t.is(widget.text, "Toggle me!");
 	t.true(widget.isPressed);
@@ -44,7 +44,7 @@ test("Is pressed is still bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.true(widget.isPressed);
 
 	pressed.set(false);
@@ -65,7 +65,7 @@ test("Is pressed updates on toggle", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const widget = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.falsy(widget.isPressed);
 
 	call(widget.onClick);
@@ -97,7 +97,7 @@ test("Is pressed store does not update store", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const widget = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.false(widget.isPressed);
 
 	call(widget.onClick);
@@ -141,7 +141,7 @@ test("Change event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const widget = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.deepEqual(hits, []);
 
 	call(widget.onClick);
@@ -173,7 +173,7 @@ test("Two-way bindings update toggle", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const widget = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.true(widget.isPressed);
 	t.true(isPressed.get());
 	t.deepEqual(hits, []);

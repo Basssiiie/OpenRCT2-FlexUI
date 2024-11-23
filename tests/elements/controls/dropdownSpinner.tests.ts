@@ -23,12 +23,12 @@ test("Standard properties are set", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const spinner = created.widgets[0] as SpinnerDesc;
+	const spinner = <SpinnerDesc>created.widgets[0];
 	t.is(spinner.type, "spinner");
 	t.is(spinner.text, "0");
 	t.is(spinner.tooltip, "spin me");
 
-	const dropdown = created.widgets[1] as DropdownDesc;
+	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(dropdown.type, "dropdown");
 	t.deepEqual(dropdown.items, [ "a", "b", "c" ]);
 	t.is(dropdown.selectedIndex, 0);
@@ -50,8 +50,8 @@ test("Dropdown updates spinner", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const spinner = created.widgets[0] as SpinnerDesc;
-	const dropdown = created.widgets[1] as DropdownDesc;
+	const spinner = <SpinnerDesc>created.widgets[0];
+	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(spinner.text, "0");
 
 	call(dropdown.onChange, 2);
@@ -76,8 +76,8 @@ test("Spinner updates dropdown", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const spinner = created.widgets[0] as SpinnerDesc;
-	const dropdown = created.widgets[1] as DropdownDesc;
+	const spinner = <SpinnerDesc>created.widgets[0];
+	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(dropdown.selectedIndex, 0);
 
 	call(spinner.onIncrement);
@@ -108,8 +108,8 @@ test("Spinner allows empty item list", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const spinner = created.widgets[0] as SpinnerDesc;
-	const dropdown = created.widgets[1] as DropdownDesc;
+	const spinner = <SpinnerDesc>created.widgets[0];
+	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(dropdown.selectedIndex, 0);
 
 	call(spinner.onIncrement);
@@ -141,8 +141,8 @@ test("Two-way bindings update dropdown spinner", t =>
 	template.open();
 
 	const created = mock.createdWindows[0];
-	const spinner = created.widgets[0] as SpinnerDesc;
-	const dropdown = created.widgets[1] as DropdownDesc;
+	const spinner = <SpinnerDesc>created.widgets[0];
+	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(dropdown.selectedIndex, 1);
 	t.is(selectedIndex.get(), 1);
 	t.deepEqual(hits, []);

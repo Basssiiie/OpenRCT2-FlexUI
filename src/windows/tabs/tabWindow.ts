@@ -60,14 +60,14 @@ export interface TabWindowParams extends BaseWindowParams
 
 
 /**
- * Create a new flexiblely designed window that has tabs. An arrow function can be used to create windows to fit a specific viewmodel.
+ * Create a new flexiblely designed window that has tabs.
  *
  * @example
  * const template = tabwindow({ title: "Hello world!" })
  *
  * template.open()
  */
-export function tabwindow(params: TabWindowParams): WindowTemplate<void>;
+export function tabwindow(params: TabWindowParams): WindowTemplate;
 /**
  * Create a new flexiblely designed window that has tabs. An arrow function can be used to create windows to fit a specific viewmodel.
  * *

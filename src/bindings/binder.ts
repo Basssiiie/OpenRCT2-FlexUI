@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
 import { AnyBindable } from "./anyBindable";
 import { TwoWayBindable } from "./twoway/twowayBindable";
 
@@ -29,8 +30,8 @@ export interface Binder<TTarget>
 	 * @param value A store that can be written to for updates.
 	 * @param callback An optional callback to be invoked after the callback specified by `key` was invoked.
 	 */
-	callback<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void;
-	callback<T extends TTarget, K extends keyof T, V, P extends unknown[]>(target: T, key: K, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined, converter: (...args: P) => V): void;
+	callback<T extends TTarget, V>(target: T, key: keyof T, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined): void;
+	callback<T extends TTarget, V, P extends unknown[]>(target: T, key: keyof T, value: TwoWayBindable<V> | undefined, callback: ((arg: V) => void) | undefined, converter: (...args: P) => V): void;
 
 	/**
 	 * Reads the specified value and writes it to the target. If the value is a store, a binding

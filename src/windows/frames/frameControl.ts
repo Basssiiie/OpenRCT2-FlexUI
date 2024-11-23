@@ -82,6 +82,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 	getWidget<T extends Widget>(name: string): T | null
 	{
 		const activeWidgets = this._activeWidgets;

@@ -50,7 +50,7 @@ test("Standard properties are set", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const widget = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "listview");
 	t.is(widget.scrollbars, "both");
 	t.deepEqual(widget.selectedCell, { row: 2, column: 1 });
@@ -107,7 +107,7 @@ test("Simple column names get converted", t =>
 
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const widget = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "listview");
 	t.is(widget.scrollbars, "vertical");
 	t.true(widget.showColumnHeaders);
@@ -161,7 +161,7 @@ test("Items is bindable", t =>
 
 	const instance1 = template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(listview1.items, [ "Hello", "world" ]);
 
 	items.set([ "Bye", "friendly", "friend" ]);
@@ -171,7 +171,7 @@ test("Items is bindable", t =>
 	items.set([ "Still", "there" ]);
 	template.open();
 
-	const listview2 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview2 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.deepEqual(listview2.items, [ "Still", "there" ]);
 });
 
@@ -191,7 +191,7 @@ test("Show column headers is false without columns", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.false(listview1.showColumnHeaders);
 	t.falsy(listview1.columns);
 });
@@ -213,7 +213,7 @@ test("Show column headers is true with empty column array", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.true(listview1.showColumnHeaders);
 	t.deepEqual(listview1.columns, []);
 });
@@ -239,7 +239,7 @@ test("Built-in ratio width colums map correctly", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.true(listview1.showColumnHeaders);
 
 	const columns = listview1.columns;
@@ -270,7 +270,7 @@ test("Custom colum params with mixed widths map correctly", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.true(listview1.showColumnHeaders);
 
 	const columns = listview1.columns;
@@ -319,7 +319,7 @@ test("Custom columns with unspecified width", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	t.true(listview1.showColumnHeaders);
 
 	const columns = listview1.columns;
@@ -357,7 +357,7 @@ test("All pixel widths is built-in scaling", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	const columns = listview1.columns;
 	t.is(columns[0].width, 25);
 	t.is(columns[1].width, 35);
@@ -388,7 +388,7 @@ test("All weighted widths is built-in scaling", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	const columns = listview1.columns;
 	t.is(columns[0].ratioWidth, 1);
 	t.is(columns[1].ratioWidth, 3);
@@ -419,7 +419,7 @@ test("All percentage widths is custom scaling", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 	const columns = listview1.columns;
 	t.is(columns[0].width, 50);
 	t.is(columns[1].width, 70);
@@ -447,7 +447,7 @@ test("On click callback is propagated and skips duplicate clicks", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewDesc;
+	const listview1 = <ListViewDesc>mock.createdWindows[0].widgets[0];
 	listview1.onClick!(2, 1);
 	listview1.onClick!(1, 0);
 	listview1.onClick!(1, 1);
@@ -477,7 +477,7 @@ test("Selected cell can be bound", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as ListViewWidget;
+	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
 
 	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
 	t.deepEqual(updates, []);
@@ -517,7 +517,7 @@ test("Selected cell can be bound with separate on click event", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+	const listview1 = <ListViewWidget & ListViewDesc>mock.createdWindows[0].widgets[0];
 
 	t.deepEqual(listview1.selectedCell, null);
 	t.deepEqual(calls, []);
@@ -561,7 +561,7 @@ test("Selected cell can be two-way bound", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+	const listview1 = <ListViewWidget & ListViewDesc>mock.createdWindows[0].widgets[0];
 
 	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
 	t.deepEqual(updates, []);
@@ -600,7 +600,7 @@ test("Selected cell can be two-way bound with extra on click event", t =>
 
 	template.open();
 
-	const listview1 = mock.createdWindows[0].widgets[0] as (ListViewWidget & ListViewDesc);
+	const listview1 = <ListViewWidget & ListViewDesc>mock.createdWindows[0].widgets[0];
 
 	t.deepEqual(listview1.selectedCell, { row: 2, column: 0 });
 	t.deepEqual(calls, []);

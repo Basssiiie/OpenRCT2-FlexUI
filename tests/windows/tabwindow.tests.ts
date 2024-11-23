@@ -34,14 +34,14 @@ test("Window with one tab and one absolute widget", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.width, 120);
 	t.is(created.height, 70);
 	t.is(created.widgets.length, 1);
 	t.is(created.tabIndex, 0);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.type, "button");
 	t.is(button1.text, "hello world");
 	t.is(button1.x, 10);
@@ -82,7 +82,7 @@ test("Window with viewmodel", t =>
 	const model = new Model();
 	template.open(model);
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.width, 120);
 	t.is(created.height, 70);
@@ -90,7 +90,7 @@ test("Window with viewmodel", t =>
 	t.is(created.tabIndex, 0);
 	t.is(created.title, "better window");
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.type, "button");
 	t.is(button1.text, "hello world");
 	t.is(button1.x, 10);
@@ -123,14 +123,14 @@ test("Window with one tab and one 100% widget", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.width, 120);
 	t.is(created.height, 150);
 	t.is(created.widgets.length, 1);
 	t.is(created.tabIndex, 0);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.type, "button");
 	t.is(button1.text, "hello world");
 	t.is(button1.x, 10);
@@ -157,14 +157,14 @@ test("Window with no tabs and one static absolute widget", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.width, 200);
 	t.is(created.height, 150);
 	t.is(created.widgets.length, 1);
 	t.is(created.tabIndex, 0);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.type, "button");
 	t.is(button1.text, "hello world");
 	t.is(button1.x, 10);
@@ -187,14 +187,14 @@ test("Window with no tabs and one static 100% widget", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.width, 200);
 	t.is(created.height, 150);
 	t.is(created.widgets.length, 1);
 	t.is(created.tabIndex, 0);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.type, "button");
 	t.is(button1.text, "hello world");
 	t.is(button1.x, 10);
@@ -224,7 +224,7 @@ test("Window with tabs errors with weighted widget in auto-sized tab", t =>
 	{
 		template.open();
 	});
-	t.is(error?.message, "Window body width must resolve to absolute size for \"auto\" window size.");
+	t.is(error.message, "Window body width must resolve to absolute size for \"auto\" window size.");
 });
 
 
@@ -248,7 +248,7 @@ test("Window with tabs errors with weighted padding in auto-sized tab", t =>
 	{
 		template.open();
 	});
-	t.is(error?.message, "Window padding must be absolute for \"auto\" window size.");
+	t.is(error.message, "Window padding must be absolute for \"auto\" window size.");
 });
 
 
@@ -272,20 +272,20 @@ test("Window with tabs allows weighted widget for static widget in auto-sized ta
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	const expectedWindowWidth = (35 + 16);
 	const expectedWindowHeight = (20 + 16 + 44);
 	t.is(created.width, expectedWindowWidth);
 	t.is(created.height, expectedWindowHeight);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 8);
 	t.is(button1.y, 8 + 15);
 	t.is(button1.width, 35); // should be same width and height + topbar difference
 	t.is(button1.height, 20 + (44 - 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 8);
 	t.is(button2.y, 8 + 44);
@@ -324,14 +324,14 @@ test("Window with tabs allows weighted widget and padding for static widget in a
 		t.is(window.width, expectedWindowWidth);
 		t.is(window.height, expectedWindowHeight);
 
-		const button1 = window.widgets[0] as ButtonWidget;
+		const button1 = <ButtonWidget>window.widgets[0];
 		t.is(button1.text, "static button");
 		t.is(button1.x, 8 + 4); // 10% = 4.1 of (35 + 6)
 		t.is(button1.y, 8 + 6 + 15); // 10% = 5.5 of (20 + 6 + (44 - 15))
 		t.is(button1.width, expectedWindowWidth - (16 + 8));
 		t.is(button1.height, expectedWindowHeight - (16 + 11 + 15));
 
-		const button2 = window.widgets[1] as ButtonWidget;
+		const button2 = <ButtonWidget>window.widgets[1];
 		t.is(button2.text, "tab 1 button");
 		t.is(button2.x, 8 + 3);
 		t.is(button2.y, 8 + 3 + 44);
@@ -339,7 +339,7 @@ test("Window with tabs allows weighted widget and padding for static widget in a
 		t.is(button2.height, 20);
 	}
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	verify(created);
 
 	call(created.onUpdate);
@@ -378,7 +378,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.truthy(created);
 	t.is(created.title, "test tab window");
 	t.is(created.width, 200);
@@ -387,7 +387,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 	t.is(created.tabIndex, 1);
 	t.deepEqual(created.colours, [ Colour.Aquamarine, Colour.BrightGreen, Colour.SalmonPink ]);
 
-	const label1 = created.widgets[0] as LabelWidget;
+	const label1 = <LabelWidget>created.widgets[0];
 	t.is(label1.type, "label");
 	t.is(label1.text, "hello world");
 	t.is(label1.x, 10);
@@ -395,7 +395,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 	t.is(label1.width, 200 - 20);
 	t.is(label1.height, 14);
 
-	const label2 = created.widgets[1] as LabelWidget;
+	const label2 = <LabelWidget>created.widgets[1];
 	t.is(label2.type, "label");
 	t.is(label2.text, "tab 2");
 	t.is(label2.x, 10);
@@ -428,18 +428,18 @@ test("Window with tabs and static includes all paddings", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 150);
 	t.is(created.height, 275);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10 + 7);
 	t.is(button1.y, 10 + 7 + 15);
 	t.is(button1.width, 150 - (20 + 14));
 	t.is(button1.height, 275 - (20 + 14 + 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 10 + 4);
 	t.is(button2.y, 10 + 4 + 44);
@@ -483,7 +483,7 @@ test("Window and tab events execute", t =>
 
 	t.deepEqual(hits, ["window open", "tab 2 open"]);
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	call(created.onUpdate);
 	t.deepEqual(hits, ["window open", "tab 2 open", "window update", "tab 2 update"]);
 
@@ -559,7 +559,7 @@ test("Window and tab events with static content execute", t =>
 
 	t.deepEqual(hits, ["window open", "tab 3 open"]);
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	call(created.onUpdate);
 	t.deepEqual(hits, ["window open", "tab 3 open", "window update", "tab 3 update"]);
 
@@ -607,7 +607,7 @@ test("Window layouts with tabs and static with padding", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	const secondTab = <LabelWidget[]>created.widgets;
 	t.is(secondTab[0].text, "label 2");
 	t.is(secondTab[0].x, 30 + 2);
@@ -684,7 +684,7 @@ test("Window layouts with tabs and static", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	function assertStaticWidgets(widgets: LabelWidget[]): void
 	{
 		t.is(widgets[0].text, "static label");
@@ -768,7 +768,7 @@ test("Window and tab rebind to stores on each tab change", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	const firstTab = <LabelWidget[]>created.widgets;
 	t.is(firstTab[0].text, "static");
 	t.is(firstTab[0].tooltip, "hello");
@@ -854,11 +854,11 @@ test("Window is sized to tab size", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 450);
 	t.is(created.height, 300);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "tab button");
 	t.is(button1.x, 25 + 10);
 	t.is(button1.y, 25 + 10 + 44);
@@ -889,7 +889,7 @@ test("Window with tabs adjusts to resize", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 200);
 	t.is(created.height, 180);
 	t.is(created.minWidth, 100);
@@ -901,14 +901,14 @@ test("Window with tabs adjusts to resize", t =>
 	created.height = 300;
 	call(created.onUpdate);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 15);
 	t.is(button1.width, 400 - 20);
 	t.is(button1.height, 300 - (20 + 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -939,17 +939,17 @@ test("Window with tabs does not resize if size has not changed", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	call(created.onUpdate);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 15);
 	t.is(button1.width, 200 - 20);
 	t.is(button1.height, 180 - (20 + 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -978,7 +978,7 @@ test("Window with tabs does auto resizes to tab content", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 175 + 20);
 	t.is(created.height, 60 + 20 + 44);
 	t.is(created.minWidth, created.width);
@@ -986,14 +986,14 @@ test("Window with tabs does auto resizes to tab content", t =>
 	t.is(created.maxWidth, created.width);
 	t.is(created.maxHeight, created.height);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 15);
 	t.is(button1.width, 500);
 	t.is(button1.height, 800);
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -1026,7 +1026,7 @@ test("Window with tabs does auto resizes when tabs switch", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 20 + 20);
 	t.is(created.height, 70 + 20 + 44);
 	t.is(created.minWidth, created.width);
@@ -1034,7 +1034,7 @@ test("Window with tabs does auto resizes when tabs switch", t =>
 	t.is(created.maxWidth, created.width);
 	t.is(created.maxHeight, created.height);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "tab 2 button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 44);
@@ -1051,7 +1051,7 @@ test("Window with tabs does auto resizes when tabs switch", t =>
 	t.is(created.maxWidth, created.width);
 	t.is(created.maxHeight, created.height);
 
-	const button2 = created.widgets[0] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[0];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -1090,7 +1090,7 @@ test("Window with tabs does single redraw after tabs switch", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	call(created.onUpdate);
 	t.deepEqual(hits, []);
 
@@ -1126,8 +1126,8 @@ test("Window with tabs can do layouts when tabs switch", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
-	const button1 = created.widgets[0] as ButtonWidget;
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "tab 1 button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 44);
@@ -1138,7 +1138,7 @@ test("Window with tabs can do layouts when tabs switch", t =>
 	call(created.onTabChange);
 	call(created.onUpdate);
 
-	const button2 = created.widgets[0] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[0];
 	t.is(button2.text, "tab 2 button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -1149,7 +1149,7 @@ test("Window with tabs can do layouts when tabs switch", t =>
 	call(created.onTabChange);
 	call(created.onUpdate);
 
-	const button3 = created.widgets[0] as ButtonWidget;
+	const button3 = <ButtonWidget>created.widgets[0];
 	t.is(button3.text, "tab 1 button");
 	t.is(button3.x, 10);
 	t.is(button3.y, 10 + 44);
@@ -1178,18 +1178,18 @@ test("Window with tabs has auto static widgets with pixel tab size", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 400);
 	t.is(created.height, 350);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 15);
 	t.is(button1.width, 400 - 20);
 	t.is(button1.height, 350 - (20 + 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -1218,18 +1218,18 @@ test("Window with tabs has pixel static widgets in auto container with pixel tab
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 400);
 	t.is(created.height, 350);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 10);
 	t.is(button1.y, 10 + 15);
 	t.is(button1.width, 120);
 	t.is(button1.height, 85);
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 10);
 	t.is(button2.y, 10 + 44);
@@ -1261,20 +1261,20 @@ test("Window with tabs has weighted static widgets with auto tab size", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	const expectedWindowWidth = (230 + 24 + 6);
 	const expectedWindowHeight = (135 + 24 + 6 + 44);
 	t.is(created.width, expectedWindowWidth);
 	t.is(created.height, expectedWindowHeight);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.text, "static button");
 	t.is(button1.x, 12 + 7);
 	t.is(button1.y, 12 + 7 + 15);
 	t.is(button1.width, expectedWindowWidth - (24 + 14));
 	t.is(button1.height, expectedWindowHeight - (24 + 14 + 15));
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.text, "tab 1 button");
 	t.is(button2.x, 12 + 3);
 	t.is(button2.y, 12 + 3 + 44);
@@ -1324,7 +1324,7 @@ test("Window with tabs has mixed static widgets in auto container with multiple 
 		t.is(window.width, expectedWidth);
 		t.is(window.height, expectedHeight);
 
-		const tab = created.widgets as ButtonWidget[];
+		const tab = <ButtonWidget[]>created.widgets;
 		t.is(tab[0].text, "static pixel button");
 		t.is(tab[0].x, 10);
 		t.is(tab[0].y, 10 + 15);
@@ -1342,7 +1342,7 @@ test("Window with tabs has mixed static widgets in auto container with multiple 
 		t.is(tab[2].height, expectedHeight - (20 + 44));
 	}
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	verifyWindow(created, 170, 220, "tab 2");
 
 	created.tabIndex = 0;
@@ -1415,7 +1415,7 @@ test("Window with tabs has mixed static widgets in pixel container with multiple
 		t.is(window.width, expectedWidth);
 		t.is(window.height, expectedHeight);
 
-		const tab = created.widgets as ButtonWidget[];
+		const tab = <ButtonWidget[]>created.widgets;
 		t.is(tab[0].text, "static pixel button");
 		t.is(tab[0].x, 12);
 		t.is(tab[0].y, 12 + 15);
@@ -1433,7 +1433,7 @@ test("Window with tabs has mixed static widgets in pixel container with multiple
 		t.is(tab[2].height, expectedHeight - (24 + 44));
 	}
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	verifyWindow(created, 250, 350, "tab 3");
 
 	call(created.onUpdate);
@@ -1502,11 +1502,11 @@ test("Window with tabs relayouts static on tab switch if window size changed", t
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 150);
 	t.is(created.height, 280);
 
-	const firstTab = created.widgets as ButtonWidget[];
+	const firstTab = <ButtonWidget[]>created.widgets;
 	t.is(firstTab[0].text, "static button");
 	t.is(firstTab[0].x, 10 + 7);
 	t.is(firstTab[0].y, 10 + 7 + 15);
@@ -1524,7 +1524,7 @@ test("Window with tabs relayouts static on tab switch if window size changed", t
 	t.is(created.width, 265);
 	t.is(created.height, 120);
 
-	const secondTab = created.widgets as ButtonWidget[];
+	const secondTab = <ButtonWidget[]>created.widgets;
 	t.is(secondTab[0].text, "static button");
 	t.is(secondTab[0].x, 10 + 7);
 	t.is(secondTab[0].y, 10 + 7 + 15);
@@ -1557,17 +1557,17 @@ test("Window with tabs does auto resizes to body size changes", t =>
 	});
 	template.open();
 
-	const created = (globalThis.ui as UiMock).createdWindows[0];
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created.width, 100 + 12);
 	t.is(created.height, 30 + 12 + 8 + 30 + 44);
 
-	const button1 = created.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created.widgets[0];
 	t.is(button1.x, 6);
 	t.is(button1.y, 44 + 6);
 	t.is(button1.width, 100);
 	t.is(button1.height, 30);
 
-	const button2 = created.widgets[1] as ButtonWidget;
+	const button2 = <ButtonWidget>created.widgets[1];
 	t.is(button2.x, 6);
 	t.is(button2.y, 44 + 6 + 30 + 8);
 	t.is(button2.width, 100);
@@ -1602,7 +1602,7 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 	});
 	template.open();
 
-	const created1 = (globalThis.ui as UiMock).createdWindows[0];
+	const created1 = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created1.width, 200);
 	t.is(created1.height, 100);
 	t.deepEqual(created1.widgets, []);
@@ -1613,7 +1613,7 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 	const tab1widgets = created1.widgets;
 	t.is(tab1widgets.length, 1);
 
-	const button1 = created1.widgets[0] as ButtonWidget;
+	const button1 = <ButtonWidget>created1.widgets[0];
 	t.is(button1.x, 5);
 	t.is(button1.y, 44 + 5);
 	t.is(button1.width, 200 - 10);
@@ -1623,7 +1623,7 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 	created1.onClose!();
 	template.open();
 
-	const created2 = (globalThis.ui as UiMock).createdWindows[0];
+	const created2 = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created2.tabIndex, 0);
 	t.deepEqual(created2.widgets, []);
 });

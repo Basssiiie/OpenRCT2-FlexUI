@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
 	eslint.configs.recommended,
-	...tseslint.configs.recommendedTypeChecked,
+	...tseslint.configs.strictTypeChecked,
 	...tseslint.configs.stylisticTypeChecked,
 	{
 		languageOptions: {
@@ -15,22 +15,34 @@ export default tseslint.config(
 		rules: {
 			"@typescript-eslint/consistent-type-assertions": ["error", { assertionStyle: "angle-bracket" }],
 			"@typescript-eslint/prefer-includes": "off", // not in es5
-			"@typescript-eslint/prefer-nullish-coalescing": "off", // verbose in es5
-			"@typescript-eslint/prefer-optional-chain": "off", // verbose in es5
-    		"@typescript-eslint/no-inferrable-types": "warn",
+			"@typescript-eslint/prefer-literal-enum-member": "off", // enums are used as bit flags for clean efficiency
+			"@typescript-eslint/prefer-nullish-coalescing": "off", // too verbose in es5
+			"@typescript-eslint/prefer-optional-chain": "off", // too verbose in es5
+    		"@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
+			"@typescript-eslint/no-inferrable-types": "warn",
 			"@typescript-eslint/no-unnecessary-condition": "warn",
 			"@typescript-eslint/no-unsafe-enum-comparison": "off", // enums are only used as labelled numbers
-			"@typescript-eslint/restrict-template-expressions": ["warn", { allowArray: true, allowBoolean: true, allowNullish: true, allowNumber: true }],
+			"@typescript-eslint/restrict-plus-operands": ["error", { allowNumberAndString: true }],
+			"@typescript-eslint/restrict-template-expressions": ["error", { allowArray: true, allowBoolean: true, allowNullish: true, allowNumber: true }],
     		"@typescript-eslint/triple-slash-reference": "off", // needed for openrct2 symbols
+			"@typescript-eslint/unified-signatures": "off", // signatures are split for easier readability
+		}
+	},
+	{
+		files: [
+			"**/tests/**/*.ts"
+		],
+		rules: {
+			"@typescript-eslint/dot-notation": "off", // by-passes allowed in tests
+    		"@typescript-eslint/no-non-null-assertion": "off" // allowed in tests
 		}
 	},
 	{
 		ignores: [
 			"**/dist/**",
 			"**/lib/**",
-			"**/tests/**",
-			"**/rollup.config.js",
-			"eslint.config.mjs"
+			"**/*.config.{js,mjs}",
+			"**/_setup.cjs"
 		]
 	}
 );

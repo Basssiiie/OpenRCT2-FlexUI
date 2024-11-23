@@ -1,5 +1,5 @@
-import test from "ava";
 import * as Type from "@src/utilities/type";
+import test from "ava";
 
 
 test("isUndefined() returns true", t =>
@@ -9,7 +9,7 @@ test("isUndefined() returns true", t =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let a: any;
 	t.true(Type.isUndefined(a));
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
 	t.true(Type.isUndefined((<any>{}).b));
 });
 
@@ -121,7 +121,7 @@ test("isNumber() returns false", t =>
 
 class Test
 {
-	value: number = 5;
+	value = 5;
 }
 
 

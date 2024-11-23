@@ -2,7 +2,7 @@ import { TestFn } from 'ava';
 import { getFile } from "./_integration-helpers";
 
 
-export function integrations(test: TestFn<unknown>, name: string): void
+export function integrations(test: TestFn, name: string): void
 {
 	test("Output contains no arrow functions", async t =>
 	{

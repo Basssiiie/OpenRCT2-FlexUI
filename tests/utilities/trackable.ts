@@ -58,7 +58,7 @@ function createTotalCounter<T>(root: Trackable<T>, children: Trackable<T>[], key
 			get: function()
 			{
 				return children
-					.map(t => selector(t)[key as keyof T] as number)
+					.map(t => <number>selector(t)[<keyof T>key])
 					.reduce((sum, cur) => sum + cur);
 			},
 			enumerable: true,
@@ -70,9 +70,9 @@ function createTotalCounter<T>(root: Trackable<T>, children: Trackable<T>[], key
 /**
  * Allows any reads and writes to the object of T to be tracked.
  */
-export default function track<T>(source: T[]): Trackable<Trackable<T>[]>;
-export default function track<T>(source: T): Trackable<T>;
-export default function track<T>(source: T | T[]): Trackable<T> | Trackable<Trackable<T>[]>
+export default function track<T extends object>(source: T[]): Trackable<Trackable<T>[]>;
+export default function track<T extends object>(source: T): Trackable<T>;
+export default function track<T extends object>(source: T | T[]): Trackable<T> | Trackable<Trackable<T>[]>
 {
 	if (Array.isArray(source))
 	{
@@ -86,46 +86,44 @@ export default function track<T>(source: T | T[]): Trackable<T> | Trackable<Trac
  * Tracks all geter and setter accessings on all items in source,
  * and adds totals to the array object.
  */
-function trackArray<T>(source: T[]): Trackable<Trackable<T>[]>
+function trackArray<T extends object>(source: T[]): Trackable<Trackable<T>[]>
 {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const tracker = source as Trackable<any>;
+	const tracker = <Trackable<Trackable<T>[]>>source;
 	Object.defineProperty(tracker ,"_gets", { value: {} });
 	Object.defineProperty(tracker ,"_sets", { value: {} });
 
-	const subtrackers: Trackable<T>[] = new Array(source.length);
+	const subtrackers = new Array<Trackable<T>>(source.length);
 
 	for (const item of source)
 	{
 		for (const key of Object.keys(source[0]))
 		{
-			createTotalCounter(tracker, subtrackers, key, t => t._gets);
-			createTotalCounter(tracker, subtrackers, key, t => t._sets);
+			createTotalCounter<object>(tracker, subtrackers, key, t => t._gets);
+			createTotalCounter<object>(tracker, subtrackers, key, t => t._sets);
 		}
 		subtrackers.push(track<T>(item));
 	}
-	return tracker as Trackable<Trackable<T>[]>;
+	return tracker;
 }
 
 
 /**
  * Tracks all geter and setter accessings on source.
  */
-function trackObject<T>(source: T): Trackable<T>
+function trackObject<T extends object>(source: T): Trackable<T>
 {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const trackable = source as Trackable<any>;
-    const internal: Record<string, unknown> = {};
+	const trackable = <Trackable<T>>source;
+    const internal = <Record<keyof T, unknown>>{};
 
-    const keys = Object.keys(source);
+    const keys = <(keyof T)[]>Object.keys(source);
 	Object.defineProperty(trackable ,"_gets", { value: { total: calculateTotal } });
 	Object.defineProperty(trackable ,"_sets", { value: { total: calculateTotal } });
 
 	for (const key of keys)
 	{
         internal[key] = trackable[key];
-		trackable._gets[key] = 0;
-		trackable._sets[key] = 0;
+		trackable._gets[key] = <never>0;
+		trackable._sets[key] = <never>0;
 
         Object.defineProperty(source, key,
 		{
@@ -134,12 +132,12 @@ function trackObject<T>(source: T): Trackable<T>
 				trackable._gets[key]++;
                 return internal[key];
             },
-            set: function(value)
+            set: function(value: unknown)
 			{
 				trackable._sets[key]++;
                 internal[key] = value;
             },
         });
     }
-    return trackable as Trackable<T>;
+    return trackable;
 }

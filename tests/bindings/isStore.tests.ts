@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /// <reference path="../../lib/openrct2.d.ts" />
 import { compute } from "@src/bindings/stores/compute";
 import { arrayStore } from "@src/bindings/stores/createArrayStore";

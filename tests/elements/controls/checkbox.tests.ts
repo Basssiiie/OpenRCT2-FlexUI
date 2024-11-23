@@ -26,7 +26,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as CheckboxWidget;
+	const widget = <CheckboxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "checkbox");
 	t.is(widget.text, "Check me out");
 	t.is(widget.tooltip, "checkable!");
@@ -48,7 +48,7 @@ test("Change event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as CheckboxDesc;
+	const widget = <CheckboxDesc>mock.createdWindows[0].widgets[0];
 	call(widget.onChange, true);
 	call(widget.onChange, false);
 	call(widget.onChange, true);
@@ -74,7 +74,7 @@ test("One-way bindings update checkbox", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as CheckboxDesc;
+	const widget = <CheckboxDesc>mock.createdWindows[0].widgets[0];
 	t.true(widget.isChecked);
 	t.is(widget.text, "Hello");
 	t.falsy(widget.onChange); // not assigned
@@ -112,7 +112,7 @@ test("Two-way bindings update checkbox", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as CheckboxDesc;
+	const widget = <CheckboxDesc>mock.createdWindows[0].widgets[0];
 	t.false(widget.isChecked);
 	t.false(isChecked.get());
 	t.deepEqual(hits, []);

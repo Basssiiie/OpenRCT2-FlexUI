@@ -30,14 +30,14 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 4 + 7);
 	t.is(widget1.y, 4 + 7 + 15 - 4); // - 4px default top pad
 	t.is(widget1.width, 50 - 22);
 	t.is(widget1.height, (40 - 22) + 4); // + 4px default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 4 + 7 + 6); // incl. 6px default padding
@@ -66,7 +66,7 @@ test("Title changes size and position", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.text, "title");
 	t.is(widget1.x, 4 + 7);
@@ -74,7 +74,7 @@ test("Title changes size and position", t =>
 	t.is(widget1.width, 50 - 22);
 	t.is(widget1.height, 80 - 22);
 
-	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 4 + 7 + 6); // incl. 6px default padding
@@ -103,14 +103,14 @@ test("Applies padding", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 10 + 3);
 	t.is(widget1.y, 10 + 3 + 15 - 4); // - 4px default top pad
 	t.is(widget1.width, 74);
 	t.is(widget1.height, 34 + 4); // + 4px default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 3 + 6);
@@ -139,14 +139,14 @@ test("Box takes size of absolute child", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 10);
 	t.is(widget1.y, 10 + 15 - 4); // - 4px default top pad
 	t.is(widget1.width, 120 + 24);
 	t.is(widget1.height, 70 + 24 + 4); // + 4px default top pad
 
-	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 10 + 12);
@@ -174,14 +174,14 @@ test("Box can center child", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 40);
 	t.is(widget1.y, 40 + 15 - 4);
 	t.is(widget1.width, 100);
 	t.is(widget1.height, 320 + 4);
 
-	const widget2 = mock.createdWindows[0].widgets[1] as ButtonWidget;
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "button");
 	t.is(widget2.text, "inside a box!");
 	t.is(widget2.x, 40);
@@ -212,7 +212,7 @@ test("Box reacts correctly to child size changes", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 4);
 	t.is(widget1.y, 4 + 15 - 4); // - 4px default top pad
@@ -220,7 +220,7 @@ test("Box reacts correctly to child size changes", t =>
 	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
 	t.not(false, widget1.isVisible);
 
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	const widget2 = <LabelWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 4 + 6);
@@ -279,7 +279,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 20);
 	t.is(widget1.y, 20 + 15 - 4); // - 4px default top pad
@@ -287,7 +287,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
 	t.true(widget1.isVisible);
 
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
+	const widget2 = <LabelWidget>mock.createdWindows[0].widgets[1];
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 20 + 6);
@@ -296,7 +296,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
 
-	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
+	const widget3 = <ButtonWidget>mock.createdWindows[0].widgets[2];
 	t.is(widget3.type, "button");
 	t.is(widget3.x, 20);
 	t.is(widget3.y, 20 + (2 * 6) + 4 + 14 + 15);
@@ -363,9 +363,9 @@ test("Box does not take space if it starts hidden", t =>
 	});
 	template.open();
 
-	const widget1 = mock.createdWindows[0].widgets[0] as GroupBoxWidget;
-	const widget2 = mock.createdWindows[0].widgets[1] as LabelWidget;
-	const widget3 = mock.createdWindows[0].widgets[2] as ButtonWidget;
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
+	const widget2 = <LabelWidget>mock.createdWindows[0].widgets[1];
+	const widget3 = <ButtonWidget>mock.createdWindows[0].widgets[2];
 
 	t.false(widget1.isVisible);
 	t.false(widget2.isVisible);

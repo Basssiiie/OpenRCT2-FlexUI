@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+
 /**
  * Defines a context for window or tab events so they can get their widgets by name.
  */

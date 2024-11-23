@@ -31,7 +31,7 @@ export function compute<U>(): Store<U>
 		subscribe(stores[idx++], () =>
 		{
 			const newComputedValue = getComputedValue<U>(stores, callback);
-			return dependant.set(newComputedValue);
+			dependant.set(newComputedValue);
 		});
 	}
 	return dependant;

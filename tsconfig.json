@@ -22,7 +22,8 @@
 	},
 	"include": [
 		"./lib/**/*.ts",
-		"./src/**/*.ts"
+		"./src/**/*.ts",
+		"./tests/**/*.ts"
 	],
 	"exclude": [
 		"./dist/**/*"

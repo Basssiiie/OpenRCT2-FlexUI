@@ -1,8 +1,8 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { window } from "@src/windows/window";
 import { button } from "@src/elements/controls/button";
+import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
 import { call } from "tests/helpers";
@@ -21,7 +21,7 @@ test("Standard properties are set", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.type, "button");
 	t.is(widget.text, "Click me!");
 	t.true(widget.isPressed);
@@ -43,7 +43,7 @@ test("Text is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.text, "bonjour");
 
 	text.set("annyeong");
@@ -65,7 +65,7 @@ test("Image is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget.image, 334);
 
 	image.set(543);
@@ -87,7 +87,7 @@ test("Is pressed is bindable", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonWidget;
+	const widget = <ButtonWidget>mock.createdWindows[0].widgets[0];
 	t.false(widget.isPressed);
 
 	pressed.set(true);
@@ -109,7 +109,7 @@ test("Click event gets called", t =>
 	});
 	template.open();
 
-	const widget = mock.createdWindows[0].widgets[0] as ButtonDesc;
+	const widget = <ButtonDesc>mock.createdWindows[0].widgets[0];
 	t.is(count, 0);
 
 	call(widget.onClick);

@@ -81,7 +81,12 @@ const config = [
 					...(isDev ? {} : { "Log.debug": "//" })
 				}
 			}),
-			typescript(),
+			typescript({
+				include: [
+					"./lib/**/*.ts",
+					"./src/**/*.ts",
+				]
+			}),
 			precache(cache.props.props),
 			terser({
 				compress: {
@@ -125,9 +130,8 @@ const config = [
 		plugins: [
 			dts({
 				tsconfig: "./tsconfig.json",
-				exclude: [
-					"./src/**/*.d.ts",
-					"./tests/**/*"
+				include: [
+					"./src/**/*.ts"
 				]
 			})
 		]

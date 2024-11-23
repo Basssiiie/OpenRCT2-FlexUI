@@ -36,9 +36,9 @@ export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayou
  *
  * template.open()
  */
-export function window(params: WindowParams): WindowTemplate<void>;
+export function window(params: WindowParams): WindowTemplate;
 /**
- * Create a new flexiblely designed window with a viewmodel.
+ * Create a new flexiblely designed window with a viewmodel. An arrow function can be used to create windows to fit a specific viewmodel.
  *
  * @example
  * class MyModel
