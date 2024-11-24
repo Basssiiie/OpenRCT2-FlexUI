@@ -848,3 +848,77 @@ test("Window.isOpen() returns open state", t =>
 	instance.close();
 	t.false(instance.isOpen());
 });
+
+
+test("Template can open multiple windows", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		mode: "multiple",
+		width: 200, height: 100,
+		content: [
+			label({ text: "hello!" })
+		]
+	});
+
+	const instance1 = template.open();
+	const instance2 = template.open();
+
+	t.true(instance1.isOpen());
+	t.true(instance2.isOpen());
+	t.not(instance1, instance2);
+
+	const created = (<UiMock>globalThis.ui).createdWindows;
+	t.is(created.length, 2);
+	t.is(created[0].title, "test window");
+	t.is(created[1].title, "test window");
+});
+
+
+test("Template can open multiple windows with viewmodels", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	class Model
+	{
+		title = store("Test window");
+		label = store("Hello!");
+	}
+
+	const template = window<Model>(model =>
+	({
+		title: model.title,
+		mode: "multiple",
+		width: 200, height: 100,
+		content: [
+			label({ text: model.label })
+		]
+	}));
+
+	const model1 = new Model();
+	const model2 = new Model();
+
+	const instance1 = template.open(model1);
+	const instance2 = template.open(model2);
+
+	t.true(instance1.isOpen());
+	t.true(instance2.isOpen());
+	t.not(instance1, instance2);
+
+	const created = (<UiMock>globalThis.ui).createdWindows.toReversed(); // newest windows are inserted at front
+	t.is(created.length, 2);
+	t.is(created[0].title, "Test window");
+	t.is(created[1].title, "Test window");
+	t.is((<LabelWidget>created[0].widgets[0]).text, "Hello!");
+	t.is((<LabelWidget>created[1].widgets[0]).text, "Hello!");
+
+	model1.title.set("Different title");
+	t.is(created[0].title, "Different title");
+	t.is(created[1].title, "Test window");
+
+	model2.label.set("Goodbye!");
+	t.is((<LabelWidget>created[0].widgets[0]).text, "Hello!");
+	t.is((<LabelWidget>created[1].widgets[0]).text, "Goodbye!");
+});

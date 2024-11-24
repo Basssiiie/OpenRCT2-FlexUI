@@ -44,7 +44,7 @@ export function window(params: WindowParams): WindowTemplate;
  * class MyModel
  * {
  *     header: store("Hello world!")
- * };
+ * }
  *
  * const template = window<MyModel>(model =>
  * ({

@@ -34,7 +34,7 @@ export function isArray(target: unknown): target is unknown[]
  * Checks whether the target is an array or not.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isFunction(target: unknown): target is ((...args: any[]) => void)
+export function isFunction(target: unknown): target is ((...args: any[]) => any)
 {
 	return is(target, "function");
 }

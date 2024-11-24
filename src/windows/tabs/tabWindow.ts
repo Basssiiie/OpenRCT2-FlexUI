@@ -75,7 +75,7 @@ export function tabwindow(params: TabWindowParams): WindowTemplate;
  * class MyModel
  * {
  *     header: store("Hello world!")
- * };
+ * }
  *
  * const template = tabwindow<MyModel>(model =>
  * ({

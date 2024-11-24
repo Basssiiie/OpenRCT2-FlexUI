@@ -49,6 +49,20 @@ export interface BaseWindowParams extends Paddable
 	position?: "default" | "center" | { x: number; y: number };
 
 	/**
+	 * Specifies whether it is possible to open multiple windows from the same template.
+	 *
+	 * **Options:**
+	 *
+	 *  * `"single"`: Only a single window of this template can be opened at the same time. Attempting to open a second window will only refocus the first one.
+	 *  * `"multiple"`: A new window will be opened every time `open()` is called, regardless of how many windows from this template are open already.
+	 *
+	 * When using `"multiple"`, consider using templates based on a viewmodel, to ensure all windows handle their state separately from each other.
+	 *
+	 * @default "single"
+	 */
+	mode?: "single" | "multiple";
+
+	/**
 	 * Event that gets triggered when the window is opened.
 	 */
 	onOpen?: () => void;
