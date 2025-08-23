@@ -41,7 +41,6 @@ export default tseslint.config(
 			"@stylistic/keyword-spacing": ["error", { "overrides": { "this": { "before": false } } }],
 			"@stylistic/space-before-function-paren": ["error", "never"],
 			"@stylistic/quote-props": "off",
-			"@stylistic/linebreak-style": ["error", "windows"],
 			"@stylistic/lines-around-comment": "off",
 			"@stylistic/lines-between-class-members": "off",
 			"@stylistic/multiline-ternary": ["error", "always-multiline"],
