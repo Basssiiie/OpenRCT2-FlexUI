@@ -36,9 +36,9 @@ test("Standard properties are set", t =>
 					}
 				],
 				items: [
-					[ "1.", "top entry" ],
+					["1.", "top entry"],
 					{ type: "seperator", text: "central entry" },
-					[ "2.", "bottom entry" ]
+					["2.", "bottom entry"]
 				],
 				scrollbars: "both",
 				selectedCell: { row: 2, column: 1 },
@@ -80,9 +80,9 @@ test("Standard properties are set", t =>
 
 	const items = widget.items;
 	t.is(items.length, 3);
-	t.deepEqual(items[0], [ "1.", "top entry" ]);
+	t.deepEqual(items[0], ["1.", "top entry"]);
 	t.deepEqual(items[1], { type: "seperator", text: "central entry" });
-	t.deepEqual(items[2], [ "2.", "bottom entry" ]);
+	t.deepEqual(items[2], ["2.", "bottom entry"]);
 });
 
 test("Simple column names get converted", t =>
@@ -94,11 +94,11 @@ test("Simple column names get converted", t =>
 		width: 100, height: 100,
 		content: [
 			listview({
-				columns: [ "First", "Second", "Third" ],
+				columns: ["First", "Second", "Third"],
 				items: [
-					[ "1.", "top entry" ],
+					["1.", "top entry"],
 					{ type: "seperator", text: "central entry" },
-					[ "2.", "bottom entry" ]
+					["2.", "bottom entry"]
 				],
 				scrollbars: "vertical"
 			})
@@ -151,7 +151,7 @@ test("Items is bindable", t =>
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
-	const items = store([ "Hello", "world" ]);
+	const items = store(["Hello", "world"]);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -162,17 +162,17 @@ test("Items is bindable", t =>
 	const instance1 = template.open();
 
 	const listview1 = <ListViewWidget>mock.createdWindows[0].widgets[0];
-	t.deepEqual(listview1.items, [ "Hello", "world" ]);
+	t.deepEqual(listview1.items, ["Hello", "world"]);
 
-	items.set([ "Bye", "friendly", "friend" ]);
-	t.deepEqual(listview1.items, [ "Bye", "friendly", "friend" ]);
+	items.set(["Bye", "friendly", "friend"]);
+	t.deepEqual(listview1.items, ["Bye", "friendly", "friend"]);
 
 	instance1.close();
-	items.set([ "Still", "there" ]);
+	items.set(["Still", "there"]);
 	template.open();
 
 	const listview2 = <ListViewWidget>mock.createdWindows[0].widgets[0];
-	t.deepEqual(listview2.items, [ "Still", "there" ]);
+	t.deepEqual(listview2.items, ["Still", "there"]);
 });
 
 test("Show column headers is false without columns", t =>
@@ -184,7 +184,7 @@ test("Show column headers is false without columns", t =>
 		width: 100, height: 100,
 		content: [
 			listview({
-				items: [ "Hello", "world" ]
+				items: ["Hello", "world"]
 			})
 		]
 	});
@@ -206,7 +206,7 @@ test("Show column headers is true with empty column array", t =>
 		content: [
 			listview({
 				columns: [],
-				items: [ "Hello", "world" ]
+				items: ["Hello", "world"]
 			})
 		]
 	});
@@ -312,7 +312,7 @@ test("Custom columns with unspecified width", t =>
 					{ header: "First" },
 					{ header: "Second" }
 				],
-				items: [ "Hello", "world" ]
+				items: ["Hello", "world"]
 			})
 		]
 	});
@@ -439,7 +439,7 @@ test("On click callback is propagated and skips duplicate clicks", t =>
 		width: 210, height: 100,
 		content: [
 			listview({
-				items: [ "First", "Second", "Third", "Fourth" ],
+				items: ["First", "Second", "Third", "Fourth"],
 				onClick: (r, c) => calls.push(`R${r}/C${c}`)
 			})
 		]
@@ -469,7 +469,7 @@ test("Selected cell can be bound", t =>
 		width: 210, height: 100,
 		content: [
 			listview({
-				items: [ "First", "Second", "Third", "Fourth" ],
+				items: ["First", "Second", "Third", "Fourth"],
 				selectedCell: selected
 			})
 		]
@@ -508,7 +508,7 @@ test("Selected cell can be bound with separate on click event", t =>
 		width: 210, height: 100,
 		content: [
 			listview({
-				items: [ "First", "Second", "Third", "Fourth" ],
+				items: ["First", "Second", "Third", "Fourth"],
 				selectedCell: selected,
 				onClick: (r, c) => calls.push([r, c])
 			})
@@ -553,7 +553,7 @@ test("Selected cell can be two-way bound", t =>
 		width: 210, height: 100,
 		content: [
 			listview({
-				items: [ "First", "Second", "Third", "Fourth" ],
+				items: ["First", "Second", "Third", "Fourth"],
 				selectedCell: twoway(selected)
 			})
 		]
@@ -591,7 +591,7 @@ test("Selected cell can be two-way bound with extra on click event", t =>
 		width: 210, height: 100,
 		content: [
 			listview({
-				items: [ "First", "Second", "Third", "Fourth" ],
+				items: ["First", "Second", "Third", "Fourth"],
 				selectedCell: twoway(selected),
 				onClick: (r, c) => calls.push([r, c])
 			})

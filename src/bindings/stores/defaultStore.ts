@@ -22,7 +22,7 @@ export abstract class DefaultStore<T> implements Store<T>
 	{
 		if (!this._listeners)
 		{
-			this._listeners = [ callback ];
+			this._listeners = [callback];
 		}
 		else
 		{

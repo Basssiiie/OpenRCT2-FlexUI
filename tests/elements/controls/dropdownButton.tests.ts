@@ -17,7 +17,7 @@ test("Standard properties are set", t =>
 		content: [
 			dropdownButton({
 				tooltip: "hello!",
-				buttons: [ { text: "a" }, { text: "b" } ]
+				buttons: [{ text: "a" }, { text: "b" }]
 			})
 		]
 	});
@@ -26,7 +26,7 @@ test("Standard properties are set", t =>
 	const created = mock.createdWindows[0];
 	const dropdown = <DropdownDesc>created.widgets[0];
 	t.is(dropdown.type, "dropdown");
-	t.deepEqual(dropdown.items, [ "a", "b" ]);
+	t.deepEqual(dropdown.items, ["a", "b"]);
 	t.is(dropdown.tooltip, "hello!");
 
 	const button = <ButtonDesc>created.widgets[1];
@@ -45,7 +45,7 @@ test("Dropdown updates button", t =>
 		width: 100, height: 100, padding: 0,
 		content: [
 			dropdownButton({
-				buttons: [ { text: "a" }, { text: "b" }, { text: "c" } ]
+				buttons: [{ text: "a" }, { text: "b" }, { text: "c" }]
 			})
 		]
 	});
@@ -88,19 +88,19 @@ test("Button onClick's are called", t =>
 	const dropdown = <DropdownDesc>created.widgets[0];
 	const button = <ButtonDesc>created.widgets[1];
 	call(button.onClick);
-	t.deepEqual(hits, [ "a" ]);
+	t.deepEqual(hits, ["a"]);
 
 	call(dropdown.onChange, 1);
 	call(button.onClick);
-	t.deepEqual(hits, [ "a", "b" ]);
+	t.deepEqual(hits, ["a", "b"]);
 
 	call(dropdown.onChange, 2);
 	call(button.onClick);
-	t.deepEqual(hits, [ "a", "b", "c" ]);
+	t.deepEqual(hits, ["a", "b", "c"]);
 
 	call(dropdown.onChange, 1);
 	call(button.onClick);
-	t.deepEqual(hits, [ "a", "b", "c", "b" ]);
+	t.deepEqual(hits, ["a", "b", "c", "b"]);
 });
 
 

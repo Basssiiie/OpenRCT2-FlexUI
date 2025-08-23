@@ -93,7 +93,8 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 			super(type, parent, output, params);
 			childCreator = params[content];
 
-			const binder = output.binder, text = params.text;
+			const binder = output.binder;
+			const text = params.text;
 			binder.add(this, "text", text);
 			flags |= (text) ? BoxFlags.AddTitlePadding : 0;
 		}

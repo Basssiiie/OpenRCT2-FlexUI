@@ -4,7 +4,7 @@ import test from "ava";
 
 test("find()", t =>
 {
-	const array = [ "one", "two", "three" ];
+	const array = ["one", "two", "three"];
 
 	t.is(ArrayHelper.find(array, i => i.startsWith("o")), "one");
 	t.is(ArrayHelper.find(array, i => i.startsWith("tw")), "two");

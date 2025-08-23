@@ -44,11 +44,11 @@ test("Tab open() triggers event", t =>
 	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.open(<Window>{}, {});
-	t.deepEqual(hits, [ "opened" ]);
+	t.deepEqual(hits, ["opened"]);
 
 	layoutable.close();
 	layoutable.open(<Window>{}, {});
-	t.deepEqual(hits, [ "opened", "opened" ]);
+	t.deepEqual(hits, ["opened", "opened"]);
 });
 
 
@@ -64,11 +64,11 @@ test("Tab update() triggers event", t =>
 	const layoutable = tabCreator(<ParentWindow>{}, description);
 
 	layoutable.update();
-	t.deepEqual(hits, [ "updated" ]);
+	t.deepEqual(hits, ["updated"]);
 
 	layoutable.update();
 	layoutable.update();
-	t.deepEqual(hits, [ "updated", "updated", "updated" ]);
+	t.deepEqual(hits, ["updated", "updated", "updated"]);
 });
 
 
@@ -85,11 +85,11 @@ test("Tab close() triggers event", t =>
 
 	layoutable.open(<Window>{}, {});
 	layoutable.close();
-	t.deepEqual(hits, [ "closed" ]);
+	t.deepEqual(hits, ["closed"]);
 
 	layoutable.open(<Window>{}, {});
 	layoutable.close();
-	t.deepEqual(hits, [ "closed", "closed" ]);
+	t.deepEqual(hits, ["closed", "closed"]);
 });
 
 
@@ -108,13 +108,13 @@ test("Tab all events are bound", t =>
 
 	layoutable.open(<Window>{}, {});
 	layoutable.close();
-	t.deepEqual(hits, [ "opened", "closed" ]);
+	t.deepEqual(hits, ["opened", "closed"]);
 
 	layoutable.open(<Window>{}, {});
 	layoutable.update();
 	layoutable.update();
 	layoutable.close();
-	t.deepEqual(hits, [ "opened", "closed", "opened", "updated", "updated", "closed" ]);
+	t.deepEqual(hits, ["opened", "closed", "opened", "updated", "updated", "closed"]);
 });
 
 

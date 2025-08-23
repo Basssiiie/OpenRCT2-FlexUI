@@ -54,7 +54,7 @@ test("Change event gets called", t =>
 	call(widget.onChange, true);
 	call(widget.onChange, false);
 
-	t.deepEqual(hits, [ true, false, true, false ]);
+	t.deepEqual(hits, [true, false, true, false]);
 });
 
 
@@ -125,15 +125,15 @@ test("Two-way bindings update checkbox", t =>
 	call(widget.onChange, false);
 	t.false(widget.isChecked);
 	t.false(isChecked.get());
-	t.deepEqual(hits, [ false ]);
+	t.deepEqual(hits, [false]);
 
 	call(widget.onChange, true);
 	t.true(widget.isChecked);
 	t.true(isChecked.get());
-	t.deepEqual(hits, [ false, true ]);
+	t.deepEqual(hits, [false, true]);
 
 	isChecked.set(false);
 	t.false(widget.isChecked);
 	t.false(isChecked.get());
-	t.deepEqual(hits, [ false, true ]);
+	t.deepEqual(hits, [false, true]);
 });

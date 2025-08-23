@@ -33,7 +33,8 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning, ParsedPosit
 		this.type = type;
 		this.x = this.y = this.width = this.height = 0;
 
-		const { binder, context } = output, visibility = params.visibility;
+		const { binder, context } = output;
+		const visibility = params.visibility;
 		binder.add(this, "tooltip", params.tooltip);
 		binder.add(this, "isDisabled", params.disabled);
 		binder.add(this, "isVisible", visibility, v => (v === "visible"));

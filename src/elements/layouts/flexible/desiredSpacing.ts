@@ -47,7 +47,7 @@ function isInheritable(value: unknown): boolean
  */
 export function recalculateInheritedSpaceFromChild(position: ParsedSize, flags: InheritFlags, child: Parsed<FlexiblePosition>): boolean
 {
-	return recalculateInheritedSpace(position, flags, (direction) => getDesiredSpaceFromChildForDirection(child, direction));
+	return recalculateInheritedSpace(position, flags, direction => getDesiredSpaceFromChildForDirection(child, direction));
 }
 
 
@@ -56,7 +56,7 @@ export function recalculateInheritedSpaceFromChild(position: ParsedSize, flags: 
  */
 export function recalculateInheritedSpaceFromChildren(position: ParsedSize, flags: InheritFlags, children: Layoutable<Parsed<FlexiblePosition>>[], spacing: ParsedScale, layoutDirection: Axis): boolean
 {
-	return recalculateInheritedSpace(position, flags, (direction) => getDesiredSpaceFromChildrenForDirection(children, spacing, layoutDirection, direction));
+	return recalculateInheritedSpace(position, flags, direction => getDesiredSpaceFromChildrenForDirection(children, spacing, layoutDirection, direction));
 }
 
 
@@ -83,7 +83,9 @@ function tryInheritSize(position: ParsedSize, inheritFlag: number, direction: Ax
 	let value: number | null;
 	if (inheritFlag && !isNull(value = getChildrenSpace(direction)))
 	{
-		const key = sizeKeys[direction], original = position[key];
+		const key = sizeKeys[direction];
+		const original = position[key];
+
 		if (original[0] !== value || !isAbsolute(original))
 		{
 			position[key] = [value, ScaleType.Pixel];
@@ -136,8 +138,7 @@ function getDesiredSpaceFromChildrenForDirection(items: Layoutable<Parsed<Flexib
 
 	for (const item of items)
 	{
-		// Determine if all children are absolutely sized, and if so,
-		// then size itself accordingly.
+		// Determine if all children are absolutely sized, and if so, then size itself accordingly.
 		const
 			position = item.position,
 			size = position[sizeKey],

@@ -94,7 +94,7 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 			}
 		});
 
-		output.on(openEvent, (context) =>
+		output.on(openEvent, context =>
 		{
 			const viewport = this._getViewportFromContext(context);
 			if (viewport && zoom)
@@ -106,7 +106,7 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 
 		if (isStore(target) || isNumber(target))
 		{
-			output.on(updateEvent, (context) =>
+			output.on(updateEvent, context =>
 			{
 				const viewport = this._getViewportFromContext(context);
 				this._updateViewport(viewport, target, visibilityFlags, disabled);

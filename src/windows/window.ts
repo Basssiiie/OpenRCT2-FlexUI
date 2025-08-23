@@ -86,7 +86,7 @@ class WindowControl extends BaseWindowControl
 		const widgets = builder._widgets;
 		this._description.widgets = widgets;
 		this._descriptionWidgetMap = addToWidgetMap(widgets);
-		this._frame =  builder.context;
+		this._frame = builder.context;
 	}
 
 	protected override _invoke(callback: (frame: TabLayoutable) => void): void

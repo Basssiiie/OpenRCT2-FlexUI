@@ -35,7 +35,6 @@ export async function babel(config: string): Promise<string>
 }
 
 
-
 /**
  * Gets the output file for the specified rollup configuration.
  * @param script Name of the script.

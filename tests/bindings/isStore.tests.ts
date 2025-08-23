@@ -22,7 +22,7 @@ test("Store number is true", t =>
 
 test("Array store is true", t =>
 {
-	const source = arrayStore([ "a", "b" ]);
+	const source = arrayStore(["a", "b"]);
 	t.true(isStore(source));
 });
 
@@ -67,8 +67,7 @@ test("Number is false", t =>
 
 test("Store contract is true", t =>
 {
-	const store =
-	{
+	const store = {
 		get: () => t.fail("Calling get is not allowed"),
 		set: () => t.fail("Calling set is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed")
@@ -79,8 +78,7 @@ test("Store contract is true", t =>
 
 test("Store contract without get() is false", t =>
 {
-	const store =
-	{
+	const store = {
 		set: () => t.fail("Calling set is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
@@ -90,8 +88,7 @@ test("Store contract without get() is false", t =>
 
 test("Store contract without set() is true", t =>
 {
-	const store =
-	{
+	const store = {
 		get: () => t.fail("Calling get is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
@@ -101,8 +98,7 @@ test("Store contract without set() is true", t =>
 
 test("Store contract without subscribe() is false", t =>
 {
-	const store =
-	{
+	const store = {
 		get: () => t.fail("Calling get is not allowed"),
 		set: () => t.fail("Calling set is not allowed")
 	};
@@ -112,8 +108,7 @@ test("Store contract without subscribe() is false", t =>
 
 test("Writable store contract without get() is false", t =>
 {
-	const store =
-	{
+	const store = {
 		set: () => t.fail("Calling set is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
@@ -123,8 +118,7 @@ test("Writable store contract without get() is false", t =>
 
 test("Writable store contract without set() is false", t =>
 {
-	const store =
-	{
+	const store = {
 		get: () => t.fail("Calling get is not allowed"),
 		subscribe: () => t.fail("Calling subscribe is not allowed")
 	};
@@ -134,8 +128,7 @@ test("Writable store contract without set() is false", t =>
 
 test("Writable contract without subscribe() is false", t =>
 {
-	const store =
-	{
+	const store = {
 		get: () => t.fail("Calling get is not allowed"),
 		set: () => t.fail("Calling set is not allowed")
 	};

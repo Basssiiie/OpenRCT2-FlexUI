@@ -1,3 +1,5 @@
+/* eslint-disable @stylistic/indent-binary-ops */
+
 /**
  * All the available text colours in OpenRCT2.
  */
@@ -15,5 +17,4 @@ export type TextColour
 	| "palegold"
 	| "lightpink"
 	| "pearlaqua"
-	| "palesilver"
-	;
+	| "palesilver";

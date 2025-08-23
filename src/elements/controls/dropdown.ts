@@ -129,7 +129,7 @@ export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implement
 		const setDisabled = (disabled || !items || items.length <= disableCount);
 		if (setDisabled && disabledMessage)
 		{
-			widget.items = [ disabledMessage ];
+			widget.items = [disabledMessage];
 		}
 		else
 		{
@@ -179,7 +179,5 @@ export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implement
  */
 function getDisabledCount(disableMode: DropdownDisableMode | undefined): number
 {
-	return (disableMode === "empty") ? 0
-		: (disableMode === "single") ? 1
-		: -1;
+	return (disableMode === "empty") ? 0 : (disableMode === "single") ? 1 : -1;
 }

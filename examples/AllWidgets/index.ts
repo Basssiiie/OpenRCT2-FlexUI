@@ -1,11 +1,6 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
-import
-{
-	box, button, checkbox, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner,
-	groupbox, label, LayoutDirection, listview, spinner, textbox, toggle, viewport, window
-}
-from "openrct2-flexui";
+import { box, button, checkbox, Colour, colourPicker, dropdown, dropdownButton, dropdownSpinner, groupbox, label, LayoutDirection, listview, spinner, textbox, toggle, viewport, window } from "openrct2-flexui";
 
 
 const allWidgets = window({
@@ -53,7 +48,7 @@ const allWidgets = window({
 			onChange: (checked: boolean) => console.log(`Checkbox has changed to ${checked ? "" : "not "}checked`)
 		}),
 		dropdown({
-			items: [ "First", "Second", "Third", "Fourth" ],
+			items: ["First", "Second", "Third", "Fourth"],
 			onChange: (index: number) => console.log(`Dropdown changed to index ${index}`)
 		}),
 		spinner({
@@ -61,7 +56,7 @@ const allWidgets = window({
 			onChange: (value: number) => console.log(`Spinner changed to value ${value}`)
 		}),
 		dropdownSpinner({
-			items: [ "First", "Second", "Third", "Fourth" ],
+			items: ["First", "Second", "Third", "Fourth"],
 			onChange: (index: number) => console.log(`Dropdown spinner changed to value ${index}`)
 		}),
 		dropdownButton({
@@ -87,7 +82,7 @@ const allWidgets = window({
 			onChange: (isPressed: boolean) => console.log(`Toggle has been toggled ${isPressed ? "down" : "up"}`)
 		}),
 		listview({
-			items: [ "Listview item 1", "Listview item 2", "Listview item 3" ],
+			items: ["Listview item 1", "Listview item 2", "Listview item 3"],
 			onHighlight: (item: number, column: number) => console.log(`Highlighted item ${item} in column ${column} in listview`),
 			onClick: (item: number, column: number) => console.log(`Clicked item ${item} in column ${column} in listview`)
 		}),

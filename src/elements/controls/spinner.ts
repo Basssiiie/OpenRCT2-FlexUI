@@ -120,8 +120,7 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 	{
 		super("spinner", parent, output, params);
 
-		// Make value a store regardless of user choice,
-		// to make updating the text more convenient.
+		// Make value a store regardless of user choice, to make updating the text more convenient.
 		const original = params.value;
 		const value = (isTwoWay(original)) ? original.twoway : wrap(original || 0);
 
@@ -134,13 +133,13 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 		{
 			// If disabled, it should show a special message, if not show the (binded) text.
 			const disabled = params.disabled;
-			binder.add(this, "text", disabled, (isDisabled) =>
+			binder.add(this, "text", disabled, isDisabled =>
 			{
 				Log.debug("Spinner", this.name, "isDisabled has changed, set disabled message:", isDisabled);
 				return (isDisabled) ? disabledMessage : format(value.get());
 			});
 			const originalFormat = format;
-			format = (val: number): string => (read(disabled)) ? disabledMessage : originalFormat(val);
+			format = (val: number): string => (read(disabled) ? disabledMessage : originalFormat(val));
 		}
 
 		this._value = value;
@@ -183,7 +182,8 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 	 */
 	private _onUserInput(direction: number): void
 	{
-		const min = this._minimum, max = this._maximum;
+		const min = this._minimum;
+		const max = this._maximum;
 		if (min >= max)
 			return;
 

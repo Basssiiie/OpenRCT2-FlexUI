@@ -88,8 +88,10 @@ export function applyPaddingToDirection(area: Rectangle, direction: Axis, paddin
 /**
  * Applies padding to the specified axis. Returns total space used.
  */
-function applyPaddingToAxis(area: Rectangle, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number,
-	axisKey: typeof axisKeys[number], sizeKey: typeof sizeKeys[number], startKey: typeof startKeys[number], endKey: typeof endKeys[number]): number
+function applyPaddingToAxis(
+	area: Rectangle, padding: ParsedPadding, leftoverSpace: number, weightedTotal: number, percentileTotal: number,
+	axisKey: typeof axisKeys[number], sizeKey: typeof sizeKeys[number], startKey: typeof startKeys[number], endKey: typeof endKeys[number]
+): number
 {
 	const
 		startPixels = convertToPixels(padding[startKey], leftoverSpace, weightedTotal, percentileTotal),

@@ -18,7 +18,8 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		return;
 
 	const otherDirection = (layoutDirection == Axis.Horizontal)
-		? Axis.Vertical : Axis.Horizontal;
+		? Axis.Vertical
+		: Axis.Horizontal;
 
 	// First pass: calculate available and used space.
 	const stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection);
@@ -88,9 +89,9 @@ function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: Pa
 	// First pass: parse all values to numbers.
 	for (let i = 0; i < elementCount; i++)
 	{
-		const params = elements[i], padding = params.padding;
-		const parsed: ParsedStackElement =
-		{
+		const params = elements[i];
+		const padding = params.padding;
+		const parsed: ParsedStackElement = {
 			_mainSize: params[sizeKeys[mainDirection]],
 			_otherSize: params[sizeKeys[otherDirection]],
 			_padding: padding

@@ -73,7 +73,7 @@ test("Change event gets called", t =>
 	call(widget.onChange, Colour.LightPink);
 	call(widget.onChange, Colour.Teal);
 
-	t.deepEqual(hits, [ Colour.IcyBlue, Colour.Black, Colour.LightPink, Colour.Teal ]);
+	t.deepEqual(hits, [Colour.IcyBlue, Colour.Black, Colour.LightPink, Colour.Teal]);
 });
 
 
@@ -140,15 +140,15 @@ test("Two-way bindings update colour picker", t =>
 	call(widget.onChange, Colour.Teal);
 	t.is(widget.colour, Colour.Teal);
 	t.is(colour.get(), Colour.Teal);
-	t.deepEqual(hits, [ Colour.Teal ]);
+	t.deepEqual(hits, [Colour.Teal]);
 
 	call(widget.onChange, Colour.DarkPink);
 	t.is(widget.colour, Colour.DarkPink);
 	t.is(colour.get(), Colour.DarkPink);
-	t.deepEqual(hits, [ Colour.Teal, Colour.DarkPink ]);
+	t.deepEqual(hits, [Colour.Teal, Colour.DarkPink]);
 
 	colour.set(Colour.SaturatedGreen);
 	t.is(widget.colour, Colour.SaturatedGreen);
 	t.is(colour.get(), Colour.SaturatedGreen);
-	t.deepEqual(hits, [ Colour.Teal, Colour.DarkPink ]);
+	t.deepEqual(hits, [Colour.Teal, Colour.DarkPink]);
 });

@@ -1,8 +1,7 @@
 /**
  * Makes all readonly properties on an object mutable.
  */
-export type Mutable<T> =
-{
+export type Mutable<T> = {
 	-readonly [k in keyof T]: T[k];
 };
 

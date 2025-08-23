@@ -14,8 +14,7 @@ import Mock from "openrct2-mocks";
 
 test("read() sets values", t =>
 {
-	const label: LabelDesc =
-	{
+	const label: LabelDesc = {
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100
 	};
@@ -36,8 +35,7 @@ test("read() sets values", t =>
 
 test("read() adds store to binder", t =>
 {
-	const label: LabelDesc =
-	{
+	const label: LabelDesc = {
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100
 	};
@@ -54,8 +52,7 @@ test("read() adds store to binder", t =>
 test("read() sets store in window frame", t =>
 {
 	globalThis.ui = Mock.ui();
-	const label: LabelDesc =
-	{
+	const label: LabelDesc = {
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100
 	};
@@ -82,8 +79,7 @@ test("read() sets store in window frame", t =>
 test("read() sets store through converter", t =>
 {
 	globalThis.ui = Mock.ui();
-	const label: LabelDesc =
-	{
+	const label: LabelDesc = {
 		type: "label",
 		x: 0, y: 0, height: 10, width: 100, isVisible: false
 	};

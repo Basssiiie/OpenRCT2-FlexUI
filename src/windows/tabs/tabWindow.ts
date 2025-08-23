@@ -44,13 +44,13 @@ export interface TabWindowParams extends BaseWindowParams
 
 	/**
 	 * Specify the tabs that this window has.
-     *
-     * @example
+	 *
+	 * @example
 	 * const template = tabwindow({
-     *     tabs: [
-     *         tab({ image: "copy", content: [button()] }),
-     *         tab({ image: "paste" })
-     *     ]
+	 *     tabs: [
+	 *         tab({ image: "copy", content: [button()] }),
+	 *         tab({ image: "paste" })
+	 *     ]
 	 * })
 	 */
 	tabs: TabCreator[];

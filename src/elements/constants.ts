@@ -48,8 +48,7 @@ export const zeroScale: ParsedScale = [0, ScaleType.Pixel];
 /**
  * A padding that equals to zero on each side.
  */
-export const zeroPadding: ParsedPadding =
-{
+export const zeroPadding: ParsedPadding = {
 	top: zeroScale,
 	right: zeroScale,
 	bottom: zeroScale,

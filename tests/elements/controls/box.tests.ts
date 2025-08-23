@@ -95,7 +95,7 @@ test("Applies padding", t =>
 			box({
 				padding: 3,
 				content: button({
-					padding: [ 4, 6 ],
+					padding: [4, 6],
 					text: "inside a box!"
 				})
 			})
@@ -166,7 +166,7 @@ test("Box can center child", t =>
 		content: [
 			box(
 				button({
-					width: 100, height: 200, padding: [ "50%", 0 ],
+					width: 100, height: 200, padding: ["50%", 0],
 					text: "inside a box!"
 				})
 			)
@@ -202,7 +202,7 @@ test("Box reacts correctly to child size changes", t =>
 		content: [
 			box(
 				label({
-					visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
+					visibility: compute(model.active, val => (val ? "visible" : "none")),
 					text: "managing themes",
 					height: 14
 				})
@@ -262,12 +262,12 @@ test("Box reacts correctly to nested child size changes", t =>
 		width: 300, height: 200 + 15, padding: 20, spacing: 4,
 		content: [
 			box({
-				visibility: compute(model.active, (val) => (val) ? "visible" : "none" ),
+				visibility: compute(model.active, val => (val ? "visible" : "none")),
 				content: horizontal({
 					padding: 6,
 					content: [
 						label({
-							visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
+							visibility: compute(model.active, val => (val ? "visible" : "none")),
 							text: "managing themes",
 							height: 14
 						})
@@ -346,12 +346,12 @@ test("Box does not take space if it starts hidden", t =>
 		width: 300, height: 200 + 15, padding: 20, spacing: 4,
 		content: [
 			box({
-				visibility: compute(model.active, (val) => (val) ? "visible" : "none" ),
+				visibility: compute(model.active, val => (val ? "visible" : "none")),
 				content: horizontal({
 					padding: 6,
 					content: [
 						label({
-							visibility: compute(model.active, (val) => (val) ? "visible" : "none"),
+							visibility: compute(model.active, val => (val ? "visible" : "none")),
 							text: "managing themes",
 							height: 14
 						})

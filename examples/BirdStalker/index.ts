@@ -48,7 +48,7 @@ const birdStalker = window<ViewModel>(model =>
 		box({
 			text: "Duck-o-cam",
 			content: viewport({
-				target: compute(model.selectedDuck, duck => (duck) ? duck.id : null)
+				target: compute(model.selectedDuck, duck => (duck ? duck.id : null))
 			})
 		}),
 		label({

@@ -42,7 +42,8 @@ function stacktrace(): string
 	}
 
 	const depth = -4; // skips act(), stacktrace() and the calling method.
-	let entry: DukStackEntry | undefined, result = "";
+	let entry: DukStackEntry | undefined;
+	let result = "";
 
 	for (let i = depth; (entry = Duktape.act(i)); i--)
 	{
@@ -143,6 +144,7 @@ export function stringify(obj: unknown): string
 	for (const key in obj)
 	{
 		// @ts-expect-error key is fine for indexing object
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
 		pairs.push(`${String(key)}: ${stringify(obj[key])}`);
 	}
 	return `{ ${pairs.join(", ")} }`;

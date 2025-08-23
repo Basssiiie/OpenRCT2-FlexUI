@@ -505,7 +505,7 @@ test("Update maximum clamps value", t =>
 
 	maximum.set(50);
 	t.is(widget.text, "50");
-	t.deepEqual(hits, [ 50 ]);
+	t.deepEqual(hits, [50]);
 });
 
 
@@ -539,7 +539,7 @@ test("Update minimum clamps value", t =>
 
 	minimum.set(80);
 	t.is(widget.text, "80");
-	t.deepEqual(hits, [ 80 ]);
+	t.deepEqual(hits, [80]);
 });
 
 
@@ -575,15 +575,15 @@ test("Two-way bindings update spinner", t =>
 	call(widget.onIncrement);
 	t.is(widget.text, "-2");
 	t.is(value.get(), -2);
-	t.deepEqual(hits, [ -2 ]);
+	t.deepEqual(hits, [-2]);
 
 	call(widget.onDecrement);
 	t.is(widget.text, "-3");
 	t.is(value.get(), -3);
-	t.deepEqual(hits, [ -2, -3 ]);
+	t.deepEqual(hits, [-2, -3]);
 
 	value.set(4519);
 	t.is(widget.text, "4519");
 	t.is(value.get(), 4519);
-	t.deepEqual(hits, [ -2, -3 ]);
+	t.deepEqual(hits, [-2, -3]);
 });

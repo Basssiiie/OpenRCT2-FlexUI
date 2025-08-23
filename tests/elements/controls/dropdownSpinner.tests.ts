@@ -17,7 +17,7 @@ test("Standard properties are set", t =>
 	const template = window({
 		width: 100, height: 100, padding: 0,
 		content: [
-			dropdownSpinner({ items: [ "a", "b", "c" ], wrapMode: "wrap", tooltip: "spin me" })
+			dropdownSpinner({ items: ["a", "b", "c"], wrapMode: "wrap", tooltip: "spin me" })
 		]
 	});
 	template.open();
@@ -30,7 +30,7 @@ test("Standard properties are set", t =>
 
 	const dropdown = <DropdownDesc>created.widgets[1];
 	t.is(dropdown.type, "dropdown");
-	t.deepEqual(dropdown.items, [ "a", "b", "c" ]);
+	t.deepEqual(dropdown.items, ["a", "b", "c"]);
 	t.is(dropdown.selectedIndex, 0);
 	t.is(dropdown.tooltip, "spin me");
 });
@@ -44,7 +44,7 @@ test("Dropdown updates spinner", t =>
 	const template = window({
 		width: 100, height: 100, padding: 0,
 		content: [
-			dropdownSpinner({ items: [ "a", "b", "c" ] })
+			dropdownSpinner({ items: ["a", "b", "c"] })
 		]
 	});
 	template.open();
@@ -70,7 +70,7 @@ test("Spinner updates dropdown", t =>
 	const template = window({
 		width: 100, height: 100, padding: 0,
 		content: [
-			dropdownSpinner({ items: [ "a", "b", "c" ] })
+			dropdownSpinner({ items: ["a", "b", "c"] })
 		]
 	});
 	template.open();
@@ -132,7 +132,7 @@ test("Two-way bindings update dropdown spinner", t =>
 		width: 100, height: 100,
 		content: [
 			dropdownSpinner({
-				items: [ "a", "b", "c", "d" ],
+				items: ["a", "b", "c", "d"],
 				selectedIndex: twoway(selectedIndex),
 				onChange: v => hits.push(v)
 			})
@@ -155,15 +155,15 @@ test("Two-way bindings update dropdown spinner", t =>
 	call(dropdown.onChange, 1);
 	t.is(dropdown.selectedIndex, 1);
 	t.is(selectedIndex.get(), 1);
-	t.deepEqual(hits, [ 1 ]);
+	t.deepEqual(hits, [1]);
 
 	call(spinner.onIncrement);
 	t.is(dropdown.selectedIndex, 2);
 	t.is(selectedIndex.get(), 2);
-	t.deepEqual(hits, [ 1, 2 ]);
+	t.deepEqual(hits, [1, 2]);
 
 	selectedIndex.set(0);
 	t.is(dropdown.selectedIndex, 0);
 	t.is(selectedIndex.get(), 0);
-	t.deepEqual(hits, [ 1, 2 ]);
+	t.deepEqual(hits, [1, 2]);
 });

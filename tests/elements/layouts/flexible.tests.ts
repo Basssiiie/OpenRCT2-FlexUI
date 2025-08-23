@@ -26,8 +26,7 @@ import Mock from "openrct2-mocks";
 
 type FlexControl = FlexibleLayoutControl<FlexiblePosition, Parsed<FlexiblePosition>>;
 
-const parentMock: ParentControl<FlexiblePosition> =
-{
+const parentMock: ParentControl<FlexiblePosition> = {
 	parse: parseFlexiblePosition,
 	recalculate(): void { /* empty */ }
 };
@@ -502,7 +501,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 		spacing: "0.5w",
 		content: [
 			button({ text: "a", width: "1w", height: "1w" }),
-			button({ text: "b", width: "10px", height: "1w", padding: [ "8px", "1w" ] })
+			button({ text: "b", width: "10px", height: "1w", padding: ["8px", "1w"] })
 		]
 	});
 
@@ -890,11 +889,11 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 				content: [
 					box({
 						text: "b-a",
-						content: label({ text: "l-a", padding: [ "50%", 0 ] })
+						content: label({ text: "l-a", padding: ["50%", 0] })
 					}),
 					box({
 						text: "b-b",
-						content: label({ text: "l-b", padding: [ "50%", 0 ] })
+						content: label({ text: "l-b", padding: ["50%", 0] })
 					})
 				]
 			}),
@@ -903,11 +902,11 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 				content: [
 					box({
 						text: "b-c",
-						content: label({ text: "l-c", padding: [ "50%", 0 ] })
+						content: label({ text: "l-c", padding: ["50%", 0] })
 					}),
 					box({
 						text: "b-d",
-						content: label({ text: "l-d", padding: [ "50%", 0 ] })
+						content: label({ text: "l-d", padding: ["50%", 0] })
 					})
 				]
 			})
@@ -1200,7 +1199,7 @@ test("Rounding: uneven sizes get rounded inwards", t =>
 
 	const label2 = <LabelWidget>output.widgets[1];
 	t.is(label2.x, 3);
-	t.is(label2.y, 5 + 12);  // 12 instead of 11.5
+	t.is(label2.y, 5 + 12); // 12 instead of 11.5
 	t.is(label2.width, 37);
-	t.is(label2.height, 11);  // 11 instead of 11.5
+	t.is(label2.height, 11); // 11 instead of 11.5
 });

@@ -18,14 +18,18 @@ export function absoluteLayout(elements: Layoutable<Parsed<AbsolutePosition>>[],
 	const parsedElements = Array<Parsed<AbsolutePosition>>(elementCount);
 
 	// First pass: collect and parse positional data
-	let weightedTotalWidth = 0, weightedTotalHeight = 0;
+	let weightedTotalWidth = 0;
+	let weightedTotalHeight = 0;
+
 	for (let i = 0; i < elementCount; i++)
 	{
 		const element = elements[i];
 		if (element.skip)
 			continue;
 
-		const position = element.position, { width, height } = position;
+		const position = element.position;
+		const { width, height } = position;
+
 		if (isWeighted(width))
 		{
 			weightedTotalWidth += width[0];

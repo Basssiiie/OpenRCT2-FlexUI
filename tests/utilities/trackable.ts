@@ -1,32 +1,32 @@
 /**
  * Keeps count of what happened with a set of keys from T.
  */
-export type Tracker<T> = Record<keyof T, number> &
-{
-	/**
-	 * Gets the total amount of times any of the properties on
-	 * the object have been accessed.
-	 */
-	total(): number;
-};
+export type Tracker<T> = Record<keyof T, number>
+	& {
+		/**
+		 * Gets the total amount of times any of the properties on
+		 * the object have been accessed.
+		 */
+		total(): number;
+	};
 
 
 /**
  * Allows any reads and writes to the object of T to be tracked.
  */
-export type Trackable<T> = T &
-{
-	/**
-	 * Returns the amount of times a value has been read.
-	 */
-	_gets: Tracker<T>;
+export type Trackable<T> = T
+	& {
+		/**
+		 * Returns the amount of times a value has been read.
+		 */
+		_gets: Tracker<T>;
 
 
-	/**
-	 * Returns the amount of times a value has been reassigned.
-	 */
-	_sets: Tracker<T>;
-};
+		/**
+		 * Returns the amount of times a value has been reassigned.
+		 */
+		_sets: Tracker<T>;
+	};
 
 
 /**
@@ -53,8 +53,7 @@ function createTotalCounter<T>(root: Trackable<T>, children: Trackable<T>[], key
 
 	if (!Object.prototype.hasOwnProperty.call(tracker, key))
 	{
-		Object.defineProperty(tracker, key,
-		{
+		Object.defineProperty(tracker, key, {
 			get: function()
 			{
 				return children
@@ -125,8 +124,7 @@ function trackObject<T extends object>(source: T): Trackable<T>
 		trackable._gets[key] = <never>0;
 		trackable._sets[key] = <never>0;
 
-		Object.defineProperty(source, key,
-		{
+		Object.defineProperty(source, key, {
 			get: function()
 			{
 				trackable._gets[key]++;

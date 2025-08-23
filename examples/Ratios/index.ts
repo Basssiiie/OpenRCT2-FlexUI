@@ -14,7 +14,7 @@ const ratios = window({
 				label({
 					text: "#1",
 					alignment: "centred",
-					padding: [ "50%", 0 ]
+					padding: ["50%", 0]
 				})
 			),
 			vertical([
@@ -22,7 +22,7 @@ const ratios = window({
 					label({
 						text: "#2",
 						alignment: "centred",
-						padding: [ "50%", 0 ]
+						padding: ["50%", 0]
 					})
 				),
 				horizontal([
@@ -32,7 +32,7 @@ const ratios = window({
 								label({
 									text: "#5",
 									alignment: "centred",
-									padding: [ "50%", 0 ]
+									padding: ["50%", 0]
 								})
 							),
 							vertical([
@@ -40,14 +40,14 @@ const ratios = window({
 									label({
 										text: "#6",
 										alignment: "centred",
-										padding: [ "50%", 0 ]
+										padding: ["50%", 0]
 									})
 								),
 								box(
 									label({
 										text: ":-)",
 										alignment: "centred",
-										padding: [ "50%", 0 ]
+										padding: ["50%", 0]
 									})
 								)
 							])
@@ -56,7 +56,7 @@ const ratios = window({
 							label({
 								text: "#4",
 								alignment: "centred",
-								padding: [ "50%", 0 ]
+								padding: ["50%", 0]
 							})
 						)
 					]),
@@ -64,7 +64,7 @@ const ratios = window({
 						label({
 							text: "#3",
 							alignment: "centred",
-							padding: [ "50%", 0 ]
+							padding: ["50%", 0]
 						})
 					)
 				])

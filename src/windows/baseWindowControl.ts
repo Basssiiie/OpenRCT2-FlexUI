@@ -164,7 +164,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 			const newWidth = window.width;
 			const newHeight = window.height;
 			const widthSame = (flags & WindowFlags.AutoWidth || this._width == newWidth);
-			const heightSame =  (flags & WindowFlags.AutoHeight || this._height == newHeight);
+			const heightSame = (flags & WindowFlags.AutoHeight || this._height == newHeight);
 			if (widthSame && heightSame)
 			{
 				return; // nothing has changed, do nothing

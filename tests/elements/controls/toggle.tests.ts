@@ -103,27 +103,27 @@ test("Is pressed store does not update store", t =>
 	call(widget.onClick);
 	t.true(widget.isPressed);
 	t.false(pressed.get());
-	t.deepEqual(hits, [ true ]);
+	t.deepEqual(hits, [true]);
 
 	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.false(pressed.get());
-	t.deepEqual(hits, [ true, false ]);
+	t.deepEqual(hits, [true, false]);
 
 	pressed.set(true); // does react to store changes
 	t.true(widget.isPressed);
 	t.true(pressed.get());
-	t.deepEqual(hits, [ true, false ]);
+	t.deepEqual(hits, [true, false]);
 
 	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.true(pressed.get());
-	t.deepEqual(hits, [ true, false, false ]);
+	t.deepEqual(hits, [true, false, false]);
 
 	pressed.set(false); // does react to store changes
 	t.false(widget.isPressed);
 	t.false(pressed.get());
-	t.deepEqual(hits, [ true, false, false ]);
+	t.deepEqual(hits, [true, false, false]);
 });
 
 
@@ -136,7 +136,7 @@ test("Change event gets called", t =>
 	const template = window({
 		width: 100, height: 100,
 		content: [
-			toggle({ onChange: (pressed) => hits.push(pressed) })
+			toggle({ onChange: pressed => hits.push(pressed) })
 		]
 	});
 	template.open();
@@ -145,12 +145,12 @@ test("Change event gets called", t =>
 	t.deepEqual(hits, []);
 
 	call(widget.onClick);
-	t.deepEqual(hits, [ true ]);
+	t.deepEqual(hits, [true]);
 
 	call(widget.onClick);
 	call(widget.onClick);
 	call(widget.onClick);
-	t.deepEqual(hits, [ true, false, true, false ]);
+	t.deepEqual(hits, [true, false, true, false]);
 });
 
 
@@ -186,15 +186,15 @@ test("Two-way bindings update toggle", t =>
 	call(widget.onClick);
 	t.true(widget.isPressed);
 	t.true(isPressed.get());
-	t.deepEqual(hits, [ true ]);
+	t.deepEqual(hits, [true]);
 
 	call(widget.onClick);
 	t.false(widget.isPressed);
 	t.false(isPressed.get());
-	t.deepEqual(hits, [ true, false ]);
+	t.deepEqual(hits, [true, false]);
 
 	isPressed.set(true);
 	t.true(widget.isPressed);
 	t.true(isPressed.get());
-	t.deepEqual(hits, [ true, false ]);
+	t.deepEqual(hits, [true, false]);
 });

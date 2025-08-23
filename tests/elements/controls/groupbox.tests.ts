@@ -74,11 +74,11 @@ test("Groupbox applies padding and default gap", t =>
 				spacing: "4px",
 				content: [
 					button({
-						padding: [ 4, 6 ],
+						padding: [4, 6],
 						text: "inside a box!"
 					}),
 					button({
-						padding: [ 2, 1 ],
+						padding: [2, 1],
 						text: "labelled"
 					})
 				]

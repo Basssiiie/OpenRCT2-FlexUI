@@ -152,7 +152,10 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		const binder = output.binder;
 		binder.add(this, "items", params.items);
 		binder.add(this, "selectedCell", selected);
-		binder.callback(this, "onClick", selected,
+		binder.callback(
+			this,
+			"onClick",
+			selected,
 			// Unwrap RowColumn parameter to separate row and column for optionally supplied user callback.
 			onClick && ((cell: RowColumn | null): void =>
 			{
@@ -161,8 +164,10 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 					onClick(cell.row, cell.column);
 				}
 			}),
-			// Avoid allocating new object and extra callback if user clicked same cell.
-			// This also prevents bound stores from sending out duplicate updates.
+			/*
+			 * Avoid allocating new object and extra callback if user clicked same cell.
+			 * This also prevents bound stores from sending out duplicate updates.
+			 */
 			(row: number, column: number) =>
 			{
 				const last = read(this._selected);
@@ -244,7 +249,8 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		// If there is none, pass it to OpenRCT2 and forget about it.
 		for (let i = 0; i < count; i++)
 		{
-			const column = <Partial<ListViewColumn>>columns[i], width = columWidths[i];
+			const column = <Partial<ListViewColumn>>columns[i];
+			const width = columWidths[i];
 
 			if (type == ScaleType.Pixel)
 			{

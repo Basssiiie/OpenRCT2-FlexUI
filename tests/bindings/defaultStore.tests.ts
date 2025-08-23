@@ -36,7 +36,7 @@ test("set() triggers subscription", t =>
 	});
 	source.set("Pineapple");
 
-	t.deepEqual(events, [ "hit" ]);
+	t.deepEqual(events, ["hit"]);
 });
 
 
@@ -51,14 +51,15 @@ test("subscription receives new value", t =>
 	});
 	source.set("Pineapple");
 
-	t.deepEqual(events, [ "Pineapple" ]);
+	t.deepEqual(events, ["Pineapple"]);
 });
 
 
 test("set() triggers multiple subscriptions", t =>
 {
 	t.plan(6);
-	let first = false, second = false;
+	let first = false;
+	let second = false;
 
 	const source = store("Cheese");
 	source.subscribe(v =>

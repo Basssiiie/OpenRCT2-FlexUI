@@ -60,8 +60,7 @@ class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
 		const selectedIndex = getOrConvertToTwoWayBinding(params.selectedIndex, 0);
 
 		// Setup internal spinner control
-		const spinParams: SpinnerParams =
-		{
+		const spinParams: SpinnerParams = {
 			tooltip: params.tooltip,
 			disabled: params.disabled,
 			visibility: params.visibility,
@@ -71,8 +70,7 @@ class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
 			onChange: params.onChange
 		};
 
-		// If items is a store, ensure the spinner maximum is always updated
-		// when the item list changes.
+		// If items is a store, ensure the spinner maximum is always updated when the item list changes.
 		const items = <Bindable<string[]> | undefined>params.items;
 		if (isStore(items))
 		{

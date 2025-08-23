@@ -52,10 +52,10 @@ test("Decorate can silence inner calls", t =>
 	const store = new DefaultWritableStore(12);
 	store.subscribe(v => hits.push(`store ${v}`));
 
-	const decorator = decorate(store, (v) =>
+	const decorator = decorate(store, value =>
 	{
-		hits.push(`before ${v}`);
-		hits.push(`after ${v}`);
+		hits.push(`before ${value}`);
+		hits.push(`after ${value}`);
 	});
 	decorator.subscribe(v => hits.push(`decorator ${v}`));
 

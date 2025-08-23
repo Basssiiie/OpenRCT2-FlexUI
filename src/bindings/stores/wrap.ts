@@ -1,8 +1,8 @@
 import { store } from "./createStore";
 import { isStore } from "./isStore";
-import { WritableStore } from "./writableStore";
 import { Store } from "./store";
 import { subscribe } from "./subscribe";
+import { WritableStore } from "./writableStore";
 
 /**
  * Creates a store for the specified value. If the value is a store already, a subscribed copy will be returned.

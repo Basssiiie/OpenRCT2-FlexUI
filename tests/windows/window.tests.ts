@@ -113,8 +113,7 @@ test("Simple window with viewmodel", t =>
 {
 	globalThis.ui = Mock.ui();
 
-	const model =
-	{
+	const model = {
 		title: store("better window"),
 		text: store("hello world")
 	};
@@ -680,7 +679,7 @@ test("Window close method calls on close event", t =>
 	const instance = template.open();
 	instance.close();
 
-	t.deepEqual(calls, [ "close it" ]);
+	t.deepEqual(calls, ["close it"]);
 });
 
 

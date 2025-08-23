@@ -26,10 +26,7 @@ export function widget<I, P>(params: WidgetParams & I): WidgetCreator<I, P>
 
 
 // All keys that should be ignored on the params object.
-const omittedKeys =
-[
-	"x", "y", "width", "height", "name", "tooltip", "isVisible", "isDisabled"
-];
+const omittedKeys = ["x", "y", "width", "height", "name", "tooltip", "isVisible", "isDisabled"];
 
 
 /**

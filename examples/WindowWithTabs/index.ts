@@ -67,7 +67,7 @@ const windowWithTabs = tabwindow({
 			content: [
 				dropdown({
 					width: 100,
-					items: [ "Zero", "One", "Two", "Three" ],
+					items: ["Zero", "One", "Two", "Three"],
 					selectedIndex: twoway(value),
 					onChange: val => updateSource(val, "dropdown, tab 2")
 				})

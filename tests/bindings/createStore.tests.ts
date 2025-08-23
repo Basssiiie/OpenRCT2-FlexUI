@@ -22,9 +22,9 @@ test("store() creates store with string value", t =>
 
 test("arrayStore() creates store with filled array", t =>
 {
-	const store = arrayStore([ "Bob", "Tom" ]);
+	const store = arrayStore(["Bob", "Tom"]);
 
-	t.deepEqual(store.get(), [ "Bob", "Tom" ]);
+	t.deepEqual(store.get(), ["Bob", "Tom"]);
 });
 
 

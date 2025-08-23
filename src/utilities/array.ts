@@ -36,23 +36,3 @@ export function find<T>(array: T[], predicate: (item: T) => boolean): T | null
 	const idx = findIndex(array, predicate);
 	return (idx === null) ? null : array[idx];
 }
-
-
-/**
- * Returns a copy of a section of an array.
- */
-/* export function slice<T>(array: ArrayLike<T>, start: number, end?: number): T[]
-{
-	end ||= array.length;
-
-	const result = Array<T>(end - start);
-	let idx = start;
-
-	for (; idx < end; idx++)
-	{
-		result[idx - start] = array[idx];
-	}
-
-	return result;
-}
- */

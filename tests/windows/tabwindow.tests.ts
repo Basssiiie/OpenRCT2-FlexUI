@@ -214,7 +214,7 @@ test("Window with tabs errors with weighted widget in auto-sized tab", t =>
 			tab({
 				image: 25, width: "auto", height: "auto",
 				content: [
-					button({ text: "tab 1 button"  })
+					button({ text: "tab 1 button" })
 				]
 			})
 		]
@@ -353,7 +353,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 
 	const template = tabwindow({
 		title: "test tab window",
-		colours: [ Colour.Aquamarine, Colour.BrightGreen, Colour.SalmonPink ],
+		colours: [Colour.Aquamarine, Colour.BrightGreen, Colour.SalmonPink],
 		width: 200, height: 150,
 		padding: 10,
 		startingTab: 1,
@@ -385,7 +385,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 	t.is(created.height, 150);
 	t.is(created.widgets.length, 2);
 	t.is(created.tabIndex, 1);
-	t.deepEqual(created.colours, [ Colour.Aquamarine, Colour.BrightGreen, Colour.SalmonPink ]);
+	t.deepEqual(created.colours, [Colour.Aquamarine, Colour.BrightGreen, Colour.SalmonPink]);
 
 	const label1 = <LabelWidget>created.widgets[0];
 	t.is(label1.type, "label");
@@ -460,19 +460,19 @@ test("Window and tab events execute", t =>
 		onClose() { hits.push("window close"); },
 		tabs: [
 			tab({
-				image: 456, content: [ label({ text: "1" }) ],
+				image: 456, content: [label({ text: "1" })],
 				onOpen() { hits.push("tab 1 open"); },
 				onUpdate() { hits.push("tab 1 update"); },
 				onClose() { hits.push("tab 1 close"); }
 			}),
 			tab({
-				image: 123, content: [ label({ text: "2" }) ],
+				image: 123, content: [label({ text: "2" })],
 				onOpen() { hits.push("tab 2 open"); },
 				onUpdate() { hits.push("tab 2 update"); },
 				onClose() { hits.push("tab 2 close"); }
 			}),
 			tab({
-				image: 884, content: [ label({ text: "3" }) ],
+				image: 884, content: [label({ text: "3" })],
 				onOpen() { hits.push("tab 3 open"); },
 				onUpdate() { hits.push("tab 3 update"); },
 				onClose() { hits.push("tab 3 close"); }
@@ -519,7 +519,7 @@ test("Window close method calls on close event", t =>
 	const instance = template.open();
 	instance.close();
 
-	t.deepEqual(calls, [ "close it" ]);
+	t.deepEqual(calls, ["close it"]);
 });
 
 
@@ -530,25 +530,25 @@ test("Window and tab events with static content execute", t =>
 	const hits: string[] = [];
 	const template = tabwindow({
 		width: 200, height: 150, startingTab: 2,
-		static: [ label({ text: "static" }) ],
+		static: [label({ text: "static" })],
 		onOpen() { hits.push("window open"); },
 		onUpdate() { hits.push("window update"); },
 		onClose() { hits.push("window close"); },
 		tabs: [
 			tab({
-				image: 456, content: [ label({ text: "1" }) ],
+				image: 456, content: [label({ text: "1" })],
 				onOpen() { hits.push("tab 1 open"); },
 				onUpdate() { hits.push("tab 1 update"); },
 				onClose() { hits.push("tab 1 close"); }
 			}),
 			tab({
-				image: 123, content: [ label({ text: "2" }) ],
+				image: 123, content: [label({ text: "2" })],
 				onOpen() { hits.push("tab 2 open"); },
 				onUpdate() { hits.push("tab 2 update"); },
 				onClose() { hits.push("tab 2 close"); }
 			}),
 			tab({
-				image: 884, content: [ label({ text: "3" }) ],
+				image: 884, content: [label({ text: "3" })],
 				onOpen() { hits.push("tab 3 open"); },
 				onUpdate() { hits.push("tab 3 update"); },
 				onClose() { hits.push("tab 3 close"); }
@@ -753,16 +753,16 @@ test("Window and tab rebind to stores on each tab change", t =>
 	const tooltipStore = store("hello");
 	const template = tabwindow({
 		width: 200, height: 150,
-		static: [ label({ text: "static", tooltip: tooltipStore }) ],
+		static: [label({ text: "static", tooltip: tooltipStore })],
 		tabs: [
 			tab({
-				image: 456, content: [ label({ text: "1", tooltip: tooltipStore }) ]
+				image: 456, content: [label({ text: "1", tooltip: tooltipStore })]
 			}),
 			tab({
-				image: 123, content: [ label({ text: "2", tooltip: tooltipStore }) ]
+				image: 123, content: [label({ text: "2", tooltip: tooltipStore })]
 			}),
 			tab({
-				image: 884, content: [ label({ text: "3", tooltip: tooltipStore }) ]
+				image: 884, content: [label({ text: "3", tooltip: tooltipStore })]
 			})
 		]
 	});
@@ -1096,10 +1096,10 @@ test("Window with tabs does single redraw after tabs switch", t =>
 
 	created.tabIndex = 1;
 	call(created.onTabChange);
-	t.deepEqual(hits, [ "redraw" ]);
+	t.deepEqual(hits, ["redraw"]);
 
 	call(created.onUpdate);
-	t.deepEqual(hits, [ "redraw" ]);
+	t.deepEqual(hits, ["redraw"]);
 });
 
 
@@ -1548,11 +1548,11 @@ test("Window with tabs auto resizes on tab changes with auto height and resizabl
 		tabs: [
 			tab({
 				image: 1,
-				content: [ button({ height: 300 }) ]
+				content: [button({ height: 300 })]
 			}),
 			tab({
 				image: 2,
-				content: [ button({ height: 50 }) ]
+				content: [button({ height: 50 })]
 			})
 		]
 	});
@@ -1643,11 +1643,11 @@ test("Window with tabs with manually resized tab should not reset on tab switch 
 		tabs: [
 			tab({
 				image: 4,
-				content: [ button({ text: "tab 1" }) ]
+				content: [button({ text: "tab 1" })]
 			}),
 			tab({
 				image: 4,
-				content: [ button({ text: "tab 2" }) ]
+				content: [button({ text: "tab 2" })]
 			})
 		]
 	});
@@ -1702,7 +1702,7 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 		width: 200, height: 100,
 		tabs: [
 			tab({ image: 3, content: [] }),
-			tab({ image: 4, content: [ button({ text }) ]})
+			tab({ image: 4, content: [button({ text })]})
 		]
 	});
 	template.open();
