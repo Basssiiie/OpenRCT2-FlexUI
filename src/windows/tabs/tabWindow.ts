@@ -31,10 +31,9 @@ export interface TabWindowParams extends BaseWindowParams
 	 *
 	 * Usage:
 	 *  1. Used for the window background at the top.
-	 *  2. Used for the background of each tab.
-	 *  3. Used for widget details and backgrounds.
+	 *  2. Used for the background and the content of each tab.
 	 */
-	colours?: [Colour, Colour, Colour];
+	colours?: [Colour, Colour];
 
 	/**
 	 * Specify which tab the window should open on. Starts at 0.

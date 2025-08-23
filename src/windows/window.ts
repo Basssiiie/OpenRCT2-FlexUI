@@ -21,8 +21,8 @@ export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayou
 	 * The colours of the window.
 	 *
 	 * Usage:
-	 *  1. Used for the window background.
-	 *  2. Used for widget backgrounds.
+	 *  1. Used for the window bar with the title and the 'x' at the top.
+	 *  2. Used for the rest of the window.
 	 */
 	colours?: [Colour, Colour];
 }
