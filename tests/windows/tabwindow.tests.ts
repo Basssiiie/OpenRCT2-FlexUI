@@ -1538,6 +1538,51 @@ test("Window with tabs relayouts static on tab switch if window size changed", t
 });
 
 
+test("Window with tabs auto resizes on tab changes with auto height and resizable width", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: { value: 200, min: 100, max: 400 },
+		height: "auto",
+		tabs: [
+			tab({
+				image: 1,
+				content: [ button({ height: 300 }) ]
+			}),
+			tab({
+				image: 2,
+				content: [ button({ height: 50 }) ]
+			})
+		]
+	});
+
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 200);
+	t.is(created.height, 300 + 10 + 44);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.x, 5);
+	t.is(button1.y, 44 + 5);
+	t.is(button1.width, 200 - 10);
+	t.is(button1.height, 300);
+
+	created.tabIndex = 1;
+	call(created.onTabChange);
+
+	t.is(created.width, 200);
+	t.is(created.height, 50 + 10 + 44);
+
+	const button2 = <ButtonWidget>created.widgets[0];
+	t.is(button2.x, 5);
+	t.is(button2.y, 44 + 5);
+	t.is(button2.width, 200 - 10);
+	t.is(button2.height, 50);
+});
+
+
 test("Window with tabs does auto resizes to body size changes", t =>
 {
 	globalThis.ui = Mock.ui();

@@ -69,7 +69,7 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, 
 function setWindowSize(window: WindowDesc | Window, direction: Axis, size: number, min: number | undefined, max: number | undefined): void
 {
 	Log.debug("Window.resize();", sizeKeys[direction], "=", size, ", min =", min, ", max =", max);
-	window[sizeKeys[direction]] = size;
 	window[minKeys[direction]] = min;
 	window[maxKeys[direction]] = max;
+	window[sizeKeys[direction]] = size;
 }
