@@ -1633,6 +1633,66 @@ test("Window with tabs does auto resizes to body size changes", t =>
 });
 
 
+test("Window with tabs with manually resized tab should not reset on tab switch if using same settings", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: { value: 600, min: 450, max: 750 },
+		height: { value: 200, min: 100, max: 400 },
+		tabs: [
+			tab({
+				image: 4,
+				content: [ button({ text: "tab 1" }) ]
+			}),
+			tab({
+				image: 4,
+				content: [ button({ text: "tab 2" }) ]
+			})
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 600);
+	t.is(created.height, 200);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.text, "tab 1");
+	t.is(button1.x, 5);
+	t.is(button1.y, 44 + 5);
+	t.is(button1.width, 600 - 10);
+	t.is(button1.height, 200 - (44 + 10));
+
+	// trigger resize
+	created.width = 500;
+	created.height = 250;
+	call(created.onUpdate);
+
+	t.is(created.width, 500);
+	t.is(created.height, 250);
+
+	t.is(button1.text, "tab 1");
+	t.is(button1.x, 5);
+	t.is(button1.y, 44 + 5);
+	t.is(button1.width, 500 - 10);
+	t.is(button1.height, 250 - (44 + 10));
+
+	created.tabIndex = 1;
+	call(created.onTabChange);
+
+	t.is(created.width, 500);
+	t.is(created.height, 250);
+
+	const button2 = <ButtonWidget>created.widgets[0];
+	t.is(button2.text, "tab 2");
+	t.is(button2.x, 5);
+	t.is(button2.y, 44 + 5);
+	t.is(button2.width, 500 - 10);
+	t.is(button2.height, 250 - (44 + 10));
+});
+
+
 test("Window with tabs and bindings resets properly to first tab after close", t =>
 {
 	globalThis.ui = Mock.ui();

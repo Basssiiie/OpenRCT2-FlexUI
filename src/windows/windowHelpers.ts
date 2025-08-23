@@ -46,8 +46,7 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis
 	const min = scale.min || size;
 	const max = scale.max || size;
 
-	setWindowSize(window, direction, size, min, max);
-	return size;
+	return setWindowSize(window, direction, size, min, max);
 }
 
 export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
@@ -61,15 +60,21 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, 
 	{
 		Log.thrown("Padding for " + directionKey + " must be absolute for auto window resize.");
 	}
-	setWindowSize(window, direction, size, size, size);
-	return size;
+	return setWindowSize(window, direction, size, size, size);
 }
 
 
-function setWindowSize(window: WindowDesc | Window, direction: Axis, size: number, min: number | undefined, max: number | undefined): void
+function setWindowSize(window: WindowDesc | Window, direction: Axis, size: number, min: number, max: number): number
 {
 	Log.debug("Window.resize();", sizeKeys[direction], "=", size, ", min =", min, ", max =", max);
+
 	window[minKeys[direction]] = min;
 	window[maxKeys[direction]] = max;
-	window[sizeKeys[direction]] = size;
+
+	// Prioritize previous size if it fits in min/max constraints.
+	const sizeKey = sizeKeys[direction];
+	const current = window[sizeKey];
+	return window[sizeKey] = (current && min <= current && current <= max)
+		? current
+		: size;
 }
