@@ -44,6 +44,14 @@ export interface TabWindowParams extends BaseWindowParams
 
 	/**
 	 * Specify the tabs that this window has.
+     *
+     * @example
+	 * const template = tabwindow({
+     *     tabs: [
+     *         tab({ image: "copy", content: [button()] }),
+     *         tab({ image: "paste" })
+     *     ]
+	 * })
 	 */
 	tabs: TabCreator[];
 
@@ -64,7 +72,6 @@ export interface TabWindowParams extends BaseWindowParams
  *
  * @example
  * const template = tabwindow({ title: "Hello world!" })
- *
  * template.open()
  */
 export function tabwindow(params: TabWindowParams): WindowTemplate;
@@ -77,11 +84,10 @@ export function tabwindow(params: TabWindowParams): WindowTemplate;
  *     header: store("Hello world!")
  * }
  *
- * const template = tabwindow<MyModel>(model =>
+ * const template = tabwindow((model: MyModel) =>
  * ({
  *     title: model.header
  * }))
- *
  * template.open(new MyModel())
  */
 export function tabwindow<TModel extends object>(params: (model: TModel) => TabWindowParams): WindowTemplate<TModel>;

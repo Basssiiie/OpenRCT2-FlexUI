@@ -33,7 +33,6 @@ export interface WindowParams extends BaseWindowParams, FlexibleDirectionalLayou
  *
  * @example
  * const template = window({ title: "Hello world!" })
- *
  * template.open()
  */
 export function window(params: WindowParams): WindowTemplate;
@@ -46,11 +45,10 @@ export function window(params: WindowParams): WindowTemplate;
  *     header: store("Hello world!")
  * }
  *
- * const template = window<MyModel>(model =>
+ * const template = window((model: MyModel) =>
  * ({
  *     title: model.header
  * }))
- *
  * template.open(new MyModel())
  */
 export function window<TModel extends object>(params: (model: TModel) => WindowParams): WindowTemplate<TModel>;
