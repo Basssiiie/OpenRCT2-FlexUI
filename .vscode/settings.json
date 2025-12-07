@@ -1,5 +1,8 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
+	"files.associations": {
+		"api-extractor.json": "jsonc"
+	},
 	"files.exclude": {
 		"**/.nyc_output": true
 	}

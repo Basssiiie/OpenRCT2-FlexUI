@@ -21,12 +21,13 @@
 		"lib": [ "ES5", "ES2015.Iterable" ],
 	},
 	"include": [
-		"./lib/**/*.ts",
-		"./src/**/*.ts",
-		"./tests/**/*.ts"
+		"docs/**/*.ts",
+		"lib/**/*.ts",
+		"src/**/*.ts",
+		"tests/**/*.ts"
 	],
 	"exclude": [
-		"./dist/**/*"
+		"dist"
 	],
 	"noEmit": true
 }

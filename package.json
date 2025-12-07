@@ -108,5 +108,10 @@
 		"npm": {
 			"tag": "next"
 		}
+	},
+	"dependencies": {
+		"@microsoft/api-extractor": "^7.52.11",
+		"@microsoft/api-extractor-model": "^7.30.7",
+		"@microsoft/tsdoc": "^0.15.1"
 	}
 }
