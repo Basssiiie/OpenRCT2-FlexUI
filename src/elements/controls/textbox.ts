@@ -2,7 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -41,25 +41,25 @@ export interface TextBoxParams extends ElementParams
  */
 export function textbox(params: TextBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function textbox(params: TextBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function textbox<I extends SizeParams, P>(params: TextBoxParams & I): WidgetCreator<I, P>
+export function textbox<Position extends SizeParams>(params: TextBoxParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new TextBoxControl(parent, output, params);
+	return toWidgetCreator(params, TextBoxControl);
 }
 
 
 /**
  * A controller class for a textbox widget.
  */
-class TextBoxControl<I, P> extends Control<TextBoxDesc, I, P> implements TextBoxDesc, TextBoxParams
+class TextBoxControl<Position> extends Control<TextBoxDesc, Position> implements TextBoxDesc, TextBoxParams
 {
 	text?: string;
 	maxLength?: number;
 	onChange?: (text: string) => void;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: TextBoxParams & I)
+	constructor(parent: ParentControl, output: BuildOutput, params: TextBoxParams & Position)
 	{
 		super("textbox", parent, output, params);
 

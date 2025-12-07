@@ -1,6 +1,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
+import { DefaultWritableStore } from "@src/bindings/stores/defaultWritableStore";
 import { button } from "@src/elements/controls/button";
 import { groupbox } from "@src/elements/controls/groupbox";
 import { label } from "@src/elements/controls/label";
@@ -920,4 +921,63 @@ test("Template can open multiple windows with viewmodels", t =>
 	model2.label.set("Goodbye!");
 	t.is((<LabelWidget>created[0].widgets[0]).text, "Hello!");
 	t.is((<LabelWidget>created[1].widgets[0]).text, "Goodbye!");
+});
+
+
+test("Template should keep one binding per window", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	class OpenStore<T> extends DefaultWritableStore<T>
+	{
+		subscribers() { return this._listeners?.length; }
+	}
+	class Model
+	{
+		inner = new OpenStore("Hi!");
+	}
+	const outer = new OpenStore("Hey!");
+
+	const template = window<Model>(model =>
+	({
+		mode: "multiple",
+		width: 200, height: 100,
+		content: [
+			label({ text: model.inner }),
+			label({ text: outer })
+		]
+	}));
+
+	const model1 = new Model();
+	const model2 = new Model();
+
+	const instance1 = template.open(model1);
+	const instance2 = template.open(model2);
+	t.true(instance1.isOpen());
+	t.true(instance2.isOpen());
+	t.is(model1.inner.subscribers(), 1);
+	t.is(model2.inner.subscribers(), 1);
+	t.is(outer.subscribers(), 2);
+
+	instance1.close();
+	t.false(instance1.isOpen());
+	t.true(instance2.isOpen());
+	t.is(model1.inner.subscribers(), 0);
+	t.is(model2.inner.subscribers(), 1);
+	t.is(outer.subscribers(), 1);
+
+	instance2.close();
+	t.false(instance1.isOpen());
+	t.false(instance2.isOpen());
+	t.is(model1.inner.subscribers(), 0);
+	t.is(model2.inner.subscribers(), 0);
+	t.is(outer.subscribers(), 0);
+
+	const instance3 = template.open(model1);
+	t.true(instance3.isOpen());
+	t.false(instance1.isOpen());
+	t.false(instance2.isOpen());
+	t.is(model1.inner.subscribers(), 1);
+	t.is(model2.inner.subscribers(), 0);
+	t.is(outer.subscribers(), 1);
 });

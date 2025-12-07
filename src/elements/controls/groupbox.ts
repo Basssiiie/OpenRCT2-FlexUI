@@ -3,8 +3,8 @@ import { Axis } from "@src/positional/axis";
 import { Padding } from "@src/positional/padding";
 import { Scale } from "@src/positional/scale";
 import { isUndefined } from "@src/utilities/type";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
-import { ParsedSize, SizeParams } from "../../positional/size";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { SizeParams } from "../../positional/size";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutControl } from "../layouts/flexible/flexible";
@@ -46,7 +46,7 @@ export function groupbox(params: BoxContainer[] & FlexiblePosition): WidgetCreat
 export function groupbox(params: BoxContainer[] & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function groupbox(params: GroupBoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function groupbox(params: GroupBoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function groupbox<I extends SizeParams, P extends ParsedSize>(params: (GroupBoxParams | BoxContainer[]) & I): WidgetCreator<I, P>
+export function groupbox<Position extends SizeParams>(params: (GroupBoxParams | BoxContainer[]) & Position): WidgetCreator<Position>
 {
 	let content: BoxContainer[],
 		gap: Padding | undefined,
@@ -70,9 +70,9 @@ export function groupbox<I extends SizeParams, P extends ParsedSize>(params: (Gr
 		content = params;
 	}
 
-	const boxParams = <BoxParams & I><never>params;
+	const boxParams = <BoxParams & Position><never>params;
 	const flexParams = { content, direction, spacing, padding: gap };
-	boxParams.content = <WidgetCreator<FlexiblePosition>>((parent, output) => new FlexibleLayoutControl(parent, output, flexParams));
+	boxParams.content = toWidgetCreator(flexParams, FlexibleLayoutControl);
 
-	return (parent, output) => new BoxControl<I, P>(parent, output, boxParams);
+	return toWidgetCreator(params, BoxControl);
 }

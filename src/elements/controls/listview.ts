@@ -12,8 +12,7 @@ import { Scale } from "@src/positional/scale";
 import { round } from "@src/utilities/math";
 import { isString, isUndefined } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { defaultScale, zeroPadding, zeroScale } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -117,16 +116,16 @@ export interface ListViewParams extends ElementParams
  */
 export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function listview<I, P>(params: ListViewParams & I): WidgetCreator<I, P>
+export function listview<Position>(params: ListViewParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new ListViewControl<I, P>(parent, output, params);
+	return toWidgetCreator(ListViewControl, params);
 }
 
 
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<ListViewDesc, "selectedCell"> // ListViewDesc.selectedCell does not support `null`
+class ListViewControl<Position> extends Control<ListViewDesc, Position> implements Omit<ListViewDesc, "selectedCell"> // ListViewDesc.selectedCell does not support `null`
 {
 	showColumnHeaders: boolean;
 	columns: Partial<ListViewColumn>[];
@@ -143,9 +142,9 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 	_selected?: Bindable<RowColumn | null>;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ListViewParams & I)
+	constructor(output: BuildOutput, params: ListViewParams & Position)
 	{
-		super("listview", parent, output, params);
+		super("listview", output, params);
 
 		const selected = params.selectedCell;
 		const onClick = params.onClick;

@@ -11,7 +11,7 @@ export interface FrameContext
 	isOpen(): boolean;
 
 	/**
-	 * Gets a widget editor from the window or tab by name. Returns 'null' if the widget is not present.
+	 * Gets a widget from the window or tab by name. Returns 'null' if the widget is not present.
 	 */
 	getWidget<T extends Widget>(name: string): T | null;
 	getWidget(name: string): Widget | null;

@@ -2,14 +2,14 @@ import { Bindable } from "@src/bindings/bindable";
 import { Rectangle } from "@src/positional/rectangle";
 import { TextColour } from "@src/utilities/textColour";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
+import { GridPosition } from "../layouts/grid/gridPosition";
 import { Control } from "./control";
 
 
@@ -43,28 +43,29 @@ export interface LabelParams extends ElementParams
  */
 export function label(params: LabelParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function label(params: LabelParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function label<I extends SizeParams, P>(params: LabelParams & I): WidgetCreator<I, P>
+export function label(params: LabelParams & GridPosition): WidgetCreator<GridPosition>;
+export function label<Position extends SizeParams>(params: LabelParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new LabelControl(parent, output, params);
+	return toWidgetCreator(LabelControl, params);
 }
 
 
 /**
  * A controller class for a label widget.
  */
-class LabelControl<I, P> extends Control<LabelDesc, I, P> implements LabelDesc
+class LabelControl<Position> extends Control<LabelDesc, Position> implements LabelDesc
 {
-	text = "";
+	text?: string;
 	textAlign?: TextAlignment;
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: LabelParams & I)
+	constructor(output: BuildOutput, params: LabelParams & Position)
 	{
-		super("label", parent, output, params);
+		super("label", output, params);
 
 		const binder = output.binder;
-		binder.add(this, "text", params.text);
+		binder.add(this, "text", params.text || "");
 		binder.add(this, "textAlign", params.alignment);
 	}
 

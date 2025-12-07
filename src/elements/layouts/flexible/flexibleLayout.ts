@@ -1,28 +1,23 @@
-import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { Axis } from "@src/positional/axis";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
-import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { convertToPixels } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingForDirection, sizeKeys, startKeys } from "../paddingHelpers";
+import { addScaleToStack, ParsedStack } from "../stack";
+import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 
 
 /**
  * Lay out all elements over the specified area and direction, then calls apply for each element.
  */
-export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea: Rectangle, layoutDirection: Axis, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
+export function flexibleLayout(stack: ParsedStack, elements: ParsedFlexiblePosition[], parentArea: Rectangle, layoutDirection: Axis, spacing: ParsedScale, apply: (index: number, childArea: Rectangle) => void): void
 {
 	const elementCount = elements.length;
-	if (!elementCount)
-		return;
-
-	const otherDirection = (layoutDirection == Axis.Horizontal)
-		? Axis.Vertical
-		: Axis.Horizontal;
+	const isHorizontal = (layoutDirection == Axis.Horizontal);
+	const otherDirection = isHorizontal ? Axis.Vertical : Axis.Horizontal;
 
 	// First pass: calculate available and used space.
-	const stack = parseFlexibleElements(elements, spacing, layoutDirection, otherDirection);
+	//const stack = parseFlexibleStack(elements, spacing, layoutDirection); // todo: this can probably be cached?
 	const leftoverSpace = (parentArea[sizeKeys[layoutDirection]] - stack._requestedPixels);
 	const weightedTotal = stack._requestedWeightTotal;
 	const percentileTotal = stack._requestedPercentile;
@@ -30,11 +25,18 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 
 	// Second pass: compute locations and update widgets.
 	let cursor = 0;
-	for (let i = 0; i < elementCount; i++)
+	let i = 0;
+	let parsed: ParsedFlexiblePosition;
+	for (; i < elementCount; i++)
 	{
-		const parsed = stack._elements[i];
+		parsed = elements[i];
+		if (parsed._skip)
+		{
+			continue;
+		}
+
 		const mainAxis = (cursor + parentArea[axisKeys[layoutDirection]]);
-		const mainSize = convertToPixels(parsed._mainSize, leftoverSpace, weightedTotal, percentileTotal);
+		const mainSize = convertToPixels(isHorizontal ? parsed._width : parsed._height, leftoverSpace, weightedTotal, percentileTotal);
 		const padding = parsed._padding;
 
 		const childArea = <Rectangle>{};
@@ -44,7 +46,7 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 		childArea[sizeKeys[otherDirection]] = parentArea[sizeKeys[otherDirection]];
 
 		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal, percentileTotal);
-		setSizeWithPaddingForDirection(childArea, otherDirection, parsed._otherSize, padding);
+		setSizeWithPaddingForDirection(childArea, otherDirection, isHorizontal ? parsed._height : parsed._width, padding);
 
 		apply(i, childArea);
 		cursor += spaceInPixels;
@@ -52,83 +54,53 @@ export function flexibleLayout(elements: Parsed<FlexiblePosition>[], parentArea:
 }
 
 
-// A parsed stack of widget elements.
-interface ParsedStack
+export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexiblePosition[], spacing: ParsedScale, mainDirection: Axis): number
 {
-	_elements: ParsedStackElement[];
-	_requestedPixels: number;
-	_requestedPercentile: number;
-	_requestedWeightTotal: number;
+	const elementCount = elements.length;
+	//const stack = <ParsedFlexStack>createStack(elementCount, spacing);
+	const isHorizontal = mainDirection == Axis.Horizontal;
+	let i = 0;
+	let visibleCount = 0;
+	let element: ParsedFlexiblePosition;
+
+	// First pass: parse all values to numbers.
+	for (; i < elementCount; i++)
+	{
+		element = elements[i];
+		if (element._skip)
+		{
+			continue;
+		}
+
+		const padding = element._padding;
+
+		// Add size of current element to totals
+		const size = isHorizontal ? element._width : element._height;
+		const start = padding[startKeys[mainDirection]];
+		const end = padding[endKeys[mainDirection]];
+
+		addScaleToStack(stack, size, 1);
+		addScaleToStack(stack, start, 1);
+		addScaleToStack(stack, end, 1);
+		visibleCount++;
+	}
+
+	// Parse spacing in between elements
+	addScaleToStack(stack, spacing, (visibleCount - 1));
+
+	return visibleCount;
 }
 
-// The parsed scales for a specific element.
-interface ParsedStackElement
+
+// export type ParsedFlexStack = ParsedStack & { _elements: ParsedStackElement[] };
+
+
+/**
+ * The parsed scales for a specific element.
+ */
+/* export interface ParsedStackElement
 {
 	_mainSize: ParsedScale;
 	_otherSize: ParsedScale;
 	_padding: ParsedPadding;
-}
-
-
-/**
- * Parses all specified child positions
- */
-function parseFlexibleElements(elements: Parsed<FlexiblePosition>[], spacing: ParsedScale, mainDirection: Axis, otherDirection: Axis): ParsedStack
-{
-	const elementCount = elements.length;
-	const stack: ParsedStack = {
-		_elements: Array<ParsedStackElement>(elementCount),
-		_requestedPixels: 0,
-		_requestedPercentile: 0,
-		_requestedWeightTotal: 0
-	};
-
-	// Parse spacing in between elements
-	addScaleToStack(spacing, stack, (elementCount - 1));
-
-	// First pass: parse all values to numbers.
-	for (let i = 0; i < elementCount; i++)
-	{
-		const params = elements[i];
-		const padding = params.padding;
-		const parsed: ParsedStackElement = {
-			_mainSize: params[sizeKeys[mainDirection]],
-			_otherSize: params[sizeKeys[otherDirection]],
-			_padding: padding
-		};
-		stack._elements[i] = parsed;
-
-		// Add size of current element to totals
-		const
-			size = parsed._mainSize,
-			start = parsed._padding[startKeys[mainDirection]],
-			end = parsed._padding[endKeys[mainDirection]];
-
-		addScaleToStack(size, stack, 1);
-		addScaleToStack(start, stack, 1);
-		addScaleToStack(end, stack, 1);
-	}
-	return stack;
-}
-
-
-/**
- * Adds the specified scale to the stack's weighted total or absolute space,
- * depending on whether it's a weighted or absolute scale.
- */
-function addScaleToStack(scale: ParsedScale, stack: ParsedStack, multiplier: number): void
-{
-	const value = (scale[0] * multiplier);
-	if (isWeighted(scale))
-	{
-		stack._requestedWeightTotal += value;
-	}
-	else if (isAbsolute(scale))
-	{
-		stack._requestedPixels += value;
-	}
-	else if (isPercentile(scale))
-	{
-		stack._requestedPercentile += value;
-	}
-}
+} */

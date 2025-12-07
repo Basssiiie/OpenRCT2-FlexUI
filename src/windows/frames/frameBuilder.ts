@@ -1,4 +1,6 @@
+import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
+import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Event } from "@src/utilities/event";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { BuildOutput } from "../buildOutput";
@@ -13,7 +15,7 @@ import { FrameContentParams, FrameEventParams } from "./frameParams";
 /**
  * Object that holds components required to build a final frame, such as a tab or a window.
  */
-export class FrameBuilder implements BuildOutput
+export class FrameBuilder implements BuildOutput // todo: eventually merge this one with FrameControl?
 {
 	readonly binder: WidgetBinder;
 	readonly _widgets: WidgetDesc[] = [];
@@ -46,7 +48,12 @@ export class FrameBuilder implements BuildOutput
 		this.close = close;
 		this.binder = binder;
 		this.context = context;
-		context._body = new FlexibleLayoutControl(context, this, content);
+		context._position = {
+			width: defaultScale,
+			height: defaultScale,
+			_padding: parsePadding(params.padding)
+		};
+		context._body = new FlexibleLayoutControl(this, content);
 		context._binder = (binder._hasBindings()) ? binder : null;
 
 		if (onOpen)

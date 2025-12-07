@@ -45,7 +45,7 @@ export function window(params: WindowParams): WindowTemplate;
  *     header: store("Hello world!")
  * }
  *
- * const template = window((model: MyModel) =>
+ * const template = window<MyModel>(model =>
  * ({
  *     title: model.header
  * }))
@@ -69,9 +69,9 @@ export function window<T>(params: ((model: T) => WindowParams) | WindowParams): 
  */
 class WindowControl extends BaseWindowControl
 {
-	private _frame: FrameControl;
 	protected override _descriptionWidgetMap: WidgetMap;
 
+	private readonly _frame: FrameControl;
 
 	constructor(params: WindowParams)
 	{

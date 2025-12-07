@@ -1,6 +1,6 @@
 import { BuildOutput } from "@src/windows/buildOutput";
 import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -19,9 +19,9 @@ export type WidgetParams<W extends WidgetDesc = WidgetDesc> = ElementParams
  */
 export function widget(params: WidgetParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function widget(params: WidgetParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function widget<I, P>(params: WidgetParams & I): WidgetCreator<I, P>
+export function widget<Position>(params: WidgetParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new WidgetControl(params.type, parent, output, params);
+	return toWidgetCreator(params, WidgetControl);
 }
 
 
@@ -32,11 +32,11 @@ const omittedKeys = ["x", "y", "width", "height", "name", "tooltip", "isVisible"
 /**
  * A controller class for a custom widget.
  */
-class WidgetControl<I, P> extends Control<WidgetDesc, I, P>
+class WidgetControl<Position> extends Control<WidgetDesc, Position>
 {
-	constructor(type: WidgetType, parent: ParentControl<I, P>, output: BuildOutput, params: WidgetParams & I)
+	constructor(parent: ParentControl, output: BuildOutput, params: WidgetParams & Position)
 	{
-		super(type, parent, output, params);
+		super(params.type, parent, output, params);
 
 		for (const key in params)
 		{

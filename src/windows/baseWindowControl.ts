@@ -65,17 +65,17 @@ export interface BaseWindowParams extends Paddable
 	/**
 	 * Event that gets triggered when the window is opened.
 	 */
-	onOpen?: () => void;
+	onOpen?: (this: OpenWindow) => void;
 
 	/**
 	 * Event that gets triggered for every tick the window is open.
 	 */
-	onUpdate?: () => void;
+	onUpdate?: (this: OpenWindow) => void;
 
 	/**
 	 * Event that gets triggered when the window gets closed by either the user or a plugin.
 	 */
-	onClose?: () => void;
+	onClose?: (this: OpenWindow) => void;
 }
 
 

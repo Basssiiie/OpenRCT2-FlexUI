@@ -22,7 +22,7 @@ export interface Size
 /**
  * Specifies that a parsed position has at least a width and height of the specified type.
  */
-export interface ParsedSize
+export interface ParsedSize // todo: remove?
 {
 	width: ParsedScale;
 	height: ParsedScale;

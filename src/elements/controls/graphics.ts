@@ -1,6 +1,5 @@
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
@@ -23,21 +22,21 @@ export interface GraphicsParams extends ElementParams
  */
 export function graphics(params: GraphicsParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function graphics(params: GraphicsParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function graphics<I, P>(params: GraphicsParams & I): WidgetCreator<I, P>
+export function graphics<Position>(params: GraphicsParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new GraphicsControls<I, P>(parent, output, params);
+	return toWidgetCreator(GraphicsControls, params);
 }
 
 /**
  * A controller class for a graphics drawing widget.
  */
-export class GraphicsControls<I, P> extends Control<CustomDesc, I, P> implements CustomDesc, GraphicsParams
+export class GraphicsControls<Position> extends Control<CustomDesc, Position> implements CustomDesc, GraphicsParams
 {
 	onDraw?: ((g: GraphicsContext) => void);
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: GraphicsParams & I)
+	constructor(output: BuildOutput, params: GraphicsParams & Position)
 	{
-		super("custom", parent, output, params);
+		super("custom", output, params);
 		this.onDraw = params.onDraw;
 	}
 }

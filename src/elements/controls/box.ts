@@ -1,22 +1,22 @@
 import { Bindable } from "@src/bindings/bindable";
+import { store } from "@src/bindings/stores/createStore";
+import { WritableStore } from "@src/bindings/stores/writableStore";
 import { Padding } from "@src/positional/padding";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { ScaleType } from "@src/positional/parsing/scaleType";
+import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
+import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
 import * as Log from "@src/utilities/logger";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { ParsedSize, SizeParams } from "../../positional/size";
-import { redrawEvent } from "../constants";
+import { SizeParams } from "../../positional/size";
+import { defaultScale, redrawEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { InheritFlags, getInheritanceFlags, recalculateInheritedSpaceFromChild } from "../layouts/flexible/desiredSpacing";
+import { getInheritanceFlags, InheritFlags } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
-import { parseFlexiblePosition } from "../layouts/flexible/parseFlexiblePosition";
 import { setSizeWithPadding } from "../layouts/paddingHelpers";
 import { Control } from "./control";
 
@@ -53,16 +53,23 @@ export function box(params: BoxContainer & FlexiblePosition): WidgetCreator<Flex
 export function box(params: BoxContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function box(params: BoxParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function box(params: BoxParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function box<I extends SizeParams, P extends ParsedSize>(params: (BoxParams | BoxContainer) & I): WidgetCreator<I, P>
+export function box<Position extends SizeParams>(params: (BoxParams | BoxContainer) & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new BoxControl<I, P>(parent, output, params);
+	return toWidgetCreator(BoxControl, params);
 }
 
 
 const enum BoxFlags
 {
-	RecalculateFromChildren = (InheritFlags.Count << 0),
-	AddTitlePadding = (InheritFlags.Count << 1)
+	RecalculateWidth = (InheritFlags.Count << 0),
+	RecalculateHeight = (InheritFlags.Count << 1),
+	RecalculateBoth = RecalculateWidth | RecalculateHeight,
+
+	UseStoreForWidth = (InheritFlags.Count << 2), // TODO merge with FlexFlags?
+	UseStoreForHeight = (InheritFlags.Count << 3),
+	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight,
+
+	AddTitlePadding = (InheritFlags.Count << 4)
 }
 
 const defaultBoxPadding: Padding = 6;
@@ -73,25 +80,31 @@ const trimTopWithoutTitle = 4;
 /**
  * A controller class for a groupbox widget.
  */
-export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Control<GroupBoxDesc, I, P> implements GroupBoxDesc, ParentControl<FlexiblePosition>
+export class BoxControl<Position extends SizeParams>
+	extends Control<GroupBoxDesc, Position>
+	implements GroupBoxDesc
 {
 	text?: string;
 
-	_child: Layoutable<Parsed<FlexiblePosition>>;
+	_child: Layoutable;
+	_width?: WritableStore<Scale | undefined>;
+	_height?: WritableStore<Scale | undefined>;
+	_widthParsed?: ParsedScale;
+	_heightParsed?: ParsedScale;
 	_flags: number;
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (BoxParams | BoxContainer) & I)
+	constructor(output: BuildOutput, params: (BoxParams | BoxContainer) & Position)
 	{
 		const type = "groupbox";
 		const content = "content";
 		let flags = getInheritanceFlags(params);
-		let childCreator: WidgetCreator<FlexiblePosition>;
+		let creator: WidgetCreator<FlexiblePosition>;
 
 		if (content in params)
 		{
 			// Is BoxParams (complex object)
-			super(type, parent, output, params);
-			childCreator = params[content];
+			super(type, output, params);
+			creator = params[content];
 
 			const binder = output.binder;
 			const text = params.text;
@@ -101,24 +114,58 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 		else
 		{
 			// Is BoxContainer (flat params, just a creator)
-			super(type, parent, output, <I>{});
-			childCreator = params;
+			super(type, output, <Position>{});
+			creator = params;
 		}
 
-		this._flags = (flags | BoxFlags.RecalculateFromChildren);
+		this._flags = (flags | BoxFlags.RecalculateBoth);
 
-		const child = childCreator(this, output);
+		const child = creator.create(output);
+		const position = creator.position;
+		const binder = output.binder;
+		/* const parsed = <ParsedFlexiblePosition>{
+
+		}; */
+		binder.on(position.width, (value, store) =>
+		{
+			this._widthParsed = parseScaleOrFallback(value, defaultScale);
+			this._flags |= BoxFlags.RecalculateWidth | (store ? BoxFlags.UseStoreForWidth : 0);
+			/* if (isStore)
+			{
+				const parsed = parseScaleOrFallback(value, defaultScale);
+				if (this._width)
+				{
+					this._width = store(parsed);
+				}
+				this._width = this._width ? ;
+				this._flags |= BoxFlags.RecalculateWidth;
+			} */
+		});
+		binder.on(position.height, (value, store) =>
+		{
+			this._heightParsed = parseScaleOrFallback(value, defaultScale);
+			this._flags |= BoxFlags.RecalculateHeight | (store ? BoxFlags.UseStoreForHeight : 0);
+		});
 		this._child = child;
+
+		if (flags & BoxFlags.UseStoreForWidth)
+		{
+			this._width = params.width = store<number>();
+		}
+		if (flags & BoxFlags.UseStoreForHeight)
+		{
+			this._height = params.height = store<number>();
+		}
 
 		output.on(redrawEvent, () =>
 		{
-			Log.debug("Box(", this.name, "): recalculate size from children ->", !!(this._flags & BoxFlags.RecalculateFromChildren));
-			if (this._flags & BoxFlags.RecalculateFromChildren)
+			Log.debug("Box(", this.name, "): recalculate size from children ->", !!(this._flags & BoxFlags.RecalculateBoth));
+			if (this._flags & BoxFlags.RecalculateBoth)
 			{
 				// Clear recalculate flag
-				this._flags &= ~BoxFlags.RecalculateFromChildren;
+				this._flags &= ~BoxFlags.RecalculateBoth;
 
-				if (recalculateInheritedSpaceFromChild(this.position, this._flags, this._child.position))
+				if (recalculateInheritedSpaceFromChild(this.position, this._flags, position))
 				{
 					Log.debug("Box(", this.name, "): recalculated size to", Log.stringify(this.position));
 				}
@@ -126,7 +173,7 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 		});
 	}
 
-	parse(position: FlexiblePosition): Parsed<FlexiblePosition>
+	/* parse(position: FlexiblePosition): Parsed<FlexiblePosition>
 	{
 		const defaultPadding = parsePadding(defaultBoxPadding);
 		if (this._flags & BoxFlags.AddTitlePadding)
@@ -143,7 +190,7 @@ export class BoxControl<I extends SizeParams, P extends ParsedSize> extends Cont
 		{
 			this._parent.recalculate();
 		}
-	}
+	} */
 
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{

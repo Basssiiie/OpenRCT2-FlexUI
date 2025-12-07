@@ -1,7 +1,6 @@
 import { AnyBindable } from "@src/bindings/anyBindable";
 import { Binder } from "@src/bindings/binder";
 import { Binding } from "@src/bindings/binding";
-import { Store } from "@src/bindings/stores/store";
 import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { unwrap } from "@src/bindings/twoway/unwrap";
@@ -14,13 +13,13 @@ import { isStore } from "../../bindings/stores/isStore";
  */
 export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 {
-	protected readonly _bindings: Binding<TTarget, unknown>[] = [];
+	protected readonly _bindings: Binding<unknown>[] = [];
 	protected _source: TSource | null = null;
 
 
 	add<T extends TTarget, K extends keyof T, V>(target: T, key: K, value: AnyBindable<V> | undefined, converter?: (value: V) => T[K]): void
 	{
-		this.on(target, value, (actualTarget, actualValue) =>
+		this.for(target, value, (actualTarget, actualValue) =>
 		{
 			const result = (converter) ? converter(actualValue) : actualValue;
 			actualTarget[key] = <T[K]>result;
@@ -58,21 +57,32 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		this.callback(target, outKey, value, callback);
 	}
 
-	on<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V) => void): void
+	for<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V, isStore: boolean) => void): void
+	{
+		this._createBinding<T, V>(value, <never>callback, target);
+	}
+
+	on<T>(value: AnyBindable<T> | undefined, callback: (value: T, isStore: boolean) => void): void
+	{
+		this._createBinding(value, (_, val, store) => callback(val, store));
+	}
+
+	private _createBinding<T extends TTarget, V>(value: AnyBindable<V>, callback: (target: T | undefined, value: V, isStore: boolean) => void, target?: T)
 	{
 		const underlying = unwrap(value);
 		if (isStore(underlying))
 		{
 			// bind
-			const binding = this._createBinding(target, underlying, callback);
-			this._bindings.push(<never>binding);
+			const getTarget = target ? this._getBindTarget(target) : undefined;
+			const binding = new Binding<V, TSource, T>(underlying, callback, getTarget);
+			this._bindings.push(<Binding<unknown>>binding);
 
-			callback(target, underlying.get());
+			callback(target, underlying.get(), true);
 		}
 		else if (!isUndefined(underlying))
 		{
 			// just update value
-			callback(target, underlying);
+			callback(target, underlying, false);
 		}
 	}
 
@@ -81,7 +91,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected abstract _createBinding<T extends TTarget, V>(target: T, store: Store<V>, callback: (target: T, value: V) => void): Binding<T, V>;
+	protected abstract _getBindTarget<T extends TTarget>(target: T): (source: TSource) => T | null; // maybe not necessary if we pass frame/widget map to bind?
 
 	/**
 	 * Bind a source instance to this binder.

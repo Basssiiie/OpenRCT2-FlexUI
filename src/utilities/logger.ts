@@ -120,7 +120,7 @@ export function thrown(message: string): never
  * Prints an error message to the console and an additional stacktrace
  * if the assert fails and the plugin is run in development mode.
  */
-export function assert(condition: boolean, ...messages: unknown[]): void
+export function assert(condition: boolean | null | undefined, ...messages: unknown[]): void
 {
 	if (Environment.isDevelopment && !condition)
 	{

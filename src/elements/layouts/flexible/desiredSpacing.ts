@@ -1,13 +1,13 @@
+import { Bindable } from "@src/bindings/bindable";
+import { Binder } from "@src/bindings/binder";
 import { Axis } from "@src/positional/axis";
-import { Parsed } from "@src/positional/parsing/parsed";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
 import { isNull, isUndefined } from "@src/utilities/type";
-import { Layoutable } from "@src/windows/layoutable";
 import { autoKey } from "@src/windows/windowHelpers";
-import { ParsedSize, SizeParams } from "../../../positional/size";
-import { endKeys, sizeKeys, startKeys } from "../paddingHelpers";
-import { FlexiblePosition } from "./flexiblePosition";
+import { SizeParams } from "../../../positional/size";
+import { endKeys, startKeys } from "../paddingHelpers";
+import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 
 
 /**
@@ -15,6 +15,8 @@ import { FlexiblePosition } from "./flexiblePosition";
  */
 export const enum InheritFlags
 {
+	None = 0,
+
 	Width = (1 << 0),
 	Height = (1 << 1),
 
@@ -36,9 +38,30 @@ export function getInheritanceFlags(position: SizeParams): InheritFlags
 /**
  * Returns true if the value is inheritable, or false if not.
  */
-function isInheritable(value: unknown): boolean
+export function isInheritable(value: unknown): boolean
 {
 	return (isUndefined(value) || value === autoKey);
+}
+
+
+const enum FlexFlags
+{
+	UseStoreForWidth = (InheritFlags.Count << 0),
+	UseStoreForHeight = (InheritFlags.Count << 1),
+	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight,
+
+	RecalculateWidth = (InheritFlags.Count << 2),
+	RecalculateHeight = (InheritFlags.Count << 3),
+	RecalculateBoth = RecalculateWidth | RecalculateHeight
+}
+
+export function inheritAxis(binder: Binder<unknown>, bindable: Bindable<unknown> | undefined, control: { _flags: FlexFlags }): void
+{
+	binder.on(bindable, (value, store) =>
+	{
+		parsed._width = parseScaleOrFallback(value, defaultScale);
+		control._flags |= FlexFlags.RecalculateWidth | (store ? FlexFlags.UseStoreForWidth : 0);
+	});
 }
 
 
@@ -54,16 +77,28 @@ export function recalculateInheritedSpaceFromChild(position: ParsedSize, flags: 
 /**
  * Recalculates `position` based on the size of the specified children, if the required inheritance flags are set.
  */
-export function recalculateInheritedSpaceFromChildren(position: ParsedSize, flags: InheritFlags, children: Layoutable<Parsed<FlexiblePosition>>[], spacing: ParsedScale, layoutDirection: Axis): boolean
+/* export function recalculateInheritedSpaceFromChildren(position: ParsedSize, flags: InheritFlags, children: Layoutable[], positions: Parsed<FlexiblePosition>[], spacing: ParsedScale, layoutDirection: Axis): boolean
 {
-	return recalculateInheritedSpace(position, flags, direction => getDesiredSpaceFromChildrenForDirection(children, spacing, layoutDirection, direction));
+	return recalculateInheritedSpace(position, flags, direction => getDesiredSpaceFromChildrenForDirection(children, positions, spacing, layoutDirection, direction));
+} */
+
+export function recalculateInheritedSpaceForAxis(original: ParsedScale, children: ParsedFlexiblePosition[], spacing: ParsedScale, layoutDirection: Axis, axisDirection: Axis): ParsedScale
+{
+	let value: number | null;
+	// todo: maybe inline this method call
+	if (!isNull(value = getDesiredSpaceFromChildrenForDirection(children, spacing, layoutDirection, axisDirection))
+		&& (original[0] !== value || !isAbsolute(original)))
+	{
+		return [value, ScaleType.Pixel];
+	}
+	return original;
 }
 
 
 /**
  * Recalculates `position` based on the size of the specified children, if the required inheritance flags are set.
  */
-function recalculateInheritedSpace(position: ParsedSize, flags: InheritFlags, getChildrenSpace: (direction: Axis) => number | null): boolean
+/* function recalculateInheritedSpace(position: ParsedSize, flags: InheritFlags, getChildrenSpace: (direction: Axis) => number | null): boolean
 {
 	if ((flags & InheritFlags.All)
 		&& (tryInheritSize(position, flags & InheritFlags.Width, Axis.Horizontal, getChildrenSpace)
@@ -72,13 +107,13 @@ function recalculateInheritedSpace(position: ParsedSize, flags: InheritFlags, ge
 		return true;
 	}
 	return false;
-}
+} */
 
 
 /**
  * Try to inherit the size from the child, if the inherit flag is set.
  */
-function tryInheritSize(position: ParsedSize, inheritFlag: number, direction: Axis, getChildrenSpace: (direction: Axis) => number | null): number
+/* function tryInheritSize(position: ParsedSize, inheritFlag: number, direction: Axis, getChildrenSpace: (direction: Axis) => number | null): number // todo: boolean?
 {
 	let value: number | null;
 	if (inheritFlag && !isNull(value = getChildrenSpace(direction)))
@@ -93,14 +128,14 @@ function tryInheritSize(position: ParsedSize, inheritFlag: number, direction: Ax
 		}
 	}
 	return 0;
-}
+} */
 
 
 /**
  * Gets the desired space on the parent for a single child if the child asks for
  * absolute positioning, for a single direction.
  */
-function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: Axis): number | null
+/* function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: Axis): number | null
 {
 	const
 		sizeKey = sizeKeys[direction],
@@ -114,13 +149,13 @@ function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, di
 		return (size[0] + start[0] + end[0]);
 	}
 	return null;
-}
+} */
 
 
 /**
  * Gets the total desired space for all children, if they are absolutely positioned.
  */
-function getDesiredSpaceFromChildrenForDirection(items: Layoutable<Parsed<FlexiblePosition>>[], spacing: ParsedScale, layoutDirection: Axis, axisDirection: Axis): number | null
+export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexiblePosition[], spacing: ParsedScale, layoutDirection: Axis, axisDirection: Axis): number | null
 {
 	const axisIsLayoutDirection = (layoutDirection === axisDirection);
 
@@ -131,26 +166,32 @@ function getDesiredSpaceFromChildrenForDirection(items: Layoutable<Parsed<Flexib
 	}
 
 	const
-		sizeKey = sizeKeys[axisDirection],
 		startKey = startKeys[axisDirection],
-		endKey = endKeys[axisDirection];
+		endKey = endKeys[axisDirection],
+		length = children.length;
 	let visibleSpacersCount = -1;
+	let index = 0;
+	let position: ParsedFlexiblePosition;
 
-	for (const item of items)
+	for (; index < length; index++)
 	{
+		position = children[index];
+		if (position._skip)
+		{
+			continue;
+		}
+
 		// Determine if all children are absolutely sized, and if so, then size itself accordingly.
-		const
-			position = item.position,
-			size = position[sizeKey],
-			padding = position.padding,
-			start = padding[startKey],
-			end = padding[endKey];
+		const size = axisDirection == Axis.Horizontal ? position._width : position._height;
+		const padding = position._padding;
+		const start = padding[startKey];
+		const end = padding[endKey];
 
 		if (!isAxisAbsolute(size, start, end))
 		{
 			return null;
 		}
-		if (!item.skip)
+		if (!children[index]._skip)
 		{
 			absoluteSize = addOrMax(absoluteSize, size[0] + start[0] + end[0], axisIsLayoutDirection);
 			visibleSpacersCount++;

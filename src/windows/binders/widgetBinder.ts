@@ -1,8 +1,5 @@
-import { Binding } from "@src/bindings/binding";
-import { Store } from "@src/bindings/stores/store";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
-import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { FrameControl } from "../frames/frameControl";
 import { GenericBinder } from "./genericBinder";
 
@@ -10,18 +7,17 @@ import { GenericBinder } from "./genericBinder";
 /**
  * Helper that can bind a store from a viewmodel to a widget inside a window.
  */
-export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
+export class WidgetBinder extends GenericBinder<FrameControl, Widget | WidgetBaseDesc>
 {
 	/**
 	 * Bind a source frame to this binder and specify which set of widgets to refresh.
 	 */
 	override _bind(frame: FrameControl): void
 	{
-		const widgets = frame._activeWidgets;
-		if (widgets)
+		const bindings = this._bindings;
+		for (const binding of bindings)
 		{
-			// Update the active widgets when the frame opens
-			this._refresh(widgets);
+			binding._bind(frame);
 		}
 		this._source = frame;
 	}
@@ -32,42 +28,18 @@ export class WidgetBinder extends GenericBinder<FrameControl, WidgetBaseDesc>
 	 * supplied if the value needs to be converted from an internal value to a different visual
 	 * representation of it.
 	 */
-	protected override _createBinding<T extends WidgetBaseDesc, V>(target: T, store: Store<V>, callback: (target: T, value: V) => void): Binding<T, V>
+	protected override _getBindTarget<T extends Widget | WidgetBaseDesc>(target: T): (source: FrameControl) => T | null
 	{
 		// Ensure the target widget always has a name.
-		const targetName = (target.name ||= identifier());
+		const targetName = (target.name ||= identifier()); // todo does this assign now execute too late?
 
-		return new Binding<T, V>(targetName, store, callback, (value: V): void =>
+		return (source: FrameControl): T | null =>
 		{
-			const source = this._source;
-			// Only update if source frame is active.
-			if (!source || !source.isOpen())
-			{
-				Log.debug("WidgetBinder: widget", targetName, "not active, thus not updated with value", value);
-				return;
-			}
+			Log.assert(source.isOpen(), "WidgetBinder: widget", targetName, "not active and cannot be updated");
 
 			const widget = source.getWidget(targetName);
-			if (!widget)
-			{
-				Log.debug("WidgetBinder: widget", targetName, "not found on window for updating property with value", value);
-				return;
-			}
-
-			callback(<never>widget, value);
-		});
-	}
-
-
-	/**
-	 * Updates all widgets with the values in registered bindings.
-	 */
-	private _refresh(widgets: WidgetMap): void
-	{
-		const bindings = this._bindings;
-		for (const binding of bindings)
-		{
-			binding._callback(widgets[binding._id], binding._store.get());
-		}
+			Log.assert(!!widget, "WidgetBinder: widget", targetName, "not found on window for updating property");
+			return <T>widget;
+		};
 	}
 }

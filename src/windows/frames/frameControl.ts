@@ -1,8 +1,6 @@
-import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
 import { Axis } from "@src/positional/axis";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { Size } from "@src/positional/size";
@@ -22,12 +20,13 @@ import { FrameRectangle } from "./frameRectangle";
 /**
  * An independant window component that can hold one or more widgets and manage their lifecycle.
  */
-export class FrameControl implements FrameContext, ParentControl<FramePosition, ParsedFramePosition>, TabLayoutable
+export class FrameControl implements FrameContext, ParentControl, TabLayoutable
 {
 	// eslint-disable-next-line @typescript-eslint/unbound-method
 	recalculate = this.redraw;
 
-	_body!: FlexibleLayoutControl<FramePosition, ParsedFramePosition>;
+	_position!: ParsedFramePosition;
+	_body!: FlexibleLayoutControl<FramePosition>;
 	_binder!: WidgetBinder | null;
 
 	_activeWidgets?: WidgetMap;
@@ -51,7 +50,7 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 		invoke(this._redraw, this);
 
 		const body = this._body;
-		const position = body.position;
+		const position = this._position;
 
 		const width = applyFrameScaleOption(area, this.width, position, Axis.Horizontal);
 		const height = applyFrameScaleOption(area, this.height, position, Axis.Vertical);
@@ -69,18 +68,6 @@ export class FrameControl implements FrameContext, ParentControl<FramePosition, 
 			return;
 		}
 		this._parent.redraw();
-	}
-
-	/**
-	 * Parser for the direct child body of the control.
-	 */
-	parse(position: FramePosition): ParsedFramePosition
-	{
-		return {
-			width: defaultScale,
-			height: defaultScale,
-			_padding: parsePadding(position.padding)
-		};
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters

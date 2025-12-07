@@ -1,7 +1,6 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { defaultScale } from "@src/elements/constants";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
@@ -9,27 +8,23 @@ import { ElementVisibility } from "@src/elements/elementParams";
 import { flexible, FlexibleLayoutControl, horizontal, vertical } from "@src/elements/layouts/flexible/flexible";
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
-import { parseFlexiblePosition } from "@src/elements/layouts/flexible/parseFlexiblePosition";
-import { Parsed } from "@src/positional/parsing/parsed";
-import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
 import { Event, invoke } from "@src/utilities/event";
 import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
 import { FrameContext } from "@src/windows/frames/frameContext";
 import { FrameEvent } from "@src/windows/frames/frameEvent";
-import { ParentControl } from "@src/windows/parentControl";
 import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
 
-type FlexControl = FlexibleLayoutControl<FlexiblePosition, Parsed<FlexiblePosition>>;
+type FlexControl = FlexibleLayoutControl<FlexiblePosition>;
 
-const parentMock: ParentControl<FlexiblePosition> = {
-	parse: parseFlexiblePosition,
-	recalculate(): void { /* empty */ }
-};
+// const parentMock: ParentControl<FlexiblePosition> = {
+// 	parse: parseFlexiblePosition,
+// 	recalculate(): void { /* empty */ }
+// };
 
 function createBuildOutput()
 {
@@ -71,7 +66,7 @@ test("Simple layouts with widgets", t =>
 			label({ text: "big area", alignment: "centred", height: "1w" })
 		]
 	});
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -130,7 +125,7 @@ test("Pixel sizes ignore leftover space", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -174,7 +169,7 @@ test("Percentage sizes", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -218,7 +213,7 @@ test("Weighted sizes", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -259,7 +254,7 @@ test("Relative percentage fills leftover space", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -290,7 +285,7 @@ test("Relative weight fills leftover space", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -321,7 +316,7 @@ test("Relative weight takes leftover after relative percentage", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -347,7 +342,7 @@ test("Padding: single number value", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -371,7 +366,7 @@ test("Padding: single pixel value", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -395,7 +390,7 @@ test("Padding: single percentage value", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -419,7 +414,7 @@ test("Padding: single weighted value", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -448,7 +443,7 @@ test("Padding: tuple with 2 values", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -480,7 +475,7 @@ test("Padding: weighted value with absolute size", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -505,7 +500,7 @@ test("Padding: multiple weighted values mixed with absolute sizes", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -538,7 +533,7 @@ test("Padding: included in cursor tracking", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -572,7 +567,7 @@ test("Padding: used as spacing for single element", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -608,7 +603,7 @@ test("Works without children", t =>
 		content: []
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -630,7 +625,7 @@ test("Spacing: 10 pixels between two elements", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -660,7 +655,7 @@ test("Spacing: default space between two elements", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -691,7 +686,7 @@ test("Spacing: percentile space between two elements", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -722,7 +717,7 @@ test("Spacing: weighted space between two elements", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -752,12 +747,12 @@ test("Absolute children make parent absolutely sized", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	creator.create(output);
 	invoke(output.redraw);
 
-	const pos = control.position;
-	t.deepEqual(pos.width, [35, ScaleType.Pixel]);
-	t.deepEqual(pos.height, [12, ScaleType.Pixel]);
+	const pos = creator.position;
+	t.is(pos.width, 35);
+	t.is(pos.height, 12);
 });
 
 
@@ -772,12 +767,12 @@ test("Absolutely sized parent includes spacing", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	creator.create(output);
 	invoke(output.redraw);
 
-	const pos = control.position;
-	t.deepEqual(pos.width, [35 + 8, ScaleType.Pixel]);
-	t.deepEqual(pos.height, [12, ScaleType.Pixel]);
+	const pos = creator.position;
+	t.is(pos.width, 35 + 8);
+	t.is(pos.height, 12);
 });
 
 
@@ -804,12 +799,12 @@ test("Absolute children make all parents absolutely sized", t =>
 			})
 		]
 	});
-	const control = <FlexControl>creator(parentMock, output);
+	creator.create(output);
 	invoke(output.redraw);
 
-	const pos = control.position;
-	t.deepEqual(pos.width, [20 + 20 + 33 + 8 + (3 * 4), ScaleType.Pixel]);
-	t.deepEqual(pos.height, [51, ScaleType.Pixel]);
+	const pos = creator.position;
+	t.is(pos.width, 20 + 20 + 33 + 8 + (3 * 4));
+	t.is(pos.height, 51);
 });
 
 
@@ -836,12 +831,12 @@ test("Single non-absolute child width makes parents width unknown", t =>
 			})
 		]
 	});
-	const control = <FlexControl>creator(parentMock, output);
+	creator.create(output);
 	invoke(output.redraw);
 
-	const pos = control.position;
-	t.deepEqual(pos.width, defaultScale);
-	t.deepEqual(pos.height, [51, ScaleType.Pixel]);
+	const pos = creator.position;
+	t.is(pos.width, undefined);
+	t.is(pos.height, 51);
 });
 
 
@@ -868,12 +863,12 @@ test("Single non-absolute child height makes parents height unknown", t =>
 			})
 		]
 	});
-	const control = <FlexControl>creator(parentMock, output);
+	creator.create(output);
 	invoke(output.redraw);
 
-	const pos = control.position;
-	t.deepEqual(pos.width, [20 + 10 + 33 + 8 + (3 * 4), ScaleType.Pixel]);
-	t.deepEqual(pos.height, defaultScale);
+	const pos = creator.position;
+	t.is(pos.width, 20 + 10 + 33 + 8 + (3 * 4));
+	t.is(pos.height, undefined);
 });
 
 
@@ -913,7 +908,7 @@ test("Nested layouts with boxed labels using percentage padding", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -990,7 +985,7 @@ test("Child with visibility 'none' is not updated", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -1034,7 +1029,7 @@ test("None update if all children have visibility set to 'none'", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -1080,7 +1075,7 @@ test("Child visibility is updated by store", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -1134,7 +1129,7 @@ test("Invisible childs should still count for size inheritance", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);
@@ -1148,9 +1143,9 @@ test("Invisible childs should still count for size inheritance", t =>
 	t.is(widget2.y, 3 + 2 + 10 + 15);
 	t.is(widget1.height, 15);
 	t.is(widget2.height, 25);
-	const position = control.position;
-	t.deepEqual(position.width, defaultScale);
-	t.deepEqual(position.height, defaultScale);
+	const position = creator.position;
+	t.is(position.width, undefined);
+	t.is(position.height, undefined);
 
 	visibility.set("none");
 	invoke(output.redraw);
@@ -1158,8 +1153,8 @@ test("Invisible childs should still count for size inheritance", t =>
 
 	t.is(widget1.y, 3 + 2);
 	t.is(widget1.height, 15);
-	t.deepEqual(position.width, defaultScale);
-	t.deepEqual(position.height, defaultScale);
+	t.is(position.width, undefined);
+	t.is(position.height, undefined);
 
 	visibility.set("visible");
 	invoke(output.redraw);
@@ -1169,8 +1164,8 @@ test("Invisible childs should still count for size inheritance", t =>
 	t.is(widget2.y, 3 + 2 + 10 + 15);
 	t.is(widget1.height, 15);
 	t.is(widget2.height, 25);
-	t.deepEqual(position.width, defaultScale);
-	t.deepEqual(position.height, defaultScale);
+	t.is(position.width, undefined);
+	t.is(position.height, undefined);
 });
 
 
@@ -1186,7 +1181,7 @@ test("Rounding: uneven sizes get rounded inwards", t =>
 		]
 	});
 
-	const control = <FlexControl>creator(parentMock, output);
+	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
 	control.layout(widgetMap, rect);

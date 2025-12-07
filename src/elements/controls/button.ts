@@ -1,10 +1,10 @@
 import { Bindable } from "@src/bindings/bindable";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
+import { GridPosition } from "../layouts/grid/gridPosition";
 import { Control } from "./control";
 
 
@@ -50,16 +50,17 @@ export interface ButtonParams extends ElementParams
  */
 export function button(params: ButtonParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function button(params: ButtonParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function button<I, P>(params: ButtonParams & I): WidgetCreator<I, P>
+export function button(params: ButtonParams & GridPosition): WidgetCreator<GridPosition>;
+export function button<Position>(params: ButtonParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new ButtonControl<I, P>(parent, output, params);
+	return toWidgetCreator(ButtonControl, params);
 }
 
 
 /**
  * A controller class for a button widget.
  */
-export class ButtonControl<I, P> extends Control<ButtonDesc, I, P> implements ButtonDesc, ButtonParams
+export class ButtonControl<I> extends Control<ButtonDesc, I> implements ButtonDesc, ButtonParams
 {
 	text?: string;
 	image?: number | IconName;
@@ -68,9 +69,9 @@ export class ButtonControl<I, P> extends Control<ButtonDesc, I, P> implements Bu
 	onClick?: () => void;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ButtonParams & I)
+	constructor(output: BuildOutput, params: ButtonParams & I)
 	{
-		super("button", parent, output, params);
+		super("button", output, params);
 
 		const binder = output.binder;
 		binder.add(this, "text", params.text);
