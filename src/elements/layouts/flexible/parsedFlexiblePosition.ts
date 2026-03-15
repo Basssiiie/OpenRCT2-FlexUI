@@ -6,5 +6,5 @@ export interface ParsedFlexiblePosition
 	_width: ParsedScale;
 	_height: ParsedScale;
 	_padding: ParsedPadding;
-	_skip: boolean | undefined;
+	_skip?: boolean;
 }

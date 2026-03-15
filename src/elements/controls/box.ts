@@ -15,7 +15,7 @@ import { SizeParams } from "../../positional/size";
 import { defaultScale, redrawEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { getInheritanceFlags, InheritFlags } from "../layouts/flexible/desiredSpacing";
+import { ContainerFlags, getInheritanceFlags } from "../layouts/flexible/desiredSpacing";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { setSizeWithPadding } from "../layouts/paddingHelpers";
 import { Control } from "./control";
@@ -61,15 +61,15 @@ export function box<Position extends SizeParams>(params: (BoxParams | BoxContain
 
 const enum BoxFlags
 {
-	RecalculateWidth = (InheritFlags.Count << 0),
-	RecalculateHeight = (InheritFlags.Count << 1),
+	RecalculateWidth = (ContainerFlags.Count << 0),
+	RecalculateHeight = (ContainerFlags.Count << 1),
 	RecalculateBoth = RecalculateWidth | RecalculateHeight,
 
-	UseStoreForWidth = (InheritFlags.Count << 2), // TODO merge with FlexFlags?
-	UseStoreForHeight = (InheritFlags.Count << 3),
+	UseStoreForWidth = (ContainerFlags.Count << 2), // TODO merge with FlexFlags?
+	UseStoreForHeight = (ContainerFlags.Count << 3),
 	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight,
 
-	AddTitlePadding = (InheritFlags.Count << 4)
+	AddTitlePadding = (ContainerFlags.Count << 4)
 }
 
 const defaultBoxPadding: Padding = 6;

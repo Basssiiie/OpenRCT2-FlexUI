@@ -1,6 +1,6 @@
 import { zeroScale } from "@src/elements/constants";
 import * as Log from "@src/utilities/logger";
-import { isNumber, isUndefined } from "@src/utilities/type";
+import { isNullOrUndefined, isNumber, isUndefined } from "@src/utilities/type";
 import { Scale } from "../scale";
 import { ParsedScale } from "./parsedScale";
 import { ScaleType } from "./scaleType";
@@ -13,7 +13,7 @@ export function parseScale(value: Scale): ParsedScale;
 export function parseScale(value: Scale | undefined): ParsedScale | undefined;
 export function parseScale(value: Scale | undefined): ParsedScale | undefined
 {
-	if (isUndefined(value))
+	if (isNullOrUndefined(value))
 	{
 		return value;
 	}

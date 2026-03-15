@@ -57,33 +57,35 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 		this.callback(target, outKey, value, callback);
 	}
 
-	for<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V, isStore: boolean) => void): void
+	for<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V) => void): boolean
 	{
-		this._createBinding<T, V>(value, <never>callback, target);
+		return this._createBinding<T, V>(value, <never>callback, target);
 	}
 
-	on<T>(value: AnyBindable<T> | undefined, callback: (value: T, isStore: boolean) => void): void
+	on<T>(value: AnyBindable<T> | undefined, callback: (value: T) => void): boolean
 	{
-		this._createBinding(value, (_, val, store) => callback(val, store));
+		return this._createBinding(value, (_, val) => callback(val));
 	}
 
-	private _createBinding<T extends TTarget, V>(value: AnyBindable<V>, callback: (target: T | undefined, value: V, isStore: boolean) => void, target?: T)
+	private _createBinding<T extends TTarget, V>(value: AnyBindable<V>, callback: (target: T | undefined, value: V) => void, target?: T)
 	{
 		const underlying = unwrap(value);
-		if (isStore(underlying))
+		const stored = isStore(underlying);
+		if (stored)
 		{
 			// bind
 			const getTarget = target ? this._getBindTarget(target) : undefined;
 			const binding = new Binding<V, TSource, T>(underlying, callback, getTarget);
 			this._bindings.push(<Binding<unknown>>binding);
 
-			callback(target, underlying.get(), true);
+			callback(target, underlying.get());
 		}
 		else if (!isUndefined(underlying))
 		{
 			// just update value
-			callback(target, underlying, false);
+			callback(target, underlying);
 		}
+		return stored;
 	}
 
 	/**

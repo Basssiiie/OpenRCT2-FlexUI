@@ -1,5 +1,7 @@
 import { Bindable } from "@src/bindings/bindable";
-import { Binder } from "@src/bindings/binder";
+import { store } from "@src/bindings/stores/createStore";
+import { isStore } from "@src/bindings/stores/isStore";
+import { ElementVisibility } from "@src/elements/elementParams";
 import { Axis } from "@src/positional/axis";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
@@ -13,25 +15,56 @@ import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 /**
  * Flags that indicate whether it is possible to inherit certain positional axis.
  */
-export const enum InheritFlags
+export const enum ContainerFlags
 {
 	None = 0,
 
-	Width = (1 << 0),
-	Height = (1 << 1),
+	InheritWidth = (1 << 0),
+	InheritHeight = (1 << 1),
+	InheritAll = (InheritWidth | InheritHeight),
 
-	All = (Width | Height),
-	Count = (1 << 2)
+	DynamicWidth = (1 << 2),
+	DynamicHeight = (1 << 3),
+	DynamicAll = (DynamicWidth | DynamicHeight),
+
+	Count = (1 << 4)
 }
 
 
 /**
  * Get flags that indicate whether it is possible to inherit certain positional axis.
  */
-export function getInheritanceFlags(position: SizeParams): InheritFlags
+export function getInheritanceFlags(position: SizeParams): ContainerFlags
 {
-	return (isInheritable(position.width) ? InheritFlags.Width : 0)
-		| (isInheritable(position.height) ? InheritFlags.Height : 0);
+	return (isInheritable(position.width) ? ContainerFlags.InheritWidth : 0)
+		| (isInheritable(position.height) ? ContainerFlags.InheritHeight : 0);
+}
+
+
+export interface InheritableContainer // todo: still used?
+{
+	_width?: Bindable<number | undefined>;
+	_height?: Bindable<number | undefined>;
+	_skip?: Bindable<boolean>;
+	_flags: ContainerFlags;
+}
+
+// todo: still used?
+export function setInheritance(container: InheritableContainer, parameters: SizeParams, child: SizeParams & { visibility?: ElementVisibility }): void
+{
+	const { width, height, visibility } = child;
+	const visibilityStore = isStore(visibility);
+
+	if ((visibilityStore || isStore(width)) && isInheritable(parameters.width))
+	{
+		container._width = parameters.width = store<number | undefined>();
+		container._flags |= ContainerFlags.DynamicWidth;
+	}
+	if ((visibilityStore || isStore(height)) && isInheritable(parameters.height))
+	{
+		container._height = parameters.height = store<number | undefined>();
+		container._flags |= ContainerFlags.DynamicHeight;
+	}
 }
 
 
@@ -44,7 +77,7 @@ export function isInheritable(value: unknown): boolean
 }
 
 
-const enum FlexFlags
+/* const enum FlexFlags
 {
 	UseStoreForWidth = (InheritFlags.Count << 0),
 	UseStoreForHeight = (InheritFlags.Count << 1),
@@ -62,13 +95,13 @@ export function inheritAxis(binder: Binder<unknown>, bindable: Bindable<unknown>
 		parsed._width = parseScaleOrFallback(value, defaultScale);
 		control._flags |= FlexFlags.RecalculateWidth | (store ? FlexFlags.UseStoreForWidth : 0);
 	});
-}
+} */
 
 
 /**
  * Recalculates `position` based on the size of the specified child, if the required inheritance flags are set.
  */
-export function recalculateInheritedSpaceFromChild(position: ParsedSize, flags: InheritFlags, child: Parsed<FlexiblePosition>): boolean
+export function recalculateInheritedSpaceFromChild(position: ParsedSize, flags: ContainerFlags, child: Parsed<FlexiblePosition>): boolean
 {
 	return recalculateInheritedSpace(position, flags, direction => getDesiredSpaceFromChildForDirection(child, direction));
 }
@@ -155,14 +188,14 @@ export function recalculateInheritedSpaceForAxis(original: ParsedScale, children
 /**
  * Gets the total desired space for all children, if they are absolutely positioned.
  */
-export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexiblePosition[], spacing: ParsedScale, layoutDirection: Axis, axisDirection: Axis): number | null
+export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexiblePosition[], spacing: ParsedScale, layoutDirection: Axis, axisDirection: Axis): number | undefined
 {
 	const axisIsLayoutDirection = (layoutDirection === axisDirection);
 
 	let absoluteSize = 0;
 	if (axisIsLayoutDirection && !isAbsolute(spacing))
 	{
-		return null; // Non-absolute spacing is non-absolute total size.
+		return undefined; // Non-absolute spacing is non-absolute total size.
 	}
 
 	const
@@ -189,7 +222,7 @@ export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexible
 
 		if (!isAxisAbsolute(size, start, end))
 		{
-			return null;
+			return undefined;
 		}
 		if (!children[index]._skip)
 		{

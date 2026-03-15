@@ -10,6 +10,7 @@ export interface ParsedStack
 	_requestedPixels: number;
 	_requestedPercentile: number;
 	_requestedWeightTotal: number;
+	_visibleElementsCount: number;
 }
 
 

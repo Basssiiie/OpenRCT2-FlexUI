@@ -54,8 +54,12 @@ export function flexibleLayout(stack: ParsedStack, elements: ParsedFlexiblePosit
 }
 
 
-export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexiblePosition[], spacing: ParsedScale, mainDirection: Axis): number
+export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexiblePosition[], spacing: ParsedScale, mainDirection: Axis): void
 {
+	stack._requestedPixels = 0;
+	stack._requestedPercentile = 0;
+	stack._requestedWeightTotal = 0;
+
 	const elementCount = elements.length;
 	//const stack = <ParsedFlexStack>createStack(elementCount, spacing);
 	const isHorizontal = mainDirection == Axis.Horizontal;
@@ -88,7 +92,7 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 	// Parse spacing in between elements
 	addScaleToStack(stack, spacing, (visibleCount - 1));
 
-	return visibleCount;
+	stack._visibleElementsCount = visibleCount;
 }
 
 

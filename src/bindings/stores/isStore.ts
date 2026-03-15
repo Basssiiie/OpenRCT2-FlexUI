@@ -20,9 +20,6 @@ export function isStore(target: unknown): target is Store<unknown>
  */
 export function isWritableStore(target: unknown): target is WritableStore<unknown>
 {
-	if (!target || !isObject(target))
-		return false;
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
 	return isStore(target) && isFunction((<any>target).set);
 }
