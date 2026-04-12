@@ -39,7 +39,7 @@ export interface BoxParams extends ElementParams
 	content: BoxContainer;
 
 	/**
-	 * An optionel label to show at the top of the box.
+	 * An optional label to show at the top of the box.
 	 * @default undefined
 	 */
 	text?: Bindable<string>;
