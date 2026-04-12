@@ -30,7 +30,7 @@ export interface GroupBoxParams extends FlexibleDirectionalLayoutParams, Element
 	gap?: Padding;
 
 	/**
-	 * An optionel label to show at the top of the box.
+	 * An optional label to show at the top of the box.
 	 * @default undefined
 	 */
 	text?: Bindable<string>;
