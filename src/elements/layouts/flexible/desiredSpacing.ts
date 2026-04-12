@@ -36,6 +36,7 @@ export const enum ContainerFlags
  */
 export function getInheritanceFlags(position: SizeParams): ContainerFlags
 {
+	// todo: maybe rename to computable? frames use inheritance for looking at parents, here its used to look at children
 	return (isInheritable(position.width) ? ContainerFlags.InheritWidth : 0)
 		| (isInheritable(position.height) ? ContainerFlags.InheritHeight : 0);
 }
@@ -168,12 +169,11 @@ export function recalculateInheritedSpaceForAxis(original: ParsedScale, children
  * Gets the desired space on the parent for a single child if the child asks for
  * absolute positioning, for a single direction.
  */
-/* function getDesiredSpaceFromChildForDirection(item: Parsed<FlexiblePosition>, direction: Axis): number | null
+export function getDesiredSpaceFromChildForDirection(item: ParsedFlexiblePosition, direction: Axis): number | undefined
 {
 	const
-		sizeKey = sizeKeys[direction],
-		size = item[sizeKey],
-		padding = item.padding,
+		size = direction == Axis.Horizontal ? item._width : item._height,
+		padding = item._padding,
 		start = padding[startKeys[direction]],
 		end = padding[endKeys[direction]];
 
@@ -181,8 +181,8 @@ export function recalculateInheritedSpaceForAxis(original: ParsedScale, children
 	{
 		return (size[0] + start[0] + end[0]);
 	}
-	return null;
-} */
+	return undefined;
+}
 
 
 /**

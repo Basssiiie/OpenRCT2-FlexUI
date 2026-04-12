@@ -72,7 +72,7 @@ export function groupbox<Position extends SizeParams>(params: (GroupBoxParams | 
 
 	const boxParams = <BoxParams & Position><never>params;
 	const flexParams = { content, direction, spacing, padding: gap };
-	boxParams.content = toWidgetCreator(flexParams, FlexibleLayoutControl);
+	boxParams.content = toWidgetCreator(FlexibleLayoutControl, flexParams);
 
-	return toWidgetCreator(params, BoxControl);
+	return toWidgetCreator(BoxControl, boxParams);
 }

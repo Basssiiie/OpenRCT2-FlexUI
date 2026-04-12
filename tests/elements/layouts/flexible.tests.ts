@@ -1,6 +1,7 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
+import { read } from "@src/bindings/stores/read";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
@@ -21,15 +22,10 @@ import Mock from "openrct2-mocks";
 
 type FlexControl = FlexibleLayoutControl<FlexiblePosition>;
 
-// const parentMock: ParentControl<FlexiblePosition> = {
-// 	parse: parseFlexiblePosition,
-// 	recalculate(): void { /* empty */ }
-// };
-
 function createBuildOutput()
 {
 	return {
-		widgets: Array<Widget>(),
+		widgets: new Array<Widget>(),
 		binder: new WidgetBinder(),
 		context: <FrameContext>{ redraw: noop },
 		open: <Event>[],
@@ -43,6 +39,24 @@ function createBuildOutput()
 		on(event: FrameEvent, callback: (context: FrameContext) => void): void
 		{
 			this[event].push(callback);
+		}
+	};
+}
+
+function createFrame(output: { widgets: Widget[]; redraw: Event }): FrameContext
+{
+	return {
+		isOpen(): boolean
+		{
+			return true;
+		},
+		getWidget(name: string): Widget | null
+		{
+			return output.widgets.find(w => w.name == name) || null;
+		},
+		redraw(): void
+		{
+			invoke(output.redraw);
 		}
 	};
 }
@@ -1077,7 +1091,8 @@ test("Child visibility is updated by store", t =>
 
 	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
-	invoke(output.redraw);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
 	control.layout(widgetMap, rect);
 
 	const widgets = output.widgets;
@@ -1115,7 +1130,7 @@ test("Child visibility is updated by store", t =>
 });
 
 
-test("Invisible childs should still count for size inheritance", t =>
+test("Container can switch between inherited and not, based on dynamic child visibility", t =>
 {
 	globalThis.ui = Mock.ui();
 	const output = createBuildOutput();
@@ -1131,7 +1146,8 @@ test("Invisible childs should still count for size inheritance", t =>
 
 	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
-	invoke(output.redraw);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
 	control.layout(widgetMap, rect);
 
 	const widgets = output.widgets;
@@ -1144,8 +1160,8 @@ test("Invisible childs should still count for size inheritance", t =>
 	t.is(widget1.height, 15);
 	t.is(widget2.height, 25);
 	const position = creator.position;
-	t.is(position.width, undefined);
-	t.is(position.height, undefined);
+	t.is(read(position.width), undefined);
+	t.is(read(position.height), undefined);
 
 	visibility.set("none");
 	invoke(output.redraw);
@@ -1153,8 +1169,8 @@ test("Invisible childs should still count for size inheritance", t =>
 
 	t.is(widget1.y, 3 + 2);
 	t.is(widget1.height, 15);
-	t.is(position.width, undefined);
-	t.is(position.height, undefined);
+	t.is(read(position.width), 10); // Based on single widget
+	t.is(read(position.height), 15);
 
 	visibility.set("visible");
 	invoke(output.redraw);
@@ -1164,8 +1180,8 @@ test("Invisible childs should still count for size inheritance", t =>
 	t.is(widget2.y, 3 + 2 + 10 + 15);
 	t.is(widget1.height, 15);
 	t.is(widget2.height, 25);
-	t.is(position.width, undefined);
-	t.is(position.height, undefined);
+	t.is(read(position.width), undefined);
+	t.is(read(position.height), undefined);
 });
 
 

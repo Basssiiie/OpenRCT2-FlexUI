@@ -10,7 +10,7 @@ import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
 import { isUndefined } from "@src/utilities/type";
-import { BaseWindowControl, BaseWindowParams, WindowFlags, defaultTopBarSize } from "../baseWindowControl";
+import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
 import { Template } from "../template";
@@ -103,8 +103,6 @@ export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindow
 
 
 const defaultTabIcon = 16;
-const defaultTopBarSizeWithTabs = 44;
-
 const enum TabWindowFlags
 {
 	HasTabs = (WindowFlags.Count << 0), // Yes, no tabs can happen with an empty tab array
@@ -138,7 +136,7 @@ class TabWindowControl extends BaseWindowControl
 		let rootLayoutable: TabLayoutable;
 		if (staticWidgetParams) // Create full frame for root
 		{
-			const builder = new FrameBuilder(this, params, staticWidgetParams);
+			const builder = new FrameBuilder(this, params, staticWidgetParams, defaultTopBarSize);
 			const staticWidgets = builder._widgets;
 
 			description.widgets = staticWidgets;
@@ -230,7 +228,7 @@ class TabWindowControl extends BaseWindowControl
 
 	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._createFrameRectangle(this._flags, defaultTopBarSizeWithTabs);
+		const area = this._createWindowRectangle(this._flags, defaultTopBarSizeWithTabs);
 		const padding = this._padding;
 		setFramePaddingToDirection(area, padding, Axis.Horizontal);
 		setFramePaddingToDirection(area, padding, Axis.Vertical);
@@ -248,7 +246,7 @@ class TabWindowControl extends BaseWindowControl
 			return;
 		}
 
-		const area = <Rectangle>this._createFrameRectangle(WindowFlags.None, defaultTopBarSize);
+		const area = <Rectangle>this._createWindowRectangle(WindowFlags.None, defaultTopBarSize);
 		const padding = this._padding;
 		setSizeWithPaddingForDirection(area, Axis.Horizontal, defaultScale, padding);
 		setSizeWithPaddingForDirection(area, Axis.Vertical, defaultScale, padding);

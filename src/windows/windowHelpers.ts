@@ -8,8 +8,8 @@ import { isObject, isString } from "@src/utilities/type";
 import { WindowScale } from "./windowScale";
 
 
-export const inheritKey = "inherit";
-export const autoKey = "auto";
+export const inheritKey = "inherit"; // take from parent?
+export const autoKey = "auto"; // take from children?
 
 const minKeys = <const>["minHeight", "minWidth"];
 const maxKeys = <const>["maxHeight", "maxWidth"];
@@ -34,7 +34,10 @@ export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direct
 	return setAxisSizeIfNumber(window, direction, windowValue);
 }
 
-export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis, scaleOption: TabScaleOptions): number | "auto"
+/**
+ * Sets the window to the specified scale if it is of static size, and returns the final size if possible.
+ */
+export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis, scaleOption: TabScaleOptions | undefined): number | "auto"
 {
 	if (isString(scaleOption))
 	{

@@ -1,3 +1,4 @@
+import { defaultTopBarSizeWithTabs } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Paddable } from "@src/positional/paddable";
 import { FrameBuilder } from "../frames/frameBuilder";
@@ -52,7 +53,7 @@ export function tab(params: TabParams): TabCreator
 {
 	return (parent, output) =>
 	{
-		const builder = new FrameBuilder(parent, params, params);
+		const builder = new FrameBuilder(parent, params, params, defaultTopBarSizeWithTabs);
 
 		output.image = params.image;
 		output.widgets = builder._widgets;

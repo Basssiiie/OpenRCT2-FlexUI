@@ -16,7 +16,7 @@ import { ElementVisibility } from "../elementParams";
  */
 export abstract class VisualElement implements Layoutable
 {
-	skip: Bindable<boolean>;
+	skip: Bindable<boolean>; // todo unused????
 
 	constructor(context: FrameContext, binder: Binder<WidgetBaseDesc>, visibility: Bindable<ElementVisibility> | undefined)
 	{

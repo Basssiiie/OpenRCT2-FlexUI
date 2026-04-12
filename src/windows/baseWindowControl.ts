@@ -79,7 +79,6 @@ export interface BaseWindowParams extends Paddable
 }
 
 
-export const defaultTopBarSize = 15;
 export const enum WindowFlags
 {
 	None = 0,
@@ -185,7 +184,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
 	 */
-	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
+	protected _createWindowRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
 	{
 		return {
 			x: 0,
@@ -255,6 +254,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 		this._window = window;
 		this._activeWidgetMap = activeWidgets;
+		// fixme: this currently causes a duplicate bind apply pass
 		this._invoke(frame => frame.open(window, activeWidgets));
 	}
 

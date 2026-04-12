@@ -100,12 +100,20 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	 */
 	abstract _bind(source: TSource): void;
 
-
 	/**
 	 * Unbind the current window from this binder.
 	 */
 	_unbind(): void
 	{
+		const bindings = this._bindings;
+		const count = bindings.length;
+		let index = 0;
+
+		for (; index < count; index++)
+		{
+			bindings[index]._unbind();
+		}
+
 		this._source = null;
 	}
 

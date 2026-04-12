@@ -458,7 +458,7 @@ test("Window with auto resize errors with relative child width", t =>
 	{
 		template.open();
 	});
-	t.is(error.message, "Window body width must resolve to absolute size for \"auto\" window size.");
+	t.is(error.message, "Window content body's width must resolve to absolute size for \"auto\" window size.");
 });
 
 
@@ -478,7 +478,7 @@ test("Window with auto resize errors with relative child height", t =>
 	{
 		template.open();
 	});
-	t.is(error.message, "Window body height must resolve to absolute size for \"auto\" window size.");
+	t.is(error.message, "Window content body's height must resolve to absolute size for \"auto\" window size.");
 });
 
 

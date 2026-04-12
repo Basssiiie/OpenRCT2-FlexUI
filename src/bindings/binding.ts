@@ -21,13 +21,15 @@ export class Binding<TValue, TSource = unknown, TTarget = unknown>
 	_bind(source: TSource)
 	{
 		const store = this._store;
-		const getTarget = this._getTarget;
-		const target = source && getTarget ? (getTarget(source) || undefined) : undefined;
-		this._callback(target, store.get(), true);
-		this._unsubscribe = subscribe(store, value =>
+		const executor = (value: TValue): void =>
 		{
+			const getTarget = this._getTarget;
+			const target = source && getTarget ? (getTarget(source) || undefined) : undefined;
 			this._callback(target, value, true);
-		});
+		};
+
+		executor(store.get());
+		this._unsubscribe = subscribe(store, executor);
 	}
 
 	_unbind()

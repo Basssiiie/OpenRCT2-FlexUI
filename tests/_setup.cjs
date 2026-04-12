@@ -1,3 +1,3 @@
 // Set build configuration for unit tests.
-// Options: development, production
-global.__BUILD_CONFIGURATION__ = "production";
+// Options: development, testing, production
+global.__BUILD_CONFIGURATION__ = "testing";

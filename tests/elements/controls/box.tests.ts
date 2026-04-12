@@ -84,6 +84,38 @@ test("Title changes size and position", t =>
 });
 
 
+test("Default padding", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 60 + 15,
+		content: [
+			box({
+				content: button({ text: "inside a box!" })
+			})
+		]
+	});
+	template.open();
+
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
+	t.is(widget1.type, "groupbox");
+	t.is(widget1.x, 5);
+	t.is(widget1.y, 5 + 15 - 4); // - 4px default top pad
+	t.is(widget1.width, 90);
+	t.is(widget1.height, 50 + 4); // + 4px default top pad
+
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
+	t.is(widget2.type, "button");
+	t.is(widget2.text, "inside a box!");
+	t.is(widget2.x, 5 + 6);
+	t.is(widget2.y, 5 + 6 + 15);
+	t.is(widget2.width, 78);
+	t.is(widget2.height, 38);
+});
+
+
 test("Applies padding", t =>
 {
 	const mock = Mock.ui();
@@ -117,6 +149,44 @@ test("Applies padding", t =>
 	t.is(widget2.y, 10 + 3 + 4 + 15);
 	t.is(widget2.width, 62);
 	t.is(widget2.height, 26);
+});
+
+
+test("No padding with title", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 60 + 15, padding: 0,
+		content: [
+			box({
+				padding: 0,
+				text: "With title",
+				content: button({
+					padding: 0,
+					text: "inside a box!"
+				})
+			})
+		]
+	});
+	template.open();
+
+	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
+	t.is(widget1.type, "groupbox");
+	t.is(widget1.text, "With title");
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0 + 15);
+	t.is(widget1.width, 100);
+	t.is(widget1.height, 60);
+
+	const widget2 = <ButtonWidget>mock.createdWindows[0].widgets[1];
+	t.is(widget2.type, "button");
+	t.is(widget2.text, "inside a box!");
+	t.is(widget2.x, 0);
+	t.is(widget2.y, 0 + 15);
+	t.is(widget2.width, 100);
+	t.is(widget2.height, 60);
 });
 
 
@@ -283,8 +353,8 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 20);
 	t.is(widget1.y, 20 + 15 - 4); // - 4px default top pad
-	t.is(widget1.width, 300 - (2 * 20));
-	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
+	t.is(widget1.width, 300 - (20 + 20));
+	t.is(widget1.height, 14 + 6 + 6 + 4); // + 4px default top pad
 	t.true(widget1.isVisible);
 
 	const widget2 = <LabelWidget>mock.createdWindows[0].widgets[1];
@@ -292,7 +362,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 20 + 6);
 	t.is(widget2.y, 20 + 2 + 6 + 15);
-	t.is(widget2.width, 300 - (2 * 26));
+	t.is(widget2.width, 300 - (26 + 26));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
 
@@ -300,7 +370,7 @@ test("Box reacts correctly to nested child size changes", t =>
 	t.is(widget3.type, "button");
 	t.is(widget3.x, 20);
 	t.is(widget3.y, 20 + (2 * 6) + 4 + 14 + 15);
-	t.is(widget3.width, 300 - (2 * 20));
+	t.is(widget3.width, 300 - (20 + 20));
 	t.is(widget3.height, 25);
 
 	model.active.set(false);
@@ -319,19 +389,19 @@ test("Box reacts correctly to nested child size changes", t =>
 
 	t.is(widget1.x, 20);
 	t.is(widget1.y, 20 + 15 - 4); // - 4px default top pad
-	t.is(widget1.width, 300 - (2 * 20));
-	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
+	t.is(widget1.width, 300 - (20 + 20));
+	t.is(widget1.height, 14 + 6 + 6 + 4); // + 4px default top pad
 	t.true(widget1.isVisible);
 
 	t.is(widget2.x, 20 + 6);
 	t.is(widget2.y, 20 + 2 + 6 + 15);
-	t.is(widget2.width, 300 - (2 * 26));
+	t.is(widget2.width, 300 - (26 + 26));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
 
 	t.is(widget3.x, 20);
-	t.is(widget3.y, 20 + (2 * 6) + 4 + 14 + 15);
-	t.is(widget1.width, 300 - (2 * 20));
+	t.is(widget3.y, 20 + 6 + 6 + 4 + 14 + 15);
+	t.is(widget1.width, 300 - (20 + 20));
 	t.is(widget3.height, 25);
 });
 
@@ -372,7 +442,7 @@ test("Box does not take space if it starts hidden", t =>
 
 	t.is(widget3.x, 20);
 	t.is(widget3.y, 20 + 15);
-	t.is(widget3.width, 300 - (2 * 20));
+	t.is(widget3.width, 300 - (20 + 20));
 	t.is(widget3.height, 25);
 
 	model.active.set(true);
@@ -381,21 +451,21 @@ test("Box does not take space if it starts hidden", t =>
 	t.is(widget1.type, "groupbox");
 	t.is(widget1.x, 20);
 	t.is(widget1.y, 20 + 15 - 4); // - 4px default top pad
-	t.is(widget1.width, 300 - (2 * 20));
-	t.is(widget1.height, 14 + (2 * 6) + 4); // + 4px default top pad
+	t.is(widget1.width, 300 - (20 + 20));
+	t.is(widget1.height, 14 + 6 + 6 + 4); // + 4px default top pad
 	t.true(widget1.isVisible);
 
 	t.is(widget2.type, "label");
 	t.is(widget2.text, "managing themes");
 	t.is(widget2.x, 20 + 6);
 	t.is(widget2.y, 20 + 2 + 6 + 15);
-	t.is(widget2.width, 300 - (2 * 26));
+	t.is(widget2.width, 300 - (26 + 26));
 	t.is(widget2.height, 14);
 	t.true(widget2.isVisible);
 
 	t.is(widget3.type, "button");
 	t.is(widget3.x, 20);
-	t.is(widget3.y, 20 + (2 * 6) + 4 + 14 + 15);
-	t.is(widget3.width, 300 - (2 * 20));
+	t.is(widget3.y, 20 + 6 + 6 + 4 + 14 + 15);
+	t.is(widget3.width, 300 - (20 + 20));
 	t.is(widget3.height, 25);
 });

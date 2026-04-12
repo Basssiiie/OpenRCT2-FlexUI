@@ -7,7 +7,7 @@ import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 /**
  * Base class for a container control that holds one or more child controls.
  */
-export abstract class Container<Positioning, ParsedPosition> // todo remove
+/* export abstract class Container<Positioning, ParsedPosition> // todo remove
 {
 	_children!: Layoutable[];
 	_positions!: ParsedPosition[];
@@ -33,7 +33,7 @@ export abstract class Container<Positioning, ParsedPosition> // todo remove
 			rectangles[idx] = <Rectangle>{};
 		}
 	}
-}
+} */
 
 
 export type Child<ParsedPosition> = ParsedPosition & {

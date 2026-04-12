@@ -15,11 +15,10 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	{
 		Log.assert(!!control._description, "Window control is missing description!");
 
-		const description = control._description;
 		const bindings = this._bindings;
 		for (const binding of bindings)
 		{
-			binding._bind(description);
+			binding._bind(control);
 		}
 		this._source = control;
 	}
@@ -30,9 +29,10 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	{
 		return (source: BaseWindowControl): T | null =>
 		{
-			Log.assert(!!source, "Window is not available!");
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			return <T>source._window!;
+			Log.assert(source.isOpen() || !!source._description, "Window description is not available!");
+			Log.assert(!source.isOpen() || !!source._window, "Window instance is not available!");
+
+			return <T>(source._window || source._description);
 		};
 	}
 }

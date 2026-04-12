@@ -46,6 +46,6 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning> extends Vis
 	layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		Log.debug("Control(", this.type, ":", this.name, ") layout() for area:", Log.stringify(area));
-		fillLayout(widgets, this.name, area);
+		fillLayout(area, widgets, this.name);
 	}
 }

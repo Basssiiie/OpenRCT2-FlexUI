@@ -115,13 +115,13 @@ class DropdownButtonControl<Position> extends DropdownControl<Position>
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position dropdown (take all space in behind button)
-		fillLayout(widgets, this.name, area);
+		fillLayout(area, widgets, this.name);
 
 		// Position button (leave space for dropdown control)
 		area.x++;
 		area.y++;
 		area.width -= 13;
 		area.height -= 2;
-		fillLayout(widgets, this._button.name, area);
+		fillLayout(area, widgets, this._button.name);
 	}
 }

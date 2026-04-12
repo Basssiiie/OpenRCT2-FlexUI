@@ -122,7 +122,7 @@ export function thrown(message: string): never
  */
 export function assert(condition: boolean | null | undefined, ...messages: unknown[]): void
 {
-	if (Environment.isDevelopment && !condition)
+	if (!Environment.isProduction && !condition)
 	{
 		thrown(`Assertion failed! ${messages.join(" ")}`);
 	}

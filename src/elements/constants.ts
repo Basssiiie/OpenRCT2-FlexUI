@@ -56,6 +56,10 @@ export const zeroPadding: ParsedPadding = {
 };
 
 
+export const defaultTopBarSize = 15;
+export const defaultTopBarSizeWithTabs = 44;
+
+
 /**
  * Ensures the height of the control is set to the default line height.
  */

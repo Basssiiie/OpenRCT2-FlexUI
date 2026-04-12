@@ -24,6 +24,8 @@ export function parseScale(value: Scale | undefined): ParsedScale | undefined
 		return [value, ScaleType.Pixel];
 	}
 
+	Log.assert(typeof value === "string", "Scale value is not a string, but", value);
+
 	const trimmed = value.trim();
 	const length = trimmed.length;
 

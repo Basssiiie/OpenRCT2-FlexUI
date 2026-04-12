@@ -103,10 +103,10 @@ class DropdownSpinnerControl<Position> extends DropdownControl<Position>
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position spinner (only show controls next to dropdown)
-		fillLayout(widgets, this._spinner.name, area);
+		fillLayout(area, widgets, this._spinner.name);
 
 		// Position dropdown (leave space for spinner controls)
 		area.width -= spinnerControlsWidth;
-		fillLayout(widgets, this.name, area);
+		fillLayout(area, widgets, this.name);
 	}
 }

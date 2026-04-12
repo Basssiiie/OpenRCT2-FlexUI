@@ -1,12 +1,8 @@
-import { Binder } from "@src/bindings/binder";
-import { store } from "@src/bindings/stores/createStore";
 import { WritableStore } from "@src/bindings/stores/writableStore";
-import { defaultScale, defaultSpacing, redrawEvent } from "@src/elements/constants";
-import { ElementVisibility } from "@src/elements/elementParams";
+import { defaultSpacing, redrawEvent } from "@src/elements/constants";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Axis } from "@src/positional/axis";
-import { parsePadding } from "@src/positional/parsing/parsePadding";
-import { parseScale, parseScaleOrFallback } from "@src/positional/parsing/parseScale";
+import { parseScale } from "@src/positional/parsing/parseScale";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
@@ -20,8 +16,8 @@ import { SizeParams } from "../../../positional/size";
 import { AbsolutePosition } from "../absolute/absolutePosition";
 import { Child, container } from "../container";
 import { ParsedStack } from "../stack";
-import { ContainerFlags, getDesiredSpaceFromChildrenForDirection, getInheritanceFlags, InheritableContainer } from "./desiredSpacing";
-import { flexibleLayout, parseFlexibleStack } from "./flexibleLayout";
+import { ContainerFlags, getDesiredSpaceFromChildrenForDirection, getInheritanceFlags } from "./desiredSpacing";
+import { bindFlexiblePosition, FlexFlags, FlexibleContainer, flexibleLayout, parseFlexibleStack } from "./flexibleLayout";
 import { FlexiblePosition } from "./flexiblePosition";
 import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 
@@ -102,20 +98,7 @@ export function flexible<Position extends SizeParams>(params: FlexibleDirectiona
 }
 
 
-const enum FlexFlags
-{
-	/* UseStoreForWidth = (InheritFlags.Count << 0),
-	UseStoreForHeight = (InheritFlags.Count << 1),
-	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight, */
-
-	// Marks whether the axis size needs to be recalculated.
-	ComputeHeight = (ContainerFlags.Count << 2),
-	ComputeWidth = (ContainerFlags.Count << 3),
-	ComputeBoth = ComputeHeight | ComputeWidth
-}
-
-
-export class FlexibleLayoutControl<Position extends SizeParams>	implements InheritableContainer, Layoutable, ParsedStack
+export class FlexibleLayoutControl<Position extends SizeParams>	implements FlexibleContainer, Layoutable, ParsedStack
 {
 	_children: Child<ParsedFlexiblePosition>[];
 
@@ -140,10 +123,10 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Inher
 		let spacing: ParsedScale;
 		let children: Child<ParsedFlexiblePosition>[];
 
-		this._flags = flags = getInheritanceFlags(params);
+		this._flags = flags = getInheritanceFlags(params) | FlexFlags.ComputeBoth;
 		this._direction = direction = (<{ direction?: Axis }>params).direction || Axis.Vertical;
 		this._spacing = spacing = (parseScale((<{ spacing?: Scale }>params).spacing) || defaultSpacing);
-		this._children = children = container(output, creators, pos => this._bindFlexiblePosition(binder, params, pos));
+		this._children = children = container(output, creators, pos => bindFlexiblePosition(this, binder, params, pos));
 
 		const width = this._width;
 		const height = this._height;
@@ -153,11 +136,8 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Inher
 			// If any axis is computable, bind the redraw callback.
 			output.on(redrawEvent, this._recalculate.bind(this));
 		}
-		else
-		{
-			// This still needs to be called once for layout() if there is no redraw callback.
-			parseFlexibleStack(this, children, spacing, direction);
-		}
+
+		this._recalculate();
 
 		// Handle static inheritance for children (without any stores)
 		if (!width && (flags & ContainerFlags.InheritWidth))
@@ -181,10 +161,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Inher
 			return;
 		}
 
-		flexibleLayout(this, this._children, area, this._direction, this._spacing, (idx, subarea) =>
-		{
-			this._children[idx]._layoutable.layout(widgets, subarea);
-		});
+		flexibleLayout(this, this._children, area, this._direction, this._spacing, widgets);
 	}
 
 	private _recalculate()
@@ -199,13 +176,13 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Inher
 			const width = this._width;
 			const height = this._height;
 
-			parseFlexibleStack(this, children, spacing, direction); // todo: make part of ParsedStack?
+			parseFlexibleStack(this, children, spacing, direction);
 
 			if (width && (flags & (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth)) == (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth))
 			{
 				const newWidth = getDesiredSpaceFromChildrenForDirection(children, spacing, direction, Axis.Horizontal);
 				Log.debug("Flexible: recalculated width from", width.get(), "to", newWidth);
-				width.set(newWidth); // todo get rid of null
+				width.set(newWidth);
 			}
 			if (height && (flags & (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight)) == (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight))
 			{
@@ -217,44 +194,5 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Inher
 			// Clear recalculate flag
 			this._flags &= ~FlexFlags.ComputeBoth;
 		}
-	}
-
-	private _bindFlexiblePosition(binder: Binder<WidgetBaseDesc>, parameters: Position, child: FlexiblePosition & { visibility?: ElementVisibility })
-	{
-		const { width, height, visibility } = child;
-		const parsed: ParsedFlexiblePosition = {
-			_width: defaultScale,
-			_height: defaultScale,
-			_padding: parsePadding(child.padding)
-		};
-
-		// Attempt binding the child element's position and visibility.
-		const widthStore = binder.on(width, value =>
-		{
-			parsed._width = parseScaleOrFallback(value, defaultScale);
-			this._flags |= FlexFlags.ComputeHeight;
-		});
-		const heightStore = binder.on(height, value =>
-		{
-			parsed._height = parseScaleOrFallback(value, defaultScale);
-			this._flags |= FlexFlags.ComputeWidth;
-		});
-		const visibilityStore = binder.on(visibility, value =>
-		{
-			parsed._skip = value === "none";
-			this._flags |= FlexFlags.ComputeBoth;
-		});
-
-		// Create dynamic stores for container
-		if (!this._width && (widthStore || visibilityStore) && (this._flags & ContainerFlags.InheritWidth))
-		{
-			this._width = parameters.width = store<number | undefined>();
-		}
-		if (!this._height && (heightStore || visibilityStore) && (this._flags & ContainerFlags.InheritHeight))
-		{
-			this._height = parameters.height = store<number | undefined>();
-		}
-
-		return parsed;
 	}
 }
