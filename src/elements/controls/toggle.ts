@@ -1,7 +1,6 @@
 import { getOrConvertToTwoWayBinding } from "@src/bindings/twoway/convertToTwoWay";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { SizeParams } from "../../positional/size";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -34,7 +33,7 @@ export function toggle(params: ToggleParams & FlexiblePosition): WidgetCreator<F
 export function toggle(params: ToggleParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function toggle<Position extends SizeParams>(params: ToggleParams & Position): WidgetCreator<Position>
 {
-	return toWidgetCreator(params, ToggleControl);
+	return toWidgetCreator(ToggleControl, params);
 }
 
 
@@ -43,7 +42,7 @@ export function toggle<Position extends SizeParams>(params: ToggleParams & Posit
  */
 class ToggleControl<Position> extends ButtonControl<Position> implements ButtonDesc, ToggleParams
 {
-	constructor(parent: ParentControl, output: BuildOutput, params: ToggleParams & Omit<ButtonParams, "isPressed"> & Position)
+	constructor(output: BuildOutput, params: ToggleParams & Omit<ButtonParams, "isPressed"> & Position)
 	{
 		// Ensure isPressed is a two-way store, so we can update the live widget more easily.
 		const toggled = getOrConvertToTwoWayBinding(params.isPressed, false);
@@ -51,7 +50,7 @@ class ToggleControl<Position> extends ButtonControl<Position> implements ButtonD
 
 		params.isPressed = toggled;
 
-		super(parent, output, <ButtonParams & Position>params);
+		super(output, <ButtonParams & Position>params);
 		output.binder.callback(this, "onClick", toggled, params.onChange, () => !store.get());
 	}
 }

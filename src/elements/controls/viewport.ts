@@ -5,7 +5,6 @@ import * as Log from "@src/utilities/logger";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { FrameContext } from "@src/windows/frames/frameContext";
-import { ParentControl } from "@src/windows/parentControl";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { openEvent, updateEvent } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -48,7 +47,7 @@ export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreat
 export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function viewport<Position>(params: ViewportParams & Position): WidgetCreator<Position>
 {
-	return toWidgetCreator(params, ViewportControl);
+	return toWidgetCreator(ViewportControl, params);
 }
 
 
@@ -70,9 +69,9 @@ class ViewportControl<Position> extends Control<ViewportDesc, Position> implemen
 	/**
 	 * Create a viewport control with the specified parameters.
 	 */
-	constructor(parent: ParentControl, output: BuildOutput, params: ViewportParams & Position)
+	constructor(output: BuildOutput, params: ViewportParams & Position)
 	{
-		super("viewport", parent, output, params);
+		super("viewport", output, params);
 
 		const binder = output.binder;
 		const { target, visibilityFlags, disabled, zoom } = params;

@@ -1,5 +1,4 @@
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -21,7 +20,7 @@ export function widget(params: WidgetParams & FlexiblePosition): WidgetCreator<F
 export function widget(params: WidgetParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function widget<Position>(params: WidgetParams & Position): WidgetCreator<Position>
 {
-	return toWidgetCreator(params, WidgetControl);
+	return toWidgetCreator(WidgetControl, params);
 }
 
 
@@ -34,9 +33,9 @@ const omittedKeys = ["x", "y", "width", "height", "name", "tooltip", "isVisible"
  */
 class WidgetControl<Position> extends Control<WidgetDesc, Position>
 {
-	constructor(parent: ParentControl, output: BuildOutput, params: WidgetParams & Position)
+	constructor(output: BuildOutput, params: WidgetParams & Position)
 	{
-		super(params.type, parent, output, params);
+		super(params.type, output, params);
 
 		for (const key in params)
 		{
