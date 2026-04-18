@@ -6,11 +6,12 @@ import { Rectangle } from "@src/positional/rectangle";
 import * as Log from "@src/utilities/logger";
 import { FrameRectangle } from "@src/windows/frames/frameRectangle";
 
+// todo: check this file and remove what's unused
 
 /**
  * Keys for accessing values directionally
  */
-export const
+export const // todo: maybe replace keys with just arrays+indices in parsed models
 	axisKeys = <const>["y", "x"],
 	sizeKeys = <const>["height", "width"],
 	startKeys = <const>["top", "left"],

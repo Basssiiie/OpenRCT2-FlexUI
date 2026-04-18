@@ -118,7 +118,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 		const windowDesc = <WindowDesc>{
 			classification: ("fui-" + identifier()),
-			title: "",
+			//title: "",
 			colours: params.colours,
 			onUpdate: (): void =>
 			{
@@ -135,7 +135,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 		const windowHeight = setAxisSizeIfNumber(windowDesc, Axis.Vertical, height);
 		this._setWindowSizeAndFlags(windowWidth, windowHeight);
 
-		windowBinder.add(windowDesc, "title", params.title);
+		windowBinder.add(windowDesc, "title", params.title || "");
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
 		this._position = position;
 		this._description = windowDesc;

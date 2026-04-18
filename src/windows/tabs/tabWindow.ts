@@ -1,4 +1,4 @@
-import { defaultScale, defaultWindowPadding } from "@src/elements/constants";
+import { defaultScale, defaultTopBarSize, defaultTopBarSizeWithTabs, defaultWindowPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
 import { Axis } from "@src/positional/axis";
@@ -136,7 +136,7 @@ class TabWindowControl extends BaseWindowControl
 		let rootLayoutable: TabLayoutable;
 		if (staticWidgetParams) // Create full frame for root
 		{
-			const builder = new FrameBuilder(this, params, staticWidgetParams, defaultTopBarSize);
+			const builder = new FrameBuilder(this, params, staticWidgetParams, 123123);
 			const staticWidgets = builder._widgets;
 
 			description.widgets = staticWidgets;
@@ -155,7 +155,7 @@ class TabWindowControl extends BaseWindowControl
 		this._root = rootLayoutable;
 		this._windowWidthOption = width;
 		this._windowHeightOption = height;
-		this._padding = parsePadding(isUndefined(padding) ? defaultWindowPadding : padding);
+		this._padding = parsePadding(isUndefined(padding) ? defaultWindowPadding : padding); // todo: preparse default?
 
 		const tabCount = tabs.length;
 		const tabList = Array<TabLayoutable>(tabCount);

@@ -434,10 +434,10 @@ test("Padding: single weighted value", t =>
 	control.layout(widgetMap, rect);
 
 	const widget = output.widgets[0];
-	t.is(widget.x, 9);
-	t.is(widget.y, 22);
-	t.is(widget.width, 43);
-	t.is(widget.height, 55);
+	t.is(widget.x, 9); // (60 / 2.8) * 0.4
+	t.is(widget.y, 22);	// (100 / 1.8) * 0.4
+	t.is(widget.width, 43); // (60 / 2.8) * 2
+	t.is(widget.height, 56); // (100 / 1.8) * 1
 });
 
 

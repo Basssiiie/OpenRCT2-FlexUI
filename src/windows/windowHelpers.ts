@@ -18,10 +18,16 @@ export type WindowScaleOptions = number | WindowScale | "auto";
 export type TabScaleOptions = WindowScaleOptions | "inherit";
 
 
+export function getScaleValue<T>(input: T | { value: T }): T
+{
+	return (isObject(input)) ? input.value : input;
+}
+
+
 export function getAxisSizeWithInheritance(windowScaleOption: WindowScaleOptions, tabScaleOption: TabScaleOptions): number | "auto"
 {
 	const result = (tabScaleOption == inheritKey) ? windowScaleOption : tabScaleOption;
-	return (isObject(result)) ? result.value : result;
+	return getScaleValue(result);
 }
 
 
@@ -29,7 +35,7 @@ export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direct
 {
 	if (tabValue != inheritKey)
 	{
-		return (isObject(tabValue)) ? tabValue.value : tabValue;
+		return getScaleValue(tabValue);
 	}
 	return setAxisSizeIfNumber(window, direction, windowValue);
 }

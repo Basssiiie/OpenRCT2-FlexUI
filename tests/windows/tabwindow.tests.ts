@@ -1,11 +1,13 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { button } from "@src/elements/controls/button";
+import { button, ButtonParams } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { ElementVisibility } from "@src/elements/elementParams";
+import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Colour } from "@src/utilities/colour";
+import { Layoutable } from "@src/windows/layoutable";
 import { tab } from "@src/windows/tabs/tab";
 import { tabwindow } from "@src/windows/tabs/tabWindow";
 import test from "ava";
@@ -224,7 +226,7 @@ test("Window with tabs errors with weighted widget in auto-sized tab", t =>
 	{
 		template.open();
 	});
-	t.is(error.message, "Window body width must resolve to absolute size for \"auto\" window size.");
+	t.is(error.message, "Window content body's width must resolve to absolute size for \"auto\" window size.");
 });
 
 
@@ -326,8 +328,8 @@ test("Window with tabs allows weighted widget and padding for static widget in a
 
 		const button1 = <ButtonWidget>window.widgets[0];
 		t.is(button1.text, "static button");
-		t.is(button1.x, 8 + 4); // 10% = 4.1 of (35 + 6)
-		t.is(button1.y, 8 + 6 + 15); // 10% = 5.5 of (20 + 6 + (44 - 15))
+		t.is(button1.x, 8 + 4); // 10% = 4.1 rounded down of (35 + 6)
+		t.is(button1.y, 8 + 6 + 15); // 10% = 5.5 rounded up of (20 + 6 + (44 - 15))
 		t.is(button1.width, expectedWindowWidth - (16 + 8));
 		t.is(button1.height, expectedWindowHeight - (16 + 11 + 15));
 
@@ -1065,6 +1067,11 @@ test("Window with tabs does single redraw after tabs switch", t =>
 	globalThis.ui = Mock.ui();
 
 	const hits: string[] = [];
+	const widget: ButtonParams & FlexiblePosition =	{
+		 text: "tab 2 button",
+		 width: 20,
+		 height: 70
+	};
 	const template = tabwindow({
 		width: "auto", height: "auto", padding: 10,
 		tabs: [
@@ -1077,12 +1084,14 @@ test("Window with tabs does single redraw after tabs switch", t =>
 			tab({
 				image: 35,
 				content: [
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(parent, output): any =>
 					{
-						output.on("redraw", () => hits.push("redraw"));
-						const btn = button({ text: "tab 2 button", width: 20, height: 70 });
-						return btn(parent, output);
+						position: widget,
+						create(output): Layoutable
+						{
+							output.on("redraw", () => hits.push("redraw"));
+							const btn = button(widget);
+							return btn.create(output);
+						}
 					}
 				]
 			})

@@ -1,6 +1,7 @@
 import { read } from "@src/bindings/stores/read";
+import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
-import { setAbsolutePaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
 import { Axis } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { Rectangle } from "@src/positional/rectangle";
@@ -138,22 +139,22 @@ export class FrameControl implements FrameContext, ParentControl, TabLayoutable
 function scaleFrame(area: FrameRectangle, option: TabScaleOptions, containerSize: Store<number | undefined> | number | undefined, padding: ParsedPadding, direction: Axis): number
 {
 	const sizeKey = sizeKeys[direction];
-	let size: WindowScaleOptions | undefined = (!option || option == inheritKey) ? area[sizeKey] : option;
-	const paddingSize = setAbsolutePaddingForDirection(area, padding, direction);
+	let size: WindowScaleOptions = (!option || option == inheritKey) ? area[sizeKey] : option;
 
 	// If auto or inherit auto from parent, try size to child content.
 	if (size == autoKey)
 	{
 		// Resize area size to child frame's size.
-		size = read(containerSize);
+		size = <number><never>read(containerSize);
 
 		if (isNullOrUndefined(size))
 		{
 			Log.thrown("Window content body's " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
 		}
 
-		return size + paddingSize;
+		return size + setAbsolutePaddingForDirection(area, padding, direction);
 	}
 
-	return (<number>area[sizeKey]) -= paddingSize;
+	// Apply regular padding to area and return original size.
+	return setSizeWithPaddingForDirection(<Rectangle>area, direction, defaultScale, padding);
 }
