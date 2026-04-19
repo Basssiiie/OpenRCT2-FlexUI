@@ -8,8 +8,7 @@ import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import * as Log from "@src/utilities/logger";
 import * as MathUtils from "@src/utilities/math";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -90,18 +89,18 @@ export interface SpinnerParams extends ElementParams
  */
 export function spinner(params: SpinnerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function spinner(params: SpinnerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function spinner<I extends SizeParams, P>(params: SpinnerParams & I): WidgetCreator<I, P>
+export function spinner<Position extends SizeParams>(params: SpinnerParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new SpinnerControl(parent, output, params);
+	return toWidgetCreator(SpinnerControl, params);
 }
 
 
 /**
  * A controller class for a spinner widget.
  */
-export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements SpinnerDesc
+export class SpinnerControl<Position> extends Control<SpinnerDesc, Position> implements SpinnerDesc
 {
 	text?: string;
 	onIncrement: () => void;
@@ -116,9 +115,9 @@ export class SpinnerControl<I, P> extends Control<SpinnerDesc, I, P> implements 
 	_onChange?: (value: number, adjustment: number) => void;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: SpinnerParams & I)
+	constructor(output: BuildOutput, params: SpinnerParams & Position)
 	{
-		super("spinner", parent, output, params);
+		super("spinner", output, params);
 
 		// Make value a store regardless of user choice, to make updating the text more convenient.
 		const original = params.value;

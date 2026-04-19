@@ -1,5 +1,5 @@
-import { endKeys, sizeKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
-import { Axis } from "@src/positional/axis";
+import { sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { Axis, AxisSide } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Size } from "@src/positional/size";
@@ -8,8 +8,8 @@ import { isObject, isString } from "@src/utilities/type";
 import { WindowScale } from "./windowScale";
 
 
-export const inheritKey = "inherit";
-export const autoKey = "auto";
+export const inheritKey = "inherit"; // take from parent?
+export const autoKey = "auto"; // take from children?
 
 const minKeys = <const>["minHeight", "minWidth"];
 const maxKeys = <const>["maxHeight", "maxWidth"];
@@ -18,10 +18,16 @@ export type WindowScaleOptions = number | WindowScale | "auto";
 export type TabScaleOptions = WindowScaleOptions | "inherit";
 
 
+export function getScaleValue<T>(input: T | { value: T }): T
+{
+	return (isObject(input)) ? input.value : input;
+}
+
+
 export function getAxisSizeWithInheritance(windowScaleOption: WindowScaleOptions, tabScaleOption: TabScaleOptions): number | "auto"
 {
 	const result = (tabScaleOption == inheritKey) ? windowScaleOption : tabScaleOption;
-	return (isObject(result)) ? result.value : result;
+	return getScaleValue(result);
 }
 
 
@@ -29,12 +35,15 @@ export function setAxisSizeIfInheritedNumber(window: Window | WindowDesc, direct
 {
 	if (tabValue != inheritKey)
 	{
-		return (isObject(tabValue)) ? tabValue.value : tabValue;
+		return getScaleValue(tabValue);
 	}
 	return setAxisSizeIfNumber(window, direction, windowValue);
 }
 
-export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis, scaleOption: TabScaleOptions): number | "auto"
+/**
+ * Sets the window to the specified scale if it is of static size, and returns the final size if possible.
+ */
+export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis, scaleOption: TabScaleOptions | undefined): number | "auto"
 {
 	if (isString(scaleOption))
 	{
@@ -52,8 +61,8 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis
 export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
 {
 	const directionKey = sizeKeys[direction];
-	const startPad = windowPadding[startKeys[direction]];
-	const endPad = windowPadding[endKeys[direction]];
+	const startPad = windowPadding[AxisSide.Start + direction];
+	const endPad = windowPadding[AxisSide.End + direction];
 	const size = (frameSize[directionKey] + startPad[0] + endPad[0] + extraPadding);
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))

@@ -1,5 +1,3 @@
-import { Binding } from "@src/bindings/binding";
-import { Store } from "@src/bindings/stores/store";
 import * as Log from "@src/utilities/logger";
 import { BaseWindowControl } from "../baseWindowControl";
 import { GenericBinder } from "./genericBinder";
@@ -17,34 +15,24 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	{
 		Log.assert(!!control._description, "Window control is missing description!");
 
-		this._refresh(control._description);
+		const bindings = this._bindings;
+		for (const binding of bindings)
+		{
+			binding._bind(control);
+		}
 		this._source = control;
 	}
 
 
-	protected override _createBinding<T extends Window | WindowDesc, V>(_target: T, store: Store<V>, callback: (target: T, value: V) => void): Binding<T, V>
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+	protected override _getBindTarget<T>(): (source: BaseWindowControl) => T | null
 	{
-		return new Binding<T, V>("", store, callback, (value: V): void =>
+		return (source: BaseWindowControl): T | null =>
 		{
-			const control = this._source;
-			// Only update if window is open.
-			if (!control || !control._window)
-				return;
+			Log.assert(source.isOpen() || !!source._description, "Window description is not available!");
+			Log.assert(!source.isOpen() || !!source._window, "Window instance is not available!");
 
-			callback(<T>control._window, value);
-		});
-	}
-
-
-	/**
-	 * Updates the window with the values in registered bindings.
-	 */
-	private _refresh(window: Window | WindowDesc): void
-	{
-		const bindings = this._bindings;
-		for (const binding of bindings)
-		{
-			binding._callback(window, binding._store.get());
-		}
+			return <T>(source._window || source._description);
+		};
 	}
 }

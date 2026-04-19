@@ -1,9 +1,9 @@
-import { defaultWindowPadding, zeroPadding } from "@src/elements/constants";
+import { defaultTopBarSize, defaultWindowPadding, zeroPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
-import { BaseWindowControl, BaseWindowParams, defaultTopBarSize } from "./baseWindowControl";
+import { BaseWindowControl, BaseWindowParams } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
 import { FrameControl } from "./frames/frameControl";
 import { TabLayoutable } from "./tabs/tabLayoutable";
@@ -45,7 +45,7 @@ export function window(params: WindowParams): WindowTemplate;
  *     header: store("Hello world!")
  * }
  *
- * const template = window((model: MyModel) =>
+ * const template = window<MyModel>(model =>
  * ({
  *     title: model.header
  * }))
@@ -69,9 +69,9 @@ export function window<T>(params: ((model: T) => WindowParams) | WindowParams): 
  */
 class WindowControl extends BaseWindowControl
 {
-	private _frame: FrameControl;
 	protected override _descriptionWidgetMap: WidgetMap;
 
+	private readonly _frame: FrameControl;
 
 	constructor(params: WindowParams)
 	{
@@ -96,7 +96,7 @@ class WindowControl extends BaseWindowControl
 
 	override _layout(window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._createFrameRectangle(this._flags, defaultTopBarSize);
+		const area = this._createWindowRectangle(this._flags, defaultTopBarSize);
 		const size = this._frame.layout(area, widgets);
 
 		this._setAutoWindowSize(window, size, defaultTopBarSize, zeroPadding);

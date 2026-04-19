@@ -15,11 +15,11 @@ export function isNull(target: unknown): target is null
 }
 
 /**
- * Checks whether the target is null or not.
+ * Checks whether the target is null or undefined.
  */
 export function isNullOrUndefined(target: unknown): target is null | undefined
 {
-	return isUndefined(target) || isNull(target);
+	return (target == null); // non-strict equals covers both cases
 }
 
 /**

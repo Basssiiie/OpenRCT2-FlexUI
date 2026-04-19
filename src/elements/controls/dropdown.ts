@@ -5,8 +5,7 @@ import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import * as Log from "@src/utilities/logger";
 import { decorateWithSilencer } from "@src/utilities/silencer";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
 import { ElementParams } from "../elementParams";
@@ -61,18 +60,18 @@ export interface DropdownParams extends ElementParams
  */
 export function dropdown(params: DropdownParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function dropdown(params: DropdownParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function dropdown<I extends SizeParams, P>(params: DropdownParams & I): WidgetCreator<I, P>
+export function dropdown<Position extends SizeParams>(params: DropdownParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new DropdownControl(parent, output, params);
+	return toWidgetCreator(DropdownControl, params);
 }
 
 
 /**
  * A controller class for a dropdown widget.
  */
-export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implements DropdownDesc
+export class DropdownControl<Position> extends Control<DropdownDesc, Position> implements DropdownDesc
 {
 	items: string[] = [];
 	selectedIndex = 0;
@@ -82,9 +81,9 @@ export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implement
 	_previousItems?: string[];
 	_silenceOnChange?: boolean;
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: DropdownParams & I)
+	constructor(output: BuildOutput, params: DropdownParams & Position)
 	{
-		super("dropdown", parent, output, params);
+		super("dropdown", output, params);
 
 		const { items, disabled, disabledMessage, onChange } = params;
 		const disableCount = getDisabledCount(params.autoDisable);
@@ -108,13 +107,13 @@ export class DropdownControl<I, P> extends Control<DropdownDesc, I, P> implement
 			};
 		}
 
-		binder.on(this, items, itemsSetter);
-		binder.on(this, selectedIndex, (widget, idx) =>
+		binder.for(this, items, itemsSetter);
+		binder.for(this, selectedIndex, (widget, idx) =>
 		{
 			this._selectedIndex = idx;
 			setter(widget);
 		});
-		binder.on(this, disabled, setter);
+		binder.for(this, disabled, setter);
 		// Ensure index is never negative (= uninitialised state)
 		const silencer = decorateWithSilencer(this, onChange, (idx, apply) => apply((idx < 0) ? 0 : idx));
 		binder.callback(this, "onChange", selectedIndex, silencer);

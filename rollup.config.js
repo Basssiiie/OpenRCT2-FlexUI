@@ -17,7 +17,7 @@ const isDev = (build === "development");
  */
 function precache(cache)
 {
-	const bans = [ "x", "y", "id", "on", "add", "get", "set", "gap", "pop", "min", "max", "top" ];
+	const bans = [ "x", "y", "id", "on", "add", "get", "set", "gap", "pop", "min", "max", "top", "row", "for" ];
 	const leading = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_";
     const all = (leading+"0123456789");
 	let mangleId = 0;

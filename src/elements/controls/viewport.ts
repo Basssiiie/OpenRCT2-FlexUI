@@ -5,8 +5,7 @@ import * as Log from "@src/utilities/logger";
 import { isNullOrUndefined, isNumber, isObject } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { FrameContext } from "@src/windows/frames/frameContext";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { openEvent, updateEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
@@ -46,9 +45,9 @@ export interface ViewportParams extends ElementParams
  */
 export function viewport(params: ViewportParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function viewport(params: ViewportParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function viewport<I, P>(params: ViewportParams & I): WidgetCreator<I, P>
+export function viewport<Position>(params: ViewportParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new ViewportControl(parent, output, params);
+	return toWidgetCreator(ViewportControl, params);
 }
 
 
@@ -62,7 +61,7 @@ const disabledFlags = ViewportFlags.HideBase | ViewportFlags.HideVertical
 /**
  * A controller class for a viewport widget.
  */
-class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements ViewportDesc
+class ViewportControl<Position> extends Control<ViewportDesc, Position> implements ViewportDesc
 {
 	_target?: CoordsXY | CoordsXYZ | number | null;
 
@@ -70,9 +69,9 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 	/**
 	 * Create a viewport control with the specified parameters.
 	 */
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ViewportParams & I)
+	constructor(output: BuildOutput, params: ViewportParams & Position)
 	{
-		super("viewport", parent, output, params);
+		super("viewport", output, params);
 
 		const binder = output.binder;
 		const { target, visibilityFlags, disabled, zoom } = params;
@@ -82,10 +81,10 @@ class ViewportControl<I, P> extends Control<ViewportDesc, I, P> implements Viewp
 			this._updateViewport(widget.viewport, target, visibilityFlags, disabled);
 		};
 
-		binder.on(<ViewportWidget><unknown>this, visibilityFlags, viewportSetter);
-		binder.on(<ViewportWidget><unknown>this, disabled, viewportSetter);
-		binder.on(<ViewportWidget><unknown>this, target, viewportSetter);
-		binder.on(<ViewportWidget><unknown>this, zoom, (widget: ViewportWidget, value: number) =>
+		binder.for(<ViewportWidget><unknown>this, visibilityFlags, viewportSetter);
+		binder.for(<ViewportWidget><unknown>this, disabled, viewportSetter);
+		binder.for(<ViewportWidget><unknown>this, target, viewportSetter);
+		binder.for(<ViewportWidget><unknown>this, zoom, (widget: ViewportWidget, value: number) =>
 		{
 			const viewport = <Viewport | null>widget.viewport;
 			if (viewport)

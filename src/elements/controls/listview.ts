@@ -2,9 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { read } from "@src/bindings/stores/read";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { unwrap } from "@src/bindings/twoway/unwrap";
-import { Axis } from "@src/positional/axis";
-import { parseScaleOrFallback } from "@src/positional/parsing/parseScale";
-import { Parsed } from "@src/positional/parsing/parsed";
+import { convertToPixels, parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { ScaleType } from "@src/positional/parsing/scaleType";
 import { Rectangle } from "@src/positional/rectangle";
@@ -12,13 +10,12 @@ import { Scale } from "@src/positional/scale";
 import { round } from "@src/utilities/math";
 import { isString, isUndefined } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { defaultScale, zeroPadding, zeroScale } from "../constants";
+import { defaultScale } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { flexibleLayout } from "../layouts/flexible/flexibleLayout";
+import { fillLayout } from "../layouts/fillLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { Control } from "./control";
 
@@ -117,16 +114,18 @@ export interface ListViewParams extends ElementParams
  */
 export function listview(params: ListViewParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function listview(params: ListViewParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function listview<I, P>(params: ListViewParams & I): WidgetCreator<I, P>
+export function listview<Position>(params: ListViewParams & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new ListViewControl<I, P>(parent, output, params);
+	return toWidgetCreator(ListViewControl, params);
 }
 
 
 /**
  * A controller class for a listview widget.
  */
-class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<ListViewDesc, "selectedCell"> // ListViewDesc.selectedCell does not support `null`
+class ListViewControl<Position> extends Control<ListViewDesc, Position>
+	// Omitting ListViewDesc.selectedCell as it does not support `null`
+	implements Omit<ListViewDesc, "selectedCell">
 {
 	showColumnHeaders: boolean;
 	columns: Partial<ListViewColumn>[];
@@ -138,14 +137,14 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 	onHighlight?: (item: number, column: number) => void;
 	onClick?: (item: number, column: number) => void;
 
-	/** @todo: fix this so it doesnt need to be a complex object, and can just be a ParsedScale instead. */
-	_columnWidths?: Parsed<FlexiblePosition>[];
 	_selected?: Bindable<RowColumn | null>;
+	_columnWidths?: ParsedScale[];
+	_requestedWidths!: Record<ScaleType, number>;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: ListViewParams & I)
+	constructor(output: BuildOutput, params: ListViewParams & Position)
 	{
-		super("listview", parent, output, params);
+		super("listview", output, params);
 
 		const selected = params.selectedCell;
 		const onClick = params.onClick;
@@ -193,6 +192,7 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		// Figure out if default columns or custom columns were configured..
 		const count = columns.length;
 		const columWidths = Array<ParsedScale>(count);
+		const requested: Record<ScaleType, number> = [0, 0, 0]; // [pixels, percentile, weight] requested by columns
 		let type = -1;
 		let differentTypes = false;
 
@@ -220,6 +220,8 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 					? [ratioWidth, ScaleType.Weight]
 					: parseScaleOrFallback(width, defaultScale);
 
+				requested[parsedWidth[1]] += parsedWidth[0];
+
 				// Rename tooltip property
 				if (tooltip)
 				{
@@ -237,12 +239,8 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		// If there is different width types, or there is percentile width, let the plugin handle calculation.
 		if (differentTypes || type == ScaleType.Percentage)
 		{
-			this._columnWidths = columWidths.map(width =>
-			({
-				width,
-				height: zeroScale,
-				padding: zeroPadding
-			}));
+			this._columnWidths = columWidths;
+			this._requestedWidths = requested;
 			return;
 		}
 
@@ -281,15 +279,22 @@ class ListViewControl<I, P> extends Control<ListViewDesc, I, P> implements Omit<
 		const columnWidths = this._columnWidths;
 		if (columnWidths && widget.width !== area.width)
 		{
-			flexibleLayout(widths, area, Axis.Horizontal, zeroScale, (idx, subarea) =>
+			// Simplified version of flexibleLayout()
+			const requested = this._requestedWidths;
+			const leftoverSpace = (area.width - requested[ScaleType.Pixel]);
+			const weightedTotal = requested[ScaleType.Weight];
+			const percentileTotal = requested[ScaleType.Percentage];
+			const columns = this.columns;
+			const count = columns.length;
+			let idx = 0;
+
+			for (; idx < count; idx++)
 			{
-				this.columns[idx].width = round(subarea.width);
-			});
-			widget.columns = this.columns;
-			widget.width = area.width;
+				columns[idx].width = round(convertToPixels(columnWidths[idx], leftoverSpace, weightedTotal, percentileTotal) - 0.01);
+			}
+
+			widget.columns = columns;
 		}
-		widget.x = area.x;
-		widget.y = area.y;
-		widget.height = area.height;
+		fillLayout(area, widget);
 	}
 }

@@ -1,4 +1,4 @@
-import { defaultScale, defaultWindowPadding } from "@src/elements/constants";
+import { defaultScale, defaultTopBarSize, defaultTopBarSizeWithTabs, defaultWindowPadding } from "@src/elements/constants";
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
 import { Axis } from "@src/positional/axis";
@@ -10,7 +10,7 @@ import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
 import { isUndefined } from "@src/utilities/type";
-import { BaseWindowControl, BaseWindowParams, WindowFlags, defaultTopBarSize } from "../baseWindowControl";
+import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { FrameRectangle } from "../frames/frameRectangle";
 import { Template } from "../template";
@@ -83,7 +83,7 @@ export function tabwindow(params: TabWindowParams): WindowTemplate;
  *     header: store("Hello world!")
  * }
  *
- * const template = tabwindow((model: MyModel) =>
+ * const template = tabwindow<MyModel>(model =>
  * ({
  *     title: model.header
  * }))
@@ -103,7 +103,7 @@ export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindow
 
 
 const defaultTabIcon = 16;
-const defaultTopBarSizeWithTabs = 44;
+let defaultTablessWindowPadding: ParsedPadding | undefined;
 
 const enum TabWindowFlags
 {
@@ -157,7 +157,10 @@ class TabWindowControl extends BaseWindowControl
 		this._root = rootLayoutable;
 		this._windowWidthOption = width;
 		this._windowHeightOption = height;
-		this._padding = parsePadding(isUndefined(padding) ? defaultWindowPadding : padding);
+		this._padding = isUndefined(padding)
+			// Cache default padding only if ever used
+			? (defaultTablessWindowPadding ||= parsePadding(defaultWindowPadding))
+			: parsePadding(padding);
 
 		const tabCount = tabs.length;
 		const tabList = Array<TabLayoutable>(tabCount);
@@ -230,7 +233,7 @@ class TabWindowControl extends BaseWindowControl
 
 	private _layoutTab(tab: TabLayoutable, window: Window | WindowDesc, widgets: WidgetMap): void
 	{
-		const area = this._createFrameRectangle(this._flags, defaultTopBarSizeWithTabs);
+		const area = this._createWindowRectangle(this._flags, defaultTopBarSizeWithTabs);
 		const padding = this._padding;
 		setFramePaddingToDirection(area, padding, Axis.Horizontal);
 		setFramePaddingToDirection(area, padding, Axis.Vertical);
@@ -248,7 +251,7 @@ class TabWindowControl extends BaseWindowControl
 			return;
 		}
 
-		const area = <Rectangle>this._createFrameRectangle(WindowFlags.None, defaultTopBarSize);
+		const area = <Rectangle>this._createWindowRectangle(WindowFlags.None, defaultTopBarSize);
 		const padding = this._padding;
 		setSizeWithPaddingForDirection(area, Axis.Horizontal, defaultScale, padding);
 		setSizeWithPaddingForDirection(area, Axis.Vertical, defaultScale, padding);

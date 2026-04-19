@@ -29,7 +29,7 @@ export class Template<TModel, TParams extends BaseWindowParams> implements Windo
 		const current = this._active;
 		if (current && current._window && this._mode !== "multiple")
 		{
-			current.focus(); // todo: update model?
+			current.focus();
 			return current;
 		}
 

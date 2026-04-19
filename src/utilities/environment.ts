@@ -1,7 +1,7 @@
 /**
- * Specifies whether the current build is for production or development environment.
+ * Specifies whether the current build is for production, testing, or development environment.
  */
-type BuildConfiguration = "production" | "development";
+type BuildConfiguration = "production" | "testing" | "development";
 
 
 /**
@@ -23,7 +23,13 @@ export const isProduction = (buildConfiguration === "production");
 
 
 /**
- * Returns true if the current build is a production build.
+ * Returns true if the current build is a testing build.
+ */
+export const isTesting = (buildConfiguration === "testing");
+
+
+/**
+ * Returns true if the current build is a development build.
  */
 export const isDevelopment = (buildConfiguration === "development");
 

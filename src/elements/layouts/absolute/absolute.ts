@@ -1,17 +1,15 @@
-import { VisualElement } from "@src/elements/controls/visualElement";
-import { parseScale } from "@src/positional/parsing/parseScale";
-import { Parsed } from "@src/positional/parsing/parsed";
+import { Layoutable } from "@src/index";
+import { isWeighted } from "@src/positional/parsing/parsedScale";
+import { convertToPixels, parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
-import { noop } from "@src/utilities/noop";
 import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { Layoutable } from "@src/windows/layoutable";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
+import { Child, container } from "../container";
 import { FlexiblePosition } from "../flexible/flexiblePosition";
-import { absoluteLayout } from "./absoluteLayout";
 import { AbsolutePosition } from "./absolutePosition";
+import { ParsedAbsolutePosition } from "./parsedAbsolutePosition";
 
 
 /**
@@ -39,45 +37,86 @@ export function absolute(params: AbsoluteLayoutContainer & FlexiblePosition): Wi
 export function absolute(params: AbsoluteLayoutContainer & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function absolute(params: AbsoluteLayoutParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function absolute(params: AbsoluteLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function absolute<I, P>(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & I): WidgetCreator<I, P>
+export function absolute<Position>(params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Position): WidgetCreator<Position>
 {
-	return (parent, output) => new AbsoluteLayoutControl<I, P>(parent, output, params);
+	return toWidgetCreator(AbsoluteLayoutControl, params);
 }
 
 
-class AbsoluteLayoutControl<I, P> extends VisualElement<I, P> implements ParentControl<AbsolutePosition>
+class AbsoluteLayoutControl<Position> implements Layoutable
 {
-	recalculate = noop; // Nothing to recalculate
+	_children: Child<ParsedAbsolutePosition>[];
 
-	_children: Layoutable<Parsed<AbsolutePosition>>[];
+	_weightedTotalWidth: number;
+	_weightedTotalHeight: number;
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & I)
+	constructor(output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Position)
 	{
-		super(parent, params);
-
-		const childCreators = (isArray(params)) ? params : params.content;
-		const count = childCreators.length;
-		this._children = Array<Layoutable<Parsed<AbsolutePosition>>>(count);
-
-		for (let i = 0; i < childCreators.length; i++)
-		{
-			const creator = childCreators[i];
-			this._children[i] = creator(this, output);
-		}
-	}
-
-	parse(position: AbsolutePosition): Parsed<AbsolutePosition>
-	{
-		return {
+		const creators = (isArray(params)) ? params : params.content;
+		const children = container(output, creators, position =>
+		({
 			x: parseScale(position.x),
 			y: parseScale(position.y),
-			width: parseScale(position.width),
-			height: parseScale(position.height)
-		};
+			_width: parseScale(position.width),
+			_height: parseScale(position.height)
+		}));
+		const count = children.length;
+		let weightedTotalWidth = 0;
+		let weightedTotalHeight = 0;
+		let child: Child<ParsedAbsolutePosition>;
+		let idx = 0;
+
+		for (; idx < count; idx++)
+		{
+			child = children[idx];
+			if (child._skip)
+			{
+				continue;
+			}
+
+			const width = child._width;
+			const height = child._height;
+
+			if (isWeighted(width))
+			{
+				weightedTotalWidth += width[0];
+			}
+			if (isWeighted(height))
+			{
+				weightedTotalHeight += height[0];
+			}
+		}
+
+		this._children = children;
+		this._weightedTotalWidth = weightedTotalWidth;
+		this._weightedTotalHeight = weightedTotalHeight;
 	}
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle): void
 	{
-		absoluteLayout(this._children, area, widgets);
+		const children = this._children;
+		const count = children.length;
+		const weightedTotalWidth = this._weightedTotalWidth;
+		const weightedTotalHeight = this._weightedTotalHeight;
+		const leftoverWidth = area.width;
+		const leftoverHeight = area.height;
+		const rect = <Rectangle>{}; // Reuse the rect for every element to reduce allocation.
+		let child: Child<ParsedAbsolutePosition>;
+
+		for (let i = 0; i < count; i++)
+		{
+			child = children[i];
+			if (child._skip)
+			{
+				continue;
+			}
+
+			rect.x = (area.x + convertToPixels(child.x, leftoverWidth, weightedTotalWidth, 0));
+			rect.y = (area.y + convertToPixels(child.y, leftoverHeight, weightedTotalHeight, 0));
+			rect.width = convertToPixels(child._width, leftoverWidth, weightedTotalWidth, 0);
+			rect.height = convertToPixels(child._height, leftoverHeight, weightedTotalHeight, 0);
+
+			child._layoutable.layout(widgets, rect);
+		}
 	}
 }

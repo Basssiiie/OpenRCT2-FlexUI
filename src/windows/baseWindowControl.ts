@@ -65,21 +65,20 @@ export interface BaseWindowParams extends Paddable
 	/**
 	 * Event that gets triggered when the window is opened.
 	 */
-	onOpen?: () => void;
+	onOpen?: (this: OpenWindow) => void;
 
 	/**
 	 * Event that gets triggered for every tick the window is open.
 	 */
-	onUpdate?: () => void;
+	onUpdate?: (this: OpenWindow) => void;
 
 	/**
 	 * Event that gets triggered when the window gets closed by either the user or a plugin.
 	 */
-	onClose?: () => void;
+	onClose?: (this: OpenWindow) => void;
 }
 
 
-export const defaultTopBarSize = 15;
 export const enum WindowFlags
 {
 	None = 0,
@@ -119,7 +118,6 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 		const windowDesc = <WindowDesc>{
 			classification: ("fui-" + identifier()),
-			title: "",
 			colours: params.colours,
 			onUpdate: (): void =>
 			{
@@ -136,7 +134,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 		const windowHeight = setAxisSizeIfNumber(windowDesc, Axis.Vertical, height);
 		this._setWindowSizeAndFlags(windowWidth, windowHeight);
 
-		windowBinder.add(windowDesc, "title", params.title);
+		windowBinder.add(windowDesc, "title", params.title || "");
 		this._windowBinder = (windowBinder._hasBindings()) ? windowBinder : null;
 		this._position = position;
 		this._description = windowDesc;
@@ -185,7 +183,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
 	 */
-	protected _createFrameRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
+	protected _createWindowRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
 	{
 		return {
 			x: 0,
@@ -255,6 +253,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 		this._window = window;
 		this._activeWidgetMap = activeWidgets;
+		// fixme: this currently causes a duplicate bind apply pass
 		this._invoke(frame => frame.open(window, activeWidgets));
 	}
 

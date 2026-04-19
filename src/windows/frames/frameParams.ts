@@ -1,5 +1,4 @@
 import { FlexibleDirectionalLayoutParams, FlexibleLayoutContainer } from "@src/elements/layouts/flexible/flexible";
-import { Paddable } from "@src/positional/paddable";
 import { FramePosition } from "./framePosition";
 
 
@@ -7,7 +6,7 @@ import { FramePosition } from "./framePosition";
  * Parameters to allow for frame events; these are separate to allow for custom
  * documentation for both tabs and windows.
  */
-export interface FrameEventParams extends Paddable
+export interface FrameEventParams
 {
 	onOpen?: () => void;
 	onUpdate?: () => void;

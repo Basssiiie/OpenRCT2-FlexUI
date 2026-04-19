@@ -5,8 +5,7 @@ import { subscribe } from "@src/bindings/stores/subscribe";
 import { getOrConvertToTwoWayBinding } from "@src/bindings/twoway/convertToTwoWay";
 import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
@@ -36,11 +35,11 @@ export interface DropdownSpinnerParams extends DropdownParams
  */
 export function dropdownSpinner(params: DropdownSpinnerParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function dropdownSpinner(params: DropdownSpinnerParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function dropdownSpinner<I extends SizeParams, P>(params: DropdownSpinnerParams & I): WidgetCreator<I, P>
+export function dropdownSpinner<Position extends SizeParams>(params: DropdownSpinnerParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new DropdownSpinnerControl(parent, output, params);
+	return toWidgetCreator(DropdownSpinnerControl, params);
 }
 
 
@@ -50,11 +49,11 @@ const spinnerControlsWidth = 25;
 /**
  * A dropdown with a spinner control on the side.
  */
-class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
+class DropdownSpinnerControl<Position> extends DropdownControl<Position>
 {
-	_spinner: SpinnerControl<I, P>;
+	_spinner: SpinnerControl<Position>;
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: DropdownSpinnerParams & I)
+	constructor(output: BuildOutput, params: DropdownSpinnerParams & Position)
 	{
 		// Ensure selectedIndex is a two-way store to keep the spinner and dropdown in sync.
 		const selectedIndex = getOrConvertToTwoWayBinding(params.selectedIndex, 0);
@@ -91,8 +90,8 @@ class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
 		// Pass ensured two-way binding to underlying dropdown control.
 		params.selectedIndex = selectedIndex;
 
-		const spinner = new SpinnerControl(parent, output, <SpinnerParams & I>spinParams);
-		super(parent, output, params);
+		const spinner = new SpinnerControl(output, <SpinnerParams & Position>spinParams);
+		super(output, params);
 
 		this._spinner = spinner;
 	}
@@ -104,10 +103,10 @@ class DropdownSpinnerControl<I, P> extends DropdownControl<I, P>
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position spinner (only show controls next to dropdown)
-		fillLayout(widgets, this._spinner.name, area);
+		fillLayout(area, widgets, this._spinner.name);
 
 		// Position dropdown (leave space for spinner controls)
 		area.width -= spinnerControlsWidth;
-		fillLayout(widgets, this.name, area);
+		fillLayout(area, widgets, this.name);
 	}
 }

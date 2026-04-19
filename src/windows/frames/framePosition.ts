@@ -28,7 +28,7 @@ export interface FramePosition extends Paddable
  */
 export interface ParsedFramePosition
 {
-	width: ParsedScale;
-	height: ParsedScale;
+	_width: ParsedScale;
+	_height: ParsedScale;
 	_padding: ParsedPadding;
 }

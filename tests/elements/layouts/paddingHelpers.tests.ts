@@ -15,42 +15,42 @@ const w = ScaleType.Weight;
 
 test("Has all padding", t =>
 {
-	const value = hasPadding({ top: [1, px], right: [2, pc], bottom: [3, w], left: [4, px] });
+	const value = hasPadding([[1, px], [4, px], [3, w], [2, pc]]);
 	t.true(value);
 });
 
 
 test("Has top padding", t =>
 {
-	const value = hasPadding({ top: [1, px], right: [0, pc], bottom: [0, w], left: [0, px] });
+	const value = hasPadding([[1, px], [0, px], [0, w], [0, pc]]);
 	t.true(value);
 });
 
 
 test("Has right padding", t =>
 {
-	const value = hasPadding({ top: [0, px], right: [1, pc], bottom: [0, w], left: [0, px] });
+	const value = hasPadding([[0, px], [0, px], [0, w], [1, pc]]);
 	t.true(value);
 });
 
 
 test("Has bottom padding", t =>
 {
-	const value = hasPadding({ top: [0, px], right: [0, pc], bottom: [1, w], left: [0, px] });
+	const value = hasPadding([[0, px], [0, px], [1, w], [0, pc]]);
 	t.true(value);
 });
 
 
 test("Has left padding", t =>
 {
-	const value = hasPadding({ top: [0, px], right: [0, pc], bottom: [0, w], left: [1, px] });
+	const value = hasPadding([[0, px], [1, px], [0, w], [0, pc]]);
 	t.true(value);
 });
 
 
 test("Has zero padding", t =>
 {
-	const value = hasPadding({ top: [0, px], right: [0, pc], bottom: [0, w], left: [0, px] });
+	const value = hasPadding([[0, px], [0, px], [0, w], [0, pc]]);
 	t.false(value);
 });
 
@@ -66,7 +66,7 @@ test("Set horizontal pixel padding on pixel size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 250 };
 	const size: ParsedScale = [100, px];
-	const padding: ParsedPadding = { top: [8, px], right: [5, px], bottom: [3, w], left: [2, px] };
+	const padding: ParsedPadding = [[8, px], [2, px], [3, w], [5, px]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -82,7 +82,7 @@ test("Set vertical pixel padding on pixel size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 250 };
 	const size: ParsedScale = [100, px];
-	const padding: ParsedPadding = { top: [8, px], right: [5, pc], bottom: [23, px], left: [2, px] };
+	const padding: ParsedPadding = [[8, px], [2, px], [23, px], [5, pc]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Vertical, size, padding);
 
@@ -98,7 +98,7 @@ test("Set weighted padding on horizontal pixel size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 250 };
 	const size: ParsedScale = [50, px];
-	const padding: ParsedPadding = { top: [8, px], right: [3, w], bottom: [3, w], left: [2, w] };
+	const padding: ParsedPadding = [[8, px], [2, w], [3, w], [3, w]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -114,7 +114,7 @@ test("Set pixel padding on horizontal weighted size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 250 };
 	const size: ParsedScale = [2, w];
-	const padding: ParsedPadding = { top: [8, px], right: [30, px], bottom: [3, px], left: [25, px] };
+	const padding: ParsedPadding = [[8, px], [25, px], [3, px], [30, px]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -130,7 +130,7 @@ test("Set weighted padding on horizontal weighted size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
 	const size: ParsedScale = [5, w];
-	const padding: ParsedPadding = { top: [8, px], right: [3, w], bottom: [3, w], left: [2, w] };
+	const padding: ParsedPadding = [[8, px], [2, w], [3, w], [3, w]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -146,7 +146,7 @@ test("Set weighted left padding on horizontal pixel size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
 	const size: ParsedScale = [50, px];
-	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [1, w] };
+	const padding: ParsedPadding = [[8, px], [1, w], [3, px], [15, px]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -162,7 +162,7 @@ test("Set weighted right padding on horizontal pixel size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
 	const size: ParsedScale = [50, px];
-	const padding: ParsedPadding = { top: [8, px], right: [1, w], bottom: [3, px], left: [25, px] };
+	const padding: ParsedPadding = [[8, px], [25, px], [3, px], [1, w]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -178,7 +178,7 @@ test("Set weighted left padding on horizontal weighted size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
 	const size: ParsedScale = [3, w];
-	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [2, w] };
+	const padding: ParsedPadding = [[8, px], [2, w], [3, px], [15, px]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -194,7 +194,7 @@ test("Set weighted right padding on horizontal weighted size", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
 	const size: ParsedScale = [3, w];
-	const padding: ParsedPadding = { top: [8, px], right: [2, w], bottom: [3, px], left: [25, px] };
+	const padding: ParsedPadding = [[8, px], [25, px], [3, px], [2, w]];
 
 	const total = setSizeWithPaddingForDirection(area, Axis.Horizontal, size, padding);
 
@@ -209,7 +209,7 @@ test("Set weighted right padding on horizontal weighted size", t =>
 test("Apply horizontal pixel padding", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 100, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [5, px], bottom: [3, w], left: [2, px] };
+	const padding: ParsedPadding = [[8, px], [2, px], [3, w], [5, px]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 0, 0, 0);
 
@@ -224,7 +224,7 @@ test("Apply horizontal pixel padding", t =>
 test("Apply vertical pixel padding", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 100 };
-	const padding: ParsedPadding = { top: [8, px], right: [5, pc], bottom: [23, px], left: [2, px] };
+	const padding: ParsedPadding = [[8, px], [2, px], [23, px], [5, pc]];
 
 	const total = applyPaddingToDirection(area, Axis.Vertical, padding, 10, 2, 0);
 
@@ -239,7 +239,7 @@ test("Apply vertical pixel padding", t =>
 test("Apply weighted padding on horizontal pixel space", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 150, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [3, w], bottom: [3, w], left: [2, w] };
+	const padding: ParsedPadding = [[8, px], [2, w], [3, w], [3, w]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 160, 8, 0);
 
@@ -254,7 +254,7 @@ test("Apply weighted padding on horizontal pixel space", t =>
 test("Apply weighted left padding on horizontal pixel space", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [1, w] };
+	const padding: ParsedPadding = [[8, px], [1, w], [3, px], [15, px]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 675, 5, 0);
 
@@ -269,7 +269,7 @@ test("Apply weighted left padding on horizontal pixel space", t =>
 test("Apply weighted right padding on horizontal pixel space", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 50, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [1, w], bottom: [3, px], left: [25, px] };
+	const padding: ParsedPadding = [[8, px], [25, px], [3, px], [1, w]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 225, 3, 0);
 
@@ -284,7 +284,7 @@ test("Apply weighted right padding on horizontal pixel space", t =>
 test("Apply percentage left padding on horizontal pixel space", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 111, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [15, px], bottom: [3, px], left: [25, pc] };
+	const padding: ParsedPadding = [[8, px], [25, pc], [3, px], [15, px]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 120, 3, 0);
 
@@ -299,7 +299,7 @@ test("Apply percentage left padding on horizontal pixel space", t =>
 test("Apply percentage right padding on horizontal pixel space", t =>
 {
 	const area: Rectangle = { x: 10, y: 20, width: 200, height: 250 };
-	const padding: ParsedPadding = { top: [8, px], right: [40, pc], bottom: [3, px], left: [25, px] };
+	const padding: ParsedPadding = [[8, px], [25, px], [3, px], [40, pc]];
 
 	const total = applyPaddingToDirection(area, Axis.Horizontal, padding, 75, 7, 0);
 

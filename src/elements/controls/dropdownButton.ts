@@ -1,8 +1,7 @@
 import { store } from "@src/bindings/stores/createStore";
 import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
-import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
+import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
@@ -49,24 +48,24 @@ export interface DropdownButtonParams extends ElementParams
  */
 export function dropdownButton(params: DropdownButtonParams & FlexiblePosition): WidgetCreator<FlexiblePosition>;
 export function dropdownButton(params: DropdownButtonParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
-export function dropdownButton<I extends SizeParams, P>(params: DropdownButtonParams & I): WidgetCreator<I, P>
+export function dropdownButton<Position extends SizeParams>(params: DropdownButtonParams & Position): WidgetCreator<Position>
 {
 	ensureDefaultLineHeight(params);
 
-	return (parent, output) => new DropdownButtonControl(parent, output, params);
+	return toWidgetCreator(DropdownButtonControl, params);
 }
 
 
 /**
  * A button with a dropdown on the side for more options.
  */
-class DropdownButtonControl<I, P> extends DropdownControl<I, P>
+class DropdownButtonControl<Position> extends DropdownControl<Position>
 {
-	_button: ButtonControl<I, P>;
+	_button: ButtonControl<Position>;
 	_selectedButton: number;
 
 
-	constructor(parent: ParentControl<I, P>, output: BuildOutput, params: DropdownButtonParams & I)
+	constructor(output: BuildOutput, params: DropdownButtonParams & Position)
 	{
 		// Split button actions into labels and seperate actions
 		const
@@ -85,17 +84,17 @@ class DropdownButtonControl<I, P> extends DropdownControl<I, P>
 		const buttonText = store(labels[0] || "");
 
 		// Setup dropdown part, reusing params object
-		const dropdownParams = <DropdownParams & I><never>params;
+		const dropdownParams = <DropdownParams & Position><never>params;
 		dropdownParams.items = labels;
 		dropdownParams.onChange = (idx): void =>
 		{
 			this._selectedButton = idx;
 			buttonText.set(labels[idx] || "");
 		};
-		super(parent, output, dropdownParams);
+		super(output, dropdownParams);
 
 		// Setup button part, reusing params object
-		const buttonParams = <ButtonParams & I>params;
+		const buttonParams = <ButtonParams & Position>params;
 		buttonParams.text = buttonText;
 		buttonParams.onClick = (): void =>
 		{
@@ -105,7 +104,7 @@ class DropdownButtonControl<I, P> extends DropdownControl<I, P>
 				action();
 			}
 		};
-		this._button = new ButtonControl<I, P>(parent, output, buttonParams);
+		this._button = new ButtonControl<Position>(output, buttonParams);
 		this._selectedButton = 0;
 	}
 
@@ -116,13 +115,13 @@ class DropdownButtonControl<I, P> extends DropdownControl<I, P>
 	override layout(widgets: WidgetMap, area: Rectangle): void
 	{
 		// Position dropdown (take all space in behind button)
-		fillLayout(widgets, this.name, area);
+		fillLayout(area, widgets, this.name);
 
 		// Position button (leave space for dropdown control)
 		area.x++;
 		area.y++;
 		area.width -= 13;
 		area.height -= 2;
-		fillLayout(widgets, this._button.name, area);
+		fillLayout(area, widgets, this._button.name);
 	}
 }
