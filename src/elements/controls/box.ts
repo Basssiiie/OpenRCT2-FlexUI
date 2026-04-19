@@ -2,7 +2,7 @@ import { Bindable } from "@src/bindings/bindable";
 import { WritableStore } from "@src/bindings/stores/writableStore";
 import { Axis } from "@src/positional/axis";
 import { Paddable } from "@src/positional/paddable";
-import { Padding } from "@src/positional/padding";
+import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Rectangle } from "@src/positional/rectangle";
 import * as Log from "@src/utilities/logger";
@@ -62,20 +62,12 @@ export function box<Position extends SizeParams>(params: (BoxParams | BoxContain
 
 const enum BoxFlags
 {
-	/* RecalculateWidth = (ContainerFlags.Count << 0),
-	RecalculateHeight = (ContainerFlags.Count << 1),
-	RecalculateBoth = RecalculateWidth | RecalculateHeight,
-
-	UseStoreForWidth = (ContainerFlags.Count << 2), // TODO merge with FlexFlags?
-	UseStoreForHeight = (ContainerFlags.Count << 3),
-	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight, */
-
-	AddTitlePadding = (ContainerFlags.Count << 10)
+	AddTitlePadding = (ContainerFlags.Count << 1)
 }
 
 const trimTopWithoutTitle = 4;
-const defaultBoxPaddingWithTitle: Padding = [15, 6, 6, 6]; // todo: should be compacter
-const defaultBoxPaddingWithoutTitle: Padding = 6;
+let defaultBoxPaddingWithTitle: ParsedPadding | undefined;
+let defaultBoxPaddingWithoutTitle: ParsedPadding | undefined;
 
 
 /**
@@ -121,9 +113,10 @@ export class BoxControl<Position extends SizeParams & Paddable>
 
 		this._flags = flags;
 
-		const fallbackPadding = parsePadding((flags & BoxFlags.AddTitlePadding)
-			? defaultBoxPaddingWithTitle
-			: defaultBoxPaddingWithoutTitle); // todo: should be compacter
+		const fallbackPadding = (flags & BoxFlags.AddTitlePadding)
+			// Cache default paddings only if used
+			? (defaultBoxPaddingWithTitle ||= parsePadding([15, 6, 6, 6]))
+			: (defaultBoxPaddingWithoutTitle ||= parsePadding(6));
 		const child = creator.create(output); // fixme: the order of these calls matters
 		const position = bindFlexiblePosition(this, output.binder, params, creator.position, fallbackPadding);
 		const width = this._width;

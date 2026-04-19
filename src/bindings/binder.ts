@@ -56,9 +56,9 @@ export interface Binder<TTarget>
 	for<T extends TTarget, V>(target: T, value: AnyBindable<V> | undefined, callback: (target: T, value: V) => void): boolean;
 
 	/**
-	 * TODO: docs
-	 * @param value
-	 * @param callback
+	 * Adds a simple binding without a direct target.
+	 * @param value A store that can be monitored for changes, or a constant that will be applied immediately.
+	 * @param callback The callback to be invoked when the value has updated.
 	 */
 	on<T>(value: AnyBindable<T> | undefined, callback: (value: T) => void): boolean;
 }

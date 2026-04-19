@@ -1,5 +1,5 @@
-import { endKeys, sizeKeys, startKeys } from "@src/elements/layouts/paddingHelpers";
-import { Axis } from "@src/positional/axis";
+import { sizeKeys } from "@src/elements/layouts/paddingHelpers";
+import { Axis, AxisSide } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { isAbsolute } from "@src/positional/parsing/parsedScale";
 import { Size } from "@src/positional/size";
@@ -61,8 +61,8 @@ export function setAxisSizeIfNumber(window: Window | WindowDesc, direction: Axis
 export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, frameSize: Size, windowPadding: ParsedPadding, extraPadding: number): number
 {
 	const directionKey = sizeKeys[direction];
-	const startPad = windowPadding[startKeys[direction]];
-	const endPad = windowPadding[endKeys[direction]];
+	const startPad = windowPadding[AxisSide.Start + direction];
+	const endPad = windowPadding[AxisSide.End + direction];
 	const size = (frameSize[directionKey] + startPad[0] + endPad[0] + extraPadding);
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))

@@ -31,8 +31,7 @@ export class FrameBuilder implements BuildOutput // todo: eventually merge this 
 	constructor(
 		parent: ParentWindow,
 		params: FrameEventParams,
-		content: FrameContentParams,
-		top: number
+		content: FrameContentParams
 	)
 	{
 		const open: Event<FrameContext> = [];

@@ -82,7 +82,7 @@ class WindowControl extends BaseWindowControl
 
 		super(params);
 
-		const builder = new FrameBuilder(this, params, params, defaultTopBarSize);
+		const builder = new FrameBuilder(this, params, params);
 		const widgets = builder._widgets;
 		this._description.widgets = widgets;
 		this._descriptionWidgetMap = addToWidgetMap(widgets);

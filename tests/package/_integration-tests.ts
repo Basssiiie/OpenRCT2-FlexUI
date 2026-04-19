@@ -53,7 +53,8 @@ export function integrations(test: TestFn, name: string): void
 		const data = await getFile(name);
 
 		t.false(data.includes("RedrawNextTick"));
-		t.false(data.includes("RecalculateFromChildren"));
-		t.false(data.includes("Horizontal"));
+		t.false(data.includes("AddTitlePadding"));
+		t.false(data.includes("DynamicHeight"));
+		t.false(data.includes("HasStaticWidgets"));
 	});
 }

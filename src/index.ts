@@ -1,8 +1,8 @@
 // Window related components
 export { OpenWindow } from "./windows/openWindow";
-export { TabParams, tab } from "./windows/tabs/tab";
-export { TabWindowParams, tabwindow } from "./windows/tabs/tabWindow";
-export { WindowParams, window } from "./windows/window";
+export { tab, TabParams } from "./windows/tabs/tab";
+export { tabwindow, TabWindowParams } from "./windows/tabs/tabWindow";
+export { window, WindowParams } from "./windows/window";
 export { WindowScale } from "./windows/windowScale";
 export { WindowTemplate } from "./windows/windowTemplate";
 
@@ -21,24 +21,24 @@ export { twoway } from "./bindings/twoway/twoway";
 export { TwoWayBinding } from "./bindings/twoway/twowayBinding";
 
 // Widget controls
-export { BoxParams, box } from "./elements/controls/box";
-export { ButtonParams, button } from "./elements/controls/button";
-export { CheckboxParams, checkbox } from "./elements/controls/checkbox";
-export { ColourPickerParams, colourPicker } from "./elements/controls/colourPicker";
-export { DropdownDisableMode, DropdownParams, dropdown } from "./elements/controls/dropdown";
-export { DropdownButtonAction, DropdownButtonParams, dropdownButton } from "./elements/controls/dropdownButton";
-export { DropdownSpinnerParams, dropdownSpinner } from "./elements/controls/dropdownSpinner";
-export { GraphicsParams, graphics } from "./elements/controls/graphics";
-export { GroupBoxParams, groupbox } from "./elements/controls/groupbox";
-export { LabelParams, label } from "./elements/controls/label";
-export { ListViewColumnParams, ListViewParams, listview } from "./elements/controls/listview";
-export { SpinnerParams, SpinnerWrapMode, spinner } from "./elements/controls/spinner";
-export { TextBoxParams, textbox } from "./elements/controls/textbox";
-export { ToggleParams, toggle } from "./elements/controls/toggle";
-export { ViewportParams, viewport } from "./elements/controls/viewport";
-export { WidgetParams, widget } from "./elements/controls/widget";
-export { AbsoluteLayoutContainer, AbsoluteLayoutParams, absolute } from "./elements/layouts/absolute/absolute";
-export { FlexibleLayoutContainer, FlexibleLayoutParams, flexible, horizontal, vertical } from "./elements/layouts/flexible/flexible";
+export { box, BoxParams } from "./elements/controls/box";
+export { button, ButtonParams } from "./elements/controls/button";
+export { checkbox, CheckboxParams } from "./elements/controls/checkbox";
+export { colourPicker, ColourPickerParams } from "./elements/controls/colourPicker";
+export { dropdown, DropdownDisableMode, DropdownParams } from "./elements/controls/dropdown";
+export { dropdownButton, DropdownButtonAction, DropdownButtonParams } from "./elements/controls/dropdownButton";
+export { dropdownSpinner, DropdownSpinnerParams } from "./elements/controls/dropdownSpinner";
+export { graphics, GraphicsParams } from "./elements/controls/graphics";
+export { groupbox, GroupBoxParams } from "./elements/controls/groupbox";
+export { label, LabelParams } from "./elements/controls/label";
+export { listview, ListViewColumnParams, ListViewParams } from "./elements/controls/listview";
+export { spinner, SpinnerParams, SpinnerWrapMode } from "./elements/controls/spinner";
+export { textbox, TextBoxParams } from "./elements/controls/textbox";
+export { toggle, ToggleParams } from "./elements/controls/toggle";
+export { viewport, ViewportParams } from "./elements/controls/viewport";
+export { widget, WidgetParams } from "./elements/controls/widget";
+export { absolute, AbsoluteLayoutContainer, AbsoluteLayoutParams } from "./elements/layouts/absolute/absolute";
+export { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal, vertical } from "./elements/layouts/flexible/flexible";
 
 export { ViewportFlags } from "./elements/controls/enums/viewportFlags";
 
@@ -60,14 +60,12 @@ export { Scale } from "./positional/scale";
 export { Bindable } from "./bindings/bindable";
 export { Binder } from "./bindings/binder";
 export { TwoWayBindable } from "./bindings/twoway/twowayBindable";
-export { Parsed } from "./positional/parsing/parsed";
 export { ParsedPadding } from "./positional/parsing/parsedPadding";
 export { ParsedScale } from "./positional/parsing/parsedScale";
 export { BuildOutput } from "./windows/buildOutput";
 export { FrameContext } from "./windows/frames/frameContext";
 export { FrameEvent } from "./windows/frames/frameEvent";
 export { Layoutable } from "./windows/layoutable";
-export { ParentControl } from "./windows/parentControl";
 export { TabCreator } from "./windows/tabs/tabCreator";
 export { TabLayoutable } from "./windows/tabs/tabLayoutable";
 export { WidgetCreator } from "./windows/widgets/widgetCreator";

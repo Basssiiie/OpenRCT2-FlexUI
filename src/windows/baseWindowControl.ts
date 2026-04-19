@@ -118,7 +118,6 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 		const windowDesc = <WindowDesc>{
 			classification: ("fui-" + identifier()),
-			//title: "",
 			colours: params.colours,
 			onUpdate: (): void =>
 			{

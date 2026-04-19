@@ -4,7 +4,7 @@ import { WritableStore } from "@src/bindings/stores/writableStore";
 import { defaultScale } from "@src/elements/constants";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { WidgetMap } from "@src/index";
-import { Axis } from "@src/positional/axis";
+import { Axis, AxisSide } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
@@ -12,7 +12,7 @@ import { convertToPixels, parseScaleOrFallback } from "@src/positional/parsing/p
 import { Rectangle } from "@src/positional/rectangle";
 import { SizeParams } from "@src/positional/size";
 import { Child } from "../container";
-import { applyPaddingToDirection, axisKeys, endKeys, setSizeWithPaddingForDirection, sizeKeys, startKeys } from "../paddingHelpers";
+import { applyPaddingToDirection, axisKeys, setSizeWithPaddingForDirection, sizeKeys } from "../paddingHelpers";
 import { addScaleToStack, ParsedStack } from "../stack";
 import { ContainerFlags } from "./desiredSpacing";
 import { FlexiblePosition } from "./flexiblePosition";
@@ -21,10 +21,6 @@ import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 
 export const enum FlexFlags
 {
-	/* UseStoreForWidth = (InheritFlags.Count << 0),
-	UseStoreForHeight = (InheritFlags.Count << 1),
-	UseStoreForBoth = UseStoreForWidth | UseStoreForHeight, */
-
 	// Marks whether the axis size needs to be recalculated.
 	ComputeHeight = (ContainerFlags.Count << 2),
 	ComputeWidth = (ContainerFlags.Count << 3),
@@ -84,7 +80,9 @@ export function flexibleLayout(stack: ParsedStack, elements: Child<ParsedFlexibl
 	}
 }
 
-
+/**
+ * Collects details about the widget stack, e.g. how many pixels, percentiles, and weights are requested.
+ */
 export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexiblePosition[], spacing: ParsedScale, mainDirection: Axis): void
 {
 	stack._requestedPixels = 0;
@@ -110,8 +108,8 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 
 		// Add size of current element to totals
 		const size = isHorizontal ? element._width : element._height;
-		const start = padding[startKeys[mainDirection]];
-		const end = padding[endKeys[mainDirection]];
+		const start = padding[AxisSide.Start + mainDirection];
+		const end = padding[AxisSide.End + mainDirection];
 
 		addScaleToStack(stack, size, 1);
 		addScaleToStack(stack, start, 1);
@@ -125,7 +123,9 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 	stack._visibleElementsCount = visibleCount;
 }
 
-
+/**
+ * Performs bindings on a child with flexible positional parameters.
+ */
 export function bindFlexiblePosition(container: FlexibleContainer, binder: Binder<WidgetBaseDesc>, parameters: SizeParams, child: FlexiblePosition & { visibility?: ElementVisibility }, fallbackPadding?: ParsedPadding): ParsedFlexiblePosition
 {
 	const { width, height, visibility } = child;

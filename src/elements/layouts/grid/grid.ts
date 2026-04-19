@@ -9,7 +9,6 @@ import { Scale } from "@src/positional/scale";
 import { isArray, isNumber } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
-import { ParentControl } from "@src/windows/parentControl";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { AbsolutePosition } from "../absolute/absolutePosition";
@@ -84,16 +83,16 @@ export function grid(params: GridLayoutParams & AbsolutePosition): WidgetCreator
 export function grid(params: GridLayoutParams & GridPosition): WidgetCreator<GridPosition>;
 export function grid<Position>(params: GridLayoutParams & Position): WidgetCreator<Position>
 {
-	return toWidgetCreator(params, GridLayoutControl);
+	return toWidgetCreator(GridLayoutControl, params);
 }
 
 
-class GridLayoutControl<Position> extends Container<GridPosition, ParsedGridPosition> implements ParentControl, Layoutable
+class GridLayoutControl<Position> extends Container<GridPosition, ParsedGridPosition> implements Layoutable
 {
 	_columns: ParsedCellAxis;
 	_rows: ParsedCellAxis;
 
-	constructor(parent: ParentControl, output: BuildOutput, params: GridLayoutParams & Position)
+	constructor(output: BuildOutput, params: GridLayoutParams & Position)
 	{
 		const freeform: ParsedGridPosition[] = [];
 

@@ -1,12 +1,14 @@
 import { isAbsolute, isPercentile, isWeighted, ParsedScale } from "@src/positional/parsing/parsedScale";
 
 
+// todo: re-review this file with grid.ts
+
+
 /**
  *  A parsed stack of widget elements.
  */
 export interface ParsedStack
 {
-	//_elements: TElement[];
 	_requestedPixels: number;
 	_requestedPercentile: number;
 	_requestedWeightTotal: number;

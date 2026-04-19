@@ -1,7 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { BuildOutput } from "@src/windows/buildOutput";
-import { ParentControl } from "@src/windows/parentControl";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { SizeParams } from "../../positional/size";
 import { ensureDefaultLineHeight } from "../constants";
@@ -45,7 +44,7 @@ export function textbox<Position extends SizeParams>(params: TextBoxParams & Pos
 {
 	ensureDefaultLineHeight(params);
 
-	return toWidgetCreator(params, TextBoxControl);
+	return toWidgetCreator(TextBoxControl, params);
 }
 
 
@@ -59,9 +58,9 @@ class TextBoxControl<Position> extends Control<TextBoxDesc, Position> implements
 	onChange?: (text: string) => void;
 
 
-	constructor(parent: ParentControl, output: BuildOutput, params: TextBoxParams & Position)
+	constructor(output: BuildOutput, params: TextBoxParams & Position)
 	{
-		super("textbox", parent, output, params);
+		super("textbox", output, params);
 
 		const binder = output.binder;
 		binder.twoway(this, "text", "onChange", params.text, params.onChange);

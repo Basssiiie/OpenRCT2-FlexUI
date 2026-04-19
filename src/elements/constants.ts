@@ -48,17 +48,17 @@ export const zeroScale: ParsedScale = [0, ScaleType.Pixel];
 /**
  * A padding that equals to zero on each side.
  */
-export const zeroPadding: ParsedPadding = {
-	top: zeroScale,
-	right: zeroScale,
-	bottom: zeroScale,
-	left: zeroScale
-};
+export const zeroPadding: ParsedPadding = [zeroScale, zeroScale, zeroScale, zeroScale];
 
-
+/**
+ * Default size of the top bar of a window without tabs.
+ */
 export const defaultTopBarSize = 15;
-export const defaultTopBarSizeWithTabs = 44;
 
+/**
+ * Default size of the top bar of a window with tabs and thus tab icons.
+ */
+export const defaultTopBarSizeWithTabs = 44;
 
 /**
  * Ensures the height of the control is set to the default line height.

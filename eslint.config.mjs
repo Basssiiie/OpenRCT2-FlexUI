@@ -50,9 +50,6 @@ export default tseslint.config(
 			"@stylistic/object-property-newline": "off",
 			"@stylistic/operator-linebreak": ["error", "before"],
 			"@stylistic/padded-blocks": "off", // not needed with Allman braces
-
-			// TEMPORARY
-			"@stylistic/multiline-comment-style": "off",
 		}
 	},
 	{

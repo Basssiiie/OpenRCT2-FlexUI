@@ -1,4 +1,5 @@
 import { read } from "@src/bindings/stores/read";
+import { Store } from "@src/bindings/stores/store";
 import { defaultScale } from "@src/elements/constants";
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
 import { setAbsolutePaddingForDirection, setSizeWithPaddingForDirection, sizeKeys } from "@src/elements/layouts/paddingHelpers";
@@ -9,9 +10,7 @@ import { Size } from "@src/positional/size";
 import { Event, invoke } from "@src/utilities/event";
 import * as Log from "@src/utilities/logger";
 import { isNullOrUndefined } from "@src/utilities/type";
-import { Store } from "dist";
 import { WidgetBinder } from "../binders/widgetBinder";
-import { ParentControl } from "../parentControl";
 import { ParentWindow } from "../parentWindow";
 import { TabLayoutable } from "../tabs/tabLayoutable";
 import { WidgetMap } from "../widgets/widgetMap";
@@ -24,17 +23,13 @@ import { FrameRectangle } from "./frameRectangle";
 /**
  * An independant window component that can hold one or more widgets and manage their lifecycle.
  */
-export class FrameControl implements FrameContext, ParentControl, TabLayoutable
+export class FrameControl implements FrameContext, TabLayoutable
 {
-	// eslint-disable-next-line @typescript-eslint/unbound-method
-	recalculate = this.redraw;
-
 	// These are only set if the frame is of static size.
 	_width?: number;
 	_height?: number; // todo not needed anymore?
 
 	_padding!: ParsedPadding;
-	//_position!: ParsedFramePosition;
 	_body!: FlexibleLayoutControl<FramePosition>;
 	_binder!: WidgetBinder | null;
 	_activeWidgets?: WidgetMap;

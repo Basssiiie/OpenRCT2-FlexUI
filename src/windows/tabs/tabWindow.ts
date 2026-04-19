@@ -103,6 +103,8 @@ export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindow
 
 
 const defaultTabIcon = 16;
+let defaultTablessWindowPadding: ParsedPadding | undefined;
+
 const enum TabWindowFlags
 {
 	HasTabs = (WindowFlags.Count << 0), // Yes, no tabs can happen with an empty tab array
@@ -136,7 +138,7 @@ class TabWindowControl extends BaseWindowControl
 		let rootLayoutable: TabLayoutable;
 		if (staticWidgetParams) // Create full frame for root
 		{
-			const builder = new FrameBuilder(this, params, staticWidgetParams, 123123);
+			const builder = new FrameBuilder(this, params, staticWidgetParams);
 			const staticWidgets = builder._widgets;
 
 			description.widgets = staticWidgets;
@@ -155,7 +157,10 @@ class TabWindowControl extends BaseWindowControl
 		this._root = rootLayoutable;
 		this._windowWidthOption = width;
 		this._windowHeightOption = height;
-		this._padding = parsePadding(isUndefined(padding) ? defaultWindowPadding : padding); // todo: preparse default?
+		this._padding = isUndefined(padding)
+			// Cache default padding only if ever used
+			? (defaultTablessWindowPadding ||= parsePadding(defaultWindowPadding))
+			: parsePadding(padding);
 
 		const tabCount = tabs.length;
 		const tabList = Array<TabLayoutable>(tabCount);

@@ -5,43 +5,16 @@ import { WidgetCreator } from "@src/windows/widgets/widgetCreator";
 
 
 /**
- * Base class for a container control that holds one or more child controls.
+ * Represents a simple child element in a container.
  */
-/* export abstract class Container<Positioning, ParsedPosition> // todo remove
-{
-	_children!: Layoutable[];
-	_positions!: ParsedPosition[];
-	_rectangles!: Rectangle[];
-
-	protected _bindChildren(output: BuildOutput, creators: WidgetCreator<Positioning>[], parse: (position: Positioning) => ParsedPosition)
-	{
-		const count = creators.length;
-		const children = Array<Layoutable>(count);
-		const positions = Array<ParsedPosition>(count);
-		const rectangles = Array<Rectangle>(count);
-		let idx = 0;
-
-		this._children = children;
-		this._positions = positions;
-		this._rectangles = rectangles;
-
-		for (; idx < count; idx++)
-		{
-			const creator = creators[idx];
-			children[idx] = creator.create(output);
-			positions[idx] = parse(creator.position);
-			rectangles[idx] = <Rectangle>{};
-		}
-	}
-} */
-
-
 export type Child<ParsedPosition> = ParsedPosition & {
 	_layoutable: Layoutable;
 	_area: Rectangle;
 };
 
-
+/**
+ * Constructs a container array that holds one or more child controls.
+ */
 export function container<Positioning, ParsedPosition>(output: BuildOutput, creators: WidgetCreator<Positioning>[], parse: (position: Positioning) => ParsedPosition): Child<ParsedPosition>[]
 {
 	const count = creators.length;
