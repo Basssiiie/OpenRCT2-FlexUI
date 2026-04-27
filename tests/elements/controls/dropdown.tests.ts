@@ -6,8 +6,8 @@ import { dropdown } from "@src/elements/controls/dropdown";
 import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
-import { call } from "../../helpers";
-import { proxy } from "../../utilities/proxy";
+import { call } from "../../helpers/call";
+import { proxy } from "../../helpers/proxy";
 
 
 test("Standard properties are set", t =>

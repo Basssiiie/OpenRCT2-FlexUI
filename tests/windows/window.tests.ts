@@ -12,7 +12,7 @@ import { FrameContext } from "@src/windows/frames/frameContext";
 import { window } from "@src/windows/window";
 import test from "ava";
 import Mock, { UiMock } from "openrct2-mocks";
-import { call } from "../helpers";
+import { call } from "../helpers/call";
 
 
 test("Simple window with widgets", t =>

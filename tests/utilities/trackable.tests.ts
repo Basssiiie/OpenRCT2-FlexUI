@@ -1,7 +1,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import test from "ava";
-import track from "./trackable";
+import track from "../helpers/trackable";
 
 
 test("Gets are counted", t =>

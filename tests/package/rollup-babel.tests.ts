@@ -4,6 +4,11 @@ import { integrations } from "./_integration-tests";
 
 
 const name = "rollup-babel";
-test.before("Build succesfully", () => rollup(name));
+test.before("Build succesfully", t =>
+{
+	t.timeout(30_000, "Rollup compilation took longer than 30 seconds");
+
+	return rollup(name);
+});
 
 integrations(test, name);

@@ -12,7 +12,7 @@ import { tab } from "@src/windows/tabs/tab";
 import { tabwindow } from "@src/windows/tabs/tabWindow";
 import test from "ava";
 import Mock, { UiMock, WindowMock } from "openrct2-mocks";
-import { call } from "../helpers";
+import { call } from "../helpers/call";
 
 
 test("Window with one tab and one absolute widget", t =>
