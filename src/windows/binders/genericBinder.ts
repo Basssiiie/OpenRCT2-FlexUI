@@ -34,7 +34,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 			target[key] = <T[keyof T]>((a: V | P[0], b: P[1]): void =>
 			{
 				// If no converter present, take just the first one. Multiple parameters must be converted anyway to fit into one store.
-				const result = ((converter) ? converter(<P[0]>a, b) : <V>a);
+				const result = ((converter) ? converter(a, b) : <V>a);
 				value.twoway.set(result);
 				if (callback)
 				{
