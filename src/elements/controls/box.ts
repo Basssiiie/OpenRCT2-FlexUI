@@ -62,7 +62,7 @@ export function box<Position extends SizeParams>(params: (BoxParams | BoxContain
 
 const enum BoxFlags
 {
-	AddTitlePadding = (ContainerFlags.Count << 1)
+	AddTitlePadding = (FlexFlags.Count << 0) // Must not overlap with FlexFlags
 }
 
 const trimTopWithoutTitle = 4;

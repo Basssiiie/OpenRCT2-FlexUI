@@ -24,7 +24,9 @@ export const enum FlexFlags
 	// Marks whether the axis size needs to be recalculated.
 	ComputeHeight = (ContainerFlags.Count << 0),
 	ComputeWidth = (ContainerFlags.Count << 1),
-	ComputeBoth = ComputeHeight | ComputeWidth
+	ComputeBoth = ComputeHeight | ComputeWidth,
+
+	Count = (ContainerFlags.Count << 2)
 }
 
 export interface FlexibleContainer
