@@ -1,9 +1,9 @@
-import { Layoutable } from "@src/index";
 import { isWeighted } from "@src/positional/parsing/parsedScale";
 import { convertToPixels, parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
+import { Layoutable } from "@src/windows/layoutable";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Child, container } from "../container";
