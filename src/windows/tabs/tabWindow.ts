@@ -149,7 +149,7 @@ class TabWindowControl extends BaseWindowControl
 		}
 		else // Create slimmed down frame for root, core widgets are all in tabs
 		{
-			rootLayoutable = <TabLayoutable><never>{
+			rootLayoutable = <never>{
 				open: (params.onOpen || noop),
 				update: (params.onUpdate || noop),
 				close: (params.onClose || noop)

@@ -130,9 +130,9 @@ class ViewportControl<Position> extends Control<ViewportDesc, Position> implemen
 	/**
 	 * Get the coordinate location of the target.
 	 */
-	private _getTargetLocation(target: CoordsXY | CoordsXYZ | number | null | undefined): CoordsXY | null
+	private _getTargetLocation(target: CoordsXY | CoordsXYZ | number | null | undefined): CoordsXY | CoordsXYZ | null
 	{
-		let moveToLocation: CoordsXY | null = null;
+		let moveToLocation: CoordsXY | CoordsXYZ | null = null;
 		if (!isNullOrUndefined(target))
 		{
 			if (isNumber(target))
@@ -140,11 +140,7 @@ class ViewportControl<Position> extends Control<ViewportDesc, Position> implemen
 				const entity = <Entity | null>map.getEntity(target);
 				if (entity)
 				{
-					moveToLocation = <CoordsXYZ>{
-						x: entity.x,
-						y: entity.y,
-						z: entity.z
-					};
+					moveToLocation = { x: entity.x, y: entity.y, z: entity.z };
 				}
 			}
 			else if (isObject(target))
@@ -158,7 +154,7 @@ class ViewportControl<Position> extends Control<ViewportDesc, Position> implemen
 	/**
 	 * Set the viewport to the specified location if enabled, or to black if disabled.
 	 */
-	private _setViewportLocation(viewport: Viewport, target: CoordsXY | null, flags: ViewportFlags | undefined, disabled: boolean | undefined): void
+	private _setViewportLocation(viewport: Viewport, target: CoordsXY | CoordsXYZ | null, flags: ViewportFlags | undefined, disabled: boolean | undefined): void
 	{
 		if (disabled || !target)
 		{

@@ -6,8 +6,8 @@ test("isUndefined() returns true", t =>
 {
 	t.true(Type.isUndefined(undefined));
 	t.true(Type.isUndefined(void 0));
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let a: any;
+	// eslint-disable-next-line no-unassigned-vars
+	let a: undefined;
 	t.true(Type.isUndefined(a));
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
 	t.true(Type.isUndefined((<any>{}).b));

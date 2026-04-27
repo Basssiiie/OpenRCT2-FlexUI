@@ -6,7 +6,7 @@ import { checkbox } from "@src/elements/controls/checkbox";
 import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
-import { call } from "tests/helpers";
+import { call } from "../../helpers";
 
 
 test("Standard properties are set", t =>

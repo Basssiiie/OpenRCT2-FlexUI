@@ -68,6 +68,7 @@ export function horizontal(params: FlexibleLayoutParams & FlexiblePosition): Wid
 export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function horizontal<Position extends SizeParams>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Position): WidgetCreator<Position>
 {
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Horizontal;
 	return <never>flexible(<never>params);
 }
@@ -82,6 +83,7 @@ export function vertical(params: FlexibleLayoutParams & FlexiblePosition): Widge
 export function vertical(params: FlexibleLayoutParams & AbsolutePosition): WidgetCreator<AbsolutePosition>;
 export function vertical<Position extends SizeParams>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Position): WidgetCreator<Position>
 {
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Vertical;
 	return <never>flexible(<never>params);
 }

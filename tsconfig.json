@@ -1,10 +1,9 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"module": "ES2020",
-		"moduleResolution": "node",
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
 		"noImplicitOverride": true,
@@ -14,7 +13,7 @@
 		"noUnusedParameters": true,
 		"preserveConstEnums": false,
 		"paths": {
-			"@src/*": [ "src/*" ]
+			"@src/*": [ "./src/*" ]
 		},
 		"strict": true,
 		"target": "ES5",

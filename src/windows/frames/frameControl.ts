@@ -140,14 +140,14 @@ function scaleFrame(area: FrameRectangle, option: TabScaleOptions, containerSize
 	if (size == autoKey)
 	{
 		// Resize area size to child frame's size.
-		size = <number><never>read(containerSize);
+		size = <never>read(containerSize);
 
 		if (isNullOrUndefined(size))
 		{
 			Log.error("Window content body's " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
 		}
 
-		return size + setAbsolutePaddingForDirection(area, padding, direction);
+		return <number>size + setAbsolutePaddingForDirection(area, padding, direction);
 	}
 
 	// Apply regular padding to area and return original size.

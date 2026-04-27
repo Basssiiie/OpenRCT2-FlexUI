@@ -18,7 +18,7 @@ test("Standard properties are set", t =>
 		content: [
 			listview({
 				columns: [
-					<ListViewColumn>{
+					{
 						canSort: true,
 						sortOrder: "ascending",
 						header: "Classic header",
@@ -27,13 +27,13 @@ test("Standard properties are set", t =>
 						ratioWidth: 2,
 						minWidth: 75,
 						maxWidth: 155
-					},
-					<ListViewColumn>{
+					} satisfies ListViewColumn,
+					{
 						sortOrder: "descending",
 						header: "Header 2",
 						headerTooltip: "Tooltip 2",
 						width: 25
-					}
+					} satisfies Partial<ListViewColumn>
 				],
 				items: [
 					["1.", "top entry"],

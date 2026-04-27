@@ -11,5 +11,5 @@ export type Mutable<T> = {
  */
 export function mutable<T>(target: T): Mutable<T>
 {
-	return <Mutable<T>>target;
+	return target;
 }
