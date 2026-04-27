@@ -10,6 +10,7 @@ import { flexible, FlexibleLayoutControl, horizontal, vertical } from "@src/elem
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Rectangle } from "@src/positional/rectangle";
+import { Scale } from "@src/positional/scale";
 import { Event, invoke } from "@src/utilities/event";
 import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
@@ -345,6 +346,45 @@ test("Relative weight takes leftover after relative percentage", t =>
 });
 
 
+test("Mixed pixel, percentage, and weighted sizes", t =>
+{
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 50 };
+	const creator = flexible({
+		spacing: 0,
+		direction: LayoutDirection.Horizontal,
+		content: [
+			button({ text: "a", width: "30px" }),
+			button({ text: "b", width: "50%" }),
+			button({ text: "c", width: "2w" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0);
+	t.is(widget1.width, 30); // 30px out of 100px
+	t.is(widget1.height, 50);
+
+	const widget2 = output.widgets[1];
+	t.is(widget2.x, 30);
+	t.is(widget2.y, 0);
+	t.is(widget2.width, 35); // 50% of leftover 70px
+	t.is(widget2.height, 50);
+
+	const widget3 = output.widgets[2];
+	t.is(widget3.x, 65);
+	t.is(widget3.y, 0);
+	t.is(widget3.width, 35); // rest
+	t.is(widget3.height, 50);
+});
+
+
 test("Padding: single number value", t =>
 {
 	const output = createBuildOutput();
@@ -627,6 +667,37 @@ test("Works without children", t =>
 });
 
 
+test("Layout with zero-size area", t =>
+{
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 0, height: 0 };
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a" }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0);
+	t.true(widget1.width === 0);
+	t.true(widget1.height === 0);
+
+	const widget2 = output.widgets[1];
+	t.is(widget2.x, 0);
+	t.is(widget2.y, 0);
+	t.true(widget2.width === 0);
+	t.true(widget2.height === 0);
+});
+
+
 test("Spacing: 10 pixels between two elements", t =>
 {
 	const output = createBuildOutput();
@@ -750,6 +821,45 @@ test("Spacing: weighted space between two elements", t =>
 });
 
 
+test("Spacing: pixel space between three elements", t =>
+{
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 90, height: 40 };
+	const creator = flexible({
+		spacing: 15, direction: LayoutDirection.Horizontal,
+		content: [
+			button({ text: "a" }),
+			button({ text: "b" }),
+			button({ text: "c" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	// 3 elements, 2 gaps of 15 = 30px, leftover = 60, each = 20
+	const widget1 = output.widgets[0];
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0);
+	t.is(widget1.width, 20);
+	t.is(widget1.height, 40);
+
+	const widget2 = output.widgets[1];
+	t.is(widget2.x, 35);
+	t.is(widget2.y, 0);
+	t.is(widget2.width, 20);
+	t.is(widget2.height, 40);
+
+	const widget3 = output.widgets[2];
+	t.is(widget3.x, 70);
+	t.is(widget3.y, 0);
+	t.is(widget3.width, 20);
+	t.is(widget3.height, 40);
+});
+
+
 test("Absolute children make parent absolutely sized", t =>
 {
 	const output = createBuildOutput();
@@ -790,6 +900,26 @@ test("Absolutely sized parent includes spacing", t =>
 });
 
 
+test("Non-absolute spacing makes inherited parent size unknown", t =>
+{
+	const output = createBuildOutput();
+	const creator = flexible({
+		spacing: "1w", direction: LayoutDirection.Horizontal,
+		content: [
+			label({ text: "a", width: 20, height: "12px" }),
+			label({ text: "b", width: 15, height: "5px" })
+		]
+	});
+
+	creator.create(output);
+	invoke(output.redraw);
+
+	const pos = creator.position;
+	t.is(pos.width, undefined);
+	t.is(pos.height, 12);
+});
+
+
 test("Absolute children make all parents absolutely sized", t =>
 {
 	const output = createBuildOutput();
@@ -819,6 +949,27 @@ test("Absolute children make all parents absolutely sized", t =>
 	const pos = creator.position;
 	t.is(pos.width, 20 + 20 + 33 + 8 + (3 * 4));
 	t.is(pos.height, 51);
+});
+
+
+test("Other axis uses biggest child size for parent inheritance", t =>
+{
+	const output = createBuildOutput();
+	const creator = flexible({
+		spacing: 0, direction: LayoutDirection.Vertical,
+		content: [
+			label({ text: "a", width: 10, height: "8px" }),
+			label({ text: "b", width: 25, height: "12px" }),
+			label({ text: "c", width: 15, height: "6px" })
+		]
+	});
+
+	creator.create(output);
+	invoke(output.redraw);
+
+	const pos = creator.position;
+	t.is(pos.width, 25); // max(10, 25, 15)
+	t.is(pos.height, 26); // 8 + 12 + 6
 });
 
 
@@ -1013,6 +1164,7 @@ test("Child with visibility 'none' is not updated", t =>
 	t.is(widget1.y, 20 + 2);
 	t.is(widget1.width, 43);
 	t.is(widget1.height, 25);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
 
 	const widget2 = <LabelWidget>output.widgets[1];
 	t.is(widget2.text, "nada");
@@ -1020,6 +1172,7 @@ test("Child with visibility 'none' is not updated", t =>
 	t.is(widget2.y, 0);
 	t.is(widget2.width, 0);
 	t.is(widget2.height, 0);
+	t.false(widget2.isVisible);
 
 	const widget3 = <LabelWidget>output.widgets[2];
 	t.is(widget3.text, "def");
@@ -1027,6 +1180,54 @@ test("Child with visibility 'none' is not updated", t =>
 	t.is(widget3.y, 20 + 2 + 25 + 10);
 	t.is(widget3.width, 43);
 	t.is(widget3.height, 25);
+	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+});
+
+
+test("Child with visibility 'hidden' still takes up space", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 80 };
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			label({ text: "abc", height: "1w" }),
+			label({ text: "hidden-one", height: "1w", visibility: "hidden" }),
+			label({ text: "def", height: "1w" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widget1 = <LabelWidget>output.widgets[0];
+	t.is(widget1.text, "abc");
+	t.is(widget1.x, 0);
+	t.is(widget1.y, 0 + 2);
+	t.is(widget1.width, 60);
+	t.is(widget1.height, 20);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+
+	const widget2 = <LabelWidget>output.widgets[1];
+	t.is(widget2.text, "hidden-one");
+	t.is(widget2.x, 0);
+	t.is(widget2.y, 30 + 2);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 20);
+	t.false(widget2.isVisible);
+
+	const widget3 = <LabelWidget>output.widgets[2];
+	t.is(widget3.text, "def");
+	t.is(widget3.x, 0);
+	t.is(widget3.y, 60 + 2);
+	t.is(widget3.width, 60);
+	t.is(widget3.height, 20);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
 });
 
 
@@ -1046,6 +1247,8 @@ test("None update if all children have visibility set to 'none'", t =>
 	const control = <FlexControl>creator.create(output);
 	const widgetMap = addToWidgetMap(output.widgets);
 	invoke(output.redraw);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
 	control.layout(widgetMap, rect);
 
 	const widgets = output.widgets;
@@ -1057,6 +1260,7 @@ test("None update if all children have visibility set to 'none'", t =>
 	t.is(widget1.y, 0);
 	t.is(widget1.width, 0);
 	t.is(widget1.height, 0);
+	t.false(widget1.isVisible);
 
 	const widget2 = <LabelWidget>output.widgets[1];
 	t.is(widget2.text, "def");
@@ -1064,6 +1268,7 @@ test("None update if all children have visibility set to 'none'", t =>
 	t.is(widget2.y, 0);
 	t.is(widget2.width, 0);
 	t.is(widget2.height, 0);
+	t.false(widget2.isVisible);
 
 	const widget3 = <LabelWidget>output.widgets[2];
 	t.is(widget3.text, "ghi");
@@ -1071,6 +1276,7 @@ test("None update if all children have visibility set to 'none'", t =>
 	t.is(widget3.y, 0);
 	t.is(widget3.width, 0);
 	t.is(widget3.height, 0);
+	t.false(widget3.isVisible);
 });
 
 
@@ -1107,6 +1313,9 @@ test("Child visibility is updated by store", t =>
 	t.is(widget1.height, 20);
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);
+	t.true(widget2.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
 
 	visibility.set("none");
 	invoke(output.redraw);
@@ -1116,6 +1325,9 @@ test("Child visibility is updated by store", t =>
 	t.is(widget3.y, 3 + 2 + 10 + 35);
 	t.is(widget1.height, 35);
 	t.is(widget3.height, 35);
+	t.false(widget2.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
 
 	visibility.set("visible");
 	invoke(output.redraw);
@@ -1127,6 +1339,238 @@ test("Child visibility is updated by store", t =>
 	t.is(widget1.height, 20);
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);
+	t.true(widget2.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+});
+
+
+test("Child width is updated by store", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 80, height: 40 };
+	const widthStore = store<Scale>("1w");
+	const creator = flexible({
+		spacing: 0, direction: LayoutDirection.Horizontal,
+		content: [
+			button({ text: "a", width: widthStore }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	const widget2 = output.widgets[1];
+	t.is(widget1.x, 0);
+	t.is(widget1.width, 40);
+	t.is(widget2.x, 40);
+	t.is(widget2.width, 40);
+
+	widthStore.set("20px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.x, 0);
+	t.is(widget1.width, 20);
+	t.is(widget2.x, 20);
+	t.is(widget2.width, 60);
+
+	widthStore.set("75%");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.x, 0);
+	t.is(widget1.width, 60); // 75% of 80
+	t.is(widget2.x, 60);
+	t.is(widget2.width, 20); // leftover 1w
+});
+
+
+test("Child height is updated by store", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 60 };
+	const heightStore = store<Scale>("1w");
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a", height: heightStore }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	const widget2 = output.widgets[1];
+	t.is(widget1.y, 0);
+	t.is(widget1.height, 30);
+	t.is(widget2.y, 30);
+	t.is(widget2.height, 30);
+
+	heightStore.set("20px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.y, 0);
+	t.is(widget1.height, 20);
+	t.is(widget2.y, 20);
+	t.is(widget2.height, 40);
+
+	heightStore.set("25%");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.y, 0);
+	t.is(widget1.height, 15); // 25% of 60
+	t.is(widget2.y, 15);
+	t.is(widget2.height, 45); // leftover 1w
+});
+
+
+test("Child width and height updated by stores simultaneously", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 80 };
+	const widthStore = store<Scale>("1w");
+	const heightStore = store<Scale>("1w");
+	const creator = flexible({
+		spacing: 0, direction: LayoutDirection.Horizontal,
+		content: [
+			button({ text: "a", width: widthStore, height: heightStore }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	const widget2 = output.widgets[1];
+	t.is(widget1.width, 50);
+	t.is(widget1.height, 80);
+	t.is(widget2.width, 50);
+
+	widthStore.set("30px");
+	heightStore.set("25px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.x, 0);
+	t.is(widget1.width, 30);
+	t.is(widget1.height, 25);
+	t.is(widget2.x, 30);
+	t.is(widget2.width, 70);
+	t.is(widget2.height, 80);
+});
+
+
+test("Multiple children with independent height stores", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 90 };
+	const heightA = store<Scale>("1w");
+	const heightB = store<Scale>("1w");
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a", height: heightA }),
+			button({ text: "b", height: heightB }),
+			button({ text: "c" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	const widget2 = output.widgets[1];
+	const widget3 = output.widgets[2];
+	t.is(widget1.height, 30);
+	t.is(widget2.height, 30);
+	t.is(widget3.height, 30);
+
+	// Fix first child, others share leftover
+	heightA.set("30px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.height, 30);
+	t.is(widget2.y, 30);
+	t.is(widget2.height, 30);
+	t.is(widget3.y, 60);
+	t.is(widget3.height, 30);
+
+	// Fix both, third gets all leftover
+	heightB.set("20px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(widget1.height, 30);
+	t.is(widget2.y, 30);
+	t.is(widget2.height, 20);
+	t.is(widget3.y, 50);
+	t.is(widget3.height, 40);
+});
+
+
+test("Store-driven size affects parent inherited size", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 100 };
+	const heightStore = store<Scale>("20px");
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a", width: 40, height: heightStore }),
+			button({ text: "b", width: 30, height: "10px" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const position = creator.position;
+	t.is(read(position.width), 40);
+	t.is(read(position.height), 30); // 20 + 10
+
+	heightStore.set("50px");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(read(position.width), 40);
+	t.is(read(position.height), 60); // 50 + 10
+
+	// Switching to non-absolute makes parent height unknown
+	heightStore.set("1w");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.is(read(position.width), 40);
+	t.is(read(position.height), undefined);
 });
 
 
@@ -1213,4 +1657,71 @@ test("Rounding: uneven sizes get rounded inwards", t =>
 	t.is(label2.y, 5 + 12); // 12 instead of 11.5
 	t.is(label2.width, 37);
 	t.is(label2.height, 11); // 11 instead of 11.5
+});
+
+
+test("Rounding: uneven sizes in horizontal direction", t =>
+{
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 5, y: 3, width: 23, height: 37 };
+	const creator = flexible({
+		spacing: 0, direction: LayoutDirection.Horizontal,
+		content: [
+			button({ text: "a" }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	const widget1 = output.widgets[0];
+	t.is(widget1.x, 5);
+	t.is(widget1.y, 3);
+	t.is(widget1.width, 11); // 11 instead of 11.5
+	t.is(widget1.height, 37);
+
+	const widget2 = output.widgets[1];
+	t.is(widget2.x, 5 + 12); // 12 instead of 11.5
+	t.is(widget2.y, 3);
+	t.is(widget2.width, 11); // 11 instead of 11.5
+	t.is(widget2.height, 37);
+});
+
+
+test("Re-layout adapts to different area", t =>
+{
+	const output = createBuildOutput();
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			button({ text: "a" }),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	invoke(output.redraw);
+	control.layout(widgetMap, { x: 0, y: 0, width: 100, height: 60 });
+
+	const widget1 = output.widgets[0];
+	const widget2 = output.widgets[1];
+	t.is(widget1.y, 0);
+	t.is(widget1.height, 30);
+	t.is(widget2.y, 30);
+	t.is(widget2.height, 30);
+
+	control.layout(widgetMap, { x: 10, y: 5, width: 80, height: 40 });
+
+	t.is(widget1.x, 10);
+	t.is(widget1.y, 5);
+	t.is(widget1.width, 80);
+	t.is(widget1.height, 20);
+	t.is(widget2.x, 10);
+	t.is(widget2.y, 25);
+	t.is(widget2.width, 80);
+	t.is(widget2.height, 20);
 });
