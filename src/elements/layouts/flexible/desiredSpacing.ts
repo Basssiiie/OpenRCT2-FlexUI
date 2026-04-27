@@ -17,11 +17,7 @@ export const enum ContainerFlags
 	InheritHeight = (1 << 1),
 	InheritAll = (InheritWidth | InheritHeight),
 
-	DynamicWidth = (1 << 2),
-	DynamicHeight = (1 << 3),
-	DynamicAll = (DynamicWidth | DynamicHeight),
-
-	Count = (1 << 4)
+	Count = (1 << 2)
 }
 
 /**

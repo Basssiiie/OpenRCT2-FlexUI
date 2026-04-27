@@ -22,8 +22,8 @@ import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 export const enum FlexFlags
 {
 	// Marks whether the axis size needs to be recalculated.
-	ComputeHeight = (ContainerFlags.Count << 2),
-	ComputeWidth = (ContainerFlags.Count << 3),
+	ComputeHeight = (ContainerFlags.Count << 0),
+	ComputeWidth = (ContainerFlags.Count << 1),
 	ComputeBoth = ComputeHeight | ComputeWidth
 }
 
