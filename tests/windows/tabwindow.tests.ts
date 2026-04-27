@@ -508,6 +508,40 @@ test("Window and tab events execute", t =>
 });
 
 
+test("onTabChange callback fires with correct tab index", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const changes: number[] = [];
+	const template = tabwindow({
+		width: 200, height: 150,
+		onTabChange: idx => changes.push(idx),
+		tabs: [
+			tab({ image: 1, content: [label({ text: "1" })] }),
+			tab({ image: 2, content: [label({ text: "2" })] }),
+			tab({ image: 3, content: [label({ text: "3" })] })
+		]
+	});
+	template.open();
+
+	t.deepEqual(changes, []);
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+
+	created.tabIndex = 2;
+	call(created.onTabChange);
+	t.deepEqual(changes, [2]);
+
+	created.tabIndex = 0;
+	call(created.onTabChange);
+	t.deepEqual(changes, [2, 0]);
+
+	created.tabIndex = 1;
+	call(created.onTabChange);
+	t.deepEqual(changes, [2, 0, 1]);
+});
+
+
 test("Window close method calls on close event", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -1740,6 +1774,42 @@ test("Window with tabs and bindings resets properly to first tab after close", t
 	const created2 = (<UiMock>globalThis.ui).createdWindows[0];
 	t.is(created2.tabIndex, 0);
 	t.deepEqual(created2.widgets, []);
+});
+
+
+test("Window with non-zero starting tab resets to starting tab after close", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = tabwindow({
+		width: 200, height: 100,
+		startingTab: 1,
+		tabs: [
+			tab({ image: 3, content: [] }),
+			tab({ image: 4, content: [button({ text: "tab 2 btn" })]}),
+			tab({ image: 5, content: [] })
+		]
+	});
+	template.open();
+
+	const created1 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created1.tabIndex, 1);
+	t.is(created1.widgets.length, 1);
+
+	// Switch away from the starting tab
+	created1.tabIndex = 2;
+	created1.onTabChange!();
+	t.is(created1.tabIndex, 2);
+	t.deepEqual(created1.widgets, []);
+
+	created1.onClose!();
+	template.open();
+
+	// Should reset to starting tab 1, not tab 0 or last-used tab (2)
+	const created2 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created2.tabIndex, 1);
+	t.is(created2.widgets.length, 1);
+	t.is((<ButtonWidget>created2.widgets[0]).text, "tab 2 btn");
 });
 
 

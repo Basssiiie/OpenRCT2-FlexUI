@@ -7,6 +7,7 @@ import { groupbox } from "@src/elements/controls/groupbox";
 import { label } from "@src/elements/controls/label";
 import { ElementVisibility } from "@src/elements/elementParams";
 import { horizontal } from "@src/elements/layouts/flexible/flexible";
+import { Colour } from "@src/utilities/colour";
 import { mutable } from "@src/utilities/mutable";
 import { FrameContext } from "@src/windows/frames/frameContext";
 import { window } from "@src/windows/window";
@@ -151,6 +152,39 @@ test("Simple window with viewmodel", t =>
 });
 
 
+test("Auto-sizing with viewmodel window", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const model = {
+		buttonText: store("content")
+	};
+	const template = window<typeof model>(model =>
+	({
+		title: "Automatically sized window",
+		width: "auto", height: "auto", padding: 5,
+		content: [
+			button({ text: model.buttonText, width: 80, height: 25 })
+		]
+	}));
+	template.open(model);
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 80 + 10);
+	t.is(created.height, 25 + 10 + 15);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.text, "content");
+	t.is(button1.x, 5);
+	t.is(button1.y, 15 + 5);
+	t.is(button1.width, 80);
+	t.is(button1.height, 25);
+
+	model.buttonText.set("updated");
+	t.is(button1.text, "updated");
+});
+
+
 test("Simple window with single 100% widget", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -220,6 +254,26 @@ test("Simple window with default padding and spacing", t =>
 });
 
 
+test("Window applies colours", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "Coloured window",
+		width: 100, height: 80,
+		colours: [Colour.Aquamarine, Colour.BrightGreen],
+		content: [
+			button({ text: "click" })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.deepEqual(created.colours, [Colour.Aquamarine, Colour.BrightGreen]);
+	t.is(created.title, "Coloured window");
+});
+
+
 test("Window adjusts to resize", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -279,6 +333,56 @@ test("Window adjusts to resize", t =>
 	t.is(label2.y, 200 + 2 + 15);
 	t.is(label2.width, 400);
 	t.is(label2.height, 100);
+});
+
+
+test("Window with only min set is resizable up to value", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: { value: 200, min: 100 },
+		height: { value: 150, min: 80 },
+		padding: 0, spacing: 0,
+		content: [
+			button({ text: "a" })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 200);
+	t.is(created.height, 150);
+	t.is(created.minWidth, 100);
+	t.is(created.minHeight, 80);
+	t.is(created.maxWidth, 200);
+	t.is(created.maxHeight, 150);
+});
+
+
+test("Window with only max set is resizable down to value", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: { value: 200, max: 500 },
+		height: { value: 150, max: 400 },
+		padding: 0, spacing: 0,
+		content: [
+			button({ text: "a" })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 200);
+	t.is(created.height, 150);
+	t.is(created.minWidth, 200);
+	t.is(created.minHeight, 150);
+	t.is(created.maxWidth, 500);
+	t.is(created.maxHeight, 400);
 });
 
 
@@ -439,6 +543,56 @@ test("Window does auto resizes to body size changes", t =>
 	t.is(button1.height, 30);
 
 	t.false(button2.isVisible);
+});
+
+
+test("Window auto width with fixed height", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: "auto", height: 100, padding: 5, spacing: 0,
+		content: [
+			button({ text: "a", width: 80, height: "1w" })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 80 + 10);
+	t.is(created.height, 100);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.x, 5);
+	t.is(button1.y, 5 + 15);
+	t.is(button1.width, 80);
+	t.is(button1.height, 100 - 10 - 15);
+});
+
+
+test("Window fixed width with auto height", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 200, height: "auto", padding: 5, spacing: 0,
+		content: [
+			button({ text: "a", width: "1w", height: 40 })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 200);
+	t.is(created.height, 40 + 10 + 15);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.x, 5);
+	t.is(button1.y, 5 + 15);
+	t.is(button1.width, 200 - 10);
+	t.is(button1.height, 40);
 });
 
 
@@ -667,6 +821,90 @@ test("Window events are triggered", t =>
 });
 
 
+test("FrameContext.getWidget() retrieves widget by name", t =>
+{
+	globalThis.ui = Mock.ui();
+	let ctx: FrameContext;
+
+	const template = window({
+		width: 100, height: 100,
+		onOpen: <() => void><unknown>((c: FrameContext) => { ctx = c; }),
+		content: [
+			button({ text: "find me" }),
+			label({ text: "also here" })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const button1 = <ButtonWidget>created.widgets[0];
+	const label1 = <LabelWidget>created.widgets[1];
+
+	const foundButton = ctx!.getWidget<ButtonWidget>(button1.name);
+	t.truthy(foundButton);
+	t.is(foundButton!.text, "find me");
+
+	const foundLabel = ctx!.getWidget<LabelWidget>(label1.name);
+	t.truthy(foundLabel);
+	t.is(foundLabel!.text, "also here");
+
+	t.is(ctx!.getWidget("nonexistent"), null);
+});
+
+
+test("FrameContext.isOpen() returns frame active state", t =>
+{
+	globalThis.ui = Mock.ui();
+	let ctx: FrameContext;
+
+	const template = window({
+		width: 100, height: 100,
+		onOpen: <() => void><unknown>((c: FrameContext) => { ctx = c; }),
+		content: []
+	});
+	const instance = template.open();
+	t.true(ctx!.isOpen());
+
+	instance.close();
+	t.false(ctx!.isOpen());
+});
+
+
+test("FrameContext.redraw() triggers relayout on next update", t =>
+{
+	globalThis.ui = Mock.ui();
+	let ctx: FrameContext;
+
+	const visible = store<ElementVisibility>("visible");
+	const template = window({
+		width: "auto", height: "auto", padding: 5, spacing: 8,
+		onOpen: <() => void><unknown>((c: FrameContext) => { ctx = c; }),
+		content: [
+			button({ text: "a", width: 100, height: 30 }),
+			button({ text: "b", width: 100, height: 30, visibility: visible })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.height, 30 + 8 + 30 + 10 + 15);
+	t.true(ctx!.isOpen());
+
+	// Visibility store change internally calls context.redraw()
+	visible.set("none");
+	call(created.onUpdate);
+
+	t.is(created.height, 30 + 10 + 15);
+
+	// Restore visibility and explicitly use context.redraw()
+	visible.set("visible");
+	ctx!.redraw();
+	call(created.onUpdate);
+
+	t.is(created.height, 30 + 8 + 30 + 10 + 15);
+});
+
+
 test("Window close method calls on close event", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -730,6 +968,31 @@ test("Window can be reopened after closing", t =>
 	t.is(created.length, 2);
 	t.is(created[0].title, "test window");
 	t.is(created[1].title, "test window");
+});
+
+
+test("Window close and reopen fires events each time", t =>
+{
+	globalThis.ui = Mock.ui();
+	const hits: string[] = [];
+
+	const template = window({
+		title: "test window", width: 150, height: 100,
+		content: [],
+		onOpen: () => hits.push("open"),
+		onClose: () => hits.push("close")
+	});
+	const instance1 = template.open();
+	t.deepEqual(hits, ["open"]);
+
+	instance1.close();
+	t.deepEqual(hits, ["open", "close"]);
+
+	const instance2 = template.open();
+	t.deepEqual(hits, ["open", "close", "open"]);
+
+	instance2.close();
+	t.deepEqual(hits, ["open", "close", "open", "close"]);
 });
 
 

@@ -22,6 +22,7 @@ test("Standard properties are set", t =>
 		content: [
 			box({
 				padding: "7px",
+				tooltip: "box tip",
 				content: button({
 					text: "inside a box!"
 				})
@@ -32,6 +33,7 @@ test("Standard properties are set", t =>
 
 	const widget1 = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
 	t.is(widget1.type, "groupbox");
+	t.is(widget1.tooltip, "box tip");
 	t.is(widget1.x, 4 + 7);
 	t.is(widget1.y, 4 + 7 + 15 - 4); // - 4px default top pad
 	t.is(widget1.width, 50 - 22);
@@ -81,6 +83,33 @@ test("Title changes size and position", t =>
 	t.is(widget2.y, 4 + 7 + 15 + 15); // inc. 15px title padding
 	t.is(widget2.width, (50 - 22) - (6 + 6));
 	t.is(widget2.height, (80 - 22) - (15 + 6));
+});
+
+
+test("Text is bindable", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const text = store("initial title");
+	const template = window({
+		width: 100, height: 60 + 15, padding: 0,
+		content: [
+			box({
+				padding: 0,
+				text,
+				content: button({ text: "inside" })
+			})
+		]
+	});
+	template.open();
+
+	const widget = <GroupBoxWidget>mock.createdWindows[0].widgets[0];
+	t.is(widget.type, "groupbox");
+	t.is(widget.text, "initial title");
+
+	text.set("updated title");
+	t.is(widget.text, "updated title");
 });
 
 
