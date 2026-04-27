@@ -1,4 +1,3 @@
-/// <reference path="../../lib/duktape.d.ts" />
 /* istanbul ignore file */
 
 import * as Environment from "./environment";
@@ -12,12 +11,6 @@ type LogLevel = "debug" | "warning" | "error";
 
 
 /**
- * Returns true if Duktape is available, or false if not.
- */
-const isDuktapeAvailable = (typeof Duktape !== "undefined");
-
-
-/**
  * Prints a message with the specified logging and plugin identifier.
  */
 function print(level: LogLevel, messages: unknown[]): void
@@ -28,46 +21,6 @@ function print(level: LogLevel, messages: unknown[]): void
 		.join(" ");
 
 	console.log(`\x1b[95m<FUI/${level}>\x1b[37m ${message}`);
-}
-
-
-/**
- * Returns the current call stack as a string.
- */
-function stacktrace(): string
-{
-	if (!isDuktapeAvailable)
-	{
-		return "  (stacktrace unavailable)\r\n";
-	}
-
-	const depth = -4; // skips act(), stacktrace() and the calling method.
-	let entry: DukStackEntry | undefined;
-	let result = "";
-
-	for (let i = depth; (entry = Duktape.act(i)); i--)
-	{
-		const functionName = entry.function.name;
-		const prettyName = functionName
-			? (functionName + "()")
-			: "<anonymous>";
-
-		result += `   -> ${prettyName}: line ${entry.lineNumber}\r\n`;
-	}
-	return result;
-}
-
-
-/**
- * Enable stack-traces on errors in development mode.
- */
-if (Environment.isDevelopment && isDuktapeAvailable)
-{
-	Duktape.errCreate = function onError(error): Error
-	{
-		error.message += `\r\n${stacktrace()}`;
-		return error;
-	};
 }
 
 
@@ -93,24 +46,9 @@ export function warning(...messages: unknown[]): void
 
 
 /**
- * Prints an error message to the console and an additional stacktrace
- * if the plugin is run in development mode.
- */
-
-export function error(...messages: unknown[]): void
-{
-	if (Environment.isDevelopment)
-	{
-		messages.push(`\r\n${stacktrace()}`);
-	}
-	print("error", messages);
-}
-
-
-/**
  * Throws an error with the specified message.
  */
-export function thrown(message: string): never
+export function error(message: string): never
 {
 	throw Error(message);
 }
@@ -124,7 +62,7 @@ export function assert(condition: boolean | null | undefined, ...messages: unkno
 {
 	if (!Environment.isProduction && !condition)
 	{
-		thrown(`Assertion failed! ${messages.join(" ")}`);
+		error(`Assertion failed! ${messages.join(" ")}`);
 	}
 }
 
@@ -148,17 +86,4 @@ export function stringify(obj: unknown): string
 		pairs.push(`${String(key)}: ${stringify(obj[key])}`);
 	}
 	return `{ ${pairs.join(", ")} }`;
-}
-
-
-/**
- * Returns the current time on milliseconds, including fractions. Useful for performance timing.
- */
-export function time(): number
-{
-	if (Environment.isDevelopment)
-	{
-		return performance.now();
-	}
-	return 0;
 }

@@ -59,7 +59,7 @@ export function parseScale(value: Scale | undefined): ParsedScale | undefined
 		}
 	}
 
-	Log.thrown("Value '" + value + "' is not a valid scale.");
+	Log.error("Value '" + value + "' is not a valid scale.");
 }
 
 

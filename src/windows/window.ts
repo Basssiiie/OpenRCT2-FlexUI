@@ -2,6 +2,7 @@ import { defaultTopBarSize, defaultWindowPadding, zeroPadding } from "@src/eleme
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
+import * as performance from "@src/utilities/performance";
 import { isUndefined } from "@src/utilities/type";
 import { BaseWindowControl, BaseWindowParams } from "./baseWindowControl";
 import { FrameBuilder } from "./frames/frameBuilder";
@@ -55,11 +56,11 @@ export function window<TModel extends object>(params: (model: TModel) => WindowP
 export function window<T>(params: ((model: T) => WindowParams) | WindowParams): WindowTemplate<T>
 {
 	Log.debug("window() started");
-	const startTime = Log.time();
+	const startTime = performance.time();
 
 	const template = new Template(WindowControl, params);
 
-	Log.debug("window() creation time:", (Log.time() - startTime), "ms");
+	Log.debug("window() creation time:", (performance.time() - startTime), "ms");
 	return template;
 }
 

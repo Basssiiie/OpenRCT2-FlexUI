@@ -172,7 +172,7 @@ export class SpinnerControl<Position> extends Control<SpinnerDesc, Position> imp
 
 		if (this._minimum > this._maximum)
 		{
-			Log.thrown("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
+			Log.error("Spinner: minimum " + this._minimum + " is larger than maximum " + this._maximum);
 		}
 	}
 

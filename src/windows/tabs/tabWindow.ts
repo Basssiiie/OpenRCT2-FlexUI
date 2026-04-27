@@ -9,6 +9,7 @@ import { Rectangle } from "@src/positional/rectangle";
 import { Colour } from "@src/utilities/colour";
 import * as Log from "@src/utilities/logger";
 import { noop } from "@src/utilities/noop";
+import * as performance from "@src/utilities/performance";
 import { isUndefined } from "@src/utilities/type";
 import { BaseWindowControl, BaseWindowParams, WindowFlags } from "../baseWindowControl";
 import { FrameBuilder } from "../frames/frameBuilder";
@@ -93,11 +94,11 @@ export function tabwindow<TModel extends object>(params: (model: TModel) => TabW
 export function tabwindow<T>(params: ((model: T) => TabWindowParams) | TabWindowParams): WindowTemplate<T>
 {
 	Log.debug("tabwindow() started");
-	const startTime = Log.time();
+	const startTime = performance.time();
 
 	const template = new Template(TabWindowControl, params);
 
-	Log.debug("tabwindow() creation time:", (Log.time() - startTime), "ms");
+	Log.debug("tabwindow() creation time:", (performance.time() - startTime), "ms");
 	return template;
 }
 

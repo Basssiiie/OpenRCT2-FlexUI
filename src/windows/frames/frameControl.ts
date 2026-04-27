@@ -144,7 +144,7 @@ function scaleFrame(area: FrameRectangle, option: TabScaleOptions, containerSize
 
 		if (isNullOrUndefined(size))
 		{
-			Log.thrown("Window content body's " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
+			Log.error("Window content body's " + sizeKey + " must resolve to absolute size for \"auto\" window size.");
 		}
 
 		return size + setAbsolutePaddingForDirection(area, padding, direction);

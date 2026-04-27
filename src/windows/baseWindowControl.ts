@@ -5,6 +5,7 @@ import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { Size } from "@src/positional/size";
 import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
+import * as performance from "@src/utilities/performance";
 import { WindowBinder } from "./binders/windowBinder";
 import { FrameRectangle } from "./frames/frameRectangle";
 import { OpenWindow } from "./openWindow";
@@ -173,11 +174,11 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 			this._height = newHeight;
 		}
 
-		const startTime = Log.time();
+		const startTime = performance.time();
 		this._layout(window, activeWidgets);
 		this._flags &= ~WindowFlags.RedrawNextTick;
 
-		Log.debug("BaseWindow.checkResizeAndRedraw() finished in", (Log.time() - startTime), "ms");
+		Log.debug("BaseWindow.checkResizeAndRedraw() finished in", (performance.time() - startTime), "ms");
 	}
 
 	/**

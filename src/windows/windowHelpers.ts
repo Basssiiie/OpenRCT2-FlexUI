@@ -67,7 +67,7 @@ export function setAxisSizeIfAuto(window: Window | WindowDesc, direction: Axis, 
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))
 	{
-		Log.thrown("Padding for " + directionKey + " must be absolute for auto window resize.");
+		Log.error("Padding for " + directionKey + " must be absolute for auto window resize.");
 	}
 	return setWindowSize(window, direction, size, size, size);
 }

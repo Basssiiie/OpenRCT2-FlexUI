@@ -38,7 +38,7 @@ export function setAbsolutePaddingForDirection(area: FrameRectangle, padding: Pa
 
 	if (!isAbsolute(startPad) || !isAbsolute(endPad))
 	{
-		Log.thrown("Window padding must be absolute for \"auto\" window size.");
+		Log.error("Window padding must be absolute for \"auto\" window size.");
 	}
 
 	area[axisKeys[direction]] += startPad[0];
