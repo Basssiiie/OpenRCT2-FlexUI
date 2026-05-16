@@ -90,6 +90,7 @@ export class BoxControl<Position extends SizeParams & Paddable>
 	{
 		const type = "groupbox";
 		const content = "content";
+		const binder = output.binder;
 		let flags = getInheritanceFlags(params) | FlexFlags.ComputeBoth;
 		let creator: WidgetCreator<FlexiblePosition>;
 
@@ -99,7 +100,6 @@ export class BoxControl<Position extends SizeParams & Paddable>
 			super(type, output, params);
 			creator = params[content];
 
-			const binder = output.binder;
 			const text = params.text;
 			binder.add(this, "text", text);
 			flags |= (text) ? BoxFlags.AddTitlePadding : 0;
@@ -118,7 +118,7 @@ export class BoxControl<Position extends SizeParams & Paddable>
 			? (defaultBoxPaddingWithTitle ||= parsePadding([15, 6, 6, 6]))
 			: (defaultBoxPaddingWithoutTitle ||= parsePadding(6));
 		const child = creator.create(output); // fixme: the order of these calls matters
-		const position = bindFlexiblePosition(this, output.binder, params, creator.position, fallbackPadding);
+		const position = bindFlexiblePosition(this, output.context, binder, params, creator.position, fallbackPadding);
 		const width = this._width;
 		const height = this._height;
 
@@ -128,8 +128,8 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		if (width || height)
 		{
 			// If any axis is computable, bind the redraw callback.
-			output.on(redrawEvent, this._recalculate.bind(this));
-			this._recalculate();
+			output.on(redrawEvent, this._redraw.bind(this));
+			this._redraw();
 		}
 
 		// Handle static inheritance for children (without any stores)
@@ -163,7 +163,7 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		child.layout(widgets, area);
 	}
 
-	private _recalculate()
+	private _redraw()
 	{
 		const flags = this._flags;
 		Log.debug("Box(", this.name, "): recalculate size from children ->", !!(flags & FlexFlags.ComputeBoth));

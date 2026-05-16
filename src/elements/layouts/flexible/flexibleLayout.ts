@@ -10,6 +10,7 @@ import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { convertToPixels, parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { SizeParams } from "@src/positional/size";
+import { FrameContext } from "@src/windows/frames/frameContext";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Child } from "../container";
 import { applyPaddingToDirection, axisKeys, setSizeWithPaddingForDirection, sizeKeys } from "../paddingHelpers";
@@ -128,7 +129,7 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 /**
  * Performs bindings on a child with flexible positional parameters.
  */
-export function bindFlexiblePosition(container: FlexibleContainer, binder: Binder<WidgetBaseDesc>, parameters: SizeParams, child: FlexiblePosition & { visibility?: ElementVisibility }, fallbackPadding?: ParsedPadding): ParsedFlexiblePosition
+export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameContext, binder: Binder<WidgetBaseDesc>, parameters: SizeParams, child: FlexiblePosition & { visibility?: ElementVisibility }, fallbackPadding?: ParsedPadding): ParsedFlexiblePosition
 {
 	const { width, height, visibility } = child;
 	const parsed: ParsedFlexiblePosition = {
@@ -142,26 +143,36 @@ export function bindFlexiblePosition(container: FlexibleContainer, binder: Binde
 	{
 		parsed._width = parseScaleOrFallback(value, defaultScale);
 		container._flags |= FlexFlags.ComputeHeight;
+		frame.redraw();
 	});
 	const heightStore = binder.on(height, value =>
 	{
 		parsed._height = parseScaleOrFallback(value, defaultScale);
 		container._flags |= FlexFlags.ComputeWidth;
+		frame.redraw();
 	});
 	const visibilityStore = binder.on(visibility, value =>
 	{
-		parsed._skip = value === "none";
+		const next = value === "none";
+		const previous = parsed._skip;
+
+		parsed._skip = next;
 		container._flags |= FlexFlags.ComputeBoth;
+
+		if (previous !== next)
+		{
+			frame.redraw();
+		}
 	});
 
 	// Create dynamic stores for container
 	if (!container._width && (widthStore || visibilityStore) && (container._flags & ContainerFlags.InheritWidth))
 	{
-		container._width = parameters.width = store<number | undefined>();
+		parameters.width = container._width = store<number | undefined>();
 	}
 	if (!container._height && (heightStore || visibilityStore) && (container._flags & ContainerFlags.InheritHeight))
 	{
-		container._height = parameters.height = store<number | undefined>();
+		parameters.height = container._height = store<number | undefined>();
 	}
 
 	return parsed;

@@ -119,6 +119,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 	constructor(output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Position)
 	{
 		const creators = (isArray(params)) ? params : params.content;
+		const context = output.context;
 		const binder = output.binder;
 		let flags: ContainerFlags;
 		let direction: Axis;
@@ -128,7 +129,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		this._flags = flags = getInheritanceFlags(params) | FlexFlags.ComputeBoth;
 		this._direction = direction = (<{ direction?: Axis }>params).direction || Axis.Vertical;
 		this._spacing = spacing = (parseScale((<{ spacing?: Scale }>params).spacing) || defaultSpacing);
-		this._children = children = container(output, creators, pos => bindFlexiblePosition(this, binder, params, pos));
+		this._children = children = container(output, creators, pos => bindFlexiblePosition(this, context, binder, params, pos));
 
 		const width = this._width;
 		const height = this._height;
@@ -136,10 +137,10 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		if (width || height)
 		{
 			// If any axis is computable, bind the redraw callback.
-			output.on(redrawEvent, this._recalculate.bind(this));
+			output.on(redrawEvent, this._redraw.bind(this));
 		}
 
-		this._recalculate();
+		this._redraw();
 
 		// Handle static inheritance for children (without any stores)
 		if (!width && (flags & ContainerFlags.InheritWidth))
@@ -166,7 +167,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		flexibleLayout(this, this._children, area, this._direction, this._spacing, widgets);
 	}
 
-	private _recalculate()
+	private _redraw()
 	{
 		const flags = this._flags;
 		Log.debug("Flexible: recalculate size from children ->", (flags & FlexFlags.ComputeBoth).toString(2));

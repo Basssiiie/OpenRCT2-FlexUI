@@ -14,6 +14,7 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	override _bind(control: BaseWindowControl): void
 	{
 		Log.assert(!!control._description, "Window control is missing description!");
+		Log.debug("[WindowBinder] -----> Binding to", control._description.title);
 
 		const bindings = this._bindings;
 		for (const binding of bindings)

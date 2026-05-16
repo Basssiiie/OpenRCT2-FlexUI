@@ -546,6 +546,39 @@ test("Window does auto resizes to body size changes", t =>
 });
 
 
+test("Window auto resizes when child store-bound size changes", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const btnWidth = store(100);
+	const btnHeight = store(30);
+	const template = window({
+		title: "test window",
+		width: "auto", height: "auto", padding: 5, spacing: 0,
+		content: [
+			button({ text: "resizable", width: btnWidth, height: btnHeight })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.width, 100 + 10);
+	t.is(created.height, 30 + 10 + 15);
+
+	btnWidth.set(200);
+	call(created.onUpdate);
+
+	t.is(created.width, 200 + 10);
+	t.is(created.height, 30 + 10 + 15);
+
+	btnHeight.set(60);
+	call(created.onUpdate);
+
+	t.is(created.width, 200 + 10);
+	t.is(created.height, 60 + 10 + 15);
+});
+
+
 test("Window auto width with fixed height", t =>
 {
 	globalThis.ui = Mock.ui();
@@ -943,6 +976,34 @@ test("Window focuses on double open", t =>
 	t.is(created.length, 1);
 	t.is(created[0].title, "test window");
 	t.true(created[0].isOpen);
+});
+
+
+test("Window with store-bound children can reopen after closing", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const btnWidth = store(80);
+	const template = window({
+		title: "test window",
+		width: "auto", height: "auto", padding: 5,
+		content: [
+			button({ text: "click", width: btnWidth, height: 25 })
+		]
+	});
+
+	const instance1 = template.open();
+	const created1 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created1.width, 80 + 10);
+	t.is(created1.height, 25 + 10 + 15);
+
+	instance1.close();
+
+	const instance2 = template.open();
+	const created2 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created2.width, 80 + 10);
+	t.is(created2.height, 25 + 10 + 15);
+	t.not(instance1, instance2);
 });
 
 

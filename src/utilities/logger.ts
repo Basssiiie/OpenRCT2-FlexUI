@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import * as Environment from "./environment";
 import { isArray, isObject } from "./type";
 
@@ -16,8 +14,8 @@ type LogLevel = "debug" | "warning" | "error";
 function print(level: LogLevel, messages: unknown[]): void
 {
 	const message = messages
-		// eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
-		.map(v => (isArray(v) ? `[${v}]` : isObject(v) ? String(v) : v))
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		.map(v => (isArray(v) ? `[${v}]` : isObject(v) ? stringify(v) : v))
 		.join(" ");
 
 	console.log(`\x1b[95m<FUI/${level}>\x1b[37m ${message}`);
@@ -70,20 +68,30 @@ export function assert(condition: boolean | null | undefined, ...messages: unkno
 /**
  * Stringifies the object to json in a compact fashion, useful for logging.
  */
-export function stringify(obj: unknown): string
+export function stringify(obj: unknown, iterations = 3): string
 {
 	if (typeof obj !== "object" || obj === null)
+	{
 		return JSON.stringify(obj);
-
+	}
+	if (iterations <= 0)
+	{
+		return "...";
+	}
 	if (Array.isArray(obj))
-		return `[${obj.map(stringify).join(", ")}]`;
+	{
+		return `[${obj.map(v => stringify(v, iterations - 1)).join(", ")}]`;
+	}
 
 	const pairs = [];
 	for (const key in obj)
 	{
-		// @ts-expect-error key is fine for indexing object
+		const value = (<Record<string, unknown>>obj)[key];
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
-		pairs.push(`${String(key)}: ${stringify(obj[key])}`);
+		pairs.push(String(key) + (typeof value === "function"
+			? "(?)"
+			: `: ${stringify(value, iterations - 1)}`
+		));
 	}
 	return `{ ${pairs.join(", ")} }`;
 }

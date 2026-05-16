@@ -25,7 +25,7 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning> implements 
 
 	constructor(type: W["type"], output: BuildOutput, params: ElementParams & Positioning)
 	{
-		const { binder, context } = output;
+		const { binder } = output;
 		const visibility = params.visibility;
 
 		this.type = type;
@@ -33,14 +33,7 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning> implements 
 
 		binder.add(this, "tooltip", params.tooltip);
 		binder.add(this, "isDisabled", params.disabled);
-		binder.add(this, "isVisible", visibility, v =>
-		{
-			if (this.isVisible !== (v === "none"))
-			{
-				context.redraw();
-			}
-			return (v === "visible");
-		});
+		binder.add(this, "isVisible", visibility, v => v === "visible");
 
 		output.add(this);
 	}

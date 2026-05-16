@@ -1,7 +1,7 @@
 import { FlexibleLayoutControl } from "@src/elements/layouts/flexible/flexible";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Event } from "@src/utilities/event";
-import { isString } from "@src/utilities/type";
+import { isArray, isString } from "@src/utilities/type";
 import { WidgetBinder } from "../binders/widgetBinder";
 import { BuildOutput } from "../buildOutput";
 import { ParentWindow } from "../parentWindow";
@@ -48,9 +48,10 @@ export class FrameBuilder implements BuildOutput // todo: eventually merge this 
 		this.binder = binder;
 		this.context = frame;
 
-		const body = new FlexibleLayoutControl(this, content);
+		const copy = isArray(content) ? content : { ...content };
+		const body = new FlexibleLayoutControl(this, copy);
 		const { onOpen, onUpdate, onClose } = params;
-		const { width, height } = content;
+		const { width, height } = copy;
 
 		// If any size is static, assign it to the frame here.
 		if (!body._width && width && !isString(width))

@@ -94,7 +94,7 @@ export class FrameControl implements FrameContext, TabLayoutable
 
 	open(window: Window, widgets: WidgetMap): void
 	{
-		Log.debug("FrameControl.open(", widgets.length, "widgets )");
+		Log.debug("FrameControl.open(", Object.keys(widgets).length, "widgets )");
 		setAxisSizeIfNumber(window, Axis.Horizontal, this.width);
 		setAxisSizeIfNumber(window, Axis.Vertical, this.height);
 

@@ -4,6 +4,7 @@ import { Binding } from "@src/bindings/binding";
 import { isTwoWay } from "@src/bindings/twoway/isTwoWay";
 import { TwoWayBindable } from "@src/bindings/twoway/twowayBindable";
 import { unwrap } from "@src/bindings/twoway/unwrap";
+import * as Log from "@src/utilities/logger";
 import { isUndefined } from "@src/utilities/type";
 import { isStore } from "../../bindings/stores/isStore";
 
@@ -105,6 +106,7 @@ export abstract class GenericBinder<TSource, TTarget> implements Binder<TTarget>
 	 */
 	_unbind(): void
 	{
+		Log.debug("[Binder] -----> Unbinding from source...");
 		const bindings = this._bindings;
 		const count = bindings.length;
 		let index = 0;

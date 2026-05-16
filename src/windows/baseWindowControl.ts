@@ -237,7 +237,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 
 	_open(): void
 	{
-		Log.debug("BaseWindowControl.open()");
+		Log.debug("BaseWindowControl.open():", this._description.title, "(", this._description.classification, ")");
 		const description = this._description;
 		const binder = this._windowBinder;
 
