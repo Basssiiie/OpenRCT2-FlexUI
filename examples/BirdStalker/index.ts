@@ -32,7 +32,11 @@ const birdStalker = window<ViewModel>(model =>
 	{
 		const ducks = map.getAllEntities("duck");
 		model.allDucks.set(ducks);
-		model.selectedDuckIndex.set(0);
+
+		if (ducks.length > 0)
+		{
+			model.selectedDuck.set(ducks[0]);
+		}
 	},
 	onUpdate: () =>
 	{
