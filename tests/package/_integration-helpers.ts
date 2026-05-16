@@ -1,3 +1,4 @@
+import { ExecutionContext } from "ava";
 import child_process from "node:child_process";
 import fs from "node:fs/promises";
 import util from "node:util";
@@ -17,8 +18,10 @@ export const projectPath = "./tests/package/project";
  * Run a specific rollup configuration on the integration test project.
  * @param config Name of the rollup script.
  */
-export async function rollup(config: string): Promise<string>
+export async function rollup(config: string, ctx: ExecutionContext): Promise<string>
 {
+	ctx.timeout(60_000, "Rollup compilation took longer than 60 seconds");
+
 	await exec(`rollup --config ./configs/${config}.config.js --environment OUTPUT:./dist/${config}.js`, { cwd: projectPath });
 	return await getFile(config);
 }
