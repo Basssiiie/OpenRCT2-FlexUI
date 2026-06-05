@@ -1,5 +1,6 @@
 import { FlexibleDirectionalLayoutParams } from "@src/elements/layouts/flexible/flexible";
 import { Paddable } from "@src/positional/paddable";
+import { isNullOrUndefined } from "@src/utilities/type";
 import { FrameBuilder } from "../frames/frameBuilder";
 import { WindowScale } from "../windowScale";
 import { TabCreator } from "./tabCreator";
@@ -25,7 +26,7 @@ export interface TabParams extends FlexibleDirectionalLayoutParams, Paddable
 	/**
 	 * Specifies an image sprite to be used as the icon of the tab.
 	 */
-	image: number | ImageAnimation | IconName;
+	image?: number | ImageAnimation | IconName;
 
 	/**
 	 * Event that gets triggered when the tab is opened.
@@ -53,8 +54,13 @@ export function tab(params: TabParams): TabCreator
 	return (parent, output) =>
 	{
 		const builder = new FrameBuilder(parent, params, params);
+		const image = params.image;
 
-		output.image = params.image;
+		if (!isNullOrUndefined(image))
+		{
+			output.image = image;
+		}
+
 		output.widgets = builder._widgets;
 		return builder.context;
 	};

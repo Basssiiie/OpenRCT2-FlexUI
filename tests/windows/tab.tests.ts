@@ -32,6 +32,24 @@ test("Tab gets created", t =>
 });
 
 
+test("Tab image is optional", t =>
+{
+	const tabCreator = tab({
+		content: [
+			button({ text: "hey" })
+		]
+	});
+	const description = <WindowTabDesc>{};
+	tabCreator(<ParentWindow>{}, description);
+
+	t.is<unknown, unknown>(description.image, undefined);
+	t.truthy(description.widgets);
+	const buttonWidget = <ButtonWidget>description.widgets![0];
+	t.is(buttonWidget.type, "button");
+	t.is(buttonWidget.text, "hey");
+});
+
+
 test("Tab open() triggers event", t =>
 {
 	const hits: string[] = [];

@@ -14,9 +14,6 @@ import { Control } from "./control";
 import { ViewportFlags } from "./enums/viewportFlags";
 
 
-const FarAway: CoordsXY = { x: -9000, y: -9000 };
-
-
 /**
  * The parameters for configuring the viewport.
  */
@@ -51,6 +48,7 @@ export function viewport<Position>(params: ViewportParams & Position): WidgetCre
 }
 
 
+const farAway: CoordsXY = { x: -9000, y: -9000 };
 const disabledFlags = ViewportFlags.HideBase | ViewportFlags.HideVertical
 	| ViewportFlags.InvisibleGuests | ViewportFlags.InvisibleStaff
 	| ViewportFlags.InvisibleRides | ViewportFlags.InvisibleVehicles
@@ -159,7 +157,7 @@ class ViewportControl<Position> extends Control<ViewportDesc, Position> implemen
 		if (disabled || !target)
 		{
 			flags = disabledFlags;
-			target = FarAway;
+			target = farAway;
 		}
 		viewport.moveTo(target);
 		viewport.visibilityFlags = flags || 0;

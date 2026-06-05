@@ -9,6 +9,7 @@ import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection"
 import { Colour } from "@src/utilities/colour";
 import { Layoutable } from "@src/windows/layoutable";
 import { tab } from "@src/windows/tabs/tab";
+import { TabCreator } from "@src/windows/tabs/tabCreator";
 import { tabwindow } from "@src/windows/tabs/tabWindow";
 import test from "ava";
 import Mock, { UiMock, WindowMock } from "openrct2-mocks";
@@ -615,6 +616,62 @@ test("Window and tab events with static content execute", t =>
 	hits.length = 0;
 	call(created.onClose);
 	t.deepEqual(hits, ["window close", "tab 2 close"]);
+});
+
+
+test("Window accepts a custom tab creator implementation", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const hits: string[] = [];
+	const customTab: TabCreator = (_parent, output) =>
+	{
+		output.image = 99;
+		output.widgets = [<ButtonWidget>{
+			type: "button",
+			name: "custom_button",
+			text: "custom content"
+		}];
+
+		return {
+			width: "inherit",
+			height: "inherit",
+			open: () => hits.push("open"),
+			layout: (area, widgets) =>
+			{
+				const widget = widgets.custom_button;
+				widget.x = area.x;
+				widget.y = area.y;
+				widget.width = <number>area.width;
+				widget.height = <number>area.height;
+				return { width: widget.width, height: widget.height };
+			},
+			update: () => hits.push("update"),
+			close: () => hits.push("close")
+		};
+	};
+
+	const template = tabwindow({
+		width: 120, height: 70, padding: 10,
+		tabs: [customTab]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.truthy(created);
+	t.is(created.width, 120);
+	t.is(created.height, 70);
+	t.is(created.tabIndex, 0);
+	t.is(created.tabs![0].image, 99);
+	t.deepEqual(hits, ["open"]);
+
+	const button1 = <ButtonWidget>created.widgets[0];
+	t.is(button1.type, "button");
+	t.is(button1.text, "custom content");
+	t.is(button1.x, 10);
+	t.is(button1.y, 10 + 44);
+	t.is(button1.width, 120 - 20);
+	t.is(button1.height, 70 - (20 + 44));
 });
 
 
