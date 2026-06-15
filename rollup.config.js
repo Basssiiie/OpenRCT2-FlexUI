@@ -17,7 +17,7 @@ const isDev = (build === "development");
  */
 function precache(cache)
 {
-	const bans = [ "x", "y", "id", "on", "add", "get", "set", "gap", "pop", "min", "max", "top", "row", "for" ];
+	const bans = new Set(["x", "y", "id", "on", "add", "get", "set", "gap", "pop", "min", "max", "top", "row", "for"]);
 	const leading = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_";
     const all = (leading+"0123456789");
 	let mangleId = 0;
@@ -32,17 +32,23 @@ function precache(cache)
 			result += all[index % all.length];
 			index = Math.floor(index / all.length) - 1;
 		}
-		return bans.includes(result) ? getName() : result;
+		return bans.has(result) ? getName() : result;
 	}
 
 	return {
 		name: "Prepare property mangle cache",
-		renderChunk(code)
+		renderChunk(code, chunk)
 		{
-			[...code.matchAll(/(?:\.prototype|this)\.(_\w+)\s*=/g)]
-				.map(m => `$${m[1]}`)
-				.filter(m => !(m in cache))
-				.forEach(m => cache[m] = getName());
+			for (const [match,] of code.matchAll(/\b_[a-z0-9$]+\b/gi))
+			{
+				const key = `$${match}`; // terser requires $-prefix
+				if (!(key in cache))
+				{
+					const token = getName();
+					cache[key] = token;
+					this.info(`${chunk.fileName}: ${match} -> ${token}`);
+				}
+			}
 		}
 	};
 }
