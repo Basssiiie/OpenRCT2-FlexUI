@@ -120,6 +120,51 @@ test("Spinner allows empty item list", t =>
 });
 
 
+test("Spinner arrows work when items store is set before window opens", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const items = store<string[]>([]);
+	items.set(["a", "b", "c"]); // set BEFORE the window opens
+
+	const selectedIndex = store(0);
+	const hits: number[] = [];
+
+	const template = window({
+		width: 100, height: 100, padding: 0,
+		content: [
+			dropdownSpinner({
+				items,
+				selectedIndex: twoway(selectedIndex),
+				onChange: v => hits.push(v)
+			})
+		]
+	});
+	template.open();
+
+	const created = mock.createdWindows[0];
+	const spinner = <SpinnerDesc>created.widgets[0];
+	const dropdown = <DropdownDesc>created.widgets[1];
+	t.is(dropdown.selectedIndex, 0);
+
+	call(spinner.onIncrement);
+	t.is(dropdown.selectedIndex, 1);
+	t.is(selectedIndex.get(), 1);
+	t.deepEqual(hits, [1]);
+
+	call(spinner.onDecrement);
+	t.is(dropdown.selectedIndex, 0);
+	t.is(selectedIndex.get(), 0);
+	t.deepEqual(hits, [1, 0]);
+
+	call(spinner.onDecrement);
+	t.is(dropdown.selectedIndex, 2); // wraps to maximum, proving maximum was seeded
+	t.is(selectedIndex.get(), 2);
+	t.deepEqual(hits, [1, 0, 2]);
+});
+
+
 test("Two-way bindings update dropdown spinner", t =>
 {
 	const mock = Mock.ui();

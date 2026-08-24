@@ -1,7 +1,6 @@
 import { Bindable } from "@src/bindings/bindable";
 import { store } from "@src/bindings/stores/createStore";
 import { isStore } from "@src/bindings/stores/isStore";
-import { subscribe } from "@src/bindings/stores/subscribe";
 import { getOrConvertToTwoWayBinding } from "@src/bindings/twoway/convertToTwoWay";
 import { Rectangle } from "@src/positional/rectangle";
 import { BuildOutput } from "@src/windows/buildOutput";
@@ -74,7 +73,7 @@ class DropdownSpinnerControl<Position> extends DropdownControl<Position>
 		if (isStore(items))
 		{
 			const maximum = store(0);
-			subscribe(items, val =>
+			output.binder.on(items, val =>
 			{
 				const length = val.length;
 				maximum.set(length > 0 ? (length - 1) : 0);
