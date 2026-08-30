@@ -27,8 +27,9 @@ export function fillLayout(area: Rectangle, widgets: WidgetMap | Widget | Widget
  */
 function updateIfNotEqual(widget: Rectangle, key: keyof Rectangle, value: number): void // todo: benchmark
 {
+	value = round(value);
 	if (widget[key] !== value)
 	{
-		widget[key] = round(value);
+		widget[key] = value;
 	}
 }
