@@ -938,6 +938,61 @@ test("FrameContext.redraw() triggers relayout on next update", t =>
 });
 
 
+test("Child's relative padding resizes on visibility of sibling", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<ElementVisibility>("visible");
+	const template = window({
+		title: "test window",
+		width: 60, height: 80 + 15,
+		padding: 0, spacing: 10,
+		content: [
+			button({ text: "wow", height: 15, visibility }),
+			button({ text: "def", height: 15, padding: { top: "1w" } })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.widgets.length, 2);
+
+	const widget1 = <ButtonWidget>created.widgets[0]; // "wow"
+	const widget2 = <ButtonWidget>created.widgets[1]; // "def"
+
+	// Start state: "wow" at the top, "def" pushed to the bottom by its weighted top padding.
+	t.is(widget1.y, 15);
+	t.is(widget1.height, 15);
+	t.is(widget2.y, 80);
+	t.is(widget2.x, 0);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.true(widget1.isVisible);
+
+	visibility.set("none");
+	call(created.onUpdate);
+
+	// "wow" is hidden; its space is absorbed by "def"'s weighted top padding, so "def" does not move.
+	t.is(widget2.y, 80);
+	t.is(widget2.x, 0);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.false(widget1.isVisible);
+
+	visibility.set("visible");
+	call(created.onUpdate);
+
+	// Final state: "wow" is back at the top, "def" is still in the same place.
+	t.is(widget1.y, 15);
+	t.is(widget1.height, 15);
+	t.is(widget2.y, 80);
+	t.is(widget2.x, 0);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.true(widget1.isVisible);
+});
+
+
 test("Window close method calls on close event", t =>
 {
 	globalThis.ui = Mock.ui();

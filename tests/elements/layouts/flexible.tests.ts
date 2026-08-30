@@ -1345,6 +1345,119 @@ test("Child visibility is updated by store", t =>
 });
 
 
+test("Child's relative padding resizes on visibility of sibling", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 35, y: 10, width: 60, height: 80 };
+	const visibility = store<ElementVisibility>("visible");
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			button({ text: "wow", height: 15, visibility }),
+			button({ text: "def", height: 15, padding: { top: "1w" } })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const widgets = output.widgets;
+	t.is(widgets.length, 2);
+
+	const widget1 = <LabelWidget>output.widgets[0]; // "wow"
+	const widget2 = <LabelWidget>output.widgets[1]; // "def"
+
+	// Start state: "wow" at the top, "def" pushed to the bottom by its weighted top padding.
+	t.is(widget1.y, 10);
+	t.is(widget1.height, 15);
+	t.is(widget2.y, 75);
+	t.is(widget2.x, 35);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.true(widget1.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+
+	visibility.set("none");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	// "wow" is hidden; its space is absorbed by "def"'s weighted top padding, so "def" does not move.
+	t.is(widget2.y, 75);
+	t.is(widget2.x, 35);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.false(widget1.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+
+	visibility.set("visible");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	// Final state: "wow" is back at the top, "def" is still in the same place.
+	t.is(widget1.y, 10);
+	t.is(widget1.height, 15);
+	t.is(widget2.y, 75);
+	t.is(widget2.x, 35);
+	t.is(widget2.width, 60);
+	t.is(widget2.height, 15);
+	t.true(widget1.isVisible);
+	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+});
+
+
+test("Fixed-size container with visibility child keeps its explicit size", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 300, height: 40 };
+	const visibility = store<ElementVisibility>("visible");
+	const creator = flexible({
+		direction: LayoutDirection.Horizontal, spacing: 0,
+		content: [
+			flexible({
+				width: 100, direction: LayoutDirection.Vertical, spacing: 0,
+				content: [
+					button({ text: "a", height: 20, visibility })
+				]
+			}),
+			button({ text: "b" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	/*
+	 * Button "a" fills the inner container, so its width reflects the container's
+	 * explicit width, which must be kept even though a child is visibility-bound.
+	 */
+	const button1 = <ButtonWidget>output.widgets[0];
+	t.is(button1.type, "button");
+	t.is(button1.text, "a");
+	t.is(button1.x, 0);
+	t.is(button1.y, 0);
+	t.is(button1.width, 100);
+	t.is(button1.height, 20);
+	t.true(button1.isVisible);
+
+	// Button "b" fills the leftover width next to the fixed-width container.
+	const button2 = <ButtonWidget>output.widgets[1];
+	t.is(button2.type, "button");
+	t.is(button2.text, "b");
+	t.is(button2.x, 100);
+	t.is(button2.y, 0);
+	t.is(button2.width, 200);
+	t.is(button2.height, 40);
+});
+
+
 test("Child width is updated by store", t =>
 {
 	globalThis.ui = Mock.ui();

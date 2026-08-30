@@ -14,7 +14,7 @@ import { SizeParams } from "../../positional/size";
 import { redrawEvent } from "../constants";
 import { ElementParams } from "../elementParams";
 import { AbsolutePosition } from "../layouts/absolute/absolutePosition";
-import { ContainerFlags, getDesiredSpaceFromChildForDirection, getInheritanceFlags } from "../layouts/flexible/desiredSpacing";
+import { ContainerFlags, getComputableFlags, getDesiredSpaceFromChildForDirection } from "../layouts/flexible/desiredSpacing";
 import { bindFlexiblePosition, FlexFlags, FlexibleContainer } from "../layouts/flexible/flexibleLayout";
 import { FlexiblePosition } from "../layouts/flexible/flexiblePosition";
 import { ParsedFlexiblePosition } from "../layouts/flexible/parsedFlexiblePosition";
@@ -91,7 +91,7 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		const type = "groupbox";
 		const content = "content";
 		const binder = output.binder;
-		let flags = getInheritanceFlags(params) | FlexFlags.ComputeBoth;
+		let flags = getComputableFlags(params) | FlexFlags.ComputeBoth;
 		let creator: WidgetCreator<FlexiblePosition>;
 
 		if (content in params)
@@ -133,12 +133,12 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		}
 
 		// Handle static inheritance for children (without any stores)
-		if (!width && (flags & ContainerFlags.InheritWidth))
+		if (!width && (flags & ContainerFlags.ComputableWidth))
 		{
 			params.width = getDesiredSpaceFromChildForDirection(position, Axis.Horizontal);
 			Log.debug("Box(", this.name, "): static width is", params.width);
 		}
-		if (!height && (flags & ContainerFlags.InheritHeight))
+		if (!height && (flags & ContainerFlags.ComputableHeight))
 		{
 			params.height = getDesiredSpaceFromChildForDirection(position, Axis.Vertical);
 			Log.debug("Box(", this.name, "): static height is", params.height);
@@ -173,13 +173,13 @@ export class BoxControl<Position extends SizeParams & Paddable>
 			const width = this._width;
 			const height = this._height;
 
-			if (width && (flags & (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth)) == (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth))
+			if (width && (flags & (FlexFlags.ComputeHeight | ContainerFlags.ComputableWidth)) == (FlexFlags.ComputeHeight | ContainerFlags.ComputableWidth))
 			{
 				const newWidth = getDesiredSpaceFromChildForDirection(position, Axis.Horizontal);
 				Log.debug("Box(", this.name, "): recalculated width from", width.get(), "to", newWidth);
 				width.set(newWidth);
 			}
-			if (height && (flags & (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight)) == (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight))
+			if (height && (flags & (FlexFlags.ComputeWidth | ContainerFlags.ComputableHeight)) == (FlexFlags.ComputeWidth | ContainerFlags.ComputableHeight))
 			{
 				const newHeight = getDesiredSpaceFromChildForDirection(position, Axis.Vertical);
 				Log.debug("Box(", this.name, "): recalculated height from", height.get(), "to", newHeight);

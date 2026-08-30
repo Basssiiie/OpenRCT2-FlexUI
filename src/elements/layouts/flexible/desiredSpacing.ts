@@ -7,33 +7,32 @@ import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
 
 
 /**
- * Flags that indicate whether it is possible to inherit certain positional axis.
+ * Flags that indicate whether the container is recomputed dynamically on certain positional axis.
  */
 export const enum ContainerFlags
 {
 	None = 0,
 
-	InheritWidth = (1 << 0),
-	InheritHeight = (1 << 1),
-	InheritAll = (InheritWidth | InheritHeight),
+	ComputableWidth = (1 << 0),
+	ComputableHeight = (1 << 1),
+	ComputableAll = (ComputableWidth | ComputableHeight),
 
 	Count = (1 << 2)
 }
 
 /**
- * Get flags that indicate whether it is possible to inherit certain positional axis.
+ * Get flags that indicate whether it is possible to compute certain positional axis dynamically.
  */
-export function getInheritanceFlags(position: SizeParams): ContainerFlags
+export function getComputableFlags(position: SizeParams): ContainerFlags
 {
-	// todo: maybe rename to computable? frames use inheritance for looking at parents, here its used to look at children
-	return (isInheritable(position.width) ? ContainerFlags.InheritWidth : 0)
-		| (isInheritable(position.height) ? ContainerFlags.InheritHeight : 0);
+	return (isComputable(position.width) ? ContainerFlags.ComputableWidth : 0)
+		| (isComputable(position.height) ? ContainerFlags.ComputableHeight : 0);
 }
 
 /**
- * Returns true if the value is inheritable, or false if not.
+ * Returns true if the value is computable, or false if not.
  */
-export function isInheritable(value: unknown): boolean
+export function isComputable(value: unknown): boolean
 {
 	return (isUndefined(value) || value === autoKey);
 }

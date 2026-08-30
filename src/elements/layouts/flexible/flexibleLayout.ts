@@ -27,7 +27,13 @@ export const enum FlexFlags
 	ComputeWidth = (ContainerFlags.Count << 1),
 	ComputeBoth = ComputeHeight | ComputeWidth,
 
-	Count = (ContainerFlags.Count << 2)
+	/*
+	 * Marks whether any child has a store-bound size or visibility, and thus the
+	 * stack must be recalculated on redraw even when this container's size is fixed.
+	 */
+	HasDynamicChild = (ContainerFlags.Count << 2),
+
+	Count = (ContainerFlags.Count << 3)
 }
 
 export interface FlexibleContainer
@@ -164,13 +170,18 @@ export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameC
 			frame.redraw();
 		}
 	});
+	if (widthStore || heightStore || visibilityStore)
+	{
+		// A store-bound child can change the stack at runtime, so mark it for recalculation on redraw.
+		container._flags |= FlexFlags.HasDynamicChild;
+	}
 
 	// Create dynamic stores for container
-	if (!container._width && (widthStore || visibilityStore) && (container._flags & ContainerFlags.InheritWidth))
+	if (!container._width && (widthStore || visibilityStore) && (container._flags & ContainerFlags.ComputableWidth))
 	{
 		parameters.width = container._width = store<number | undefined>();
 	}
-	if (!container._height && (heightStore || visibilityStore) && (container._flags & ContainerFlags.InheritHeight))
+	if (!container._height && (heightStore || visibilityStore) && (container._flags & ContainerFlags.ComputableHeight))
 	{
 		parameters.height = container._height = store<number | undefined>();
 	}

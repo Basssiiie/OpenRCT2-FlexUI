@@ -16,7 +16,7 @@ import { SizeParams } from "../../../positional/size";
 import { AbsolutePosition } from "../absolute/absolutePosition";
 import { Child, container } from "../container";
 import { ParsedStack } from "../stack";
-import { ContainerFlags, getDesiredSpaceFromChildrenForDirection, getInheritanceFlags } from "./desiredSpacing";
+import { ContainerFlags, getComputableFlags, getDesiredSpaceFromChildrenForDirection } from "./desiredSpacing";
 import { bindFlexiblePosition, FlexFlags, FlexibleContainer, flexibleLayout, parseFlexibleStack } from "./flexibleLayout";
 import { FlexiblePosition } from "./flexiblePosition";
 import { ParsedFlexiblePosition } from "./parsedFlexiblePosition";
@@ -126,7 +126,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		let spacing: ParsedScale;
 		let children: Child<ParsedFlexiblePosition>[];
 
-		this._flags = flags = getInheritanceFlags(params) | FlexFlags.ComputeBoth;
+		this._flags = flags = getComputableFlags(params) | FlexFlags.ComputeBoth;
 		this._direction = direction = (<{ direction?: Axis }>params).direction || Axis.Vertical;
 		this._spacing = spacing = (parseScale((<{ spacing?: Scale }>params).spacing) || defaultSpacing);
 		this._children = children = container(output, creators, pos => bindFlexiblePosition(this, context, binder, params, pos));
@@ -134,21 +134,21 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		const width = this._width;
 		const height = this._height;
 
-		if (width || height)
+		// Fully static containers need no redraw.
+		if (this._flags & FlexFlags.HasDynamicChild)
 		{
-			// If any axis is computable, bind the redraw callback.
 			output.on(redrawEvent, this._redraw.bind(this));
 		}
 
 		this._redraw();
 
 		// Handle static inheritance for children (without any stores)
-		if (!width && (flags & ContainerFlags.InheritWidth))
+		if (!width && (flags & ContainerFlags.ComputableWidth))
 		{
 			params.width = getDesiredSpaceFromChildrenForDirection(children, spacing, direction, Axis.Horizontal);
 			Log.debug("Flexible: static width is", params.width);
 		}
-		if (!height && (flags & ContainerFlags.InheritHeight))
+		if (!height && (flags & ContainerFlags.ComputableHeight))
 		{
 			params.height = getDesiredSpaceFromChildrenForDirection(children, spacing, direction, Axis.Vertical);
 			Log.debug("Flexible: static height is", params.height);
@@ -181,13 +181,13 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 
 			parseFlexibleStack(this, children, spacing, direction);
 
-			if (width && (flags & (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth)) == (FlexFlags.ComputeHeight | ContainerFlags.InheritWidth))
+			if (width && (flags & (FlexFlags.ComputeHeight | ContainerFlags.ComputableWidth)) == (FlexFlags.ComputeHeight | ContainerFlags.ComputableWidth))
 			{
 				const newWidth = getDesiredSpaceFromChildrenForDirection(children, spacing, direction, Axis.Horizontal);
 				Log.debug("Flexible: recalculated width from", width.get(), "to", newWidth);
 				width.set(newWidth);
 			}
-			if (height && (flags & (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight)) == (FlexFlags.ComputeWidth | ContainerFlags.InheritHeight))
+			if (height && (flags & (FlexFlags.ComputeWidth | ContainerFlags.ComputableHeight)) == (FlexFlags.ComputeWidth | ContainerFlags.ComputableHeight))
 			{
 				const newHeight = getDesiredSpaceFromChildrenForDirection(children, spacing, direction, Axis.Vertical);
 				Log.debug("Flexible: recalculated height from", height.get(), "to", newHeight);
