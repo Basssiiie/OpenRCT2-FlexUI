@@ -3,7 +3,7 @@ import { identifier } from "@src/utilities/identifier";
 import * as Log from "@src/utilities/logger";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
-import { ElementParams } from "../elementParams";
+import { ElementParams, visibleKey } from "../elementParams";
 import { fillLayout } from "../layouts/fillLayout";
 
 
@@ -33,7 +33,7 @@ export abstract class Control<W extends WidgetBaseDesc, Positioning> implements 
 
 		binder.add(this, "tooltip", params.tooltip);
 		binder.add(this, "isDisabled", params.disabled);
-		binder.add(this, "isVisible", visibility, v => v === "visible");
+		binder.add(this, "isVisible", visibility, v => v === visibleKey);
 
 		output.add(this);
 	}

@@ -2,7 +2,7 @@ import { Binder } from "@src/bindings/binder";
 import { store } from "@src/bindings/stores/createStore";
 import { WritableStore } from "@src/bindings/stores/writableStore";
 import { defaultScale } from "@src/elements/constants";
-import { ElementVisibility } from "@src/elements/elementParams";
+import { ElementVisibility, noneKey } from "@src/elements/elementParams";
 import { Axis, AxisSide } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -159,7 +159,7 @@ export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameC
 	});
 	const visibilityStore = binder.on(visibility, value =>
 	{
-		const next = value === "none";
+		const next = value === noneKey;
 		const previous = parsed._skip;
 
 		parsed._skip = next;

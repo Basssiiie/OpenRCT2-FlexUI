@@ -8,6 +8,20 @@ import { Bindable } from "@src/bindings/bindable";
  */
 export type ElementVisibility = "visible" | "hidden" | "none";
 
+/**
+ * Key for the "visible" state of an element.
+ */
+export const visibleKey = "visible";
+
+/**
+ * Key for the "hidden" state of an element: invisible but still taking up space.
+ */
+export const hiddenKey = "hidden";
+
+/**
+ * Key for the "none" state of an element: invisible and not taking up space.
+ */
+export const noneKey = "none";
 
 /**
  * Configurable settings for a custom element.
