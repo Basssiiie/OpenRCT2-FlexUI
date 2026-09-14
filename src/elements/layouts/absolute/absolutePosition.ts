@@ -1,3 +1,4 @@
+import { Bindable } from "@src/bindings/bindable";
 import { Scale } from "@src/positional/scale";
 import { Hideable } from "@src/positional/visibility";
 
@@ -12,24 +13,24 @@ export interface AbsolutePosition extends Hideable
 	 * relative to the top-left corner of the parent area.
 	 * @see {@link Scale} for examples of allowed values.
 	 */
-	x: Scale;
+	x: Bindable<Scale>;
 
 	/**
 	 * The position on the vertical axis of the top-left corner of the widget,
 	 * relative to the top-left corner of the parent area.
 	 * @see {@link Scale} for examples of allowed values.
 	 */
-	y: Scale;
+	y: Bindable<Scale>;
 
 	/**
 	 * The width of this widget on the horizontal axis.
 	 * @see {@link Scale} for examples of allowed values.
 	 */
-	width: Scale;
+	width: Bindable<Scale>;
 
 	/**
 	 * The height of this widget on the vertical axis.
 	 * @see {@link Scale} for examples of allowed values.
 	 */
-	height: Scale;
+	height: Bindable<Scale>;
 }

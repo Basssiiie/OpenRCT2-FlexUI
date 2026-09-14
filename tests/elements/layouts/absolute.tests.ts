@@ -5,6 +5,7 @@ import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { absolute } from "@src/elements/layouts/absolute/absolute";
 import { vertical } from "@src/elements/layouts/flexible/flexible";
+import { Scale } from "@src/positional/scale";
 import { Visibility } from "@src/positional/visibility";
 import { window } from "@src/windows/window";
 import test from "ava";
@@ -298,4 +299,81 @@ test("Container visibility inside absolute layout is updated by store", t =>
 	t.is(inner.y, 15 + 10);
 	t.is(inner.width, 80);
 	t.is(inner.height, 20);
+});
+
+
+test("Child position and size in absolute layout are updated by stores", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const x = store<Scale>(10);
+	const y = store<Scale>(20);
+	const width = store<Scale>(30);
+	const height = store<Scale>(40);
+	const template = window({
+		width: 100, height: 100 + 15, padding: 0,
+		content: [
+			absolute([
+				button({ x, y, width, height, text: "a" }),
+				button({ x: 0, y: 0, width: "1w", height: 20, text: "b" })
+			])
+		]
+	});
+	template.open();
+
+	const created = mock.createdWindows[0];
+	const first = created.widgets[0];
+	const second = created.widgets[1];
+	t.is(first.x, 10);
+	t.is(first.y, 15 + 20);
+	t.is(first.width, 30);
+	t.is(first.height, 40);
+	t.is(second.width, 100); // the only weighted child takes all the width
+
+	x.set(50);
+	y.set("50%");
+	width.set("1w");
+	height.set(10);
+	call(created.onUpdate);
+
+	t.is(first.x, 50);
+	t.is(first.y, 15 + 50); // 50% of the 100px body
+	t.is(first.width, 50); // now shares the weighted width with "b"
+	t.is(first.height, 10);
+	t.is(second.width, 50);
+});
+
+
+test("Weighted sizes in absolute layout are recalculated when a child is toggled by store", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		width: 100, height: 100 + 15, padding: 0,
+		content: [
+			absolute([
+				button({ x: 0, y: 0, width: "1w", height: "1w", text: "a" }),
+				button({ x: 0, y: 0, width: "1w", height: "1w", text: "b", visibility })
+			])
+		]
+	});
+	template.open();
+
+	const created = mock.createdWindows[0];
+	const widget = created.widgets[0];
+	t.is(widget.width, 50);
+	t.is(widget.height, 50);
+
+	visibility.set("none");
+	call(created.onUpdate);
+	t.is(widget.width, 100); // "b" no longer takes part in the weights
+	t.is(widget.height, 100);
+
+	visibility.set("hidden");
+	call(created.onUpdate);
+	t.is(widget.width, 50); // hidden takes up space again
+	t.is(widget.height, 50);
 });

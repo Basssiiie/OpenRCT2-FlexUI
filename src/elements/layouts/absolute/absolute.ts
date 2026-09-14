@@ -1,9 +1,11 @@
+import { Binder } from "@src/bindings/binder";
 import { isWeighted } from "@src/positional/parsing/parsedScale";
 import { convertToPixels, parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { hiddenKey, noneKey } from "@src/positional/visibility";
 import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
+import { FrameContext } from "@src/windows/frames/frameContext";
 import { Layoutable } from "@src/windows/layoutable";
 import { toWidgetCreator, WidgetCreator } from "@src/windows/widgets/widgetCreator";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
@@ -48,41 +50,34 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 {
 	_children: Child<ParsedAbsolutePosition>[];
 
-	_weightedTotalWidth: number;
-	_weightedTotalHeight: number;
-
 	constructor(output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Position)
 	{
 		const creators = (isArray(params)) ? params : params.content;
-		const binder = output.binder;
 		const frame = output.context;
-		const children = container(output, creators, position =>
-		{
-			const parsed: ParsedAbsolutePosition = {
-				x: parseScale(position.x),
-				y: parseScale(position.y),
-				_width: parseScale(position.width),
-				_height: parseScale(position.height)
-			};
+		const binder = output.binder;
 
-			/*
-			 * Note: a runtime toggle to or from "none" does not recompute the weighted totals
-			 * below, which are only calculated once on creation.
-			 */
-			binder.on(position.visibility, value =>
+		this._children = container(output, creators, position => bindAbsolutePosition(frame, binder, position));
+	}
+
+	layout(widgets: WidgetMap, area: Rectangle | false): void
+	{
+		const children = this._children;
+		let child: Child<ParsedAbsolutePosition>;
+
+		if (!area)
+		{
+			// Hidden: hide all children, no position calculation is needed.
+			for (child of children)
 			{
-				if (parsed._visibility !== value)
-				{
-					parsed._visibility = value;
-					frame.redraw();
-				}
-			});
-			return parsed;
-		});
+				child._layoutable.layout(widgets, false);
+			}
+			return;
+		}
+
+		// Bound sizes and visibility can change at runtime, so the weighted totals are recalculated on every layout.
 		const count = children.length;
 		let weightedTotalWidth = 0;
 		let weightedTotalHeight = 0;
-		let child: Child<ParsedAbsolutePosition>;
 		let idx = 0;
 
 		for (; idx < count; idx++)
@@ -106,36 +101,13 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 			}
 		}
 
-		this._children = children;
-		this._weightedTotalWidth = weightedTotalWidth;
-		this._weightedTotalHeight = weightedTotalHeight;
-	}
-
-	layout(widgets: WidgetMap, area: Rectangle | false): void
-	{
-		const children = this._children;
-		const count = children.length;
-		let child: Child<ParsedAbsolutePosition>;
-
-		if (!area)
-		{
-			// Hidden: hide all children, no position calculation is needed.
-			for (child of children)
-			{
-				child._layoutable.layout(widgets, false);
-			}
-			return;
-		}
-
-		const weightedTotalWidth = this._weightedTotalWidth;
-		const weightedTotalHeight = this._weightedTotalHeight;
 		const leftoverWidth = area.width;
 		const leftoverHeight = area.height;
 		const rect = <Rectangle>{}; // Reuse the rect for every element to reduce allocation.
 
-		for (let i = 0; i < count; i++)
+		for (idx = 0; idx < count; idx++)
 		{
-			child = children[i];
+			child = children[idx];
 			const visibility = child._visibility;
 			if (visibility === noneKey)
 			{
@@ -152,4 +124,45 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 			child._layoutable.layout(widgets, (visibility === hiddenKey) ? false : rect);
 		}
 	}
+}
+
+
+/**
+ * Performs bindings on a child with absolute positional parameters.
+ */
+function bindAbsolutePosition(frame: FrameContext, binder: Binder<WidgetBaseDesc>, child: AbsolutePosition): ParsedAbsolutePosition
+{
+	// All four scales are required, so the binder assigns them synchronously before this returns.
+	const parsed = <ParsedAbsolutePosition>{};
+
+	binder.on(child.x, value =>
+	{
+		parsed.x = parseScale(value);
+		frame.redraw();
+	});
+	binder.on(child.y, value =>
+	{
+		parsed.y = parseScale(value);
+		frame.redraw();
+	});
+	binder.on(child.width, value =>
+	{
+		parsed._width = parseScale(value);
+		frame.redraw();
+	});
+	binder.on(child.height, value =>
+	{
+		parsed._height = parseScale(value);
+		frame.redraw();
+	});
+	binder.on(child.visibility, value =>
+	{
+		// The guard is required: the binder fires this again when the frame opens.
+		if (parsed._visibility !== value)
+		{
+			parsed._visibility = value;
+			frame.redraw();
+		}
+	});
+	return parsed;
 }
