@@ -266,10 +266,10 @@ class ListViewControl<Position> extends Control<ListViewDesc, Position>
 	/**
 	 * Defines custom layouting for when the listview uses flexible columns.
 	 */
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		const widths = this._columnWidths;
-		if (!widths)
+		if (!widths || !area) // Hidden: skip the column math, the geometry is irrelevant.
 		{
 			super.layout(widgets, area);
 			return;

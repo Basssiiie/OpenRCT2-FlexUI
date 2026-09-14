@@ -2,7 +2,6 @@ import { Binder } from "@src/bindings/binder";
 import { store } from "@src/bindings/stores/createStore";
 import { WritableStore } from "@src/bindings/stores/writableStore";
 import { defaultScale } from "@src/elements/constants";
-import { ElementVisibility, noneKey } from "@src/elements/elementParams";
 import { Axis, AxisSide } from "@src/positional/axis";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
@@ -10,6 +9,7 @@ import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { convertToPixels, parseScaleOrFallback } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
 import { SizeParams } from "@src/positional/size";
+import { hiddenKey, noneKey, Visibility } from "@src/positional/visibility";
 import { FrameContext } from "@src/windows/frames/frameContext";
 import { WidgetMap } from "@src/windows/widgets/widgetMap";
 import { Child } from "../container";
@@ -63,11 +63,17 @@ export function flexibleLayout(stack: ParsedStack, elements: Child<ParsedFlexibl
 	let cursor = 0;
 	let i = 0;
 	let element: Child<ParsedFlexiblePosition>;
+	let visibility: Visibility | undefined;
+
 	for (; i < elementCount; i++)
 	{
 		element = elements[i];
-		if (element._skip)
+		visibility = element._visibility;
+
+		if (visibility === noneKey)
 		{
+			// Takes up no space, but the whole subtree still needs to be hidden.
+			element._layoutable.layout(widgets, false);
 			continue;
 		}
 
@@ -84,7 +90,7 @@ export function flexibleLayout(stack: ParsedStack, elements: Child<ParsedFlexibl
 		cursor += applyPaddingToDirection(childArea, layoutDirection, padding, leftoverSpace, weightedTotal, percentileTotal);
 		setSizeWithPaddingForDirection(childArea, otherDirection, isHorizontal ? element._height : element._width, padding);
 
-		element._layoutable.layout(widgets, childArea);
+		element._layoutable.layout(widgets, (visibility === hiddenKey) ? false : childArea);
 		cursor += spaceInPixels;
 	}
 }
@@ -108,7 +114,7 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 	for (; i < elementCount; i++)
 	{
 		element = elements[i];
-		if (element._skip)
+		if (element._visibility === noneKey)
 		{
 			continue;
 		}
@@ -128,14 +134,12 @@ export function parseFlexibleStack(stack: ParsedStack, elements: ParsedFlexibleP
 
 	// Parse spacing in between elements
 	addScaleToStack(stack, spacing, (visibleCount - 1));
-
-	stack._visibleElementsCount = visibleCount;
 }
 
 /**
  * Performs bindings on a child with flexible positional parameters.
  */
-export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameContext, binder: Binder<WidgetBaseDesc>, parameters: SizeParams, child: FlexiblePosition & { visibility?: ElementVisibility }, fallbackPadding?: ParsedPadding): ParsedFlexiblePosition
+export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameContext, binder: Binder<WidgetBaseDesc>, parameters: SizeParams, child: FlexiblePosition, fallbackPadding?: ParsedPadding): ParsedFlexiblePosition
 {
 	const { width, height, visibility } = child;
 	const parsed: ParsedFlexiblePosition = {
@@ -159,14 +163,11 @@ export function bindFlexiblePosition(container: FlexibleContainer, frame: FrameC
 	});
 	const visibilityStore = binder.on(visibility, value =>
 	{
-		const next = value === noneKey;
-		const previous = parsed._skip;
-
-		parsed._skip = next;
-		container._flags |= FlexFlags.ComputeBoth;
-
-		if (previous !== next)
+		// The guard is required: the binder fires this again when the frame opens.
+		if (parsed._visibility !== value)
 		{
+			parsed._visibility = value;
+			container._flags |= FlexFlags.ComputeBoth;
 			frame.redraw();
 		}
 	});

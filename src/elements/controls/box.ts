@@ -5,6 +5,7 @@ import { Paddable } from "@src/positional/paddable";
 import { ParsedPadding } from "@src/positional/parsing/parsedPadding";
 import { parsePadding } from "@src/positional/parsing/parsePadding";
 import { Rectangle } from "@src/positional/rectangle";
+import { visibleKey } from "@src/positional/visibility";
 import * as Log from "@src/utilities/logger";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
@@ -145,9 +146,18 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		}
 	}
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		Log.debug("Box(", this.name, ") layout() for area:", Log.stringify(area));
+		const child = this._layoutable;
+		if (!area)
+		{
+			// Hidden: hide the box and everything in it.
+			super.layout(widgets, false);
+			child.layout(widgets, false);
+			return;
+		}
+
 		// Align visual box with layout box, will move label slightly out of bounds.
 		const trim = (this._flags & BoxFlags.AddTitlePadding) ? 0 : trimTopWithoutTitle;
 		area.y -= trim;
@@ -156,11 +166,11 @@ export class BoxControl<Position extends SizeParams & Paddable>
 		area.y += trim;
 		area.height -= trim;
 
-		const child = this._layoutable;
 		const position = this._position;
+		const visibility = position._visibility;
 		Log.debug("Box(", this.name, ") layout() child size:", position._width, "x", position._height);
 		setSizeWithPadding(area, position._width, position._height, position._padding);
-		child.layout(widgets, area);
+		child.layout(widgets, (!visibility || visibility === visibleKey) ? area : false);
 	}
 
 	private _redraw()

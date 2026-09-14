@@ -6,19 +6,28 @@ import { axisKeys, sizeKeys } from "./paddingHelpers";
 
 
 /**
- * A layout function that retrieves the widget from the container by name
- * and then updates it to fill the rectangle area.
+ * A layout function that retrieves the widget from the container by name and then
+ * updates it to fill the rectangle area, or hides it when no area is given.
  */
-export function fillLayout(area: Rectangle, widget: Widget | WidgetDesc): void;
-export function fillLayout(area: Rectangle, widgets: WidgetMap, name: string): void;
-export function fillLayout(area: Rectangle, widgets: WidgetMap | Widget | WidgetDesc, name?: string): void
+export function fillLayout(area: Rectangle | false, widget: Widget | WidgetDesc): void;
+export function fillLayout(area: Rectangle | false, widgets: WidgetMap, name: string): void;
+export function fillLayout(area: Rectangle | false, widgets: WidgetMap | Widget | WidgetDesc, name?: string): void
 {
 	const widget = name ? (<WidgetMap>widgets)[name] : <Widget>widgets;
-	Log.assert(!!widget, "Widget with name", widget.name, "not in widget map.");
-	updateIfNotEqual(widget, axisKeys[1], area.x);
-	updateIfNotEqual(widget, axisKeys[0], area.y);
-	updateIfNotEqual(widget, sizeKeys[1], area.width - 0.01); // ensure values ending in .5 exactly round down (round inwards)
-	updateIfNotEqual(widget, sizeKeys[0], area.height - 0.01);
+	const visible = !!area;
+	Log.assert(!!widget, "Widget with name", name, "not in widget map.");
+
+	if (area)
+	{
+		updateIfNotEqual(widget, axisKeys[1], area.x);
+		updateIfNotEqual(widget, axisKeys[0], area.y);
+		updateIfNotEqual(widget, sizeKeys[1], area.width - 0.01); // ensure values ending in .5 exactly round down (round inwards)
+		updateIfNotEqual(widget, sizeKeys[0], area.height - 0.01);
+	}
+	if (widget.isVisible !== visible)
+	{
+		widget.isVisible = visible;
+	}
 }
 
 /**

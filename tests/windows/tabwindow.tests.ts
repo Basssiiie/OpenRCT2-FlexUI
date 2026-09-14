@@ -3,9 +3,10 @@
 import { store } from "@src/bindings/stores/createStore";
 import { button, ButtonParams } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
-import { ElementVisibility } from "@src/elements/elementParams";
+import { vertical } from "@src/elements/layouts/flexible/flexible";
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
+import { Visibility } from "@src/positional/visibility";
 import { Colour } from "@src/utilities/colour";
 import { Layoutable } from "@src/windows/layoutable";
 import { tab } from "@src/windows/tabs/tab";
@@ -1687,7 +1688,7 @@ test("Window with tabs does auto resizes to body size changes", t =>
 {
 	globalThis.ui = Mock.ui();
 
-	const visible = store<ElementVisibility>("visible");
+	const visible = store<Visibility>("visible");
 	const template = tabwindow({
 		width: "auto", height: "auto", padding: 6,
 		tabs: [
@@ -1730,6 +1731,61 @@ test("Window with tabs does auto resizes to body size changes", t =>
 	t.is(button1.height, 30);
 
 	t.false(button2.isVisible);
+});
+
+
+test("Hidden container inside a tab stays hidden across tab switches", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = tabwindow({
+		width: 200, height: 200, padding: 6,
+		tabs: [
+			tab({
+				image: 4,
+				content: [button({ text: "first tab" })]
+			}),
+			tab({
+				image: 5, spacing: 8,
+				content: [
+					vertical({ visibility, height: 30, spacing: 0, content: [button({ text: "inner", height: 30 })] }),
+					button({ text: "below", height: 30 })
+				]
+			})
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	t.is(created.tabIndex, 0);
+
+	// Hide while the second tab is not active yet, then switch to it.
+	visibility.set("none");
+	created.tabIndex = 1;
+	call(created.onTabChange);
+	call(created.onUpdate);
+
+	const inner = <ButtonWidget>created.widgets[0];
+	const below = <ButtonWidget>created.widgets[1];
+	t.is(inner.text, "inner");
+	t.false(inner.isVisible);
+	t.true(below.isVisible);
+	t.is(below.y, 44 + 6); // the hidden container took up no space
+
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.true(inner.isVisible);
+	t.is(inner.y, 44 + 6);
+	t.is(below.y, 44 + 6 + 30 + 8);
+
+	// Switching away and back keeps the state consistent.
+	created.tabIndex = 0;
+	call(created.onTabChange);
+	created.tabIndex = 1;
+	call(created.onTabChange);
+	t.true(created.widgets[0].isVisible);
+	t.is(created.widgets[1].y, 44 + 6 + 30 + 8);
 });
 
 

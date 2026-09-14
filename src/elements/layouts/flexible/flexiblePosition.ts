@@ -1,12 +1,13 @@
 import { Bindable } from "@src/bindings/bindable";
 import { Paddable } from "@src/positional/paddable";
 import { Scale } from "@src/positional/scale";
+import { Hideable } from "@src/positional/visibility";
 
 
 /**
  * Specifies a flexible position for a widget.
  */
-export interface FlexiblePosition extends Paddable
+export interface FlexiblePosition extends Paddable, Hideable
 {
 	/**
 	 * The width of this widget on the horizontal axis.

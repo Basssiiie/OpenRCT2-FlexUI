@@ -69,9 +69,12 @@ class CheckboxControl<Position> extends Control<CheckboxDesc, Position> implemen
 		binder.twoway(this, "isChecked", "onChange", params.isChecked, params.onChange);
 	}
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
-		area.y += 1;
+		if (area)
+		{
+			area.y += 1;
+		}
 		super.layout(widgets, area);
 	}
 }

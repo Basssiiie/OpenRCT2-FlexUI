@@ -1,7 +1,7 @@
 /// <reference path="../../lib/openrct2.d.ts" />
 
 import { store } from "@src/bindings/stores/createStore";
-import { ElementVisibility } from "@src/elements/elementParams";
+import { Visibility } from "@src/positional/visibility";
 import { mutable } from "@src/utilities/mutable";
 import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
@@ -86,7 +86,7 @@ test("read() sets store through converter", t =>
 	const output = new FrameBuilder(<ParentWindow>{ redraw: noop }, {}, []);
 	output.add(label);
 
-	const storeNumber = store<ElementVisibility>("visible");
+	const storeNumber = store<Visibility>("visible");
 	output.binder.add(label, "isVisible", storeNumber, v => (v === "visible"));
 
 	const frame = mutable(output.context);

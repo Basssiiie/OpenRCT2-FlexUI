@@ -61,7 +61,6 @@ class DropdownSpinnerControl<Position> extends DropdownControl<Position>
 		const spinParams: SpinnerParams = {
 			tooltip: params.tooltip,
 			disabled: params.disabled,
-			visibility: params.visibility,
 			wrapMode: params.wrapMode || "wrap",
 			minimum: 0,
 			value: selectedIndex,
@@ -99,13 +98,16 @@ class DropdownSpinnerControl<Position> extends DropdownControl<Position>
 	/**
 	 * Positions the two widgets in the proper location.
 	 */
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		// Position spinner (only show controls next to dropdown)
 		fillLayout(area, widgets, this._spinner.name);
 
 		// Position dropdown (leave space for spinner controls)
-		area.width -= spinnerControlsWidth;
+		if (area)
+		{
+			area.width -= spinnerControlsWidth;
+		}
 		fillLayout(area, widgets, this.name);
 	}
 }

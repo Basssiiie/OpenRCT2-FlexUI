@@ -1,10 +1,11 @@
 import { Scale } from "@src/positional/scale";
+import { Hideable } from "@src/positional/visibility";
 
 
 /**
  * Specifies an absolute position relative to the parent area.
  */
-export interface AbsolutePosition
+export interface AbsolutePosition extends Hideable
 {
 	/**
 	 * The position on the horizontal axis of the top-left corner of the widget,

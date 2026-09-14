@@ -1,11 +1,15 @@
 /// <reference path="../../../lib/openrct2.d.ts" />
 
+import { store } from "@src/bindings/stores/createStore";
 import { button } from "@src/elements/controls/button";
 import { label } from "@src/elements/controls/label";
 import { absolute } from "@src/elements/layouts/absolute/absolute";
+import { vertical } from "@src/elements/layouts/flexible/flexible";
+import { Visibility } from "@src/positional/visibility";
 import { window } from "@src/windows/window";
 import test from "ava";
 import Mock from "openrct2-mocks";
+import { call } from "../../helpers/call";
 
 
 test("Simple layout with widgets", t =>
@@ -87,4 +91,211 @@ test("Flat layout with widgets", t =>
 	t.is(widget1.y, 35 + 2 + 15);
 	t.is(widget1.width, 44);
 	t.is(widget1.height, 20);
+});
+
+
+test("Child with visibility none is hidden and skipped in layout", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 100, padding: 0,
+		content: [
+			absolute([
+				button({ x: 10, y: 10, width: 30, height: 30, text: "shown" }),
+				label({ x: 20, y: 20, width: 40, height: 40, text: "gone", visibility: "none" })
+			])
+		]
+	});
+	template.open();
+
+	const shown = mock.createdWindows[0].widgets[0];
+	const gone = mock.createdWindows[0].widgets[1];
+
+	t.is(shown.x, 10);
+	t.is(shown.width, 30);
+	t.false(gone.isVisible);
+	// The "none" child is skipped, so its geometry is never set by the layout pass.
+	t.is(gone.width, 0);
+	t.is(gone.height, 0);
+});
+
+
+test("Child visibility in absolute layout is updated by store", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		width: 100, height: 100, padding: 0,
+		content: [
+			absolute([
+				button({ x: 10, y: 10, width: 30, height: 30, text: "a" }),
+				button({ x: 20, y: 20, width: 40, height: 40, text: "b", visibility })
+			])
+		]
+	});
+	template.open();
+
+	const created = mock.createdWindows[0];
+	const a = created.widgets[0];
+	const b = created.widgets[1];
+	t.true(b.isVisible);
+	t.is(b.x, 20);
+	t.is(b.y, 15 + 20);
+	t.is(b.width, 40);
+
+	visibility.set("none");
+	call(created.onUpdate);
+	t.false(b.isVisible);
+	t.true(a.isVisible); // siblings are untouched
+	t.is(a.x, 10);
+
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.true(b.isVisible);
+	t.is(b.x, 20);
+	t.is(b.width, 40);
+});
+
+
+test("Hidden child in absolute layout still counts toward weighted sizes, none does not", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	function open(visibility: Visibility): void
+	{
+		window({
+			width: 100, height: 100 + 15, padding: 0,
+			content: [
+				absolute([
+					button({ x: 0, y: 0, width: "1w", height: "1w", text: "a" }),
+					button({ x: 0, y: 0, width: "1w", height: "1w", text: "b", visibility })
+				])
+			]
+		}).open();
+	}
+
+	open("hidden");
+	const hidden = mock.createdWindows[0].widgets;
+	t.is(hidden[0].width, 50); // two weighted children share the width and height
+	t.is(hidden[0].height, 50);
+	t.false(hidden[1].isVisible);
+
+	open("none");
+	const none = mock.createdWindows[0].widgets;
+	t.is(none[0].width, 100); // the none child is left out of the weights
+	t.is(none[0].height, 100);
+	t.false(none[1].isVisible);
+});
+
+
+test("Absolute layout inside a hidden container hides all its children", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 100, padding: 0, spacing: 0,
+		content: [
+			vertical({
+				visibility: "none",
+				content: [
+					absolute([
+						button({ x: 10, y: 10, width: 30, height: 30, text: "a" }),
+						button({ x: 20, y: 20, width: 40, height: 40, text: "b" })
+					])
+				]
+			}),
+			button({ text: "shown", height: 20 })
+		]
+	});
+	template.open();
+
+	const widgets = mock.createdWindows[0].widgets;
+	t.false(widgets[0].isVisible);
+	t.false(widgets[1].isVisible);
+	t.true(widgets[2].isVisible);
+	t.is(widgets[2].y, 15); // the hidden container took up no space
+});
+
+
+test("Container inside absolute layout is hidden by its own visibility", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const template = window({
+		width: 100, height: 100 + 15, padding: 0,
+		content: [
+			absolute([
+				vertical({
+					x: 10, y: 10, width: 80, height: 40, visibility: "none",
+					content: [button({ text: "gone", height: 20 })]
+				}),
+				vertical({
+					x: 10, y: 50, width: 80, height: 40, visibility: "hidden",
+					content: [button({ text: "hidden", height: 20 })]
+				}),
+				button({ x: 10, y: 90, width: 30, height: 10, text: "shown" })
+			])
+		]
+	});
+	template.open();
+
+	const widgets = mock.createdWindows[0].widgets;
+	t.false(widgets[0].isVisible); // the none container hides its child...
+	t.is(widgets[0].width, 0); // ...and never lays it out
+	t.false(widgets[1].isVisible); // the hidden container hides its child as well
+	t.true(widgets[2].isVisible);
+	t.is(widgets[2].x, 10);
+	t.is(widgets[2].y, 15 + 90);
+});
+
+
+test("Container visibility inside absolute layout is updated by store", t =>
+{
+	const mock = Mock.ui();
+	globalThis.ui = mock;
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		width: 100, height: 100 + 15, padding: 0,
+		content: [
+			absolute([
+				vertical({
+					x: 10, y: 10, width: 80, height: 40, visibility,
+					content: [button({ text: "inner", height: 20 })]
+				})
+			])
+		]
+	});
+	template.open();
+
+	const created = mock.createdWindows[0];
+	const inner = created.widgets[0];
+	t.true(inner.isVisible);
+	t.is(inner.x, 10);
+	t.is(inner.y, 15 + 10);
+	t.is(inner.width, 80);
+	t.is(inner.height, 20);
+
+	visibility.set("hidden");
+	call(created.onUpdate);
+	t.false(inner.isVisible);
+
+	visibility.set("none");
+	call(created.onUpdate);
+	t.false(inner.isVisible);
+
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.true(inner.isVisible);
+	t.is(inner.x, 10);
+	t.is(inner.y, 15 + 10);
+	t.is(inner.width, 80);
+	t.is(inner.height, 20);
 });

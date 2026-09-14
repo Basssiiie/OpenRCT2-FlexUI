@@ -1,5 +1,6 @@
 import { Axis, AxisSide } from "@src/positional/axis";
 import { isAbsolute, ParsedScale } from "@src/positional/parsing/parsedScale";
+import { noneKey } from "@src/positional/visibility";
 import { isUndefined } from "@src/utilities/type";
 import { autoKey } from "@src/windows/windowHelpers";
 import { SizeParams } from "../../../positional/size";
@@ -79,7 +80,7 @@ export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexible
 	for (; index < length; index++)
 	{
 		position = children[index];
-		if (position._skip)
+		if (position._visibility === noneKey)
 		{
 			continue;
 		}
@@ -94,11 +95,8 @@ export function getDesiredSpaceFromChildrenForDirection(children: ParsedFlexible
 		{
 			return undefined;
 		}
-		if (!children[index]._skip)
-		{
-			absoluteSize = addOrMax(absoluteSize, size[0] + start[0] + end[0], axisIsLayoutDirection);
-			visibleSpacersCount++;
-		}
+		absoluteSize = addOrMax(absoluteSize, size[0] + start[0] + end[0], axisIsLayoutDirection);
+		visibleSpacersCount++;
 	}
 	if (axisIsLayoutDirection)
 	{

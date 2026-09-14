@@ -2,11 +2,21 @@
 
 import { store } from "@src/bindings/stores/createStore";
 import { DefaultWritableStore } from "@src/bindings/stores/defaultWritableStore";
+import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
+import { checkbox } from "@src/elements/controls/checkbox";
+import { colourPicker } from "@src/elements/controls/colourPicker";
+import { dropdown } from "@src/elements/controls/dropdown";
+import { dropdownButton } from "@src/elements/controls/dropdownButton";
+import { dropdownSpinner } from "@src/elements/controls/dropdownSpinner";
 import { groupbox } from "@src/elements/controls/groupbox";
 import { label } from "@src/elements/controls/label";
-import { ElementVisibility } from "@src/elements/elementParams";
-import { horizontal } from "@src/elements/layouts/flexible/flexible";
+import { listview } from "@src/elements/controls/listview";
+import { spinner } from "@src/elements/controls/spinner";
+import { textbox } from "@src/elements/controls/textbox";
+import { toggle } from "@src/elements/controls/toggle";
+import { horizontal, vertical } from "@src/elements/layouts/flexible/flexible";
+import { Visibility } from "@src/positional/visibility";
 import { Colour } from "@src/utilities/colour";
 import { mutable } from "@src/utilities/mutable";
 import { FrameContext } from "@src/windows/frames/frameContext";
@@ -504,7 +514,7 @@ test("Window does auto resizes to body size changes", t =>
 {
 	globalThis.ui = Mock.ui();
 
-	const visible = store<ElementVisibility>("visible");
+	const visible = store<Visibility>("visible");
 	const template = window({
 		title: "test window",
 		width: "auto", height: "auto", padding: 5, spacing: 8,
@@ -908,7 +918,7 @@ test("FrameContext.redraw() triggers relayout on next update", t =>
 	globalThis.ui = Mock.ui();
 	let ctx: FrameContext;
 
-	const visible = store<ElementVisibility>("visible");
+	const visible = store<Visibility>("visible");
 	const template = window({
 		width: "auto", height: "auto", padding: 5, spacing: 8,
 		onOpen: <() => void><unknown>((c: FrameContext) => { ctx = c; }),
@@ -942,7 +952,7 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 {
 	globalThis.ui = Mock.ui();
 
-	const visibility = store<ElementVisibility>("visible");
+	const visibility = store<Visibility>("visible");
 	const template = window({
 		title: "test window",
 		width: 60, height: 80 + 15,
@@ -990,6 +1000,255 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 	t.is(widget2.width, 60);
 	t.is(widget2.height, 15);
 	t.true(widget1.isVisible);
+});
+
+
+test("Visibility and layout of siblings change together on the next update", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		title: "test window",
+		width: 60, height: 80 + 15,
+		padding: 0, spacing: 10,
+		content: [
+			button({ text: "toggle", height: 15, visibility }),
+			button({ text: "below", height: 15 })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const toggle = <ButtonWidget>created.widgets[0];
+	const below = <ButtonWidget>created.widgets[1];
+	t.true(toggle.isVisible);
+	t.is(below.y, 15 + 15 + 10);
+
+	// Setting the store only schedules a redraw: nothing changes until the next update...
+	visibility.set("none");
+	t.true(toggle.isVisible);
+	t.is(below.y, 15 + 15 + 10);
+
+	// ...where visibility and position are applied in the same pass, so there is no flash in between.
+	call(created.onUpdate);
+	t.false(toggle.isVisible);
+	t.is(below.y, 15);
+});
+
+
+test("Hidden child is applied on the next update and keeps its space", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		title: "test window",
+		width: 60, height: 80 + 15,
+		padding: 0, spacing: 10,
+		content: [
+			button({ text: "target", height: 15, visibility }),
+			button({ text: "below", height: 15 })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const target = <ButtonWidget>created.widgets[0];
+	const below = <ButtonWidget>created.widgets[1];
+	t.true(target.isVisible);
+	t.is(below.y, 15 + 15 + 10);
+
+	// A visible <-> hidden change must schedule a relayout by itself; nothing changes before it.
+	visibility.set("hidden");
+	t.true(target.isVisible);
+
+	call(created.onUpdate);
+	t.false(target.isVisible);
+	t.is(below.y, 15 + 15 + 10); // still takes up space
+
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.true(target.isVisible);
+	t.is(target.y, 15);
+	t.is(below.y, 15 + 15 + 10);
+});
+
+
+test("Child visibility cycles through visible, hidden and none with correct spacing", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		title: "test window",
+		width: 60, height: 80 + 15,
+		padding: 0, spacing: 10,
+		content: [
+			button({ text: "target", height: 15, visibility }),
+			button({ text: "below", height: 15 })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const target = <ButtonWidget>created.widgets[0];
+	const below = <ButtonWidget>created.widgets[1];
+	t.true(target.isVisible);
+	t.is(target.y, 15);
+	t.is(below.y, 15 + 15 + 10);
+
+	// Hidden: invisible, but keeps its slot.
+	visibility.set("hidden");
+	call(created.onUpdate);
+	t.false(target.isVisible);
+	t.is(below.y, 15 + 15 + 10);
+
+	// None: invisible, and the slot is reclaimed.
+	visibility.set("none");
+	call(created.onUpdate);
+	t.false(target.isVisible);
+	t.is(below.y, 15);
+
+	// Visible again: geometry is re-applied and the slot returns.
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.true(target.isVisible);
+	t.is(target.y, 15);
+	t.is(target.width, 60);
+	t.is(target.height, 15);
+	t.is(below.y, 15 + 15 + 10);
+});
+
+
+test("Reopened window applies a persisted hidden state before it is shown", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		title: "test window",
+		width: 60, height: 80 + 15,
+		padding: 0, spacing: 10,
+		content: [
+			vertical({ visibility, height: 15, spacing: 0, content: [button({ text: "inner", height: 15 })] }),
+			button({ text: "below", height: 15 })
+		]
+	});
+	const instance1 = template.open();
+
+	const created1 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.true(created1.widgets[0].isVisible);
+	t.is(created1.widgets[1].y, 15 + 15 + 10);
+
+	visibility.set("none");
+	call(created1.onUpdate);
+	t.false(created1.widgets[0].isVisible);
+	t.is(created1.widgets[1].y, 15);
+
+	instance1.close();
+	template.open();
+
+	// The store is still "none": the fresh descriptors are hidden by the pre-open layout, no update needed.
+	const created2 = (<UiMock>globalThis.ui).createdWindows[0];
+	t.not(created2, created1);
+	const inner = <ButtonWidget>created2.widgets[0];
+	const below = <ButtonWidget>created2.widgets[1];
+	t.false(inner.isVisible);
+	t.true(below.isVisible);
+	t.is(below.y, 15);
+
+	visibility.set("visible");
+	call(created2.onUpdate);
+	t.true(inner.isVisible);
+	t.is(inner.y, 15);
+	t.is(below.y, 15 + 15 + 10);
+});
+
+
+test("Hidden container hides every kind of control without errors", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const template = window({
+		title: "test window",
+		width: 200, height: 300 + 15,
+		padding: 0, spacing: 0,
+		content: [
+			vertical({
+				visibility: "none",
+				content: [
+					label({ text: "label" }),
+					button({ text: "button" }),
+					checkbox({ text: "checkbox" }),
+					colourPicker({ colour: 0 }),
+					dropdown({ items: ["a", "b"] }),
+					dropdownButton({ buttons: [{ text: "a" }, { text: "b" }] }),
+					dropdownSpinner({ items: ["a", "b"] }),
+					spinner({}),
+					textbox({ text: "textbox" }),
+					toggle({ text: "toggle" }),
+					listview({ columns: [{ header: "a", width: "50%" }, { header: "b", width: "50%" }], items: [["1", "2"]] }),
+					box({ content: button({ text: "boxed" }) })
+				]
+			}),
+			button({ text: "shown", height: 20 })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const widgets = created.widgets;
+	t.is(widgets.length, 16); // compound controls and the box each add an extra widget
+
+	const shown = <ButtonWidget>widgets[widgets.length - 1];
+	t.is(shown.text, "shown");
+	t.true(shown.isVisible);
+	t.is(shown.y, 15); // the hidden container takes up no space
+
+	// Every widget inside the container is hidden, including the extra widgets of compound controls.
+	for (let i = 0; i < widgets.length - 1; i++)
+	{
+		t.false(widgets[i].isVisible, `widget ${i} (${widgets[i].type}) should be hidden`);
+	}
+});
+
+
+test("Window auto size keeps space for hidden children and reclaims it for none", t =>
+{
+	globalThis.ui = Mock.ui();
+
+	const visibility = store<Visibility>("visible");
+	const template = window({
+		title: "test window",
+		width: "auto", height: "auto", padding: 5, spacing: 8,
+		content: [
+			button({ text: "hello world", width: 100, height: 30 }),
+			button({ text: "maybe hello", width: 100, height: 30, visibility })
+		]
+	});
+	template.open();
+
+	const created = (<UiMock>globalThis.ui).createdWindows[0];
+	const button2 = <ButtonWidget>created.widgets[1];
+	t.is(created.height, 30 + 10 + 8 + 30 + 15);
+	t.true(button2.isVisible);
+
+	visibility.set("hidden");
+	call(created.onUpdate);
+	t.is(created.height, 30 + 10 + 8 + 30 + 15); // hidden still takes up space
+	t.false(button2.isVisible);
+
+	visibility.set("none");
+	call(created.onUpdate);
+	t.is(created.height, 30 + 10 + 15); // none does not
+	t.false(button2.isVisible);
+
+	visibility.set("visible");
+	call(created.onUpdate);
+	t.is(created.height, 30 + 10 + 8 + 30 + 15);
+	t.true(button2.isVisible);
+	t.is(button2.y, 15 + 5 + 30 + 8);
 });
 
 

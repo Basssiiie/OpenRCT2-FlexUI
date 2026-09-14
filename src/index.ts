@@ -43,7 +43,8 @@ export { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal, ve
 export { ViewportFlags } from "./elements/controls/enums/viewportFlags";
 
 // Widget parameter types
-export { ElementParams, ElementVisibility } from "./elements/elementParams";
+export { ElementParams } from "./elements/elementParams";
+export { Visibility } from "./positional/visibility";
 export { Colour } from "./utilities/colour";
 export { TextColour } from "./utilities/textColour";
 
@@ -55,6 +56,7 @@ export { Paddable } from "./positional/paddable";
 export { Padding } from "./positional/padding";
 export { Rectangle } from "./positional/rectangle";
 export { Scale } from "./positional/scale";
+export { Hideable } from "./positional/visibility";
 
 // Internal components
 export { Bindable } from "./bindings/bindable";

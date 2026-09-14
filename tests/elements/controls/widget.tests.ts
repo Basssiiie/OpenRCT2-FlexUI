@@ -23,7 +23,7 @@ test("Standard properties are set", t =>
 				isPressed: true,
 				onClick: callback,
 				// @ts-expect-error These properties should be skipped
-				isVisible: true, x: 25, y: 3421, name: "bob", isDisabled: true
+				isVisible: false, x: 25, y: 3421, name: "bob", isDisabled: true
 			})
 		]
 	});
@@ -41,6 +41,6 @@ test("Standard properties are set", t =>
 	t.true(result.isPressed);
 
 	t.not(result.name, "bob");
-	t.falsy(result.isVisible);
+	t.true(result.isVisible); // the layout decides visibility, not the user-supplied value
 	t.falsy(result.isDisabled);
 });

@@ -1,4 +1,5 @@
 import { ParsedScale } from "@src/positional/parsing/parsedScale";
+import { Visibility } from "@src/positional/visibility";
 
 export interface ParsedAbsolutePosition
 {
@@ -6,5 +7,5 @@ export interface ParsedAbsolutePosition
 	y: ParsedScale;
 	_width: ParsedScale;
 	_height: ParsedScale;
-	_skip?: boolean;
+	_visibility?: Visibility;
 }

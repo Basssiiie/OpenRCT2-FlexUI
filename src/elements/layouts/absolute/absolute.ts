@@ -1,6 +1,7 @@
 import { isWeighted } from "@src/positional/parsing/parsedScale";
 import { convertToPixels, parseScale } from "@src/positional/parsing/parseScale";
 import { Rectangle } from "@src/positional/rectangle";
+import { hiddenKey, noneKey } from "@src/positional/visibility";
 import { isArray } from "@src/utilities/type";
 import { BuildOutput } from "@src/windows/buildOutput";
 import { Layoutable } from "@src/windows/layoutable";
@@ -53,13 +54,31 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 	constructor(output: BuildOutput, params: (AbsoluteLayoutParams | AbsoluteLayoutContainer) & Position)
 	{
 		const creators = (isArray(params)) ? params : params.content;
+		const binder = output.binder;
+		const frame = output.context;
 		const children = container(output, creators, position =>
-		({
-			x: parseScale(position.x),
-			y: parseScale(position.y),
-			_width: parseScale(position.width),
-			_height: parseScale(position.height)
-		}));
+		{
+			const parsed: ParsedAbsolutePosition = {
+				x: parseScale(position.x),
+				y: parseScale(position.y),
+				_width: parseScale(position.width),
+				_height: parseScale(position.height)
+			};
+
+			/*
+			 * Note: a runtime toggle to or from "none" does not recompute the weighted totals
+			 * below, which are only calculated once on creation.
+			 */
+			binder.on(position.visibility, value =>
+			{
+				if (parsed._visibility !== value)
+				{
+					parsed._visibility = value;
+					frame.redraw();
+				}
+			});
+			return parsed;
+		});
 		const count = children.length;
 		let weightedTotalWidth = 0;
 		let weightedTotalHeight = 0;
@@ -69,7 +88,7 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 		for (; idx < count; idx++)
 		{
 			child = children[idx];
-			if (child._skip)
+			if (child._visibility === noneKey)
 			{
 				continue;
 			}
@@ -92,22 +111,36 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 		this._weightedTotalHeight = weightedTotalHeight;
 	}
 
-	layout(widgets: WidgetMap, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		const children = this._children;
 		const count = children.length;
+		let child: Child<ParsedAbsolutePosition>;
+
+		if (!area)
+		{
+			// Hidden: hide all children, no position calculation is needed.
+			for (child of children)
+			{
+				child._layoutable.layout(widgets, false);
+			}
+			return;
+		}
+
 		const weightedTotalWidth = this._weightedTotalWidth;
 		const weightedTotalHeight = this._weightedTotalHeight;
 		const leftoverWidth = area.width;
 		const leftoverHeight = area.height;
 		const rect = <Rectangle>{}; // Reuse the rect for every element to reduce allocation.
-		let child: Child<ParsedAbsolutePosition>;
 
 		for (let i = 0; i < count; i++)
 		{
 			child = children[i];
-			if (child._skip)
+			const visibility = child._visibility;
+			if (visibility === noneKey)
 			{
+				// Takes up no space, but the whole subtree still needs to be hidden.
+				child._layoutable.layout(widgets, false);
 				continue;
 			}
 
@@ -116,7 +149,7 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 			rect.width = convertToPixels(child._width, leftoverWidth, weightedTotalWidth, 0);
 			rect.height = convertToPixels(child._height, leftoverHeight, weightedTotalHeight, 0);
 
-			child._layoutable.layout(widgets, rect);
+			child._layoutable.layout(widgets, (visibility === hiddenKey) ? false : rect);
 		}
 	}
 }

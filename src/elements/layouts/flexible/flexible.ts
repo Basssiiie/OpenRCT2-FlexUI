@@ -114,7 +114,6 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 	_requestedPixels!: number;
 	_requestedPercentile!: number;
 	_requestedWeightTotal!: number;
-	_visibleElementsCount!: number;
 
 	constructor(output: BuildOutput, params: (FlexibleDirectionalLayoutParams | FlexibleLayoutContainer) & Position)
 	{
@@ -155,16 +154,20 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		}
 	}
 
-	layout(widgets: WidgetMap, area: Rectangle): void
+	layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		Log.debug("Flexible; layout() for area:", Log.stringify(area));
-
-		if (!this._visibleElementsCount)
+		if (area)
 		{
+			flexibleLayout(this, this._children, area, this._direction, this._spacing, widgets);
 			return;
 		}
 
-		flexibleLayout(this, this._children, area, this._direction, this._spacing, widgets);
+		// Hide all children, no position calculation is needed.
+		for (const child of this._children)
+		{
+			child._layoutable.layout(widgets, false);
+		}
 	}
 
 	private _redraw()

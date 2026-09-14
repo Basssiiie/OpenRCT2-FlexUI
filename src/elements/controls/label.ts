@@ -67,10 +67,13 @@ class LabelControl<Position> extends Control<LabelDesc, Position> implements Lab
 		binder.add(this, "textAlign", params.alignment);
 	}
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		// Align label with checkboxes, spinners, dropdowns etc.
-		area.y += 2;
+		if (area)
+		{
+			area.y += 2;
+		}
 		super.layout(widgets, area);
 	}
 }

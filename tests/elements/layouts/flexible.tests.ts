@@ -4,19 +4,20 @@ import { store } from "@src/bindings/stores/createStore";
 import { read } from "@src/bindings/stores/read";
 import { box } from "@src/elements/controls/box";
 import { button } from "@src/elements/controls/button";
+import { dropdownSpinner } from "@src/elements/controls/dropdownSpinner";
 import { label } from "@src/elements/controls/label";
-import { ElementVisibility } from "@src/elements/elementParams";
 import { flexible, FlexibleLayoutControl, horizontal, vertical } from "@src/elements/layouts/flexible/flexible";
 import { FlexiblePosition } from "@src/elements/layouts/flexible/flexiblePosition";
 import { LayoutDirection } from "@src/elements/layouts/flexible/layoutDirection";
 import { Rectangle } from "@src/positional/rectangle";
 import { Scale } from "@src/positional/scale";
+import { Visibility } from "@src/positional/visibility";
 import { Event, invoke } from "@src/utilities/event";
 import { noop } from "@src/utilities/noop";
 import { WidgetBinder } from "@src/windows/binders/widgetBinder";
 import { FrameContext } from "@src/windows/frames/frameContext";
 import { FrameEvent } from "@src/windows/frames/frameEvent";
-import { addToWidgetMap } from "@src/windows/widgets/widgetMap";
+import { addToWidgetMap, WidgetMap } from "@src/windows/widgets/widgetMap";
 import test from "ava";
 import Mock from "openrct2-mocks";
 
@@ -1164,7 +1165,7 @@ test("Child with visibility 'none' is not updated", t =>
 	t.is(widget1.y, 20 + 2);
 	t.is(widget1.width, 43);
 	t.is(widget1.height, 25);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.true(widget1.isVisible);
 
 	const widget2 = <LabelWidget>output.widgets[1];
 	t.is(widget2.text, "nada");
@@ -1180,7 +1181,7 @@ test("Child with visibility 'none' is not updated", t =>
 	t.is(widget3.y, 20 + 2 + 25 + 10);
 	t.is(widget3.width, 43);
 	t.is(widget3.height, 25);
-	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+	t.true(widget3.isVisible);
 });
 
 
@@ -1211,14 +1212,11 @@ test("Child with visibility 'hidden' still takes up space", t =>
 	t.is(widget1.y, 0 + 2);
 	t.is(widget1.width, 60);
 	t.is(widget1.height, 20);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.true(widget1.isVisible);
 
+	// A hidden widget keeps its slot (see widget3 below), but its own geometry is not applied.
 	const widget2 = <LabelWidget>output.widgets[1];
 	t.is(widget2.text, "hidden-one");
-	t.is(widget2.x, 0);
-	t.is(widget2.y, 30 + 2);
-	t.is(widget2.width, 60);
-	t.is(widget2.height, 20);
 	t.false(widget2.isVisible);
 
 	const widget3 = <LabelWidget>output.widgets[2];
@@ -1227,7 +1225,7 @@ test("Child with visibility 'hidden' still takes up space", t =>
 	t.is(widget3.y, 60 + 2);
 	t.is(widget3.width, 60);
 	t.is(widget3.height, 20);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
+	t.true(widget3.isVisible);
 });
 
 
@@ -1285,7 +1283,7 @@ test("Child visibility is updated by store", t =>
 	globalThis.ui = Mock.ui();
 	const output = createBuildOutput();
 	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 80 };
-	const visibility = store<ElementVisibility>("visible");
+	const visibility = store<Visibility>("visible");
 	const creator = flexible({
 		spacing: 10,
 		content: [
@@ -1314,8 +1312,8 @@ test("Child visibility is updated by store", t =>
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);
 	t.true(widget2.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
-	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+	t.true(widget1.isVisible);
+	t.true(widget3.isVisible);
 
 	visibility.set("none");
 	invoke(output.redraw);
@@ -1326,8 +1324,8 @@ test("Child visibility is updated by store", t =>
 	t.is(widget1.height, 35);
 	t.is(widget3.height, 35);
 	t.false(widget2.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
-	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+	t.true(widget1.isVisible);
+	t.true(widget3.isVisible);
 
 	visibility.set("visible");
 	invoke(output.redraw);
@@ -1340,8 +1338,8 @@ test("Child visibility is updated by store", t =>
 	t.is(widget2.height, 20);
 	t.is(widget3.height, 20);
 	t.true(widget2.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget1.isVisible, undefined); // unset defaults to true
-	t.is<boolean | undefined, boolean | undefined>(widget3.isVisible, undefined); // unset defaults to true
+	t.true(widget1.isVisible);
+	t.true(widget3.isVisible);
 });
 
 
@@ -1350,7 +1348,7 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 	globalThis.ui = Mock.ui();
 	const output = createBuildOutput();
 	const rect: Rectangle = { x: 35, y: 10, width: 60, height: 80 };
-	const visibility = store<ElementVisibility>("visible");
+	const visibility = store<Visibility>("visible");
 	const creator = flexible({
 		spacing: 10,
 		content: [
@@ -1379,7 +1377,7 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 	t.is(widget2.width, 60);
 	t.is(widget2.height, 15);
 	t.true(widget1.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+	t.true(widget2.isVisible);
 
 	visibility.set("none");
 	invoke(output.redraw);
@@ -1391,7 +1389,7 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 	t.is(widget2.width, 60);
 	t.is(widget2.height, 15);
 	t.false(widget1.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+	t.true(widget2.isVisible);
 
 	visibility.set("visible");
 	invoke(output.redraw);
@@ -1405,7 +1403,7 @@ test("Child's relative padding resizes on visibility of sibling", t =>
 	t.is(widget2.width, 60);
 	t.is(widget2.height, 15);
 	t.true(widget1.isVisible);
-	t.is<boolean | undefined, boolean | undefined>(widget2.isVisible, undefined); // unset defaults to true
+	t.true(widget2.isVisible);
 });
 
 
@@ -1414,7 +1412,7 @@ test("Fixed-size container with visibility child keeps its explicit size", t =>
 	globalThis.ui = Mock.ui();
 	const output = createBuildOutput();
 	const rect: Rectangle = { x: 0, y: 0, width: 300, height: 40 };
-	const visibility = store<ElementVisibility>("visible");
+	const visibility = store<Visibility>("visible");
 	const creator = flexible({
 		direction: LayoutDirection.Horizontal, spacing: 0,
 		content: [
@@ -1455,6 +1453,295 @@ test("Fixed-size container with visibility child keeps its explicit size", t =>
 	t.is(button2.y, 0);
 	t.is(button2.width, 200);
 	t.is(button2.height, 40);
+});
+
+
+test("Container visibility hides all child widgets regardless of own setting", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 60 };
+	const creator = flexible({
+		content: [
+			vertical({
+				visibility: "hidden",
+				content: [
+					label({ text: "a" }),
+					label({ text: "b", visibility: "visible" }),
+					label({ text: "c", visibility: "hidden" })
+				]
+			})
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	t.false(output.widgets[0].isVisible);
+	t.false(output.widgets[1].isVisible); // own "visible" is overridden by the hidden container
+	t.false(output.widgets[2].isVisible);
+});
+
+
+test("Container visibility visible lets children follow their own setting", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 60 };
+	const creator = flexible({
+		content: [
+			vertical({
+				visibility: "visible",
+				content: [
+					label({ text: "a" }),
+					label({ text: "b", visibility: "hidden" })
+				]
+			})
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	// A visible container adds no constraint: children follow their own setting.
+	t.true(output.widgets[0].isVisible);
+	t.false(output.widgets[1].isVisible); // follows own "hidden"
+});
+
+
+test("Hidden container hides descendants even when skipped from layout", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 100 };
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			vertical({ visibility: "none", content: [label({ text: "hidden" })] }),
+			button({ text: "shown", height: "1w" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const innerLabel = output.widgets[0]; // built first, inside the inner container
+	const outerButton = output.widgets[1];
+	t.false(innerLabel.isVisible); // hidden even though its container is skipped and never laid out
+	t.is(outerButton.y, 0);
+	t.is(outerButton.height, 100); // the "none" container took up no space
+});
+
+
+test("Container visibility is updated by store", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 60 };
+	const visibility = store<Visibility>("visible");
+	const creator = flexible({
+		content: [
+			vertical({
+				visibility,
+				content: [
+					label({ text: "a" }),
+					label({ text: "b", visibility: "hidden" })
+				]
+			})
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const a = output.widgets[0];
+	const b = output.widgets[1];
+	t.true(a.isVisible);
+	t.false(b.isVisible); // own "hidden"
+
+	visibility.set("hidden");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.false(a.isVisible);
+	t.false(b.isVisible);
+
+	visibility.set("visible");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	t.true(a.isVisible);
+	t.false(b.isVisible); // own "hidden" still applies under a visible container
+});
+
+
+test("Nested container visibility combines with ancestors", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 100 };
+	const creator = flexible({
+		content: [
+			vertical({
+				visibility: "hidden",
+				content: [
+					vertical({ visibility: "visible", content: [label({ text: "deep" })] })
+				]
+			})
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	t.false(output.widgets[0].isVisible); // hidden by outer container despite inner being visible
+});
+
+
+test("Hidden container hides its children but still takes up space", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 80 };
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			button({ text: "abc", height: "1w" }),
+			vertical({ visibility: "hidden", height: "1w", content: [button({ text: "inner", visibility: "visible" })] }),
+			button({ text: "def", height: "1w" })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	const abc = output.widgets[0];
+	const inner = output.widgets[1];
+	const def = output.widgets[2];
+
+	// Three equal slots of 20 with two gaps of 10, as if the hidden container were visible.
+	t.is(abc.y, 0);
+	t.is(abc.height, 20);
+	t.true(abc.isVisible);
+	t.false(inner.isVisible); // hidden by its container, despite its own "visible"
+	t.is(def.y, 60);
+	t.is(def.height, 20);
+	t.true(def.isVisible);
+});
+
+
+test("Child toggled from 'none' to 'visible' gets its geometry applied", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 60, height: 80 };
+	const visibility = store<Visibility>("none");
+	const creator = flexible({
+		spacing: 10,
+		content: [
+			button({ text: "abc", height: "1w" }),
+			button({ text: "toggle", height: "1w", visibility })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	// Never laid out so far: hidden, with its geometry left untouched.
+	const toggle = output.widgets[1];
+	t.false(toggle.isVisible);
+	t.is(toggle.width, 0);
+	t.is(toggle.height, 0);
+
+	visibility.set("visible");
+	invoke(output.redraw);
+	control.layout(widgetMap, rect);
+
+	// Now takes its slot: (80 - 10 spacing) / 2 = 35 each.
+	t.true(toggle.isVisible);
+	t.is(toggle.y, 45);
+	t.is(toggle.width, 60);
+	t.is(toggle.height, 35);
+});
+
+
+test("Hidden container hides both widgets of a dropdown spinner", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 20 };
+	const creator = flexible({
+		content: [
+			vertical({ visibility: "hidden", content: [dropdownSpinner({ items: ["a", "b"] })] })
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	// The internal spinner is built before the dropdown; neither is a direct container child.
+	t.is(output.widgets.length, 2);
+	t.false(output.widgets[0].isVisible);
+	t.false(output.widgets[1].isVisible);
+});
+
+
+test("Custom layoutable receives false as area when hidden", t =>
+{
+	globalThis.ui = Mock.ui();
+	const output = createBuildOutput();
+	const rect: Rectangle = { x: 0, y: 0, width: 100, height: 100 };
+	const received: (Rectangle | false)[] = [];
+	const custom = {
+		position: { height: 20 },
+		create: () => ({
+			layout(_widgets: WidgetMap, area: Rectangle | false): void
+			{
+				received.push(area);
+			}
+		})
+	};
+	const creator = flexible({
+		spacing: 0,
+		content: [
+			vertical({ visibility: "none", content: [custom] }),
+			custom
+		]
+	});
+
+	const control = <FlexControl>creator.create(output);
+	const widgetMap = addToWidgetMap(output.widgets);
+	const frame = createFrame(output);
+	output.binder._bind(frame);
+	control.layout(widgetMap, rect);
+
+	t.is(received.length, 2);
+	t.false(received[0]); // inside the hidden container: no area, just hide
+	t.deepEqual(received[1], { x: 0, y: 0, width: 100, height: 20 }); // outside: a regular area
 });
 
 
@@ -1692,7 +1979,7 @@ test("Container can switch between inherited and not, based on dynamic child vis
 	globalThis.ui = Mock.ui();
 	const output = createBuildOutput();
 	const rect: Rectangle = { x: 28, y: 3, width: 43, height: 50 };
-	const visibility = store<ElementVisibility>("visible");
+	const visibility = store<Visibility>("visible");
 	const creator = flexible({
 		spacing: 10,
 		content: [

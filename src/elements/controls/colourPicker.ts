@@ -78,9 +78,12 @@ class ColourPickerControl<Position> extends Control<ColourPickerDesc, Position> 
 		binder.callback(this, "onChange", colour, decorateWithSilencer(this, params.onChange));
 	}
 
-	override layout(widgets: WidgetMap, area: Rectangle): void
+	override layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
-		area.y += 1;
+		if (area)
+		{
+			area.y += 1;
+		}
 		super.layout(widgets, area);
 	}
 }
