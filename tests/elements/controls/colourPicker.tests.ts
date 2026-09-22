@@ -36,7 +36,7 @@ test("Colour is bindable", t =>
 	const mock = Mock.ui();
 	globalThis.ui = mock;
 
-	const colour = store(Colour.Aquamarine);
+	const colour = store(Colour.AquaLightWater);
 	const template = window({
 		width: 100, height: 100,
 		content: [
@@ -46,7 +46,7 @@ test("Colour is bindable", t =>
 	template.open();
 
 	const widget = <ColourPickerWidget>mock.createdWindows[0].widgets[0];
-	t.is(widget.colour, Colour.Aquamarine);
+	t.is(widget.colour, Colour.AquaLightWater);
 
 	colour.set(Colour.OliveGreen);
 	t.is(widget.colour, Colour.OliveGreen);
@@ -71,9 +71,9 @@ test("Change event gets called", t =>
 	call(widget.onChange, Colour.IcyBlue);
 	call(widget.onChange, Colour.Black);
 	call(widget.onChange, Colour.LightPink);
-	call(widget.onChange, Colour.Teal);
+	call(widget.onChange, Colour.AquaDarkWater);
 
-	t.deepEqual(hits, [Colour.IcyBlue, Colour.Black, Colour.LightPink, Colour.Teal]);
+	t.deepEqual(hits, [Colour.IcyBlue, Colour.Black, Colour.LightPink, Colour.AquaDarkWater]);
 });
 
 
@@ -137,18 +137,18 @@ test("Two-way bindings update colour picker", t =>
 	t.is(colour.get(), Colour.Black);
 	t.deepEqual(hits, []);
 
-	call(widget.onChange, Colour.Teal);
-	t.is(widget.colour, Colour.Teal);
-	t.is(colour.get(), Colour.Teal);
-	t.deepEqual(hits, [Colour.Teal]);
+	call(widget.onChange, Colour.AquaDarkWater);
+	t.is(widget.colour, Colour.AquaDarkWater);
+	t.is(colour.get(), Colour.AquaDarkWater);
+	t.deepEqual(hits, [Colour.AquaDarkWater]);
 
 	call(widget.onChange, Colour.DarkPink);
 	t.is(widget.colour, Colour.DarkPink);
 	t.is(colour.get(), Colour.DarkPink);
-	t.deepEqual(hits, [Colour.Teal, Colour.DarkPink]);
+	t.deepEqual(hits, [Colour.AquaDarkWater, Colour.DarkPink]);
 
 	colour.set(Colour.SaturatedGreen);
 	t.is(widget.colour, Colour.SaturatedGreen);
 	t.is(colour.get(), Colour.SaturatedGreen);
-	t.deepEqual(hits, [Colour.Teal, Colour.DarkPink]);
+	t.deepEqual(hits, [Colour.AquaDarkWater, Colour.DarkPink]);
 });

@@ -271,7 +271,7 @@ test("Window applies colours", t =>
 	const template = window({
 		title: "Coloured window",
 		width: 100, height: 80,
-		colours: [Colour.Aquamarine, Colour.BrightGreen],
+		colours: [Colour.AquaLightWater, Colour.BrightGreen],
 		content: [
 			button({ text: "click" })
 		]
@@ -279,7 +279,7 @@ test("Window applies colours", t =>
 	template.open();
 
 	const created = (<UiMock>globalThis.ui).createdWindows[0];
-	t.deepEqual(created.colours, [Colour.Aquamarine, Colour.BrightGreen]);
+	t.deepEqual(created.colours, [Colour.AquaLightWater, Colour.BrightGreen]);
 	t.is(created.title, "Coloured window");
 });
 

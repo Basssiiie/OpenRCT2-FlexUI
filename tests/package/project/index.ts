@@ -8,7 +8,7 @@ const result = window({
 	height: 150,
 	content: [
 		colourPicker({
-			colour: Colour.Aquamarine
+			colour: Colour.AquaLightWater
 		})
 	]
 });

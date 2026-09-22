@@ -357,7 +357,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 
 	const template = tabwindow({
 		title: "test tab window",
-		colours: [Colour.Aquamarine, Colour.BrightGreen],
+		colours: [Colour.AquaLightWater, Colour.BrightGreen],
 		width: 200, height: 150,
 		padding: 10,
 		startingTab: 1,
@@ -389,7 +389,7 @@ test("Window with multiple tabs, widgets, title and colours", t =>
 	t.is(created.height, 150);
 	t.is(created.widgets.length, 2);
 	t.is(created.tabIndex, 1);
-	t.deepEqual(created.colours, [Colour.Aquamarine, Colour.BrightGreen]);
+	t.deepEqual(created.colours, [Colour.AquaLightWater, Colour.BrightGreen]);
 
 	const label1 = <LabelWidget>created.widgets[0];
 	t.is(label1.type, "label");
