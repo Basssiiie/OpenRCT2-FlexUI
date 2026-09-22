@@ -15,11 +15,9 @@ export class WindowBinder extends GenericBinder<BaseWindowControl, Window | Wind
 	{
 		Log.assert(!!control._description, "Window control is missing description!");
 		Log.debug("[WindowBinder] -----> Binding to", control._description.title);
-
-		const bindings = this._bindings;
-		for (const binding of bindings)
+		for (let bindings = this._bindings, length = bindings.length, idx = 0; idx < length; idx++)
 		{
-			binding._bind(control);
+			bindings[idx]._bind(control);
 		}
 		this._source = control;
 	}

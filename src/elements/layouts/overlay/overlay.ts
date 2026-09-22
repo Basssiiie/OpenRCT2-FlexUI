@@ -97,8 +97,9 @@ export class OverlayLayoutControl<Position extends SizeParams> implements Flexib
 	layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		Log.debug("Overlay; layout() for area:", Log.stringify(area));
-		for (const child of this._children)
+		for (let children = this._children, idx = 0, length = children.length; idx < length; idx++)
 		{
+			const child = children[idx];
 			const visibility = child._visibility;
 			if (!area || (visibility && visibility !== visibleKey))
 			{
@@ -154,9 +155,14 @@ export class OverlayLayoutControl<Position extends SizeParams> implements Flexib
  */
 function getDesiredSpaceFromChildren(children: ParsedFlexiblePosition[], direction: Axis): number | undefined
 {
+	const length = children.length;
+	let child: ParsedFlexiblePosition;
 	let biggest = 0;
-	for (const child of children)
+	let idx = 0;
+
+	for (; idx < length; idx++)
 	{
+		child = children[idx];
 		if (child._visibility === noneKey)
 		{
 			continue;

@@ -164,9 +164,9 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		}
 
 		// Hide all children, no position calculation is needed.
-		for (const child of this._children)
+		for (let children = this._children, idx = 0, length = children.length; idx < length; idx++)
 		{
-			child._layoutable.layout(widgets, false);
+			children[idx]._layoutable.layout(widgets, false);
 		}
 	}
 

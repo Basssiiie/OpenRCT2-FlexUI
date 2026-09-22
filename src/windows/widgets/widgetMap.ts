@@ -12,9 +12,16 @@ export function addToWidgetMap<T extends { name?: string }>(widgets: T[], dictio
 {
 	dictionary ||= {};
 
-	for (const widget of widgets)
+	const length = widgets.length;
+	let widget: T;
+	let name: string | undefined;
+	let idx = 0;
+
+	for (; idx < length; idx++)
 	{
-		const name = widget.name;
+		widget = widgets[idx];
+		name = widget.name;
+
 		if (name && !(name in dictionary))
 		{
 			dictionary[name] = widget;

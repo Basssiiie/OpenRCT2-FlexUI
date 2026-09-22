@@ -15,10 +15,9 @@ export class WidgetBinder extends GenericBinder<FrameContext, Widget | WidgetBas
 	override _bind(frame: FrameContext): void
 	{
 		Log.debug("[WidgetBinder] -----> Binding to frame context...");
-		const bindings = this._bindings;
-		for (const binding of bindings)
+		for (let bindings = this._bindings, length = bindings.length, idx = 0; idx < length; idx++)
 		{
-			binding._bind(frame);
+			bindings[idx]._bind(frame);
 		}
 		this._source = frame;
 	}

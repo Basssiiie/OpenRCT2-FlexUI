@@ -62,23 +62,23 @@ class AbsoluteLayoutControl<Position> implements Layoutable
 	layout(widgets: WidgetMap, area: Rectangle | false): void
 	{
 		const children = this._children;
+		const count = children.length;
 		let child: Child<ParsedAbsolutePosition>;
+		let idx = 0;
 
 		if (!area)
 		{
 			// Hidden: hide all children, no position calculation is needed.
-			for (child of children)
+			for (; idx < count; idx++)
 			{
-				child._layoutable.layout(widgets, false);
+				children[idx]._layoutable.layout(widgets, false);
 			}
 			return;
 		}
 
 		// Bound sizes and visibility can change at runtime, so the weighted totals are recalculated on every layout.
-		const count = children.length;
 		let weightedTotalWidth = 0;
 		let weightedTotalHeight = 0;
-		let idx = 0;
 
 		for (; idx < count; idx++)
 		{
