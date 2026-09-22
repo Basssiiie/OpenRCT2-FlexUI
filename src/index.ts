@@ -39,6 +39,7 @@ export { viewport, ViewportParams } from "./elements/controls/viewport";
 export { widget, WidgetParams } from "./elements/controls/widget";
 export { absolute, AbsoluteLayoutContainer, AbsoluteLayoutParams } from "./elements/layouts/absolute/absolute";
 export { flexible, FlexibleLayoutContainer, FlexibleLayoutParams, horizontal, vertical } from "./elements/layouts/flexible/flexible";
+export { overlay, OverlayLayoutContainer, OverlayLayoutParams } from "./elements/layouts/overlay/overlay";
 
 export { ViewportFlags } from "./elements/controls/enums/viewportFlags";
 
