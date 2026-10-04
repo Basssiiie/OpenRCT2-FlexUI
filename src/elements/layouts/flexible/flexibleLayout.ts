@@ -40,7 +40,7 @@ export interface FlexibleContainer
 {
 	_width?: WritableStore<number | undefined>;
 	_height?: WritableStore<number | undefined>;
-	_flags: FlexFlags;
+	_flags: FlexFlags | ContainerFlags | number;
 }
 
 

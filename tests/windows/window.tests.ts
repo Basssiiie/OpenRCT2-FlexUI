@@ -1181,7 +1181,7 @@ test("Hidden container hides every kind of control without errors", t =>
 					label({ text: "label" }),
 					button({ text: "button" }),
 					checkbox({ text: "checkbox" }),
-					colourPicker({ colour: 0 }),
+					colourPicker({ colour: Colour.BrightGreen }),
 					dropdown({ items: ["a", "b"] }),
 					dropdownButton({ buttons: [{ text: "a" }, { text: "b" }] }),
 					dropdownSpinner({ items: ["a", "b"] }),

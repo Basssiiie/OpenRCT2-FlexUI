@@ -18,10 +18,12 @@
 		"strict": true,
 		"target": "ES5",
 		"lib": [ "ES5", "ES2015.Iterable" ],
+		"ignoreDeprecations": "6.0"
 	},
 	"include": [
 		"./lib/**/*.ts",
 		"./src/**/*.ts",
+		"./examples/**/*.ts",
 		"./tests/**/*.ts"
 	],
 	"exclude": [

@@ -49,7 +49,7 @@ export class DefaultArrayStore<T> extends DefaultStore<T[]> implements ArrayStor
 		return function(...args: unknown[]): never
 		{
 			const array = store._value;
-			const arrayMethod = <(...arg: unknown[]) => unknown>array[<keyof T[]>method];
+			const arrayMethod = (<Record<K, (...arg: unknown[]) => unknown>><unknown>array)[method];
 			const value = arrayMethod.apply(array, args);
 			store._updateListeners(array);
 			return <never>value;

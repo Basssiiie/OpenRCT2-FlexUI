@@ -26,8 +26,8 @@ export const enum ContainerFlags
  */
 export function getComputableFlags(position: SizeParams): ContainerFlags
 {
-	return (isComputable(position.width) ? ContainerFlags.ComputableWidth : 0)
-		| (isComputable(position.height) ? ContainerFlags.ComputableHeight : 0);
+	return (isComputable(position.width) ? ContainerFlags.ComputableWidth : ContainerFlags.None)
+		| (isComputable(position.height) ? ContainerFlags.ComputableHeight : ContainerFlags.None);
 }
 
 /**

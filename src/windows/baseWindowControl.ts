@@ -104,13 +104,13 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 	protected abstract _descriptionWidgetMap: WidgetMap;
 
 	_window?: Window | null;
-	private readonly _position?: WindowPosition;
+	private readonly _position: WindowPosition;
 	private readonly _windowBinder: WindowBinder | null;
 
 	protected _activeWidgetMap?: WidgetMap | null;
 	protected _width!: number;
 	protected _height!: number;
-	protected _flags!: WindowFlags;
+	protected _flags!: WindowFlags | number;
 
 	constructor(params: ExtendedWindowParams)
 	{
@@ -184,7 +184,7 @@ export abstract class BaseWindowControl implements OpenWindow, ParentWindow
 	/**
 	 * Creates a new rectangle area for use in layouting child widgets.
 	 */
-	protected _createWindowRectangle(flags: WindowFlags, extraTopPadding: number): FrameRectangle
+	protected _createWindowRectangle(flags: WindowFlags | number, extraTopPadding: number): FrameRectangle
 	{
 		return {
 			x: 0,

@@ -15,38 +15,37 @@
 		"reactive"
 	],
 	"type": "module",
-	"main": "./dist/index.min.js",
 	"module": "./dist/esm/src/index.mjs",
+	"main": "./dist/index.min.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
-		"require": "./dist/index.min.js",
 		"import": "./dist/esm/src/index.mjs",
+		"require": "./dist/index.min.js",
 		"types": "./dist/index.d.ts"
 	},
 	"files": [
 		"./dist/esm/**/*",
 		"./dist/index.*"
 	],
+	"workspaces": [
+		"./examples/*"
+	],
 	"scripts": {
 		"start": "npm run watch",
-		"watch": "nodemon --watch ./src --ext js,ts --exec \"npm run build:dev\"",
+		"watch": "npm run build:dev -- --watch",
 		"build": "npm run build:prod && npm run lint",
 		"build:dev": "npm run clean && rollup --config rollup.config.js",
 		"build:prod": "npm run clean && rollup --config rollup.config.js --environment BUILD:production",
-		"build:examples": "npm run for:examples --action=\"run build\"",
-		"install:examples": "npm run for:examples --action=\"install --prefer-offline\"",
+		"build:examples": "npm run build --workspaces",
 		"install:test-setup": "npm install --prefix ./tests/package/project --prefer-offline",
-		"install:all": "npm run for:all --action=\"install --prefer-offline\"",
-		"ci:all": "npm run for:all --action=\"ci --prefer-offline --no-audit --no-save\"",
+		"install:all": "npm install --prefer-offline && npm run install:test-setup",
+		"ci:all": "npm ci --prefer-offline --no-audit --no-save && npm ci --prefix ./tests/package/project --prefer-offline --no-audit --no-save",
 		"lint": "eslint",
 		"test": "c8 ava",
 		"version:prerelease": "npm version prerelease --preid=prerelease",
 		"publish:local": "npm run build && npm install --global",
 		"publish:prerelease": "npm run build && release-it --prerelease=prerelease",
-		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\"",
-		"exec": "node --eval \"var t=process.env.npm_config_target;child_process.execSync('npm '+process.env.npm_config_action+(t?(' --prefix '+t):''),{stdio: 'inherit'})\"",
-		"for:examples": "npm run exec --target=examples/AllWidgets && npm run exec --target=examples/BirdStalker && npm run exec --target=examples/Ratios && npm run exec --target=examples/WindowWithTabs",
-		"for:all": "npm run exec && npm run for:examples && npm run exec --target=tests/package/project"
+		"clean": "node --eval \"fs.rmSync('./dist', { recursive: true, force: true })\""
 	},
 	"repository": {
 		"type": "git",
@@ -61,22 +60,21 @@
 		"@eslint/js": "^10.0.1",
 		"@rollup/plugin-replace": "^6.0.1",
 		"@rollup/plugin-terser": "^1.0.0",
-		"@rollup/plugin-typescript": "^12.1.1",
+		"@rollup/plugin-typescript": "^12.3.0",
 		"@stylistic/eslint-plugin": "^5.2.3",
 		"@types/eslint__js": "^8.42.3",
-		"@types/node": "^25.6.0",
+		"@types/node": "^26.6.4",
 		"ava": "^6.0.1",
-		"c8": "^11.0.0",
+		"c8": "^12.0.0",
 		"eslint": "^10.2.1",
-		"nodemon": "^3.0.1",
 		"openrct2-mocks": "^0.1.0",
 		"release-it": "^20.0.1",
-		"rollup": "^4.9.4",
+		"rollup": "^4.64.0",
 		"rollup-plugin-dts": "^6.0.2",
 		"tsconfig-paths": "^4.1.0",
 		"tslib": "^2.3.1",
 		"tsx": "^4.7.0",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.14.0"
 	},
 	"ava": {

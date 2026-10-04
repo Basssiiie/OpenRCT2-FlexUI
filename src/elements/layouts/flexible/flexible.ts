@@ -69,7 +69,7 @@ export function horizontal(params: FlexibleLayoutParams & AbsolutePosition): Wid
 export function horizontal<Position extends SizeParams>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Position): WidgetCreator<Position>
 {
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Horizontal;
+	(<FlexibleDirectionalLayoutParams>params).direction = <LayoutDirection><never>Axis.Horizontal;
 	return <never>flexible(<never>params);
 }
 
@@ -84,7 +84,7 @@ export function vertical(params: FlexibleLayoutParams & AbsolutePosition): Widge
 export function vertical<Position extends SizeParams>(params: (FlexibleLayoutParams | FlexibleLayoutContainer) & Position): WidgetCreator<Position>
 {
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-	(<FlexibleDirectionalLayoutParams>params).direction = <number>Axis.Vertical;
+	(<FlexibleDirectionalLayoutParams>params).direction = <LayoutDirection><never>Axis.Vertical;
 	return <never>flexible(<never>params);
 }
 
@@ -120,7 +120,7 @@ export class FlexibleLayoutControl<Position extends SizeParams>	implements Flexi
 		const creators = (isArray(params)) ? params : params.content;
 		const context = output.context;
 		const binder = output.binder;
-		let flags: ContainerFlags;
+		let flags: FlexFlags | ContainerFlags;
 		let direction: Axis;
 		let spacing: ParsedScale;
 		let children: Child<ParsedFlexiblePosition>[];

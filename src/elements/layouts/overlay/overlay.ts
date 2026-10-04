@@ -65,7 +65,7 @@ export class OverlayLayoutControl<Position extends SizeParams> implements Flexib
 		const creators = (isArray(params)) ? params : params.content;
 		const context = output.context;
 		const binder = output.binder;
-		let flags: ContainerFlags;
+		let flags: FlexFlags | ContainerFlags;
 		let children: Child<ParsedFlexiblePosition>[];
 
 		this._flags = flags = getComputableFlags(params) | FlexFlags.ComputeBoth;

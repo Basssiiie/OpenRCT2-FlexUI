@@ -79,7 +79,7 @@ test("Viewport goes into disabled appearance", t =>
 		content: [
 			viewport({
 				disabled,
-				visibilityFlags: 1,
+				visibilityFlags: ViewportFlags.UndergroundInside,
 				target: { x: 50, y: 10 }
 			})
 		]
@@ -89,14 +89,14 @@ test("Viewport goes into disabled appearance", t =>
 	const created = (<UiMock>globalThis.ui).createdWindows[0];
 	const widget = <ViewportWidget>created.widgets[0];
 	const vp = widget.viewport;
-	t.is(vp.visibilityFlags, 1);
+	t.is(vp.visibilityFlags, ViewportFlags.UndergroundInside);
 	t.is(widget.isDisabled, false);
 
 	disabled.set(true);
-	t.true(vp.visibilityFlags > 1);
+	t.true(vp.visibilityFlags > ViewportFlags.UndergroundInside);
 	t.is(widget.isDisabled, true);
 
 	disabled.set(false);
-	t.is(vp.visibilityFlags, 1);
+	t.is(vp.visibilityFlags, ViewportFlags.UndergroundInside);
 	t.is(widget.isDisabled, false);
 });
